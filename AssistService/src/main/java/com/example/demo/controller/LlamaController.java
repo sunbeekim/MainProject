@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/llama")
+@RequestMapping("/api/assist/tinylamanaver")
 public class LlamaController {
 
     private final LlamaService llamaService;

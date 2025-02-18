@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 # 모델 초기화 - HuggingFace 경로 사용
-model_path = "TheBloke/deepseek-llm-7b-chat-GGUF/deepseek-llm-7b-chat.Q4_K_M.gguf"
+model_path = "C:/java/deepseek-llm-7b-chat.Q4_K_M.gguf/deepseek-llm-7b-chat-q4_k_m-imat.gguf"
 llm = Llama(
     model_path=model_path,
     n_ctx=2048,

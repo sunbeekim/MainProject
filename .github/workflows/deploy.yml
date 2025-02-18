@@ -93,7 +93,6 @@ jobs:
           node-version: '20'
       - name: Build Frontend
         run: |
-          cd vite
           cd vite-react-teamsketch
           npm install
           npm run build
@@ -102,9 +101,19 @@ jobs:
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend ./vite-react-teamsketch
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend
 
-  deploy-locally:
+  build-and-deploy-nginx:
     runs-on: ubuntu-latest
     needs: build-and-deploy-frontend
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build & Push Nginx Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service ./nginx
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service
+
+  deploy-locally:
+    runs-on: ubuntu-latest
+    needs: [build-and-deploy-nginx]
     steps:
       - name: Deploy Services Locally
         run: |
@@ -115,12 +124,14 @@ jobs:
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/core-service
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/frontend
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service
 
-          docker stop flask-container gateway-container core-container assist-container frontend-container || true
-          docker rm flask-container gateway-container core-container assist-container frontend-container || true
+          docker stop flask-container gateway-container core-container assist-container frontend-container nginx-container || true
+          docker rm flask-container gateway-container core-container assist-container frontend-container nginx-container || true
 
           docker run -d --name flask-container --network teamsketch-network -p 5000:5000 ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai
           docker run -d --name gateway-container --network teamsketch-network -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service
           docker run -d --name core-container --network teamsketch-network -p 8081:8081 ${{ secrets.DOCKER_HUB_USERNAME }}/core-service
           docker run -d --name assist-container --network teamsketch-network -p 8082:8082 ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service
           docker run -d --name frontend-container --network teamsketch-network -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/frontend
+          docker run -d --name nginx-container --network teamsketch-network -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service

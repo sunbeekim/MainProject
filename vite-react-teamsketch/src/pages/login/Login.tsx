@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { login } from '../store/slices/authSlice';
-import { useLogin } from '../services/api/authService';
-import Loading from '../components/common/Loading';
+import { login } from '../../store/slices/authSlice';
+import { useLogin } from '../../services/api/authService';
+import Loading from '../../components/common/Loading';
 
 interface LoginForm {
   email: string;

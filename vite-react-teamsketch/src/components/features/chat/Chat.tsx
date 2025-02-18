@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { IChatMessage, IChatProps } from '../../../types/chat';
+import { IChatProps } from './types';
 
 const Chat: React.FC<IChatProps> = ({ 
   title, 
