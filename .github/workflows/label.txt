@@ -6,7 +6,7 @@ on:
 
 jobs:
   docker-login:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Docker Hub 로그인
         uses: docker/login-action@v2
@@ -15,7 +15,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
   build-and-deploy-flask:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: docker-login
     steps:
       - uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
 
   build-and-deploy-gateway:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build-and-deploy-flask
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
 
   build-and-deploy-core:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build-and-deploy-gateway
     steps:
       - uses: actions/checkout@v2
@@ -78,7 +78,7 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
 
   build-and-deploy-assist:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build-and-deploy-core
     steps:
       - uses: actions/checkout@v2
@@ -103,7 +103,7 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
 
   build-and-deploy-frontend:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build-and-deploy-assist
     steps:
       - uses: actions/checkout@v2
@@ -127,7 +127,7 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
 
   build-and-deploy-nginx:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build-and-deploy-frontend
     steps:
       - uses: actions/checkout@v2
@@ -140,15 +140,23 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
 
   deploy-locally:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: [build-and-deploy-nginx]
     steps:
       - name: Deploy Services Locally
         run: |
-          # 네트워크 생성
+          # 네트워크 생성 (이미 존재하면 무시)
           docker network create teamsketch-network || true
           
-          # 컨테이너 중지 및 제거
+          # 이미지 풀
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
+          
+          # 기존 컨테이너 중지 및 제거
           docker stop flask-container gateway-container core-container assist-container frontend-container nginx-container || true
           docker rm flask-container gateway-container core-container assist-container frontend-container nginx-container || true
           
