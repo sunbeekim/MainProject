@@ -13,9 +13,9 @@ const Header = () => {
           actions: (
             <div className="flex gap-2">
               <select className="px-3 py-1 text-sm rounded-full bg-primary-light text-white">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
+                <option value="1">운동</option>
+                <option value="2">취미</option>
+                <option value="3">기타</option>
               </select>
               <select className="px-3 py-1 text-sm rounded-full bg-primary-light text-white">
                 <option value="1">1</option>
