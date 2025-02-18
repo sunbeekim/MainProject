@@ -104,6 +104,11 @@ jobs:
     needs: build-and-deploy-assist
     steps:
       - uses: actions/checkout@v2
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -115,9 +120,9 @@ jobs:
           npm run build
       - name: Build & Push Frontend Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend ./vite-react-teamsketch
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend
-    runs-on: ubuntu-latest
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest ./vite-react-teamsketch
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
+
   build-and-deploy-nginx:
     runs-on: ubuntu-latest
     needs: build-and-deploy-frontend
@@ -127,7 +132,7 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service ./nginx
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service
-    runs-on: ubuntu-latest
+
   deploy-locally:
     runs-on: ubuntu-latest
     needs: [build-and-deploy-nginx]
