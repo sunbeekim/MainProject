@@ -15,13 +15,12 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ items }) => {
       <ul className="flex items-center gap-4">
         {items.map((item, index) => (
           <li key={index}>
-            <button 
-              className="px-4 py-2 text-primary-light hover:text-primary-dark"
+            <label 
+              className="px-4 py-2 text-dark hover:text-primary-dark"
               onClick={item.onClick}
-              type="button"
             >
               {item.label}
-            </button>
+            </label>
           </li>
         ))}
       </ul>

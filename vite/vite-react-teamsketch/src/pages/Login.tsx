@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '../store/slices/authSlice';
 import { useLogin } from '../services/api/authService';
+import Loading from '../components/common/Loading';
 
 interface LoginForm {
   email: string;
@@ -84,7 +85,16 @@ const Login = () => {
         >
           로그인
         </button>
-      </form>
+        <button
+          type="submit"
+          className="w-full bg-primary-light text-white py-2 rounded-lg hover:bg-primary-dark"
+          data-testid="login-button"
+          onClick={() => navigate('/signup')}
+        >
+          회원가입
+        </button>
+        <Loading />
+      </form>     
     </div>
   );
 };
