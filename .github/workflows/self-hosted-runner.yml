@@ -11,9 +11,9 @@ jobs:
 
     steps:
       - name: Set PowerShell Execution Policy
-        shell: pwsh
+        shell: powershell
         run: Set-ExecutionPolicy RemoteSigned -Scope Process -Force
 
       - name: Run PowerShell Script
-        shell: pwsh
+        shell: powershell
         run: echo "✅ GitHub Actions이 로컬에서 실행됨!"
