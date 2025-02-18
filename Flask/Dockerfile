@@ -9,4 +9,5 @@ COPY . .
 
 EXPOSE 8001
 
-CMD ["python", "-m", "flask", "run", "--host=0.0.0.0"] 
+ENV PORT=8001
+CMD ["uvicorn", "llamaServer:app", "--host", "0.0.0.0", "--port", "8001"] 

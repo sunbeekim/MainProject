@@ -19,8 +19,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build Flask AI Service
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai ./Flask
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest ./Flask
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
 
   build-and-deploy-gateway:
     runs-on: ubuntu-latest
