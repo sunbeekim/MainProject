@@ -9,10 +9,11 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Docker Hub 로그인
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        shell: powershell
+        run: |
+          $password = '${{ secrets.DOCKER_HUB_TOKEN }}'
+          $username = '${{ secrets.DOCKER_HUB_USERNAME }}'
+          $password | docker login -u $username --password-stdin
 
   build-and-deploy-flask:
     runs-on: self-hosted
@@ -20,8 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Docker Hub 로그인
+        shell: powershell
         run: |
-          echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          $password = '${{ secrets.DOCKER_HUB_TOKEN }}'
+          $username = '${{ secrets.DOCKER_HUB_USERNAME }}'
+          $password | docker login -u $username --password-stdin
       - name: Build Flask AI Service
         run: |
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest ./Flask
