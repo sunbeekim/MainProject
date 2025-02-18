@@ -1,0 +1,17 @@
+name: Run on Self-Hosted Runner
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 push하면 실행됨
+
+jobs:
+  my-job:
+    runs-on: self-hosted  # 내 로컬 PC에서 실행
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run a command on my local machine
+        run: echo "✅ GitHub Actions이 로컬에서 실행됨!"
