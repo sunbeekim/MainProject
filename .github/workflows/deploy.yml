@@ -69,12 +69,12 @@ jobs:
           distribution: 'adopt'
       - name: Build Core Spring Service
         run: |
-          cd SpringService
+          cd CoreService
           chmod +x ./gradlew
           ./gradlew clean build
       - name: Build & Push Core Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest ./SpringService
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest ./CoreService
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
 
   build-and-deploy-assist:
