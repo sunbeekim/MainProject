@@ -13,7 +13,7 @@ const AIChatBot = () => {
 
     try {
       const data = await DeepSeekNaverChat(message);
-      // 응답이 문자열인 경우도 처리
+      // 응답이 문자열인 경우도 처리.
       const responseContent = typeof data === 'string' ? data : data.response;
       console.log(responseContent);
       setMessages(prev => [...prev, { 
