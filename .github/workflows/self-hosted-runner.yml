@@ -1,17 +1,19 @@
-name: Run on Self-Hosted Runner
+name: Run on Self-Hosted
 
 on:
   push:
     branches:
-      - main  # main 브랜치에 push하면 실행됨
+      - main
 
 jobs:
   my-job:
-    runs-on: self-hosted  # 내 로컬 PC에서 실행
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Set PowerShell Execution Policy
+        shell: pwsh
+        run: Set-ExecutionPolicy RemoteSigned -Scope Process -Force
 
-      - name: Run a command on my local machine
-        run: echo "✅ GitHub Actions이 로컬에서 실행됨!"
+      - name: Run a script using Bash
+  	shell: bash
+  	run: echo "✅ GitHub Actions이 로컬에서 실행됨!"
