@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Docker Hub 로그인
         run: |
-          echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
       - name: Build Flask AI Service
         run: |
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest ./Flask
