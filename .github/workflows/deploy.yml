@@ -131,10 +131,13 @@ jobs:
     needs: build-and-deploy-frontend
     steps:
       - uses: actions/checkout@v2
+      - name: Docker Hub 로그인
+        run: |
+          echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
       - name: Build & Push Nginx Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service ./nginx
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest ./vite-react-teamsketch/nginx
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
 
   deploy-locally:
     runs-on: ubuntu-latest
