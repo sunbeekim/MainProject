@@ -1,7 +1,10 @@
-FROM nginx:latest
+FROM nginx:alpine
 
-COPY nginx.conf /etc/nginx/nginx.conf
+# 환경 변수 설정
+ARG ENV=local
 
-EXPOSE 80
+# 환경에 따른 설정 파일 복사
+COPY nginx.${ENV}.conf /etc/nginx/nginx.conf
 
+EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]
