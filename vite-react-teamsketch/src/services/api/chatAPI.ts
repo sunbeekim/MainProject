@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { apiConfig } from './apiConfig';
 
 interface ChatResponse {
   response: string;
@@ -6,7 +7,7 @@ interface ChatResponse {
 
 export const DeepSeekNaverChat = async (message: string): Promise<ChatResponse> => {
   try {
-    const response = await axios.post<ChatResponse>('http://localhost:8080/api/assist/tinylamanaver/chat', {
+    const response = await axios.post<ChatResponse>(apiConfig.endpoints.assist.chat, {
       message,
       type: 'customer_service'
     });
