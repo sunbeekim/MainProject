@@ -156,43 +156,10 @@ jobs:
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest ./vite-react-teamsketch/nginx
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
 
-  setup-ssl:
-    runs-on: self-hosted
-    needs: [build-and-deploy-nginx]
-    steps:
-      - name: Install Certbot
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y certbot
-
-      - name: Stop Nginx
-        run: docker stop nginx-container || true
-
-      - name: Get SSL Certificate
-        shell: bash
-        run: |
-          sudo certbot certonly --standalone \
-            --non-interactive \
-            --agree-tos \
-            --email rlatjsql12@gmail.com \
-            -d sunbee.world -d www.sunbee.world
-
-      - name: Restart Nginx with SSL
-        run: |
-          docker stop nginx-container || true
-          docker rm nginx-container || true
-          docker run -d --name nginx-container \
-            --network teamsketch-network \
-            -p 80:80 \
-            -p 443:443 \
-            -v /etc/letsencrypt:/etc/letsencrypt:ro \
-            ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
-
   deploy-locally:
     runs-on: self-hosted
+    needs: [build-and-deploy-nginx]
     if: ${{ github.event.inputs.job_name == 'deploy-locally' || github.event.inputs.job_name == 'all' || github.event_name == 'push' }}
-    needs: [setup-ssl]
     steps:
       - name: Try Bash then PowerShell
         id: deploy
