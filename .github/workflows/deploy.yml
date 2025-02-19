@@ -3,6 +3,16 @@ name: Deploy All Services
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      job_name:
+        description: 'Job to run (deploy-locally for local deployment only)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - deploy-locally
 
 jobs:
   docker-login:
@@ -148,20 +158,36 @@ jobs:
 
   deploy-locally:
     runs-on: self-hosted
+    if: ${{ github.event.inputs.job_name == 'deploy-locally' || github.event.inputs.job_name == 'all' || github.event_name == 'push' }}
     needs: [build-and-deploy-nginx]
     steps:
-      - name: Check OS
-        id: check-os
-        run: |
-          if [ -f "/proc/version" ]; then
-            echo "::set-output name=os::linux"
-          else
-            echo "::set-output name=os::windows"
-          fi
+      - name: Try Bash then PowerShell
+        id: deploy
+        continue-on-error: true
         shell: bash
+        run: |
+          # Linux/MacOS 명령어
+          if ! docker network ls | grep -q "teamsketch-network"; then
+            echo "Creating new network..."
+            docker network create teamsketch-network
+          else
+            echo "Using existing network..."
+          fi
+          
+          # 컨테이너 중지 및 제거
+          docker stop flask-container gateway-container core-container assist-container frontend-container nginx-container 2>/dev/null || true
+          docker rm flask-container gateway-container core-container assist-container frontend-container nginx-container 2>/dev/null || true
+          
+          # 새 컨테이너 실행
+          docker run -d --name flask-container --network teamsketch-network -p 8001:8001 ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
+          docker run -d --name gateway-container --network teamsketch-network -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
+          docker run -d --name core-container --network teamsketch-network -p 8081:8081 ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
+          docker run -d --name assist-container --network teamsketch-network -p 8082:8082 ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
+          docker run -d --name frontend-container --network teamsketch-network -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
+          docker run -d --name nginx-container --network teamsketch-network -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
 
-      - name: Deploy Services (Windows)
-        if: steps.check-os.outputs.os == 'windows'
+      - name: Fallback to PowerShell
+        if: steps.deploy.outcome == 'failure'
         shell: powershell
         run: |
           # Windows(PowerShell) 명령어
@@ -187,26 +213,7 @@ jobs:
           docker rm assist-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
           docker rm frontend-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
           docker rm nginx-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
-
-      - name: Deploy Services (Linux)
-        if: steps.check-os.outputs.os == 'linux'
-        shell: bash
-        run: |
-          # Linux/MacOS 명령어
-          if ! docker network ls | grep -q "teamsketch-network"; then
-            echo "Creating new network..."
-            docker network create teamsketch-network
-          else
-            echo "Using existing network..."
-          fi
           
-          # Linux 컨테이너 중지 및 제거
-          docker stop flask-container gateway-container core-container assist-container frontend-container nginx-container 2>/dev/null || true
-          docker rm flask-container gateway-container core-container assist-container frontend-container nginx-container 2>/dev/null || true
-
-      - name: Run Containers
-        shell: bash  # Docker 명령어는 OS 상관없이 동일하므로 bash 사용
-        run: |
           # 새 컨테이너 실행
           docker run -d --name flask-container --network teamsketch-network -p 8001:8001 ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
           docker run -d --name gateway-container --network teamsketch-network -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
