@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://sunbee.world/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://sunbee.world/api';
 
 export const apiConfig = {
   baseURL: BASE_URL,
