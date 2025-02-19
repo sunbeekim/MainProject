@@ -150,24 +150,54 @@ jobs:
     runs-on: self-hosted
     needs: [build-and-deploy-nginx]
     steps:
-      - name: Deploy Services Locally
+      - name: Check OS and Deploy Services
+        shell: pwsh  # PowerShell Core는 크로스 플랫폼 지원
         run: |
-          # 네트워크 생성 (이미 존재하면 무시)
-          docker network create teamsketch-network || true
+          # OS 감지
+          if ($IsWindows) {
+              Write-Host "Running on Windows..."
+              # Windows(PowerShell) 명령어
+              $network = docker network ls --filter name=teamsketch-network -q
+              if (-not $network) {
+                  Write-Host "Creating new network..."
+                  docker network create teamsketch-network
+              } else {
+                  Write-Host "Using existing network..."
+              }
+          } else {
+              Write-Host "Running on Linux/MacOS..."
+              # Linux/MacOS(Bash) 명령어
+              if ! docker network ls | grep -q "teamsketch-network"; then
+                  echo "Creating new network..."
+                  docker network create teamsketch-network
+              else
+                  echo "Using existing network..."
+              fi
+          }
           
-          # 이미지 풀
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
+          # 컨테이너 중지 및 제거 (OS별 처리)
+          if ($IsWindows) {
+              # Windows 버전
+              docker stop flask-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
+              docker stop gateway-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
+              docker stop core-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
+              docker stop assist-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
+              docker stop frontend-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
+              docker stop nginx-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
+              
+              docker rm flask-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
+              docker rm gateway-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
+              docker rm core-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
+              docker rm assist-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
+              docker rm frontend-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
+              docker rm nginx-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
+          } else {
+              # Linux/MacOS 버전
+              docker stop flask-container gateway-container core-container assist-container frontend-container nginx-container 2>/dev/null || true
+              docker rm flask-container gateway-container core-container assist-container frontend-container nginx-container 2>/dev/null || true
+          }
           
-          # 기존 컨테이너 중지 및 제거
-          docker stop flask-container gateway-container core-container assist-container frontend-container nginx-container || true
-          docker rm flask-container gateway-container core-container assist-container frontend-container nginx-container || true
-          
-          # 새 컨테이너 실행
+          # 새 컨테이너 실행 (OS 상관없이 동일)
           docker run -d --name flask-container --network teamsketch-network -p 8001:8001 ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
           docker run -d --name gateway-container --network teamsketch-network -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
           docker run -d --name core-container --network teamsketch-network -p 8081:8081 ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
