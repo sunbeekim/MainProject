@@ -127,38 +127,29 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20'
-      - name: Build Frontend
-        run: |
-          cd vite-react-teamsketch
-          npm install
-          npm run build
+      
+      # 프론트엔드 빌드 및 배포
       - name: Build & Push Frontend Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest ./vite-react-teamsketch
+          cd vite-react-teamsketch
+          docker build --build-arg ENV=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest .
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
-
-  build-and-deploy-nginx:
-    runs-on: self-hosted
-    needs: build-and-deploy-frontend
-    steps:
-      - uses: actions/checkout@v2
-      - name: Docker Hub 로그인
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      - name: Build & Push Nginx Docker Image
-        run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest ./vite-react-teamsketch/nginx
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
+          
+          # 기존 컨테이너 정리
+          docker stop frontend-container || true
+          docker rm frontend-container || true
+          
+          # 새 컨테이너 실행
+          docker run -d --name frontend-container `
+            --network teamsketch-network `
+            -p 80:80 `
+            -p 443:443 `
+            -v /etc/letsencrypt:/etc/letsencrypt:ro `
+            ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
 
   deploy-locally:
     runs-on: self-hosted
-    needs: [build-and-deploy-nginx]
+    needs: [build-and-deploy-frontend]
     if: ${{ github.event.inputs.job_name == 'deploy-locally' || github.event.inputs.job_name == 'all' || github.event_name == 'push' }}
     steps:
       - name: Try Bash then PowerShell
