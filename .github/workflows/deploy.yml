@@ -128,7 +128,6 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
       
-      # 프론트엔드 빌드 및 푸시만
       - name: Build & Push Frontend Docker Image
         shell: powershell
         run: |
