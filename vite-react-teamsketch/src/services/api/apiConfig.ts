@@ -1,4 +1,7 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const isDev = process.env.NODE_ENV === 'development';
+const BASE_URL = isDev 
+  ? 'http://localhost:8080/api'
+  : 'https://sunbee.world/api';
 
 export const apiConfig = {
   baseURL: BASE_URL,

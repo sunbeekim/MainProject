@@ -5,9 +5,11 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,29 +42,33 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
-            String path = request.getPath().value();
-
-            // 로깅 추가
-            System.out.println("Requested Path: " + path);
-            System.out.println("Is Public Path: " + isPublicPath(path));
-
-            if (isPublicPath(path)) {
+            
+            // OPTIONS 요청 체크 수정
+            if (request.getMethod() == HttpMethod.OPTIONS) {
                 return chain.filter(exchange);
             }
 
-            // Authorization 헤더 확인
-            String authHeader = request.getHeaders().getFirst("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new RuntimeException("Invalid or missing token");
+            String path = request.getPath().value();
+            
+            // PUBLIC_PATHS 체크
+            if (PUBLIC_PATHS.stream().anyMatch(path::startsWith)) {
+                return chain.filter(exchange);
             }
 
-            String token = authHeader.substring(7);
+            // JWT 토큰 검증 로직
+            String token = request.getHeaders().getFirst("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                return Mono.fromRunnable(() -> {
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                });
+            }
+
             try {
                 // JWT 토큰 검증
                 Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey.getBytes())
                     .build()
-                    .parseClaimsJws(token)
+                    .parseClaimsJws(token.substring(7))
                     .getBody();
 
                 // 사용자 정보를 헤더에 추가
@@ -73,8 +79,9 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
 
                 return chain.filter(exchange.mutate().request(modifiedRequest).build());
             } catch (Exception e) {
-                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                return exchange.getResponse().setComplete();
+                return Mono.fromRunnable(() -> {
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                });
             }
         };
     }
