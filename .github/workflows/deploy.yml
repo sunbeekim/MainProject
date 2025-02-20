@@ -106,11 +106,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Build Assist Spring Service
-        shell: powershell
+      - name: Build Assist Service
         run: |
           cd AssistService
-          .\gradlew.bat clean build
+          Write-Host "Building Assist Service JAR..."
+          ./mvnw clean package -DskipTests
+          Write-Host "JAR file contents:"
+          ls target/
       - name: Build & Push Assist Docker Image
         shell: powershell
         run: |
@@ -171,3 +173,23 @@ jobs:
           docker run -d --name core-container --network teamsketch-network -p 8081:8081 ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
           docker run -d --name assist-container --network teamsketch-network -p 8082:8082 ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
           docker run -d --name frontend-container --network teamsketch-network -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
+
+          # 어시스트 서버 실행 전 환경변수 확인
+          Write-Host "Deploying Assist Service..."
+          Write-Host "Database Username: ${{ secrets.DB_USERNAME }}"
+          Write-Host "Network Status:"
+          docker network inspect teamsketch-network
+          
+          # 어시스트 서버 실행
+          docker run -d --name assist-container `
+            --network teamsketch-network `
+            -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} `
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} `
+            -p 8082:8082 `
+            ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
+          
+          # 컨테이너 상태 및 로그 확인
+          Write-Host "Container Status:"
+          docker ps -a | findstr "assist"
+          Write-Host "Container Logs:"
+          docker logs assist-container
