@@ -128,60 +128,23 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
       
-      # 프론트엔드 빌드 및 배포
+      # 프론트엔드 빌드 및 푸시만
       - name: Build & Push Frontend Docker Image
+        shell: powershell
         run: |
           cd vite-react-teamsketch
           docker build --build-arg ENV=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest .
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
-          
-          # 기존 컨테이너 정리
-          docker stop frontend-container || true
-          docker rm frontend-container || true
-          
-          # 새 컨테이너 실행
-          docker run -d --name frontend-container `
-            --network teamsketch-network `
-            -p 80:80 `
-            -p 443:443 `
-            -v /etc/letsencrypt:/etc/letsencrypt:ro `
-            ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
 
   deploy-locally:
     runs-on: self-hosted
     needs: [build-and-deploy-frontend]
     if: ${{ github.event.inputs.job_name == 'deploy-locally' || github.event.inputs.job_name == 'all' || github.event_name == 'push' }}
     steps:
-      - name: Try Bash then PowerShell
-        id: deploy
-        continue-on-error: true
-        shell: bash
-        run: |
-          # Linux/MacOS 명령어
-          if ! docker network ls | grep -q "teamsketch-network"; then
-            echo "Creating new network..."
-            docker network create teamsketch-network
-          else
-            echo "Using existing network..."
-          fi
-          
-          # 컨테이너 중지 및 제거
-          docker stop flask-container gateway-container core-container assist-container frontend-container nginx-container 2>/dev/null || true
-          docker rm flask-container gateway-container core-container assist-container frontend-container nginx-container 2>/dev/null || true
-          
-          # 새 컨테이너 실행
-          docker run -d --name flask-container --network teamsketch-network -p 8001:8001 ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
-          docker run -d --name gateway-container --network teamsketch-network -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
-          docker run -d --name core-container --network teamsketch-network -p 8081:8081 ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
-          docker run -d --name assist-container --network teamsketch-network -p 8082:8082 ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
-          docker run -d --name frontend-container --network teamsketch-network -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
-          docker run -d --name nginx-container --network teamsketch-network -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
-
-      - name: Fallback to PowerShell
-        if: steps.deploy.outcome == 'failure'
+      - name: Deploy All Services
         shell: powershell
         run: |
-          # Windows(PowerShell) 명령어
+          # 네트워크 확인
           $network = docker network ls --filter name=teamsketch-network -q
           if (-not $network) {
               Write-Host "Creating new network..."
@@ -190,25 +153,22 @@ jobs:
               Write-Host "Using existing network..."
           }
           
-          # Windows 컨테이너 중지 및 제거
+          # 컨테이너 중지 및 제거
           docker stop flask-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
           docker stop gateway-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
           docker stop core-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
           docker stop assist-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
           docker stop frontend-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
-          docker stop nginx-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not running" }
           
           docker rm flask-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
           docker rm gateway-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
           docker rm core-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
           docker rm assist-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
           docker rm frontend-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
-          docker rm nginx-container; if ($LASTEXITCODE -ne 0) { Write-Host "Container not found" }
           
           # 새 컨테이너 실행
           docker run -d --name flask-container --network teamsketch-network -p 8001:8001 ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
           docker run -d --name gateway-container --network teamsketch-network -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
           docker run -d --name core-container --network teamsketch-network -p 8081:8081 ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
           docker run -d --name assist-container --network teamsketch-network -p 8082:8082 ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
-          docker run -d --name frontend-container --network teamsketch-network -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
-          docker run -d --name nginx-container --network teamsketch-network -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/nginx-service:latest
+          docker run -d --name frontend-container --network teamsketch-network -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
