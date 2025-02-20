@@ -196,8 +196,7 @@ jobs:
           # 어시스트 서버 실행
           docker run -d --name assist-container `
             --network teamsketch-network `
-            --add-host=host.docker.internal:host-gateway `
-            -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/project_db `
+            -e SPRING_DATASOURCE_URL=jdbc:mysql://sunbee.world:3306/project_db `
             -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} `
             -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} `
             -p 8082:8082 `
