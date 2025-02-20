@@ -140,7 +140,7 @@ public class LlamaService {
             }
             
             // LLaMA 서버 요청
-            URL url = new URL("http://localhost:8001/ai/chat");
+            URL url = new URL("http://sunbee.world:8001/ai/chat");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
