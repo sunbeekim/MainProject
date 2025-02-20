@@ -33,6 +33,7 @@ public class WebSecurityConfig {
         // Origin 목록 수정
         configuration.setAllowedOrigins(Arrays.asList(
             "https://www.sunbee.world", 
+            "https://sunbee.world",
             "http://www.sunbee.world:3000",
             "http://localhost:3000",
             "http://www.localhost:3000",  // 추가
