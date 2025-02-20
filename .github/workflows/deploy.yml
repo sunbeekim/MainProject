@@ -192,8 +192,8 @@ jobs:
           # 어시스트 서버 실행
           docker run -d --name assist-container `
             --network teamsketch-network `
-            -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} `
-            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} `
+            -e DB_USERNAME=${{ secrets.DB_USERNAME }} `
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} `
             -p 8082:8082 `
             ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
           
