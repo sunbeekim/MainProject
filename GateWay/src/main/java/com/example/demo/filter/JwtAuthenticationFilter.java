@@ -24,7 +24,8 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
         "/api/core/auth/refresh",   // 토큰 재발급 (선택적)
         "/api/core/auth/verify-email", // 이메일 인증 (선택적)
         "/api/core/health",          // 헬스체크
-        "/api/assist/tinylamanaver/chat"  // 테스트 채팅
+        "/api/assist/tinylamanaver/chat",  // 테스트 채팅
+        "/api/core/test/**"         // 테스트 엔드포인트
     );
 
     public static class Config {
@@ -39,9 +40,13 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
+            String path = request.getPath().value();
 
-            // 인증이 필요없는 경로 처리
-            if (isPublicPath(request.getPath().toString())) {
+            // 로깅 추가
+            System.out.println("Requested Path: " + path);
+            System.out.println("Is Public Path: " + isPublicPath(path));
+
+            if (isPublicPath(path)) {
                 return chain.filter(exchange);
             }
 
@@ -75,7 +80,13 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     }
 
     private boolean isPublicPath(String path) {
-        return PUBLIC_PATHS.stream()
-            .anyMatch(publicPath -> path.startsWith(publicPath));
+        return PUBLIC_PATHS.stream().anyMatch(publicPath -> {
+            if (publicPath.endsWith("/**")) {
+                // /** 패턴에 대한 처리
+                String prefix = publicPath.substring(0, publicPath.length() - 2);
+                return path.startsWith(prefix);
+            }
+            return path.equals(publicPath);
+        });
     }
 } 

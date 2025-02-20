@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.example.demo.filter.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class RouteConfig {
@@ -13,39 +14,34 @@ public class RouteConfig {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
 
+    @Value("${spring.profiles.active:local}")
+    private String activeProfile;
+
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+        // URI를 final로 선언
+        final String coreUri = "prod".equals(activeProfile) 
+            ? "http://core-container:8081" 
+            : "http://localhost:8081";
+            
+        final String assistUri = "prod".equals(activeProfile)
+            ? "http://assist-container:8082"
+            : "http://localhost:8082";
+
         return builder.routes()
-            // Core Service - Docker Network
-            .route("coreService-docker", r -> r
+            // Core Service
+            .route("coreService", r -> r
                 .path("/api/core/**")
                 .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
-                .uri("http://core-container:8081"))
+                .uri(coreUri))
             
-            // Core Service - External Domain
-            .route("coreService-domain", r -> r
-                .path("/api/core/**")
-                .and()
-                .header("X-Route-Type", "external")
-                .uri("http://sunbee.world:8081"))
-            
-            // Assist Service - Docker Network
-            .route("assistService-docker", r -> r
+            // Assist Service
+            .route("assistService", r -> r
                 .path("/api/assist/**")
                 .filters(f -> f
                     .filter(jwtFilter.apply(new JwtAuthenticationFilter.Config()))
                     .rewritePath("/api/assist/(?<segment>.*)", "/api/assist/${segment}"))
-                .uri("http://assist-container:8082"))
-            
-            // Assist Service - External Domain
-            .route("assistService-domain", r -> r
-                .path("/api/assist/**")
-                .and()
-                .header("X-Route-Type", "external")
-                .filters(f -> f
-                    .rewritePath("/api/assist/(?<segment>.*)", "/api/assist/${segment}"))
-                .uri("http://sunbee.world:8082"))
-            
+                .uri(assistUri))
             .build();
     }
 } 

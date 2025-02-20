@@ -16,6 +16,8 @@ app.add_middleware(
         "http://localhost:3000",
         "https://sunbee.world",
         "https://www.sunbee.world",
+        "http://localhost:8081",
+        "http://localhost:8082"
     ],
     allow_credentials=True,
     allow_methods=["*"],
