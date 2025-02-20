@@ -106,11 +106,17 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+      
+      # Maven 빌드 추가
       - name: Build Assist Service
         shell: powershell
         run: |
-          cd AssistService 
-          .\gradlew.bat clean build      
+          cd AssistService
+          Write-Host "Building Assist Service JAR..."
+          .\mvnw.cmd clean package -DskipTests
+          Write-Host "JAR file contents:"
+          ls target/
+      
       - name: Build & Push Assist Docker Image
         shell: powershell
         run: |
@@ -201,7 +207,7 @@ jobs:
           docker run -d --name frontend-container `
             --network teamsketch-network `
             -p 80:80 -p 443:443 `
-            -v C:/ssl/live/sunbee.world:/nginx/ssl/live/sunbee.world:ro `
+            -v "./vite-react-teamsketch/nginx/ssl/archive/sunbee.world:/nginx/ssl/live/sunbee.world:ro" `
             ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
           
           # 컨테이너 상태 및 로그 확인
