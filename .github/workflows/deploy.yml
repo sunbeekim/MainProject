@@ -107,15 +107,15 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       
-      # Maven 빌드 추가
+      # Gradle 빌드로 수정
       - name: Build Assist Service
         shell: powershell
         run: |
           cd AssistService
           Write-Host "Building Assist Service JAR..."
-          .\mvnw.cmd clean package -DskipTests
+          .\gradlew.bat clean build
           Write-Host "JAR file contents:"
-          ls target/
+          ls build/libs/
       
       - name: Build & Push Assist Docker Image
         shell: powershell
