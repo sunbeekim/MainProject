@@ -45,9 +45,10 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
             
             // OPTIONS 요청 체크 수정
             if (request.getMethod() == HttpMethod.OPTIONS) {
-                return chain.filter(exchange);
+                exchange.getResponse().setStatusCode(HttpStatus.OK);
+                return exchange.getResponse().setComplete();
             }
-
+            
             String path = request.getPath().value();
             
             // PUBLIC_PATHS 체크
