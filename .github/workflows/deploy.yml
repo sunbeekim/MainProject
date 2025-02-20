@@ -107,10 +107,15 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build Assist Service
+        shell: powershell
         run: |
           cd AssistService
           Write-Host "Building Assist Service JAR..."
-          ./mvnw clean package -DskipTests
+          if ($IsWindows) {
+            .\mvnw clean package -DskipTests
+          } else {
+            ./mvnw clean package -DskipTests
+          }
           Write-Host "JAR file contents:"
           ls target/
       - name: Build & Push Assist Docker Image
@@ -130,8 +135,19 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
       
-      - name: Build & Push Frontend Docker Image
+      # Windows PowerShell 환경
+      - name: Build & Push Frontend Docker Image (Windows)
+        if: runner.os == 'Windows'
         shell: powershell
+        run: |
+          cd vite-react-teamsketch
+          docker build --build-arg ENV=local -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest .
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
+
+      # Linux Bash 환경
+      - name: Build & Push Frontend Docker Image (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
         run: |
           cd vite-react-teamsketch
           docker build --build-arg ENV=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest .
