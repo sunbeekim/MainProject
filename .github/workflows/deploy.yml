@@ -109,15 +109,8 @@ jobs:
       - name: Build Assist Service
         shell: powershell
         run: |
-          cd AssistService
-          Write-Host "Building Assist Service JAR..."
-          if ($IsWindows) {
-            .\mvnw clean package -DskipTests
-          } else {
-            ./mvnw clean package -DskipTests
-          }
-          Write-Host "JAR file contents:"
-          ls target/
+          cd AssistService 
+          .\gradlew.bat clean build      
       - name: Build & Push Assist Docker Image
         shell: powershell
         run: |
