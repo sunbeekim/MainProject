@@ -20,7 +20,7 @@ public class LlamaService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${spring.profiles.active:local}")
+    @Value("${SPRING_PROFILES_ACTIVE:local}")
     private String activeProfile;
 
     final String gatewayUri = "prod".equals(activeProfile)
