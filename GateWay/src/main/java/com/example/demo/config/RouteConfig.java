@@ -20,11 +20,11 @@ public class RouteConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         final String coreUri = "prod".equals(activeProfile) 
-            ? "http://sunbee.world:8081" 
+            ? "http://core-container:8081" 
             : "http://localhost:8081";
         System.out.println("coreUri: " + coreUri);
         final String assistUri = "prod".equals(activeProfile)
-            ? "http://sunbee.world:8082"
+            ? "http://assist-container:8082"
             : "http://localhost:8082";
         System.out.println("assistUri: " + assistUri);
         return builder.routes()
