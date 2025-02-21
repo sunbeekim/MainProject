@@ -14,7 +14,7 @@ public class RouteConfig {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
 
-    @Value("${spring.profiles.active}")
+    @Value("${spring.profiles.active:local}")
     private String activeProfile;
 
     @Bean
