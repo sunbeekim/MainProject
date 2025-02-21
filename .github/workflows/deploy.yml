@@ -50,12 +50,12 @@ jobs:
     needs: docker-login
     steps:
       - uses: actions/checkout@v2
-      - name: Build & Push fastapi AI Service
+      - name: Build & Push FastAPI AI Service
         run: |
           # 로그인 재시도
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
           # 빌드 및 푸시 시도
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest ./fastapi || exit 1
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest ./FastAPI || exit 1
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest || exit 1
           # 상태 확인
           docker images | grep fastapi-ai
