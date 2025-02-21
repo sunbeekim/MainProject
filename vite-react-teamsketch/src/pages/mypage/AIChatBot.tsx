@@ -51,7 +51,7 @@ const AIChatBot = () => {
     console.log(response);
     setTestResponse3(response);
   };
-
+  //
   return (
     <div className="container mx-auto px-4 py-8">
       <Chat
