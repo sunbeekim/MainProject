@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       job_name:
-        description: 'Job to run (deploy-locally for local deployment only)'
+        description: 'Job to run'
         required: true
         default: 'all'
         type: choice
@@ -19,21 +19,25 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Docker Hub 로그인
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        run: |
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          docker info  # Docker 데몬 상태 확인
 
   build-and-deploy-flask:
     runs-on: self-hosted
     needs: docker-login
     steps:
       - uses: actions/checkout@v2
-      - name: Build Flask AI Service
-        shell: bash
+      - name: Build & Push Flask AI Service
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest ./Flask
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
+          # 로그인 재시도
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          # 빌드 및 푸시 시도
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest ./Flask || exit 1
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest || exit 1
+          # 상태 확인
+          docker images | grep flask-ai
+          docker logout
 
   build-and-deploy-gateway:
     runs-on: self-hosted
@@ -54,8 +58,13 @@ jobs:
       - name: Build & Push Gateway Docker Image
         shell: bash
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest ./GateWay
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
+          # 로그인 재시도
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          # 빌드 및 푸시
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest ./GateWay || exit 1
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest || exit 1
+          # 로그아웃
+          docker logout
 
   build-and-deploy-core:
     runs-on: self-hosted
@@ -76,8 +85,13 @@ jobs:
       - name: Build & Push Core Docker Image
         shell: bash
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest ./CoreService
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
+          # 로그인 재시도
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          # 빌드 및 푸시
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest ./CoreService || exit 1
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest || exit 1
+          # 로그아웃
+          docker logout
 
   build-and-deploy-assist:
     runs-on: self-hosted
@@ -98,8 +112,13 @@ jobs:
       - name: Build & Push Assist Docker Image
         shell: bash
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest ./AssistService
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
+          # 로그인 재시도
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          # 빌드 및 푸시
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest ./AssistService || exit 1
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest || exit 1
+          # 로그아웃
+          docker logout
 
   build-and-deploy-frontend:
     runs-on: self-hosted
@@ -119,8 +138,13 @@ jobs:
       - name: Build & Push Frontend Docker Image
         shell: bash
         run: |
-          docker build --build-arg ENV=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest ./vite-react-teamsketch
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
+          # 로그인 재시도
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          # 빌드 및 푸시
+          docker build --build-arg ENV=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest ./vite-react-teamsketch || exit 1
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest || exit 1
+          # 로그아웃
+          docker logout
 
   deploy-locally:
     runs-on: self-hosted
