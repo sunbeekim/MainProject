@@ -208,8 +208,8 @@ jobs:
           docker run -d --name frontend-container `
             --network teamsketch-network `
             -p 80:80 -p 443:443 `
-            -v "/path/to/ssl:/nginx/ssl/live/sunbee.world:ro" \
-            -v "/usr/share/nginx/html:/usr/share/nginx/html" \
+            --mount type=bind,source="$pwd\nginx\ssl\live\sunbee.world",target="/nginx/ssl/live/sunbee.world",readonly `
+            --mount type=bind,source="$pwd\dist",target="/usr/share/nginx/html" `
             ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
           
           # 컨테이너 상태 및 로그 확인
