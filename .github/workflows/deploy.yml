@@ -15,13 +15,35 @@ on:
         - deploy-locally
 
 jobs:
-  docker-login:
+  cleanup:
     runs-on: self-hosted
     steps:
+      - name: Cleanup workspace
+        shell: bash
+        run: |
+          # 기존 작업 디렉토리 정리
+          if [ -d "/home/user/actions-runner/_work/MainProject" ]; then
+            sudo rm -rf /home/user/actions-runner/_work/MainProject
+          fi
+          
+  docker-login:
+    runs-on: self-hosted
+    needs: cleanup
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup workspace
+        shell: bash
+        run: |
+          # 작업 디렉토리 권한 설정
+          sudo chown -R $USER:$USER .
+          # SSL 디렉토리 준비
+          mkdir -p nginx/ssl/live/sunbee.world
+          chmod -R 755 nginx
+
       - name: Docker Hub 로그인
         run: |
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-          docker info  # Docker 데몬 상태 확인
+          docker info
 
   build-and-deploy-flask:
     runs-on: self-hosted
