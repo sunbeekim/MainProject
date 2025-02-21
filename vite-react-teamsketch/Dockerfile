@@ -17,12 +17,17 @@ ARG ENV=prod
 COPY nginx/nginx.${ENV}.conf /etc/nginx/nginx.conf
 
 # 빌드된 파일들을 Nginx로 복사
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html/
 
-# SSL 인증서 디렉토리 생성 및 권한 설정
-RUN mkdir -p /etc/letsencrypt/live/sunbee.world && \
-    chown -R nginx:nginx /etc/letsencrypt && \
-    chmod -R 755 /etc/letsencrypt
+# SSL 인증서 디렉토리 생성
+RUN mkdir -p /etc/letsencrypt/live/sunbee.world
+
+# 정적 파일 권한 설정
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html
+
+# Nginx 설정 테스트
+RUN nginx -t
 
 EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"] 
