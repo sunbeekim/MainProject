@@ -42,7 +42,7 @@ jobs:
   build-and-deploy-gateway:
     runs-on: self-hosted
     needs: build-and-deploy-flask
-    steps:i
+    steps:
       - uses: actons/checkout@v2
       - name: Docker Hub 로그인
         uses: docker/login-action@v2
