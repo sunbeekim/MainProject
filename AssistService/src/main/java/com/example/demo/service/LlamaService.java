@@ -45,7 +45,7 @@ public class LlamaService {
             String[] sentences = text.split("(?<=[.!?])\\s+");
             
             for (String sentence : sentences) {
-                if (currentChunk.length() + sentence.length() > 1000) { // 여유 있게 1000자로 제한
+                if (currentChunk.length() + sentence.length() > 500) { // 여유 있게 500자로 제한
                     chunks.add(currentChunk.toString());
                     currentChunk = new StringBuilder();
                 }
@@ -89,7 +89,8 @@ public class LlamaService {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-                
+       
+
         StringBuilder response = new StringBuilder();
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
