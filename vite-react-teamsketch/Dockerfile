@@ -11,7 +11,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # 환경 변수 설정 (기본값: local)
-ARG ENV=local
+ARG ENV=prod
 
 # nginx 설정 파일 복사 (환경별 설정)
 COPY nginx/nginx.${ENV}.conf /etc/nginx/nginx.conf
