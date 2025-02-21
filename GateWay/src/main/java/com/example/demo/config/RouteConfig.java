@@ -27,8 +27,8 @@ public class RouteConfig {
             ? "http://assist-container:8082"
             : "http://localhost:8082";
 
-        final String flaskUri = "prod".equals(activeProfile)
-            ? "http://flask-container:8001"
+        final String fastapiUri = "prod".equals(activeProfile)
+            ? "http://fastapi-container:8001"
             : "http://localhost:8001";
 
        
@@ -41,10 +41,10 @@ public class RouteConfig {
                 .path("/api/assist/**")
                 .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
                 .uri(assistUri))
-            .route("flaskService", r -> r
-                .path("/api/flask/**")
+            .route("fastapiService", r -> r
+                .path("/api/fastapi/**")
                 .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
-                .uri(flaskUri))
+                .uri(fastapiUri))
             .build();
     }
 }

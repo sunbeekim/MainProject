@@ -23,8 +23,8 @@ public class LlamaService {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    final String flaskUri = "prod".equals(activeProfile)
-            ? "http://flask-container:8001"
+    final String fastapiUri = "prod".equals(activeProfile)
+            ? "http://fastapi-container:8001"
             : "http://localhost:8001";
 
     private String translate(String text, String sourceLang, String targetLang) {
@@ -147,7 +147,7 @@ public class LlamaService {
             }
             
             // LLaMA 서버 요청
-            URL url = new URL(flaskUri + "/flask/chat");
+            URL url = new URL(fastapiUri + "/fastapi/chat");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

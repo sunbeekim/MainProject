@@ -45,25 +45,25 @@ jobs:
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
           docker info
 
-  build-and-deploy-flask:
+  build-and-deploy-fastapi:
     runs-on: self-hosted
     needs: docker-login
     steps:
       - uses: actions/checkout@v2
-      - name: Build & Push Flask AI Service
+      - name: Build & Push fastapi AI Service
         run: |
           # 로그인 재시도
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
           # 빌드 및 푸시 시도
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest ./Flask || exit 1
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest || exit 1
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest ./fastapi || exit 1
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest || exit 1
           # 상태 확인
-          docker images | grep flask-ai
+          docker images | grep fastapi-ai
           docker logout
 
   build-and-deploy-gateway:
     runs-on: self-hosted
-    needs: build-and-deploy-flask
+    needs: build-and-deploy-fastapi
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 17
@@ -192,7 +192,7 @@ jobs:
           docker rm -f gateway-container || true
           docker rm -f core-container || true
           docker rm -f assist-container || true
-          docker rm -f flask-container || true
+          docker rm -f fastapi-container || true
           docker rm -f frontend-container || true
           
       - name: Deploy containers
@@ -214,10 +214,10 @@ jobs:
             -p 8082:8082 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
             
-          docker run -d --name flask-container \
+          docker run -d --name fastapi-container \
             --network teamsketch-network \
             -p 8001:8001 \
-            ${{ secrets.DOCKER_HUB_USERNAME }}/flask-ai:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest
           
           # 백엔드 서버들이 모두 준비된 후 프론트엔드 실행
           sleep 30
