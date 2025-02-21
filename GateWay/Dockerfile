@@ -4,11 +4,12 @@ FROM openjdk:17-jdk-slim
 RUN apt update && apt install -y curl
 
 WORKDIR /app
-COPY target/*.jar app.jar
+
+COPY build/libs/*.jar app.jar
 COPY src/main/resources/application.properties application.properties
 
 ENV SPRING_PROFILES_ACTIVE=prod
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"] 
+ENTRYPOINT ["java", "-jar", "/app/app.jar"] 
