@@ -31,7 +31,8 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
         "/api/core/public/**",        
         "/api/core/health",          // 헬스체크
         "/api/assist/tinylamanaver/chat",  // 테스트 채팅
-        "/api/core/test/**"         // 테스트 엔드포인트
+        "/api/core/test/**",         // 테스트 엔드포인트
+        "/fastapi/chat"
     );
     
     public static class Config {

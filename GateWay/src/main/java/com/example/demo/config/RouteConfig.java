@@ -41,10 +41,10 @@ public class RouteConfig {
                 .path("/api/assist/**")
                 .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
                 .uri(assistUri))
-            // .route("fastapiService", r -> r
-            //     .path("/api/fastapi/**")
-            //     .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
-            //     .uri(fastapiUri))
+            .route("fastapiService", r -> r
+                .path("/fastapi/**")
+                .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
+                .uri(fastapiUri))
             .build();
     }
 }
