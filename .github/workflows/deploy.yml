@@ -173,13 +173,34 @@ jobs:
       - name: Build & Push Frontend Docker Image
         shell: bash
         run: |
-          # 로그인 재시도
-          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-          # 빌드 및 푸시
-          docker build --build-arg ENV=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest ./vite-react-teamsketch || exit 1
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest || exit 1
-          # 로그아웃
+          # 최대 3번 재시도
+          max_attempts=3
+          attempt=1
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "시도 $attempt/$max_attempts: Docker 이미지 빌드 및 푸시"
+            
+            # Docker Hub 로그인
+            echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+            
+            # 빌드 시도
+            if docker build --build-arg ENV=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest ./vite-react-teamsketch; then
+              # 푸시 시도
+              if docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest; then
+                echo "성공: 이미지 빌드 및 푸시 완료"
+                docker logout
+                exit 0
+              fi
+            fi
+            
+            echo "실패: 재시도 중..."
+            sleep 10
+            attempt=$((attempt + 1))
+          done
+          
+          echo "모든 시도 실패"
           docker logout
+          exit 1
 
   deploy-locally:
     runs-on: self-hosted
