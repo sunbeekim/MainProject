@@ -1,5 +1,5 @@
 # Node 빌드 스테이지
-FROM node:20-alpine as build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 COPY package*.json ./
@@ -26,9 +26,10 @@ RUN mkdir -p /etc/letsencrypt/live/sunbee.world
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
-# Nginx 설정 테스트
-RUN nginx -t
-
 EXPOSE 80 443
-CMD ["nginx", "-g", "daemon off;"] 
+
+# 시작 스크립트 추가
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"] 
 
