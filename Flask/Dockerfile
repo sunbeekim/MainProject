@@ -6,6 +6,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
+    
 
 # Python 패키지 설치
 COPY requirements.txt .
@@ -17,6 +18,8 @@ RUN pip install --no-cache-dir \
     torch \
     sentencepiece \
     accelerate>=0.26.0  # accelerate 패키지 추가
+    
+RUN apt update && apt install -y curl
 
 # 소스 코드 복사
 COPY . .
