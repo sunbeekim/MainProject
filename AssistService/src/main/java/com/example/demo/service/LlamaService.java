@@ -23,9 +23,9 @@ public class LlamaService {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    final String fastapiUri = "prod".equals(activeProfile)
-            ? "http://fastapi-container:8001"
-            : "http://localhost:8001";
+    final String gatewayUri = "prod".equals(activeProfile)
+            ? "http://gateway-container:8080"
+            : "http://localhost:8080";
 
     private String translate(String text, String sourceLang, String targetLang) {
         System.out.println("=== 번역 시작 ===");
@@ -148,7 +148,8 @@ public class LlamaService {
             }
             
             // LLaMA 서버 요청
-            URL url = new URL(fastapiUri + "/fastapi/chat");
+            URL url = new URL(gatewayUri + "/api/fastapi/chat");
+            System.out.println("URL: " + url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
