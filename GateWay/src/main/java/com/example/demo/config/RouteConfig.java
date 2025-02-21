@@ -14,11 +14,14 @@ public class RouteConfig {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
 
-    @Value("${SPRING_PROFILES_ACTIVE:local}")
-    private String activeProfile;
+    
+    private String activeProfile = "prod";
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+        System.out.println("=== RouteConfig 초기화 ===");
+        System.out.println("현재 활성화된 프로필: " + activeProfile);
+        
         final String coreUri = "prod".equals(activeProfile) 
             ? "http://core-container:8081" 
             : "http://localhost:8081";
@@ -31,6 +34,9 @@ public class RouteConfig {
             ? "http://fastapi-container:8001"
             : "http://localhost:8001";
 
+        System.out.println("Core URI: " + coreUri);
+        System.out.println("Assist URI: " + assistUri);
+        System.out.println("FastAPI URI: " + fastapiUri);
        
         return builder.routes()
             .route("coreService", r -> r

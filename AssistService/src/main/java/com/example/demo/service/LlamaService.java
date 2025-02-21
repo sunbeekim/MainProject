@@ -20,8 +20,8 @@ public class LlamaService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${SPRING_PROFILES_ACTIVE:local}")
-    private String activeProfile;
+    
+    private String activeProfile = "prod";
 
     final String gatewayUri = "prod".equals(activeProfile)
             ? "http://gateway-container:8080"
