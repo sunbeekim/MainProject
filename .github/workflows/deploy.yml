@@ -135,11 +135,20 @@ jobs:
           cd vite-react-teamsketch
           npm install
           npm run build
+      - name: Setup SSL directory permissions
+        shell: bash
+        run: |
+          # SSL 디렉토리 생성 및 권한 설정
+          sudo mkdir -p nginx/ssl/live/sunbee.world
+          sudo chown -R $USER:$USER nginx
+          sudo chmod -R 755 nginx
       - name: Build & Push Frontend Docker Image
         shell: bash
         run: |
           # 로그인 재시도
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          # SSL 파일 복사
+          sudo cp -r /etc/letsencrypt/live/sunbee.world/* nginx/ssl/live/sunbee.world/
           # 빌드 및 푸시
           docker build --build-arg ENV=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest ./vite-react-teamsketch || exit 1
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest || exit 1
