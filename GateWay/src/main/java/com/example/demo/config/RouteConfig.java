@@ -26,6 +26,7 @@ public class RouteConfig {
         final String assistUri = "prod".equals(activeProfile)
             ? "http://assist-container:8082"
             : "http://localhost:8082";
+            
         System.out.println("assistUri: " + assistUri);
         return builder.routes()
             .route("coreService", r -> r
