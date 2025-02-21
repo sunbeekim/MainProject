@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/cloudchatbot")
+@RequestMapping("/api/assist/cloudchatbot")
 public class CloudChatBotController {
 
     private final CloudChatBotService cloudChatBotService;

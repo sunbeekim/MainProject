@@ -12,12 +12,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.*;
 import lombok.Data;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 @RequiredArgsConstructor
 public class LlamaService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
+    final String flaskUri = "prod".equals(activeProfile)
+            ? "http://flask-container:8001"
+            : "http://localhost:8001";
 
     private String translate(String text, String sourceLang, String targetLang) {
         System.out.println("=== 번역 시작 ===");
@@ -137,10 +145,9 @@ public class LlamaService {
                 
                 translatedHistory.add(conversation);
             }
-            // local 환경에서는 아래와 같이 요청
-            // URL url = new URL("http://localhost:8001/flask/chat");
+            
             // LLaMA 서버 요청
-            URL url = new URL("http://flask-container:8001/flask/chat");
+            URL url = new URL(flaskUri + "/flask/chat");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
