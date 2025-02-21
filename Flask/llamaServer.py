@@ -6,6 +6,7 @@ from typing import Dict
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 import re
+import asyncio
 
 app = FastAPI()
 
@@ -53,31 +54,31 @@ async def chat(request: ChatRequest) -> Dict[str, str]:
 
         # 대화 히스토리를 포함한 프롬프트 구성
         full_prompt = f"<system>{system_prompt}</system>\n"
-        
+
         print("\n=== 대화 히스토리 시작 ===")
         print(f"히스토리 메시지 수: {len(request.history)}")
-        
+
         # 이전 대화 내용 추가 (최근 4개 메시지만 사용)
         for i, msg in enumerate(request.history[-4:]):
             print(f"\n메시지 {i+1}:")
             print(f"사용자: {msg['user']}")
-            if 'assistant' in msg:
+            if "assistant" in msg:
                 print(f"어시스턴트: {msg['assistant']}")
             full_prompt += f"<user>{msg['user']}</user>\n"
-            if 'assistant' in msg:
+            if "assistant" in msg:
                 full_prompt += f"<assistant>{msg['assistant']}</assistant>\n"
-        
+
         # 현재 메시지 추가
         print(f"\n현재 메시지: {request.message}")
         full_prompt += f"<user>{request.message}</user>\n<assistant>"
-        
+
         print("\n=== 최종 프롬프트 ===")
         print(full_prompt)
         print("=====================\n")
 
         # 입력 메시지 토큰화
         inputs = tokenizer(full_prompt, return_tensors="pt").to(model.device)
-        
+
         # 생성 파라미터 설정
         generation_config = {
             "max_length": 2048,
@@ -86,23 +87,26 @@ async def chat(request: ChatRequest) -> Dict[str, str]:
             "repetition_penalty": 1.15,
             "do_sample": True
         }
-        
-        # 응답 생성
-        outputs = model.generate(
+
+        # 🔹 비동기 실행으로 변경 (`asyncio.to_thread` 사용)
+        outputs = await asyncio.to_thread(
+            model.generate,
             **inputs,
             **generation_config,
             pad_token_id=tokenizer.eos_token_id
         )
-        
+
         # 응답 디코딩 및 프롬프트 제거
         response = tokenizer.decode(outputs[0], skip_special_tokens=True)
         response = response.split("<assistant>")[-1].strip()
         clean_response = re.sub(r"</?[a-zA-Z0-9]+>", "", response).strip()
         print(clean_response)
         return {"response": clean_response}
+
     except Exception as e:
         print(f"에러 발생: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8001) 
+    uvicorn.run(app, host="0.0.0.0", port=8001)

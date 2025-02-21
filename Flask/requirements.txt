@@ -6,4 +6,7 @@ requests==2.31.0
 transformers
 torch
 sentencepiece
-accelerate>=0.26.0 
+accelerate>=0.26.0
+pydantic
+asyncio
+aiohttp  # HTTP 클라이언트/서버를 위한 비동기 라이브러리 

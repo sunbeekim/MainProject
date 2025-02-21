@@ -37,7 +37,7 @@ public class LlamaService {
             String[] sentences = text.split("(?<=[.!?])\\s+");
             
             for (String sentence : sentences) {
-                if (currentChunk.length() + sentence.length() > 450) { // 여유 있게 450자로 제한
+                if (currentChunk.length() + sentence.length() > 1000) { // 여유 있게 1000자로 제한
                     chunks.add(currentChunk.toString());
                     currentChunk = new StringBuilder();
                 }
@@ -51,6 +51,7 @@ public class LlamaService {
             // 각 청크 번역 후 결합
             StringBuilder translatedText = new StringBuilder();
             for (String chunk : chunks) {
+                Thread.sleep(1000);
                 String translatedChunk = translateChunk(chunk, sourceLang, targetLang);
                 translatedText.append(translatedChunk).append(" ");
             }
@@ -67,7 +68,7 @@ public class LlamaService {
 
     private String translateChunk(String text, String sourceLang, String targetLang) throws Exception {
         String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
-        String apiKey = "5431a4570f453332ff03";
+        String apiKey = "94dea587aaa15e058ead";
         String email = "rlatjsql12@gmail.com";
         
         String urlStr = String.format(
@@ -79,10 +80,7 @@ public class LlamaService {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-        
-        // 요청 간격 조절 (0.5초)
-        Thread.sleep(500);
-        
+                
         StringBuilder response = new StringBuilder();
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
