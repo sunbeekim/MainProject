@@ -138,9 +138,10 @@ public class LlamaService {
                 
                 translatedHistory.add(conversation);
             }
-            
+            // local 환경에서는 아래와 같이 요청
+            // URL url = new URL("http://localhost:8001/flask/chat");
             // LLaMA 서버 요청
-            URL url = new URL("http://localhost:8001/ai/chat");
+            URL url = new URL("http://flask-container:8001/flask/chat");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
@@ -195,7 +196,7 @@ public class LlamaService {
             System.out.println("=== LlamaService 에러 발생 ===");
             System.out.println("에러 메시지: " + e.getMessage());
             e.printStackTrace();
-            return "죄송합니다. 오류가 발생했습니다: " + e.getMessage();
+            return "죄송합니다. 서비스 오류가 발생했습니다: " + e.getMessage();
         }
     }
 } 

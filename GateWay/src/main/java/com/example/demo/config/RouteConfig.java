@@ -22,12 +22,16 @@ public class RouteConfig {
         final String coreUri = "prod".equals(activeProfile) 
             ? "http://core-container:8081" 
             : "http://localhost:8081";
-        System.out.println("coreUri: " + coreUri);
+      
         final String assistUri = "prod".equals(activeProfile)
             ? "http://assist-container:8082"
             : "http://localhost:8082";
-            
-        System.out.println("assistUri: " + assistUri);
+
+        final String flaskUri = "prod".equals(activeProfile)
+            ? "http://flask-container:8001"
+            : "http://localhost:8001";
+
+       
         return builder.routes()
             .route("coreService", r -> r
                 .path("/api/core/**")
@@ -37,6 +41,10 @@ public class RouteConfig {
                 .path("/api/assist/**")
                 .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
                 .uri(assistUri))
+            .route("flaskService", r -> r
+                .path("/api/flask/**")
+                .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
+                .uri(flaskUri))
             .build();
     }
 }

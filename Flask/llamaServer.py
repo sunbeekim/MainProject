@@ -39,7 +39,7 @@ class ChatRequest(BaseModel):
     message: str
     history: list = []  # 대화 히스토리 추가
 
-@app.post("/ai/chat")
+@app.post("/flask/chat")
 async def chat(request: ChatRequest) -> Dict[str, str]:
     try:
         # 더 구체적인 시스템 프롬프트 설정

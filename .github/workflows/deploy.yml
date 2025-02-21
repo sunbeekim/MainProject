@@ -56,7 +56,7 @@ jobs:
           distribution: 'adopt'
       - name: Build Spring Gateway
         shell: powershell
-        run: |
+        run: |          
           cd GateWay
           .\gradlew.bat clean build
       - name: Build & Push Gateway Docker Image
