@@ -195,7 +195,7 @@ jobs:
           docker run -d --name frontend-container \
             --network teamsketch-network \
             -p 80:80 -p 443:443 \
-            -v "$(pwd)/nginx/ssl/live/sunbee.world:/etc/nginx/ssl/live/sunbee.world:ro" \
+            -v "$(pwd)/nginx/ssl/live/sunbee.world:/etc/letsencrypt/live/sunbee.world:ro" \
             ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
 
           # 컨테이너 상태 확인

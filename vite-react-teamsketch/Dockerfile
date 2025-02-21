@@ -20,7 +20,7 @@ COPY nginx/nginx.${ENV}.conf /etc/nginx/nginx.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # SSL 인증서 디렉토리 생성
-RUN mkdir -p /etc/letsencrypt
+RUN mkdir -p /etc/letsencrypt/live/sunbee.world
 
 EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"] 
