@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
         "/api/assist/tinylamanaver/chat",  // 테스트 채팅
         "/api/core/test/**"         // 테스트 엔드포인트
     );
-
+    System.out.println("JwtAuthenticationFilter 실행");
     public static class Config {
         // 필터 설정을 위한 설정 클래스
     }
