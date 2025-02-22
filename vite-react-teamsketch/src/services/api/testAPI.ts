@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { apiConfig } from './apiConfig';
 
-interface IEchoRequest {
+interface IEchoRequest { // 인덱스 시그니처
   [key: string]: any;
 }
 

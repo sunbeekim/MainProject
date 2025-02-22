@@ -99,7 +99,8 @@ async def chat(request: ChatRequest) -> Dict[str, str]:
         # 응답 디코딩 및 프롬프트 제거
         response = tokenizer.decode(outputs[0], skip_special_tokens=True)
         response = response.split("<assistant>")[-1].strip()
-        clean_response = re.sub(r"</?[a-zA-Z0-9]+>", "", response).strip()
+        # \n은 유지하고 다른 태그만 제거
+        clean_response = re.sub(r"</?(?!br\b)[a-zA-Z0-9]+>", "", response).strip()
         print(clean_response)
         return {"response": clean_response}
 
