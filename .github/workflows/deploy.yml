@@ -21,9 +21,33 @@ jobs:
       - name: Cleanup workspace
         shell: bash
         run: |
-          # 기존 작업 디렉토리 정리
-          if [ -d "/home/user/actions-runner/_work/MainProject" ]; then
-            sudo rm -rf /home/user/actions-runner/_work/MainProject
+          WORKSPACE="/home/user/actions-runner/_work/MainProject"
+          if [ -d "$WORKSPACE" ]; then
+            echo "Starting cleanup process..."
+            
+            # 1. 현재 디렉토리 상태 확인
+            echo "Current directory size:"
+            du -sh $WORKSPACE
+            
+            # 2. 도커 정리
+            echo "Cleaning Docker resources..."
+            docker system prune -af --volumes || true
+            
+            # 3. 파일 시스템 캐시 정리
+            echo "Clearing filesystem cache..."
+            sudo sync
+            
+            # 4. 빠른 삭제를 위한 병렬 처리
+            echo "Removing workspace..."
+            sudo find $WORKSPACE -type f -print0 | sudo xargs -0 -P 4 rm -f || true
+            sudo find $WORKSPACE -type d -print0 | sudo xargs -0 -P 4 rm -rf || true
+            
+            # 5. 최종 정리
+            sudo rm -rf $WORKSPACE
+            
+            echo "Cleanup completed"
+          else
+            echo "Workspace not found"
           fi
           
   docker-login:
