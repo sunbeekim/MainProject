@@ -240,6 +240,13 @@ jobs:
           docker rm -f fastapi-container || true
           docker rm -f frontend-container || true
           
+      - name: Create Docker network
+        run: |
+          # 기존 네트워크 제거 (있다면)
+          docker network rm teamsketch-network || true
+          # 새 네트워크 생성
+          docker network create teamsketch-network || true
+          
       - name: Deploy containers
         run: |
           # 게이트웨이 서버 먼저 실행
@@ -274,3 +281,5 @@ jobs:
 
           # 컨테이너 상태 확인
           docker ps -a
+          # 네트워크 상태 확인
+          docker network inspect teamsketch-network
