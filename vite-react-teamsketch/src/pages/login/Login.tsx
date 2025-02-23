@@ -4,6 +4,9 @@ import { useDispatch } from 'react-redux';
 import { login } from '../../store/slices/authSlice';
 import { useLogin } from '../../services/api/authService';
 import Loading from '../../components/common/Loading';
+import Grid from '../../components/common/Grid';
+import GridItem from '../../components/layout/GridItem';
+
 
 interface LoginForm {
   email: string;
@@ -43,9 +46,9 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background-light dark:bg-background-dark">
-      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 p-8">
-        <h1 className="text-center text-2xl font-bold">로그인</h1>
-        
+                <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 p-8">
+            <h1 className="text-center text-2xl font-bold">로그인</h1>
+            
         {error && (
           <div className="text-red-500 text-sm text-center" role="alert">
             {error}
@@ -94,7 +97,7 @@ const Login = () => {
           회원가입
         </button>
         <Loading />
-      </form>     
+        </form>     
     </div>
   );
 };

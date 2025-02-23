@@ -45,6 +45,7 @@ const Header = () => {
               onClick={() => navigate('/setting')}
               className="w-8 h-8 text-primary-light"
               />
+              <button onClick={() => navigate('/login')}>login</button>
             </div>
           )
         };
