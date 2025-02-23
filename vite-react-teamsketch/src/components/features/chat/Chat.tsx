@@ -26,11 +26,11 @@ const Chat: React.FC<IChatProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <div className="flex flex-col h-[calc(90vh-theme(spacing.32))] bg-background-light dark:bg-background-dark rounded-lg shadow-lg">
       {/* 채팅 헤더 */}
       <div className="p-2 sm:p-4 bg-primary-light dark:bg-primary-dark text-white">
         <h2 className="text-lg sm:text-xl font-bold">{title}</h2>
-        {subtitle && <p className="text-xs sm:text-sm text-gray-200">{subtitle}</p>}
+        {subtitle && <p className="text-xs sm:text-sm text-primary-lightest">{subtitle}</p>}
       </div>
 
       {/* 메시지 영역 */}
@@ -64,7 +64,7 @@ const Chat: React.FC<IChatProps> = ({
       </div>
 
       {/* 입력 폼 */}
-      <div className="p-2 sm:p-4 border-t dark:border-gray-700">
+      <div className="p-2 sm:p-4 border-t border-border-light dark:border-border-dark">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"
