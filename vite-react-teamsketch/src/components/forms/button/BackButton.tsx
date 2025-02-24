@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import BaseButton from '../../common/BaseButton';
 
 interface BackButtonProps {
   className?: string;
@@ -8,9 +9,11 @@ const BackButton = ({ className = '' }: BackButtonProps) => {
   const navigate = useNavigate();
 
   return (
-    <button
+    <BaseButton
+      variant="outline"
+      size="sm"
       onClick={() => navigate(-1)}
-      className={`p-2 rounded-full text-primary hover:bg-primary-lightest dark:hover:bg-primary-dark transition-colors ${className}`}
+      className={`rounded-full ${className}`}
       aria-label="뒤로 가기"
     >
       <svg 
@@ -27,7 +30,7 @@ const BackButton = ({ className = '' }: BackButtonProps) => {
           d="M15 19l-7-7 7-7" 
         />
       </svg>
-    </button>
+    </BaseButton>
   );
 };
 

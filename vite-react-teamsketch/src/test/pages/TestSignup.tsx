@@ -1,7 +1,7 @@
 import Grid from '../../components/common/Grid';
 import GridItem from '../../components/common/GridItem';
 import Container from '../components/layout/Container';
-import BackButton from '../components/common/button/BackButton';
+import BackButton from '../../components/forms/button/BackButton';
 
 const Signup = () => {
   return (

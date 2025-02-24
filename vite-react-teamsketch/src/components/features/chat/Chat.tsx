@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { IChatProps } from './types';
+import { useAppSelector, useAppDispatch } from '../../../store/hooks';
+import { sendMessage } from '../../../store/slices/chatSlice';
 import Loading from '../../common/Loading';
 
-const Chat: React.FC<IChatProps> = ({ 
-  title, 
-  subtitle, 
-  messages, 
-  onSendMessage, 
-  isLoading 
-}) => {
+
+const Chat: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { messages, isLoading } = useAppSelector(state => state.chat);
   const [newMessage, setNewMessage] = useState<string>('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +19,7 @@ const Chat: React.FC<IChatProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    await onSendMessage(newMessage);
+    dispatch(sendMessage(newMessage));
     setNewMessage('');
   };
 
@@ -29,8 +27,7 @@ const Chat: React.FC<IChatProps> = ({
     <div className="flex flex-col h-[calc(90vh-theme(spacing.32))] bg-background-light dark:bg-background-dark rounded-lg shadow-lg">
       {/* 채팅 헤더 */}
       <div className="p-2 sm:p-4 bg-primary-light dark:bg-primary-dark text-white">
-        <h2 className="text-lg sm:text-xl font-bold">{title}</h2>
-        {subtitle && <p className="text-xs sm:text-sm text-primary-lightest">{subtitle}</p>}
+        <h2 className="text-lg sm:text-xl font-bold">채팅</h2>
       </div>
 
       {/* 메시지 영역 */}

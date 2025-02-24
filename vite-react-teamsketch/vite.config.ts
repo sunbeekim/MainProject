@@ -35,6 +35,11 @@ export default defineConfig({
       }
     })
   ],
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
   server: {
     host: true,
     port: 3000,

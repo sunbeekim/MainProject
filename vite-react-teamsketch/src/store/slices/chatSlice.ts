@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface IChatMessage {
-  role: 'user' | 'assistant' | 'system';
+interface Message {
+  role: 'user' | 'assistant';
   content: string;
 }
 
 interface ChatState {
-  messages: IChatMessage[];
+  messages: Message[];
   isLoading: boolean;
   error: string | null;
 }
@@ -27,6 +27,7 @@ const chatSlice = createSlice({
         content: action.payload
       });
       state.isLoading = true;
+      state.error = null;
     },
     receiveMessage: (state, action: PayloadAction<string>) => {
       state.messages.push({
@@ -38,13 +39,9 @@ const chatSlice = createSlice({
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
       state.isLoading = false;
-    },
-    clearMessages: (state) => {
-      state.messages = [];
-      state.error = null;
     }
   }
 });
 
-export const { sendMessage, receiveMessage, setError, clearMessages } = chatSlice.actions;
+export const { sendMessage, receiveMessage, setError } = chatSlice.actions;
 export default chatSlice.reducer; 
