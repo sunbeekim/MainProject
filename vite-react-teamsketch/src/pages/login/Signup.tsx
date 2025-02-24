@@ -1,5 +1,5 @@
 import Grid from '../../components/common/Grid';
-import GridItem from '../../components/layout/GridItem';
+import GridItem from '../../components/common/GridItem';
 
 const Signup = () => {
   return (
