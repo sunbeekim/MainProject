@@ -75,6 +75,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    # Docker 로그인 재시도
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    
     # Docker 캐시 설정
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -87,16 +94,17 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
 
-    # FastAPI Dockerfile 빌드 및 푸시
+    # FastAPI Dockerfile 빌드 및 푸시 (재시도 로직 추가)
     - name: Build and Push FastAPI Docker image
       uses: docker/build-push-action@v4
       with:
         context: ./FastAPI
-        push: true  # true로 변경하여 바로 푸시
+        push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-        
+        builder: ${{ steps.buildx.outputs.name }}
+      
     # 캐시 정리
     - name: Move cache
       run: |
