@@ -1,34 +1,36 @@
-import { useState } from 'react';
-import { DeepSeekNaverChat } from '../../services/api/chatAPI';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { sendMessage, receiveMessage, setError } from '../../store/slices/chatSlice';
+import { useSendChatMessage } from '../../services/api/chatAPI';
 import Chat from '../../components/features/chat/Chat';
-import { IChatMessage } from '../../components/features/chat/types';
+import { useState } from 'react';
 
 const AIChatBot = () => {
-  const [messages, setMessages] = useState<IChatMessage[]>([]);
-  const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
- 
+  const dispatch = useAppDispatch();
+  const { messages, isLoading } = useAppSelector(state => state.chat);
+  const { mutate: sendChatMessage } = useSendChatMessage();
+  const [error, setLocalError] = useState<string | null>(null);
 
   const handleSendMessage = async (message: string): Promise<void> => {
     if (!message.trim()) return;
     
-    setMessages(prev => [...prev, { role: 'user', content: message }]);
-    setIsChatLoading(true);
-
     try {
-      const data = await DeepSeekNaverChat(message);
-      const responseContent = typeof data === 'string' ? data : data.response;
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: responseContent 
-      }]);
-    } catch (error) {
-      console.error('채팅 에러:', error);
-      setMessages(prev => [...prev, { 
-        role: 'system', 
-        content: '죄송합니다. 오류가 발생했습니다.' 
-      }]);
-    } finally {
-      setIsChatLoading(false);
+      setLocalError(null);
+      dispatch(sendMessage(message));
+      
+      sendChatMessage(message, {
+        onSuccess: (response) => {
+          dispatch(receiveMessage(response));
+        },
+        onError: (err) => {
+          const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
+          setLocalError(errorMessage);
+          dispatch(setError(errorMessage));
+        }
+      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
+      setLocalError(errorMessage);
+      dispatch(setError(errorMessage));
     }
   };
 
@@ -39,9 +41,13 @@ const AIChatBot = () => {
         subtitle="AI 기반 고객 상담 서비스"
         messages={messages}
         onSendMessage={handleSendMessage}
-        isLoading={isChatLoading}
-      /> 
-      
+        isLoading={isLoading}
+      />
+      {error && (
+        <div className="text-red-500 text-sm mt-2 text-center">
+          {error}
+        </div>
+      )}
     </div>
   );
 };

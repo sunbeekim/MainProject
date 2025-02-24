@@ -43,5 +43,12 @@ export default defineConfig({
       'www.sunbee.world',
       'localhost',
     ],
-  }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: './index.html',
+      },
+    },
+  },
 })
