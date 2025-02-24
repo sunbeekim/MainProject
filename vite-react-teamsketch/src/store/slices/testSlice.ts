@@ -1,22 +1,22 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface TestState {
     value: number;
 }
 
 const initialState: TestState = {
-    value: 0,
+    value: 2,
 };
 
 const testSlice = createSlice({
     name: 'test',
     initialState,
     reducers: {
-        increment: (state) => {
-            state.value += 1;
+        increment: (state, action: PayloadAction<number>) => {
+            state.value *= action.payload;
         },
-        decrement: (state) => {
-            state.value -= 1;
+        decrement: (state, action: PayloadAction<number>) => {
+            state.value /= action.payload;
         },
     },
 });

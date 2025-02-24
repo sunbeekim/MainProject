@@ -3,12 +3,14 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import authReducer from './slices/authSlice';
 import chatReducer from './slices/chatSlice';
 import testReducer from './slices/testSlice';
+import signupReducer from './slices/signupSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     chat: chatReducer,
     test: testReducer,
+    signup: signupReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(),

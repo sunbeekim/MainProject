@@ -3,17 +3,16 @@ import Container from '../components/layout/Container';
 import Card from '../components/features/card/Card';
 import BackButton from '../components/common/button/BackButton';
 import Select from '../components/common/select/Select';
-import Grid from '../../components/common/grid/Grid';
-import GridItem from '../../components/common/grid/GridItem';
+import Grid from '../../components/common/Grid';
+import GridItem from '../../components/common/GridItem';
 import ImageUpload from '../components/common/upload/ImageUpload';
 import { CloudOCR } from '../services/api/testAPI';
-import { useDispatch, useSelector } from 'react-redux';
 import { increment, decrement } from '../../store/slices/testSlice';
-import { RootState } from '../../store/store';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
 
 const TestComponent = () => {
-  const dispatch = useDispatch();
-  const count = useSelector((state: RootState) => state.test.value);
+  const dispatch = useAppDispatch();
+  const count = useAppSelector((state) => state.test.value);
   const options = [
     { value: '1', label: '오름차순' },
     { value: '2', label: '내림차순' },
@@ -72,8 +71,8 @@ const TestComponent = () => {
       <div>
         <h2 className="text-xl font-semibold mb-4">카운터 테스트</h2>
         <p>현재 카운터 값: {count}</p>
-        <Button onClick={() => dispatch(increment())}>증가</Button>
-        <Button onClick={() => dispatch(decrement())}>감소</Button>
+        <Button onClick={() => dispatch(increment(2))}>증가</Button>
+        <Button onClick={() => dispatch(decrement(2))}>감소</Button>
       </div>
     </Container>
   );

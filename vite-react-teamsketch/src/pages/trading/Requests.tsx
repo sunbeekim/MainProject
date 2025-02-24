@@ -1,5 +1,5 @@
-import Grid from '../../components/common/grid/Grid';
-import GridItem from '../../components/common/grid/GridItem';
+import Grid from '../../components/common/Grid';
+import GridItem from '../../components/common/GridItem';
 
 const Requests = () => {
   return (

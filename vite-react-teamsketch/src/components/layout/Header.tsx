@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { IconSetting } from '../common/Icons';
-import BackButton from '../common/button/BackButton';
+import BackButton from '../forms/button/BackButton';
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
