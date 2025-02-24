@@ -27,11 +27,8 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     private String secretKey;
 
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
-        "/api/core/auth/**",     // 로그인
-        "/api/core/public/**",        
-        "/api/core/health",          // 헬스체크
+        "/api/core/**",          
         "/api/assist/tinylamanaver/chat",  // 테스트 채팅
-        "/api/core/test/**",         // 테스트 엔드포인트
         "/api/fastapi/chat"
     );
     

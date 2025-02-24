@@ -5,8 +5,8 @@ import BackButton from '../components/common/button/BackButton';
 import Select from '../components/common/select/Select';
 import Grid from '../../components/common/Grid';
 import GridItem from '../../components/common/GridItem';
-
-
+import ImageUpload from '../components/common/upload/ImageUpload';
+import { CloudOCR } from '../services/api/testAPI';
 
 const TestComponent = () => {
 
@@ -56,6 +56,13 @@ const TestComponent = () => {
                     <h3>그리드 아이템 1</h3>
                 </GridItem>
             </Grid>
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold mb-4">이미지 업로드 테스트</h2>
+          <ImageUpload 
+            onUpload={CloudOCR}
+            className="max-w-md mx-auto"
+          />
         </div>
       </section>
     </Container>
