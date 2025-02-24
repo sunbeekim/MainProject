@@ -1,12 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
-import { useAppSelector, useAppDispatch } from '../../../store/hooks';
+import { useAppDispatch } from '../../../store/hooks';
 import { sendMessage } from '../../../store/slices/chatSlice';
 import Loading from '../../common/Loading';
 
+interface ChatProps {
+  title: string;
+  subtitle: string;
+  messages: Array<{
+    role: 'user' | 'assistant';
+    content: string;
+  }>;
+  onSendMessage: (message: string) => Promise<void>;
+  isLoading: boolean;
+}
 
-const Chat: React.FC = () => {
+const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, isLoading }) => {
   const dispatch = useAppDispatch();
-  const { messages, isLoading } = useAppSelector(state => state.chat);
   const [newMessage, setNewMessage] = useState<string>('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -19,15 +28,22 @@ const Chat: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    dispatch(sendMessage(newMessage));
-    setNewMessage('');
+    
+    try {
+      dispatch(sendMessage(newMessage)); // 메시지 전송 상태 업데이트
+      await onSendMessage(newMessage); // API 호출
+      setNewMessage('');
+    } catch (error) {
+      console.error('메시지 전송 실패:', error);
+    }
   };
 
   return (
     <div className="flex flex-col h-[calc(90vh-theme(spacing.32))] bg-background-light dark:bg-background-dark rounded-lg shadow-lg">
       {/* 채팅 헤더 */}
       <div className="p-2 sm:p-4 bg-primary-light dark:bg-primary-dark text-white">
-        <h2 className="text-lg sm:text-xl font-bold">채팅</h2>
+        <h2 className="text-lg sm:text-xl font-bold">{title}</h2>
+        {subtitle && <p className="text-sm text-gray-200">{subtitle}</p>}
       </div>
 
       {/* 메시지 영역 */}
