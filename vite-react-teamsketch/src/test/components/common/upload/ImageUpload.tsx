@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from '../button/Button';
 import ImageSelector from './ImageSelector';
 import CameraCapture from './CameraCapture';
-
+// test
 interface ImageUploadProps {
   onUpload: (formData: FormData) => Promise<any>;
   className?: string;
