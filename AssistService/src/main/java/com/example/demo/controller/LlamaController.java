@@ -28,31 +28,7 @@ public class LlamaController {
     private final LlamaService llamaService;
     private final Map<String, List<ChatMessage>> chatHistories = new HashMap<>();
 
-    @Operation(summary = "AI 챗봇과 대화", description = "Tiny Llama 기반 챗봇과 대화하는 API")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "성공적인 응답", 
-                    content = @Content(mediaType = "application/json",
-                    schema = @Schema(example = "{" +
-                        "\"status\": \"success\"," +
-                        "\"data\": {" +
-                            "\"response\": \"안녕하세요! 어떻게 도와드릴까요?\"" +
-                        "}" +
-                    "}"))),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청",
-                    content = @Content(mediaType = "application/json",
-                    schema = @Schema(example = "{" +
-                        "\"status\": \"error\"," +
-                        "\"message\": \"메시지 내용이 비어있습니다.\"," +
-                        "\"code\": \"400\"" +
-                    "}"))),
-        @ApiResponse(responseCode = "500", description = "서버 오류",
-                    content = @Content(mediaType = "application/json",
-                    schema = @Schema(example = "{" +
-                        "\"status\": \"error\"," +
-                        "\"message\": \"서버 처리 중 오류가 발생했습니다.\"," +
-                        "\"code\": \"500\"" +
-                    "}")))
-    })
+    @Operation(summary = "AI 챗봇과 대화")
     @PostMapping("/chat")
     public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
         try {
@@ -78,7 +54,7 @@ public class LlamaController {
                 chatHistories.put(sessionId, history);
             }
 
-            return ResponseEntity.ok(new ChatResponse(response));
+            return ResponseEntity.ok(new ChatResponse(message, response));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,12 +75,8 @@ public class LlamaController {
             .body(new ChatResponse("400", "잘못된 요청 형식입니다."));
     }
 
-    @Schema(description = "챗봇 요청 데이터")
     public static class ChatRequest {
-        @Schema(description = "사용자 입력 메시지", example = "안녕!")
         private String message;
-        
-        @Schema(description = "대화 세션 ID (선택)", example = "12345")
         private String sessionId;
 
         public String getMessage() {
@@ -116,45 +88,39 @@ public class LlamaController {
         }
     }
 
-    @Schema(description = "챗봇 응답 데이터")
     public static class ChatResponse {
-        @Schema(description = "응답 상태", example = "success")
         private String status;
-        
-        @Schema(description = "응답 데이터")
         private Data data;
-        
-        @Schema(description = "에러 메시지")
-        private String message;
-        
-        @Schema(description = "에러 코드")
         private String code;
         
         public static class Data {
-            @Schema(description = "챗봇 응답 메시지", example = "안녕하세요! 어떻게 도와드릴까요?")
+            private String message;
             private String response;
             
-            public Data(String response) {
+            public Data(String message, String response) {
+                this.message = message;
                 this.response = response;
+            }
+            
+            public String getMessage() {
+                return message;
             }
             
             public String getResponse() {
                 return response;
             }
         }
-        
-        public ChatResponse(String response) {
+
+        public ChatResponse(String userMessage, String botResponse) {
             this.status = "success";
-            this.data = new Data(response);
-            this.message = null;
-            this.code = null;
+            this.data = new Data(userMessage, botResponse);
+            this.code = "200";
         }
         
-        public ChatResponse(String errorCode, String errorMessage) {
+        public ChatResponse(String errorMessage, Integer errorCode) {
             this.status = "error";
-            this.data = null;
-            this.message = errorMessage;
-            this.code = errorCode;
+            this.data = new Data(null, errorMessage);
+            this.code = errorCode.toString();
         }
         
         public String getStatus() {
@@ -163,10 +129,6 @@ public class LlamaController {
         
         public Data getData() {
             return data;
-        }
-        
-        public String getMessage() {
-            return message;
         }
         
         public String getCode() {
