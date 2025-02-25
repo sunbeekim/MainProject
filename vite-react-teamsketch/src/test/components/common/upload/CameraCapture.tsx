@@ -11,46 +11,56 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
   const [isActive, setIsActive] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   const startCamera = async () => {
     try {
-      // 먼저 isActive를 true로 설정하여 모달을 표시
+      console.log('카메라 시작 시도');
+      
+      // 먼저 모달을 표시하여 비디오 요소가 DOM에 마운트되도록 함
       setIsActive(true);
+      
+      // 비디오 요소가 마운트될 때까지 잠시 대기
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      if (!videoRef.current) {
+        throw new Error('비디오 요소를 찾을 수 없습니다.');
+      }
 
       let stream: MediaStream | null = null;
       
-      // 브라우저 카메라 지원 여부 확인
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error('미디어 디바이스 미지원:', navigator.mediaDevices);
         throw new Error('이 브라우저는 카메라를 지원하지 않습니다.');
       }
 
-      if (!isMobile) {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: { ideal: 1920 },
-            height: { ideal: 1080 }
-          }
-        });
-      } else {
-        try {
+      const constraints = {
+        video: {
+          facingMode: isMobile ? { ideal: 'environment' } : 'user',
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      };
+
+      console.log('카메라 권한 요청:', constraints);
+      
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        console.log('카메라 스트림 획득 성공:', stream.getVideoTracks()[0].label);
+      } catch (err) {
+        console.error('첫 번째 카메라 시도 실패:', err);
+        if (isMobile) {
+          console.log('후면 카메라 접근 실패, 전면 카메라 시도');
           stream = await navigator.mediaDevices.getUserMedia({
             video: {
-              facingMode: { ideal: "environment" },
+              facingMode: 'user',
               width: { ideal: 1920 },
               height: { ideal: 1080 }
             }
           });
-        } catch (err) {
-          console.log('후면 카메라 접근 실패, 전면 카메라 시도:', err);
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: "user",
-              width: { ideal: 1920 },
-              height: { ideal: 1080 }
-            }
-          });
+          console.log('전면 카메라 스트림 획득 성공:', stream.getVideoTracks()[0].label);
+        } else {
+          throw err;
         }
       }
 
@@ -58,20 +68,16 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
         throw new Error('카메라 스트림을 가져올 수 없습니다.');
       }
 
-      if (!videoRef.current) {
-        throw new Error('비디오 요소를 찾을 수 없습니다.');
-      }
-
+      console.log('비디오 요소에 스트림 연결');
       videoRef.current.srcObject = stream;
       streamRef.current = stream;
-      
+
       // 비디오 로딩 완료 대기
       await new Promise<void>((resolve, reject) => {
         if (!videoRef.current) return reject(new Error('비디오 요소를 찾을 수 없습니다.'));
         
         videoRef.current.onloadedmetadata = () => {
           if (!videoRef.current) return reject(new Error('비디오 요소를 찾을 수 없습니다.'));
-          
           videoRef.current.play()
             .then(() => resolve())
             .catch((error) => {
@@ -79,17 +85,11 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
               reject(new Error('카메라 화면을 표시할 수 없습니다.'));
             });
         };
-
-        videoRef.current.onerror = () => {
-          reject(new Error('비디오 로딩 중 오류가 발생했습니다.'));
-        };
       });
-
-      console.log('카메라 시작 성공');
 
     } catch (error) {
       console.error('카메라 접근 실패:', error);
-      stopCamera(); // 에러 발생 시 카메라 정리
+      setIsActive(false); // 에러 발생 시 모달 닫기
       alert(error instanceof Error ? error.message : '카메라를 시작할 수 없습니다.');
     }
   };

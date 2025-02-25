@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '../button/Button';
 import CardFrame from './CardFrame';
 
 interface CameraModalProps {
@@ -9,7 +8,9 @@ interface CameraModalProps {
 }
 
 const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose }) => {
-  // ESC 키 이벤트 핸들러 추가
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  // ESC 키 이벤트 핸들러
   React.useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -22,38 +23,52 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose 
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+      className="fixed inset-0 z-50 bg-black"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl max-w-2xl w-full mx-4">
+      <div className="relative h-full flex flex-col">
+        {/* 닫기 버튼 */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 z-10"
+          className="absolute top-4 right-4 z-10 text-white bg-secondary-light rounded-full p-2"
           aria-label="닫기"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        <div className="relative w-full">
+        {/* 비디오 영역 */}
+        <div className="flex-1 relative flex items-center justify-center">
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted
-            className="w-full h-auto rounded-lg"
-            style={{ maxHeight: 'calc(80vh - 8rem)' }}
+            className="h-full w-full object-cover"
           />
           
-          <CardFrame guideText="신용카드를 프레임 안에 맞춰주세요" />
+          {/* 카드 프레임 오버레이 */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <CardFrame 
+              guideText={isMobile ? "카드를 프레임 안에 맞춰주세요" : "신용카드를 프레임 안에 맞춰주세요"}
+            />
+          </div>
         </div>
 
-        <div className="flex gap-2 mt-4 justify-center">
-          <Button variant="primary" onClick={onCapture}>촬영</Button>
-          <Button variant="outline" onClick={onClose}>취소</Button>
+        {/* 하단 컨트롤 */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 flex justify-center bg-gradient-to-t from-black/50 to-transparent">
+          <button 
+            onClick={onCapture}
+            className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm p-1.5 flex items-center justify-center hover:bg-white/30 transition-colors"
+            aria-label="촬영"
+          >
+            <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+              <div className="w-[85%] h-[85%] rounded-full bg-secondary-light" />
+            </div>
+          </button>
         </div>
       </div>
     </div>
