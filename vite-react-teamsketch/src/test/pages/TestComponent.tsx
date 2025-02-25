@@ -1,7 +1,6 @@
 import Button from '../components/common/button/Button';
 import Container from '../components/layout/Container';
 import Card from '../components/features/card/Card';
-import BackButton from '../components/common/button/BackButton';
 import Select from '../components/common/select/Select';
 import Grid from '../../components/common/Grid';
 import GridItem from '../../components/common/GridItem';
@@ -28,7 +27,6 @@ const TestComponent = () => {
 
   return (
     <Container className="py-8">
-      <BackButton />
       <h1 className="text-2xl font-bold mb-6">컴포넌트 테스트 페이지</h1>
       
       <section className="space-y-6">
