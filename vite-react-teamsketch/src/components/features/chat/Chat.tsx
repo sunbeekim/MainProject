@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { useAppDispatch } from '../../../store/hooks';
-import { sendMessage } from '../../../store/slices/chatSlice';
 import Loading from '../../common/Loading';
 
 interface ChatProps {
@@ -15,7 +13,7 @@ interface ChatProps {
 }
 
 const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, isLoading }) => {
-  const dispatch = useAppDispatch();
+
   const [newMessage, setNewMessage] = useState<string>('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -30,7 +28,6 @@ const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, i
     if (!newMessage.trim()) return;
     
     try {
-      dispatch(sendMessage(newMessage)); // 메시지 전송 상태 업데이트
       await onSendMessage(newMessage); // API 호출
       setNewMessage('');
     } catch (error) {

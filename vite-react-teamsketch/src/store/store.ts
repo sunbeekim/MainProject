@@ -4,6 +4,7 @@ import authReducer from './slices/authSlice';
 import chatReducer from './slices/chatSlice';
 import testReducer from './slices/testSlice';
 import signupReducer from './slices/signupSlice';
+import loadingReducer from './slices/loadingSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     chat: chatReducer,
     test: testReducer,
     signup: signupReducer,
+    loading: loadingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(),

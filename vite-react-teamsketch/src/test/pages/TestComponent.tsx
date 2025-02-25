@@ -9,14 +9,22 @@ import ImageUpload from '../components/common/upload/ImageUpload';
 import { CloudOCR } from '../services/api/testAPI';
 import { increment, decrement } from '../../store/slices/testSlice';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import SearchInput from '../../components/forms/input/SearchInput';
+import { useState } from 'react';
+import InfoBox from '../../components/forms/box/InfoBox';
+import CustomInput from '../../components/forms/input/CustomInput';
 
 const TestComponent = () => {
   const dispatch = useAppDispatch();
-  const count = useAppSelector((state) => state.test.value);
+  const value = useAppSelector((state) => state.test.value);
+  const count = useAppSelector((state) => state.test.count);
+
   const options = [
     { value: '1', label: '오름차순' },
     { value: '2', label: '내림차순' },
   ];
+
+  const [search, setSearch] = useState('');
 
   return (
     <Container className="py-8">
@@ -70,9 +78,42 @@ const TestComponent = () => {
       </section>
       <div>
         <h2 className="text-xl font-semibold mb-4">카운터 테스트</h2>
-        <p>현재 카운터 값: {count}</p>
+        <p>현재 Value 값: {value}</p>
+        <p>현재 Count 값: {count}</p>
         <Button onClick={() => dispatch(increment(2))}>증가</Button>
         <Button onClick={() => dispatch(decrement(2))}>감소</Button>
+        
+      </div>
+      <div>
+        <h2 className="text-xl font-semibold mb-4"></h2>
+        <SearchInput value={search} onChange={(e) => setSearch(e.target.value)} name="search" />
+      </div>
+      <div>
+        <h2 className="text-xl font-semibold mb-4">InfoBox 테스트</h2>
+        <InfoBox label="테스트 라벨" content="테스트 컨텐츠" description="테스트 설명" />
+      </div>
+      <div>
+        <CustomInput
+          label="금액"
+          prefix="₩"
+          suffix="원"
+          helperText="1,000원 단위로 입력해주세요"
+        />
+          
+          
+        <CustomInput
+          label="웹사이트"
+          prefix="https://"
+          suffix=".com"
+          helperText="도메인 이름만 입력해주세요"
+        />
+          
+          
+        <CustomInput
+          label="사용자 이름"
+          prefix="@"
+          helperText="영문, 숫자, 밑줄(_)만 사용 가능합니다"
+        />
       </div>
     </Container>
   );

@@ -10,10 +10,9 @@ const BackButton = ({ className = '' }: BackButtonProps) => {
 
   return (
     <BaseButton
-      variant="outline"
-      size="sm"
-      onClick={() => navigate(-1)}
+      baseClassName="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
       className={`rounded-full ${className}`}
+      onClick={() => navigate(-1)}
       aria-label="뒤로 가기"
     >
       <svg 

@@ -1,53 +1,31 @@
 import React from 'react';
+import { BUTTON_STYLES } from '../../constants/styles';
 
-interface ButtonProps {
-  children: React.ReactNode;
+export interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
-  type?: 'button' | 'submit' | 'reset';
-  onClick?: () => void;
-  disabled?: boolean;
+  buttonSize?: 'sm' | 'md' | 'lg';
   className?: string;
+  baseClassName?: string;
 }
 
-const BaseButton = ({ 
-  children, 
+const BaseButton: React.FC<BaseButtonProps> = ({
   variant = 'primary',
-  size = 'md',
-  type = 'button',
-  onClick,
-  disabled = false,
-  className = ''
-}: ButtonProps) => {
-  // Tailwind 클래스 매핑
-  const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200';
-  
-  const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg'
-  };
-
-  const variantStyles = {
-    primary: 'bg-primary hover:bg-primary-dark text-white',
-    secondary: 'bg-secondary hover:bg-secondary-dark text-white',
-    outline: 'border-2 border-primary text-primary hover:bg-primary-lightest'
-  };
-
-  const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer';
+  buttonSize = 'md',
+  className = '',
+  baseClassName,
+  children,
+  ...props
+}) => {
+  const buttonClassName = baseClassName || `
+    ${BUTTON_STYLES.variants[variant]}
+    ${BUTTON_STYLES.sizes[buttonSize]}
+    ${BUTTON_STYLES.base}
+  `;
 
   return (
     <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`
-        ${baseStyles}
-        ${sizeStyles[size]}
-        ${variantStyles[variant]}
-        ${disabledStyles}
-        ${className}
-      `.trim()}
+      className={`${buttonClassName} ${className}`}
+      {...props}
     >
       {children}
     </button>

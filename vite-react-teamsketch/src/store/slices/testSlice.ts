@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface TestState {
     value: number;
+    count: number;
 }
 
 const initialState: TestState = {
-    value: 2,
+    value: 1,
+    count: 0,
 };
 
 const testSlice = createSlice({
@@ -14,9 +16,11 @@ const testSlice = createSlice({
     reducers: {
         increment: (state, action: PayloadAction<number>) => {
             state.value *= action.payload;
+            state.count += 1;
         },
         decrement: (state, action: PayloadAction<number>) => {
             state.value /= action.payload;
+            state.count -= 1;
         },
     },
 });

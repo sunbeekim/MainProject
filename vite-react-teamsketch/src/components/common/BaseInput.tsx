@@ -1,62 +1,53 @@
 import React from 'react';
+import { INPUT_STYLES } from '../../constants/styles';
 
-export interface BaseInputProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
-  placeholder?: string;
-  required?: boolean;
+export interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  variant?: 'default' | 'error' | 'success' | 'warning';
+  inputSize?: 'sm' | 'md' | 'lg';
   className?: string;
-  testId?: string;
-  name: string;
-  label?: string;
-  rightIcon?: React.ReactNode;
+  baseClassName?: string;
+  wrapperClassName?: string;
+  label?: React.ReactNode;
+  rightElement?: React.ReactNode;
+  error?: string;
 }
 
-const BaseInput = ({
-  value,
-  onChange,
-  error,
-  placeholder,
-  required = true,
+const BaseInput: React.FC<BaseInputProps> = ({
+  variant = 'default',
+  inputSize = 'md',
   className = '',
-  testId,
-  name,
+  baseClassName,
+  wrapperClassName = '',
   label,
-  type = 'text',
-  rightIcon,
+  rightElement,
+  error,
+  children,
   ...props
-}: BaseInputProps & { type?: string }) => {
-  const baseClassName = "w-full rounded-lg border p-2 text-gray-900 dark:text-white dark:bg-gray-800";
-  const errorClassName = error ? "border-red-500" : "border-gray-300 dark:border-gray-600";
-  
+}) => {
+  const inputClassName = baseClassName || `
+    ${INPUT_STYLES.variants[variant]}
+    ${INPUT_STYLES.sizes[inputSize]}
+    ${INPUT_STYLES.base}
+    ${rightElement ? 'pr-10' : ''}
+  `;
+
   return (
-    <div className="space-y-1">
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-          {label}
-        </label>
-      )}
+    <div className={`space-y-1 ${wrapperClassName}`}>
+      {label}
       <div className="relative">
         <input
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          required={required}
-          className={`${baseClassName} ${errorClassName} ${className} ${rightIcon ? 'pr-10' : ''}`.trim()}
-          data-testid={testId}
-          name={name}
+          className={`${inputClassName} ${className}`}
           {...props}
         />
-        {rightIcon && (
+        {rightElement && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {rightIcon}
+            {rightElement}
           </div>
         )}
       </div>
+      {children}
       {error && (
-        <p className="text-red-500 text-xs" role="alert">
+        <p className="text-red-500 text-xs mt-1" role="alert">
           {error}
         </p>
       )}
@@ -64,4 +55,4 @@ const BaseInput = ({
   );
 };
 
-export default BaseInput; 
+export default BaseInput;

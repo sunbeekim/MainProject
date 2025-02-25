@@ -17,6 +17,7 @@ import TestLogin from './test/pages/TestLogin';
 import TestMarketplace from './test/pages/TestMarketplace';
 import TestPages from './test/pages/TestPages';
 import TestSignup from './test/pages/TestSignup';
+import TestFunc from './test/pages/TestFunc';
 
 const App = () => {
   return (
@@ -40,7 +41,10 @@ const App = () => {
           <Route path="/test/signup" element={<TestSignup />} />
 
           {/* test component */}  
-          <Route path="/test/component" element={<TestComponent />} />         
+          <Route path="/test/component" element={<TestComponent />} />    
+          
+          {/* test func */}
+          <Route path="/test/func" element={<TestFunc />} />
           
         </Routes>
       </main>
