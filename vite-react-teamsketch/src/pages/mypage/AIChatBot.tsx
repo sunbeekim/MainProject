@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { sendMessage, receiveMessage, setError } from '../../store/slices/chatSlice';
+import { receiveMessage, setError, sendMessage } from '../../store/slices/chatSlice';
 import { useSendChatMessage } from '../../services/api/chatAPI';
 import Chat from '../../components/features/chat/Chat';
 import { useState } from 'react';
@@ -15,14 +15,14 @@ const AIChatBot = () => {
     
     try {
       setLocalError(null);
-      dispatch(sendMessage(message));
+      dispatch(sendMessage(message));  // Show user message immediately
       
       sendChatMessage(message, {
         onSuccess: (response) => {
           dispatch(receiveMessage(response));
         },
         onError: (err) => {
-          const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
+          const errorMessage = err instanceof Error ? err.message : 'API 통신 관련 문제가 발생했습니다.';
           setLocalError(errorMessage);
           dispatch(setError(errorMessage));
         }
