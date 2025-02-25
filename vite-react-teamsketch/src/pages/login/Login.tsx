@@ -104,8 +104,7 @@ const Login = () => {
           placeholder="이메일"
           data-testid="email-input"
         />
-        <LoginPasswordInput
-          label="비밀번호"
+        <LoginPasswordInput          
           name="password"
           value={formData.password}
           onChange={handleChange}
