@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Container from '../components/layout/Container';
 import Card from '../components/features/card/Card';
-import BackButton from '../components/common/button/BackButton';
 import Button from '../components/common/button/Button';
 
 const TestMarketplace = () => {
@@ -22,7 +21,6 @@ const TestMarketplace = () => {
 
   return (    
     <Container className="py-8">
-        <BackButton />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">테스트 마켓</h1>
         <Button variant="primary">상품 등록</Button>
