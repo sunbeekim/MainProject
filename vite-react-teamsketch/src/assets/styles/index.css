@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply min-h-screen min-w-[320px] m-0;
+    @apply bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark;
+  }
+
+  a {
+    @apply font-medium text-primary-light hover:text-primary-dark no-underline;
+  }
+
+  button {
+    @apply rounded-lg border border-transparent px-5 py-2.5;
+    @apply text-base font-medium;
+    @apply bg-[#f9f9f9] dark:bg-[#1a1a1a] cursor-pointer;
+    @apply transition-colors duration-200;
+    @apply hover:border-primary-light focus:outline-none focus:ring-4;
+  }
+
+  h1 {
+    @apply text-5xl leading-tight;
+  }
+}
