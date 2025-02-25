@@ -102,14 +102,15 @@ const Login = () => {
           value={formData.email}
           onChange={handleChange}
           placeholder="이메일"
-          testId="email-input"
+          data-testid="email-input"
         />
         <LoginPasswordInput
+          label="비밀번호"
           name="password"
           value={formData.password}
           onChange={handleChange}
           placeholder="비밀번호"
-          testId="password-input"
+          data-testid="password-input"
         />
       </LoginLayout>
       {error && (
