@@ -1,0 +1,182 @@
+CREATE USER 'user'@'%' IDENTIFIED BY 'user';
+GRANT ALL PRIVILEGES ON *.* TO 'user'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+SELECT host, user FROM mysql.user;
+
+show variables where variable_name = 'bind_adress';
+
+CREATE DATABASE haru_db;
+use haru_db;
+
+-- 1. 테이블 생성 (사용자 테이블)
+CREATE TABLE Users (
+    user_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(15),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    nickname VARCHAR(50) UNIQUE NOT NULL,
+    bio TEXT,
+    signup_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_update_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login_time DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Users;
+
+-- 2. 테이블 생성 (사용자 로그인 테이블)
+CREATE TABLE Users_login (
+    user_login_id BIGINT PRIMARY KEY AUTO_INCREMENT,        
+    password_hash VARCHAR(255) NOT NULL,                                    
+    login_method ENUM('EMAIL', 'SOCIAL') NOT NULL,           
+    social_provider ENUM('GOOGLE', 'KAKAO', 'NAVER') NULL,  
+    user_last_login_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    login_failed_attempts INT DEFAULT 0,                     
+    login_is_locked BOOLEAN DEFAULT FALSE,                   
+    user_id INT(11),                                         
+    CONSTRAINT fk_users_login_user FOREIGN KEY (user_id) REFERENCES Users(user_id)        
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Users_login;
+
+-- 3. 테이블 생성 (사용자 계정 정보 테이블)
+CREATE TABLE UserAccount (
+    user_id INT(11) PRIMARY KEY,                              
+    account_status ENUM('Active', 'Deactivated', 'Dormant', 'Withdrawal') NOT NULL,
+    authority ENUM('1', '2') NOT NULL,  -- '1': 일반, '2': 관리자                         
+    authority_name VARCHAR(255) NOT NULL,                     
+    CONSTRAINT fk_user_account_info_user FOREIGN KEY (user_id) REFERENCES Users(user_id)        
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Users_login;
+
+-- 4. 테이블 생성 (사용자 취미 테이블)
+CREATE TABLE Hobbies (
+    hobbies_id INT PRIMARY KEY,            
+    hobby_name VARCHAR(255) NOT NULL,      
+    hobby_description TEXT,               
+    category VARCHAR(50)                 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Hobbies;
+
+-- 5. 테이블 생성 (사용자 취미 관계 테이블)
+CREATE TABLE UserHobbies (
+    user_hobby_id INT PRIMARY KEY,        
+    user_id INT(11),                      
+    hobbies_id INT,                        
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),          
+    FOREIGN KEY (hobbies_id) REFERENCES Hobbies(hobbies_id) 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM UserHobbies;
+
+-- 6. 테이블 생성 (사용자 취미 위치 테이블)
+CREATE TABLE LocationInfo (
+    location_info_id INT PRIMARY KEY,       
+    location_name VARCHAR(255) NOT NULL,    
+    latitude DECIMAL(10, 8) NOT NULL,        
+    longitude DECIMAL(11, 8) NOT NULL       
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM LocationInfo;
+
+-- 7. 테이블 생성 (사용자 취미 위치 테이블)
+CREATE TABLE UserLocation (
+    location_id INT PRIMARY KEY,           
+    user_id INT(11),                        
+    location_info_id INT,                   
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),           
+    FOREIGN KEY (location_info_id) REFERENCES LocationInfo(location_info_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM UserLocation;
+
+-- 8. 테이블 생성 (사용자 활동(상품) 테이블)
+CREATE TABLE ProductActivity (
+    product_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,      
+    registered_products_count INT NOT NULL,                      
+    requested_products_count INT NOT NULL,                       
+    product_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   
+    user_id INT(11),                                            
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)             
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM ProductActivity;
+
+-- 9. 테이블 생성 (사용자 활동(신고) 테이블)
+CREATE TABLE ReportActivity (
+    report_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,       
+    total_reports_count INT NOT NULL,                            
+    report_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    
+    user_id INT(11),                                            
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)             
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM ReportActivity;
+
+-- 10. 테이블 생성 (사용자 활동(게시글,댓글) 테이블)
+CREATE TABLE PostCommentActivity (
+    post_comment_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,  
+    posts_written_count INT NOT NULL,                               
+    comments_written_count INT NOT NULL,                           
+    post_comment_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT(11),                                               
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)               
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM PostCommentActivity;
+
+-- 11. 테이블 생성 (사용자 활동(리뷰) 테이블)
+CREATE TABLE ReviewActivity (
+    review_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,        
+    review_written_count INT NOT NULL,                            
+    review_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,     
+    user_id INT(11),                                             
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)              
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM ReviewActivity;
+
+-- 12. 테이블 생성 (사용자 활동(마일리지,도파민)테이블)
+CREATE TABLE PointsDopamineActivity (
+    points_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,         
+    points INT NOT NULL,                                           
+    dopamine INT NOT NULL,                                         
+    point_dopamine_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    user_id INT(11),                                                
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)                 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM PointsDopamineActivity;
+
+-- 13. 테이블 생성 (사용자 활동(채팅방) 테이블)
+CREATE TABLE ChatRoomActivity (
+    chat_room_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,      
+    chat_rooms_joined_count INT NOT NULL,                         
+    chat_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,       
+    user_id INT(11),                                             
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)              
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM  ChatRoomActivity;
+
+-- 14. 테이블 생성 (사용자 재능 테이블)
+CREATE TABLE Skills (
+    skill_id INT PRIMARY KEY,                       
+    skills_name VARCHAR(255) NOT NULL,               
+    skills_created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
+    skills_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+    user_id INT(11),                                
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM  Skills;
+
+-- 15. 테이블 생성 (알림 테이블)
+CREATE TABLE Notices (
+    notice_id BIGINT PRIMARY KEY AUTO_INCREMENT,                 
+    notice_message TEXT NOT NULL,                               
+    notice_type ENUM('TRADE', 'CHAT', 'BOARD') NOT NULL,          
+    notice_status ENUM('UNREAD', 'READ') NOT NULL,                
+    notice_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,        
+    user_id INT(11),                                              
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)               
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM  Notices;
+
+-- 16. 테이블 생성 (읽지않은 알람 테이블)
+CREATE TABLE UnreadNotices (
+    unread_id BIGINT PRIMARY KEY AUTO_INCREMENT,             
+    notice_id BIGINT NOT NULL,                                 
+    user_id INT(11),                                          
+    FOREIGN KEY (notice_id) REFERENCES Notices(notice_id),     
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)          
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM  UnreadNotices;

@@ -1,0 +1,14 @@
+-- 1. 테이블 생성 (사용자 테이블)
+
+CREATE TABLE Users (
+    user_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(15),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    nickname VARCHAR(50) UNIQUE NOT NULL,
+    bio TEXT,
+    signup_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_update_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login_time DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Users;
