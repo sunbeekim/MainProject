@@ -1,0 +1,41 @@
+create database haru_db;
+use haru_db;
+
+-- 사용자 기본 정보 테이블
+CREATE TABLE Users (
+    user_id INT(11) NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) DEFAULT NULL,
+    phone_number VARCHAR(15) DEFAULT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    nickname VARCHAR(50) DEFAULT NULL,
+    bio TEXT,
+    signup_date DATETIME DEFAULT NULL,
+    last_update_date DATETIME DEFAULT NULL,
+    last_login_time DATETIME DEFAULT NULL,
+    PRIMARY KEY (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 로그인 관련 정보 테이블 (비밀번호 해시, 해싱 솔트, 로그인 방식 등)
+CREATE TABLE Users_login (
+    user_login_id BIGINT NOT NULL AUTO_INCREMENT,
+    password_hash VARCHAR(255) DEFAULT NULL,
+    password_salt VARCHAR(255) DEFAULT NULL,
+    login_method ENUM('EMAIL','SOCIAL') DEFAULT NULL,
+    social_provider ENUM('GOOGLE','KAKAO','NAVER') DEFAULT NULL,
+    user_last_login_at TIMESTAMP NULL DEFAULT NULL,
+    login_failed_attempts INT DEFAULT 0,
+    login_is_locked BOOLEAN DEFAULT FALSE,
+    user_id INT(11) NOT NULL,
+    PRIMARY KEY (user_login_id),
+    CONSTRAINT fk_users_login_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 계정 상태 및 권한 정보 테이블
+CREATE TABLE User_Account_info (
+    user_id INT(11) NOT NULL,
+    account_status ENUM('Active','Deactivated','Dormant','Withdrawal') DEFAULT NULL,
+    authority ENUM('1','2') DEFAULT '1',   -- '1': 일반, '2': 관리자
+    authority_name VARCHAR(255) DEFAULT NULL,
+    PRIMARY KEY (user_id),
+    CONSTRAINT fk_user_account_info_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -26,6 +26,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'  // 이 부분 수정됨 - mybatis가 아니라 spring-boot 패키지입니다
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
 
 	compileOnly 'org.projectlombok:lombok'
