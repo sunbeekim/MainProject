@@ -1,49 +1,78 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { IconHome, IconChat, IconList, IconMap, IconUser } from '../common/Icons'
+import { RiStore2Line, RiStore2Fill } from 'react-icons/ri';
+import { IoChatbubbleEllipsesOutline, IoChatbubbleEllipses } from 'react-icons/io5';
+import { BsGrid, BsGridFill } from 'react-icons/bs';
+import { HiOutlineMapPin, HiMapPin } from 'react-icons/hi2';
+import { CgUser } from 'react-icons/cg';
+import { RiUserFill } from 'react-icons/ri';
 
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const getPathForLabel = (label: string) => {
+    switch (label) {
+      case '마켓': return '/';
+      case '채팅': return '/chat';
+      case '메뉴': return '/requests';
+      case '위치': return '/location';
+      case '마이': return '/mypage';
+      default: return '/';
+    }
+  };
+
   const navigationItems = [
     {
-
-      icon: <IconHome className={`w-8 h-8 ${location.pathname === '/' ? 'text-primary-light' : ''}`} />,
+      icon: location.pathname === '/' ? <RiStore2Fill /> : <RiStore2Line />,
+      label: '마켓',
       onClick: () => navigate('/')
     },
     {
-     
-      icon: <IconChat className={`w-8 h-8 ${location.pathname === '/chat' ? 'text-primary-light' : ''}`} />,
+      icon: location.pathname === '/chat' 
+        ? <IoChatbubbleEllipses /> 
+        : <IoChatbubbleEllipsesOutline />,
+      label: '채팅',
       onClick: () => navigate('/chat')
     },
     {
-    
-      icon: <IconList className={`w-8 h-8 ${location.pathname === '/requests' ? 'text-primary-light' : ''}`} />,
+      icon: location.pathname === '/requests' 
+        ? <BsGridFill /> 
+        : <BsGrid />,
+      label: '메뉴',
       onClick: () => navigate('/requests')
     },
     {
-      
-      icon: <IconMap className={`w-8 h-8 ${location.pathname === '/location' ? 'text-primary-light' : ''}`} />,
+      icon: location.pathname === '/location' 
+        ? <HiMapPin /> 
+        : <HiOutlineMapPin />,
+      label: '위치',
       onClick: () => navigate('/location')
     },
     {
-    
-      icon: <IconUser className={`w-8 h-8 ${location.pathname === '/mypage' ? 'text-primary-light' : ''}`} />,
+      icon: location.pathname === '/mypage' 
+        ? <RiUserFill /> 
+        : <CgUser />,
+      label: '마이',
       onClick: () => navigate('/mypage')
     }
   ];
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-700">
-      <nav className="flex justify-around items-center px-2 py-3">
+    <footer className="fixed bottom-0 left-0 right-0 bg-[#ECCEF5] dark:bg-[#2D2D2D] shadow-lg backdrop-blur-md bg-opacity-95 dark:bg-opacity-90">
+      <nav className="container mx-auto flex justify-around items-center px-2 py-3">
         {navigationItems.map((item, index) => (
           <button
             key={index}
             onClick={item.onClick}
-            className="flex flex-col items-center gap-1"
+            className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-white/20 dark:hover:bg-[#F6CED8]/10 transition-all duration-300 group focus:outline-none"
           >
-            {item.icon}
-           
+            <div className={`text-4xl duration-300 ${
+              location.pathname === getPathForLabel(item.label)
+                ? 'text-[#59151C]' 
+                : 'text-[#59151C]/70 dark:text-[#59151C]/70'
+            } group-hover:scale-110 transition-transform duration-300`}>
+              {item.icon}
+            </div>    
           </button>
         ))}
       </nav>

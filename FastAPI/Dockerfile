@@ -2,27 +2,27 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# 시스템 패키지 설치
+# 시스템 패키지 설치 레이어
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Python 패키지 설치
+# requirements.txt 복사 및 설치 레이어
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir -r requirements.txt
 
-# 필요한 패키지 직접 설치
-RUN pip install --no-cache-dir \
+# 추가 패키지 설치 레이어
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir \
     transformers \
     torch \
     sentencepiece \
-    accelerate>=0.26.0  # accelerate 패키지 추가
-    
-RUN apt update && apt install -y curl
+    accelerate>=0.26.0
 
-# 소스 코드 복사
+# 소스 코드 복사 레이어
 COPY . .
 
 EXPOSE 8001

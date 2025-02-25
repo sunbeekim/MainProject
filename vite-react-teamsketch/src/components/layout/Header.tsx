@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { IconSetting } from '../common/Icons';
+import BackButton from '../forms/button/BackButton';
 
 const Header = () => {
   const location = useLocation();
@@ -11,17 +12,10 @@ const Header = () => {
         return {
           title: '#대분류',
           actions: (
-            <div className="flex gap-2">
-              <select className="px-3 py-1 text-sm rounded-full bg-primary-light text-white">
-                <option value="1">운동</option>
-                <option value="2">취미</option>
-                <option value="3">기타</option>
-              </select>
-              <select className="px-3 py-1 text-sm rounded-full bg-primary-light text-white">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
+            <div className="flex gap-2">              
+              <button onClick={() => navigate('/test/pages')}>테스트 페이지</button>
+              <button onClick={() => navigate('/test/component')}>테스트 컴포넌트</button>     
+              <button onClick={() => navigate('/test/func')}>테스트 함수</button>
             </div>
           )
         };
@@ -42,9 +36,15 @@ const Header = () => {
           actions: (
             <div className="flex gap-2">
               <IconSetting
-              onClick={() => navigate('/setting')}
-              className="w-8 h-8 text-primary-light"
+                onClick={() => navigate('/setting')}
+                className="w-8 h-8 text-[#59151C] hover:text-primary-dark cursor-pointer"
               />
+              <button 
+                onClick={() => navigate('/login')}
+                className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
+              >
+                login
+              </button>
             </div>
           )
         };
@@ -59,11 +59,14 @@ const Header = () => {
   const headerContent = getHeaderContent();
 
   return (
-    <header className="sticky top-0 z-50 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-700">
+    <header className="sticky top-0 z-50 bg-[#F3F2FF] dark:bg-background-dark border-b border-[#E5E1FF] dark:border-[#6003FF] shadow-sm">
+      <BackButton className="m-5 text-[#FFFFFF] hover:bg-[#59151C] " />
       <div className="px-4 py-3">
-        <h1 className="text-xl font-bold">{headerContent.title}</h1>
+        <h1 className="text-xl font-bold text-[#59151C] dark:text-text-dark">{headerContent.title}</h1>
         {headerContent.subtitle && (
-          <p className="text-sm text-gray-600 dark:text-gray-400">{headerContent.subtitle}</p>
+          <p className="text-sm text-[#59151C]/70 dark:text-text-dark/70">
+            {headerContent.subtitle}
+          </p>
         )}
         {headerContent.actions}
       </div>

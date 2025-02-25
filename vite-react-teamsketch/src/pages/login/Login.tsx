@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '../../store/slices/authSlice';
 import { useLogin } from '../../services/api/authService';
+import LoginLayout from '../../components/layout/LoginLayout';
+import Button from '../../components/common/BaseButton';
 import Loading from '../../components/common/Loading';
+import { google, kakao, naver } from '../../assets/images/login';
+import EmailInput from '../../components/forms/input/EmailInput';
+import LoginPasswordInput from '../../components/forms/input/LoginPasswordInput';
 
 interface LoginForm {
   email: string;
@@ -42,60 +47,77 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background-light dark:bg-background-dark">
-      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 p-8">
-        <h1 className="text-center text-2xl font-bold">로그인</h1>
-        
-        {error && (
-          <div className="text-red-500 text-sm text-center" role="alert">
-            {error}
+    <form onSubmit={handleSubmit}>
+      <LoginLayout
+        title={<h1 className="text-2xl font-bold">로그인</h1>}
+        forgotPassword={
+          <a href="/forgot-password" className="text-sm text-primary-light hover:text-primary-dark">
+            비밀번호 찾기
+          </a>
+        }
+        loginButton={
+          <Button
+            type='submit'
+            variant="primary"
+            className="w-full"
+            data-testid="login-button"
+            disabled={loginMutation.isPending}
+          >
+            {loginMutation.isPending ? <Loading /> : '로그인'}
+          </Button>
+        }
+        divider={<div className="relative my-6 h-px bg-gray-300 dark:bg-gray-700">
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 px-4 text-sm text-gray-500">
+            or
+          </span>
+        </div>}
+        socialLogins={
+          <div className="flex justify-center items-center gap-6">
+            <button type="button" className="w-20 h-20 hover:opacity-80 transition-opacity">
+              <img src={google} alt="구글 로그인" className="w-full h-full object-contain" />
+            </button>
+            <button type="button" className="w-20 h-20 hover:opacity-80 transition-opacity">
+              <img src={kakao} alt="카카오 로그인" className="w-full h-full object-contain" />
+            </button>
+            <button type="button" className="w-20 h-20 hover:opacity-80 transition-opacity">
+              <img src={naver} alt="네이버 로그인" className="w-full h-full object-contain" />
+            </button>            
           </div>
-        )}
-
-        <div className="space-y-2">
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="이메일"
-            className="w-full rounded-lg border p-2 text-gray-900 dark:text-white dark:bg-gray-800"
-            required
-            data-testid="email-input"
-          />
+        }
+        signupLink={
+          <div className="text-sm">
+            아직 회원이 아니신가요?{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/signup')}
+              className="text-primary-light hover:text-primary-dark"
+            >
+              회원가입
+            </button>
+          </div>
+        }
+      >
+        <EmailInput
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="이메일"
+          data-testid="email-input"
+        />
+        <LoginPasswordInput          
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="비밀번호"
+          data-testid="password-input"
+        />
+      </LoginLayout>
+      {error && (
+        <div className="text-red-500 text-sm text-center mt-2" role="alert">
+          {error}
         </div>
-
-        <div className="space-y-2">
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="비밀번호"
-            className="w-full rounded-lg border p-2 text-gray-900 dark:text-white dark:bg-gray-800"
-            required
-            data-testid="password-input"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-          data-testid="login-button"
-        >
-          로그인
-        </button>
-        <button
-          type="submit"
-          className="w-full bg-primary-light text-white py-2 rounded-lg hover:bg-primary-dark"
-          data-testid="login-button"
-          onClick={() => navigate('/signup')}
-        >
-          회원가입
-        </button>
-        <Loading />
-      </form>     
-    </div>
+      )}
+    </form>
   );
 };
 

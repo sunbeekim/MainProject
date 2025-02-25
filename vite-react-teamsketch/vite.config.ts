@@ -35,6 +35,11 @@ export default defineConfig({
       }
     })
   ],
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
   server: {
     host: true,
     port: 3000,
@@ -43,5 +48,12 @@ export default defineConfig({
       'www.sunbee.world',
       'localhost',
     ],
-  }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: './index.html',
+      },
+    },
+  },
 })

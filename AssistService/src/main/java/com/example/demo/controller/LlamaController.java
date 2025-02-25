@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,55 +28,55 @@ public class LlamaController {
     private final LlamaService llamaService;
     private final Map<String, List<ChatMessage>> chatHistories = new HashMap<>();
 
-    @Operation(summary = "AI 챗봇과 대화", description = "Tiny Llama 기반 챗봇과 대화하는 API")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "성공적인 응답", 
-                     content = @Content(schema = @Schema(implementation = ChatResponse.class))),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-        @ApiResponse(responseCode = "500", description = "서버 오류")
-    })
+    @Operation(summary = "AI 챗봇과 대화")
     @PostMapping("/chat")
-    public ResponseEntity<Map<String, String>> chat(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "사용자의 메시지와 세션 ID") 
-            @RequestBody ChatRequest request) {
-        
-        System.out.println("=== LlamaController 채팅 요청 받음 ===");
-        System.out.println("요청 데이터: " + request);
+    public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
+        try {
+            if (request.getMessage() == null || request.getMessage().trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(new ChatResponse("400", "메시지 내용이 비어있습니다."));
+            }
 
-        String message = request.getMessage();
-        String sessionId = request.getSessionId() != null ? request.getSessionId() : "default";
+            String message = request.getMessage();
+            String sessionId = request.getSessionId() != null ? request.getSessionId() : "default";
 
-        // 세션별 히스토리 관리
-        List<ChatMessage> history = chatHistories.computeIfAbsent(sessionId, k -> new ArrayList<>());
+            List<ChatMessage> history = chatHistories.computeIfAbsent(sessionId, k -> new ArrayList<>());
 
-        String response = llamaService.chat(message, history);
+            String response = llamaService.chat(message, history);
 
-        // 히스토리 업데이트
-        ChatMessage userMessage = new ChatMessage("user", message);
-        ChatMessage assistantMessage = new ChatMessage("assistant", response);
-        history.add(userMessage);
-        history.add(assistantMessage);
+            ChatMessage userMessage = new ChatMessage("user", message);
+            ChatMessage assistantMessage = new ChatMessage("assistant", response);
+            history.add(userMessage);
+            history.add(assistantMessage);
 
-        // 히스토리 크기 제한 (최근 10개 메시지만 유지)
-        if (history.size() > 10) {
-            history = history.subList(history.size() - 10, history.size());
-            chatHistories.put(sessionId, history);
+            if (history.size() > 10) {
+                history = history.subList(history.size() - 10, history.size());
+                chatHistories.put(sessionId, history);
+            }
+
+            return ResponseEntity.ok(new ChatResponse(message, response));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ChatResponse("500", "서버 처리 중 오류가 발생했습니다."));
         }
-
-        System.out.println("히스토리 크기: " + history.size());
-        System.out.println("LlamaService 응답: " + response);
-        System.out.println("=== LlamaController 처리 완료 ===");
-
-        return ResponseEntity.ok(Map.of("response", response));
     }
 
-    // 요청 객체 (Swagger 문서화용)
-    @Schema(description = "챗봇 요청 데이터")
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ChatResponse> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ChatResponse("500", "예상치 못한 오류가 발생했습니다."));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ChatResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ChatResponse("400", "잘못된 요청 형식입니다."));
+    }
+
     public static class ChatRequest {
-        @Schema(description = "사용자 입력 메시지", example = "안녕!")
         private String message;
-        
-        @Schema(description = "대화 세션 ID (선택)", example = "12345")
         private String sessionId;
 
         public String getMessage() {
@@ -86,18 +88,51 @@ public class LlamaController {
         }
     }
 
-    // 응답 객체 (Swagger 문서화용)
-    @Schema(description = "챗봇 응답 데이터")
     public static class ChatResponse {
-        @Schema(description = "챗봇 응답 메시지", example = "안녕하세요! 어떻게 도와드릴까요?")
-        private String response;
-
-        public ChatResponse(String response) {
-            this.response = response;
+        private String status;
+        private Data data;
+        private String code;
+        
+        public static class Data {
+            private String message;
+            private String response;
+            
+            public Data(String message, String response) {
+                this.message = message;
+                this.response = response;
+            }
+            
+            public String getMessage() {
+                return message;
+            }
+            
+            public String getResponse() {
+                return response;
+            }
         }
 
-        public String getResponse() {
-            return response;
+        public ChatResponse(String userMessage, String botResponse) {
+            this.status = "success";
+            this.data = new Data(userMessage, botResponse);
+            this.code = "200";
+        }
+        
+        public ChatResponse(String errorMessage, Integer errorCode) {
+            this.status = "error";
+            this.data = new Data(null, errorMessage);
+            this.code = errorCode.toString();
+        }
+        
+        public String getStatus() {
+            return status;
+        }
+        
+        public Data getData() {
+            return data;
+        }
+        
+        public String getCode() {
+            return code;
         }
     }
 }

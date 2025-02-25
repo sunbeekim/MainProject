@@ -1,4 +1,4 @@
-package com.example.demo.dao.impl;
+package com.example.demo.dao;
 
 import com.example.demo.dao.ChatMessageDAO;
 import com.example.demo.model.ChatMessage;

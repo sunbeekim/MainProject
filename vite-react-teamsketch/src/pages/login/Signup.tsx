@@ -1,91 +1,142 @@
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { updateField, setValidationError, setError} from '../../store/slices/signupSlice';
+
+import SignupLayout from '../../components/layout/SignupLayout';
+import Button from '../../components/common/BaseButton';
+import { validateName, validateId, validatePassword, validateEmail, validatePhone, validateNickname} from '../../utils/validation';
 import Grid from '../../components/common/Grid';
-import GridItem from '../../components/layout/GridItem';
+import TextInput from '../../components/forms/input/TextInput';
+import PasswordInput from '../../components/forms/input/PasswordInput';
+import EmailInput from '../../components/forms/input/EmailInput';
+
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { formData, validationErrors, error } = useAppSelector((state) => state.signup);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    dispatch(updateField({ name, value }));
+
+    let validationResult = { isValid: true, message: '' };
+    switch (name) {
+      case 'name':
+        validationResult = validateName(value);
+        break;
+      case 'id':
+        validationResult = validateId(value);
+        break;
+      case 'password':
+        validationResult = validatePassword(value);
+        break;
+      case 'email':
+        validationResult = validateEmail(value);
+        break;
+      case 'phone':
+        validationResult = validatePhone(value);
+        break;
+      case 'nickname':
+        validationResult = validateNickname(value);
+        break;
+    }
+
+    dispatch(setValidationError({ field: name, message: validationResult.message }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch(setError(''));
+    // TODO: 회원가입 API 호출 로직 구현
+  };
+
   return (
-    <div className="p-8 space-y-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">그리드 시스템 테스트</h1>
-      
-      <div className="space-y-12">
-        <section>
-          <h2 className="text-xl font-semibold mb-4">기본 2x2 그리드</h2>
-          <Grid cols={2} rows={2} gap="lg" className="min-h-[300px] bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-            <GridItem>
-              <div className="h-full bg-blue-200 dark:bg-blue-800 p-4 rounded-lg flex items-center justify-center">
-                아이템 1
-              </div>
-            </GridItem>
-            <GridItem>
-              <div className="h-full bg-green-200 dark:bg-green-800 p-4 rounded-lg flex items-center justify-center">
-                아이템 2
-              </div>
-            </GridItem>
-            <GridItem>
-              <div className="h-full bg-yellow-200 dark:bg-yellow-800 p-4 rounded-lg flex items-center justify-center">
-                아이템 3
-              </div>
-            </GridItem>
-            <GridItem>
-              <div className="h-full bg-red-200 dark:bg-red-800 p-4 rounded-lg flex items-center justify-center">
-                아이템 4
-              </div>
-            </GridItem>
-          </Grid>
-        </section>
+    <form onSubmit={handleSubmit}>
+      <SignupLayout
+        title={<h1 className="text-2xl font-bold">회원가입</h1>}
+        signupButton={
+          <Button type="submit" variant="primary" className="w-full">
+            회원가입
+          </Button>
+        }
+        divider={<div className="relative my-6 h-px bg-gray-300 dark:bg-gray-700" />}
+        loginSection={
+          <div className="text-sm">
+            이미 계정이 있으신가요?{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/login')}
+              className="text-primary-light hover:text-primary-dark"
+            >
+              로그인
+            </button>
+          </div>
+        }
+      >
+        {error && (
+          <div className="text-red-500 text-sm text-center mt-2" role="alert">
+            {error}
+          </div>
+        )}
+        <Grid cols={2} gap="sm">
+          <TextInput
+            label="이름"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            error={validationErrors.name}
+          />
+          <TextInput
+            label="아이디"
+            name="id"
+            value={formData.id}
+            onChange={handleChange}
+            error={validationErrors.id}
+          />
+        </Grid>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-4">복잡한 레이아웃 예시</h2>
-          <Grid cols={3} rows={3} gap="md" className="min-h-[500px] bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-            <GridItem colSpan={2} rowSpan={2}>
-              <div className="h-full bg-purple-200 dark:bg-purple-800 p-4 rounded-lg flex items-center justify-center">
-                큰 메인 영역
-              </div>
-            </GridItem>
-            <GridItem rowSpan={3}>
-              <div className="h-full bg-pink-200 dark:bg-pink-800 p-4 rounded-lg flex items-center justify-center">
-                사이드바
-              </div>
-            </GridItem>
-            <GridItem>
-              <div className="h-full bg-indigo-200 dark:bg-indigo-800 p-4 rounded-lg flex items-center justify-center">
-                작은 영역 1
-              </div>
-            </GridItem>
-            <GridItem>
-              <div className="h-full bg-teal-200 dark:bg-teal-800 p-4 rounded-lg flex items-center justify-center">
-                작은 영역 2
-              </div>
-            </GridItem>
-          </Grid>
-        </section>
+        <PasswordInput
+          label="비밀번호"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          error={validationErrors.password}
+        />
 
-        <section>
-          <h2 className="text-xl font-semibold mb-4">비대칭 레이아웃</h2>
-          <Grid cols={4} rows={2} gap="md" className="min-h-[400px] bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-            <GridItem colSpan={3}>
-              <div className="h-full bg-orange-200 dark:bg-orange-800 p-4 rounded-lg flex items-center justify-center">
-                헤더 영역
-              </div>
-            </GridItem>
-            <GridItem rowSpan={2}>
-              <div className="h-full bg-cyan-200 dark:bg-cyan-800 p-4 rounded-lg flex items-center justify-center">
-                사이드 메뉴
-              </div>
-            </GridItem>
-            <GridItem>
-              <div className="h-full bg-lime-200 dark:bg-lime-800 p-4 rounded-lg flex items-center justify-center">
-                콘텐츠 1
-              </div>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <div className="h-full bg-violet-200 dark:bg-violet-800 p-4 rounded-lg flex items-center justify-center">
-                콘텐츠 2
-              </div>
-            </GridItem>
-          </Grid>
-        </section>
-      </div>
-    </div>
+        <EmailInput
+          label="이메일"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          error={validationErrors.email}
+        />
+
+        <TextInput
+          label="전화번호"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          error={validationErrors.phone}
+        />
+
+        <Grid cols={2} gap="sm">
+          <TextInput
+            label="취미"
+            name="hobby"
+            value={formData.hobby}
+            onChange={handleChange}
+          />
+          <TextInput
+            label="닉네임"
+            name="nickname"
+            value={formData.nickname}
+            onChange={handleChange}
+            error={validationErrors.nickname}
+          />
+        </Grid>
+      </SignupLayout>
+    </form>
   );
 };
 

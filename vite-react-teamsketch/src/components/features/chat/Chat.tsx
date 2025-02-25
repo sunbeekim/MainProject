@@ -1,14 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
-import { IChatProps } from './types';
 import Loading from '../../common/Loading';
 
-const Chat: React.FC<IChatProps> = ({ 
-  title, 
-  subtitle, 
-  messages, 
-  onSendMessage, 
-  isLoading 
-}) => {
+interface ChatProps {
+  title: string;
+  subtitle: string;
+  messages: Array<{
+    role: 'user' | 'assistant';
+    content: string;
+  }>;
+  onSendMessage: (message: string) => Promise<void>;
+  isLoading: boolean;
+}
+
+const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, isLoading }) => {
+
   const [newMessage, setNewMessage] = useState<string>('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -21,16 +26,21 @@ const Chat: React.FC<IChatProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    await onSendMessage(newMessage);
-    setNewMessage('');
+    
+    try {
+      await onSendMessage(newMessage); // API 호출
+      setNewMessage('');
+    } catch (error) {
+      console.error('메시지 전송 실패:', error);
+    }
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <div className="flex flex-col h-[calc(90vh-theme(spacing.32))] bg-background-light dark:bg-background-dark rounded-lg shadow-lg">
       {/* 채팅 헤더 */}
       <div className="p-2 sm:p-4 bg-primary-light dark:bg-primary-dark text-white">
         <h2 className="text-lg sm:text-xl font-bold">{title}</h2>
-        {subtitle && <p className="text-xs sm:text-sm text-gray-200">{subtitle}</p>}
+        {subtitle && <p className="text-sm text-gray-200">{subtitle}</p>}
       </div>
 
       {/* 메시지 영역 */}
@@ -64,7 +74,7 @@ const Chat: React.FC<IChatProps> = ({
       </div>
 
       {/* 입력 폼 */}
-      <div className="p-2 sm:p-4 border-t dark:border-gray-700">
+      <div className="p-2 sm:p-4 border-t border-border-light dark:border-border-dark">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"

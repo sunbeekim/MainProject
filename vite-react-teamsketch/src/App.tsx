@@ -10,6 +10,15 @@ import Location from './pages/map/Location';
 import MyPage from './pages/mypage/MyPage';
 import Requests from './pages/trading/Requests';
 import Setting from './pages/mypage/Setting';
+
+// test
+import TestComponent from './test/pages/TestComponent';
+import TestLogin from './test/pages/TestLogin';
+import TestMarketplace from './test/pages/TestMarketplace';
+import TestPages from './test/pages/TestPages';
+import TestSignup from './test/pages/TestSignup';
+import TestFunc from './test/pages/TestFunc';
+
 const App = () => {
   return (
     <div className="min-h-screen pb-16">
@@ -24,6 +33,19 @@ const App = () => {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/requests" element={<Requests />} />
           <Route path="/setting" element={<Setting />} />
+
+          {/* test pages */}
+          <Route path="/test/pages" element={<TestPages />} />
+          <Route path="/test/login" element={<TestLogin />} />
+          <Route path="/test/marketplace" element={<TestMarketplace />} />          
+          <Route path="/test/signup" element={<TestSignup />} />
+
+          {/* test component */}  
+          <Route path="/test/component" element={<TestComponent />} />    
+          
+          {/* test func */}
+          <Route path="/test/func" element={<TestFunc />} />
+          
         </Routes>
       </main>
       <Footer />
