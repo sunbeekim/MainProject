@@ -4,10 +4,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class ChatBotRuleCondition {
+public class ProfileImage {
     private Long id;
-    private Long ruleId;
-    private String conditionText;
-    private String response;
+    private String username;
+    private String imageUrl;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

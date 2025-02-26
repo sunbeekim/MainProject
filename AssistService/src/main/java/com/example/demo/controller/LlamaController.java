@@ -2,9 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ChatRequestDTO;
 import com.example.demo.dto.ChatResponseDTO;
+import com.example.demo.model.ChatMessage;
 import com.example.demo.service.LlamaService;
 import com.example.demo.service.CloudChatBotService;
-import com.example.demo.service.LlamaService.ChatMessage;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,52 +45,7 @@ public class LlamaController {
             String message = request.getMessage();
             String sessionId = request.getSessionId() != null ? request.getSessionId() : "default";
 
-            // CloudChatBot 먼저 시도
-            try {
-                String cloudResponse = cloudChatBotService.getResponse(message);
-                if (cloudResponse != null && !cloudResponse.trim().isEmpty()) {
-                    // CloudChatBot에서 응답이 왔으면 바로 반환
-                    ChatResponseDTO.Data data = new ChatResponseDTO.Data();
-                    data.setMessage(message);
-                    data.setResponse(cloudResponse);
-                    
-                    ChatResponseDTO responseDTO = new ChatResponseDTO();
-                    responseDTO.setStatus("success");
-                    responseDTO.setData(data);
-                    responseDTO.setCode("200");
-
-                    // 채팅 히스토리 업데이트
-                    List<ChatMessage> history = chatHistories.computeIfAbsent(sessionId, k -> new ArrayList<>());
-                    ChatMessage userMessage = new ChatMessage("user", message);
-                    ChatMessage assistantMessage = new ChatMessage("assistant", cloudResponse);
-                    history.add(userMessage);
-                    history.add(assistantMessage);
-
-                    if (history.size() > 10) {
-                        history = history.subList(history.size() - 10, history.size());
-                        chatHistories.put(sessionId, history);
-                    }
-
-                    return ResponseEntity.ok(responseDTO);
-                }
-            } catch (Exception e) {
-                // CloudChatBot 호출 실패 시 로그만 남기고 LlamaService로 진행
-                System.err.println("CloudChatBot 서비스 호출 실패: " + e.getMessage());
-            }
-
-            // CloudChatBot에서 응답이 없거나 실패한 경우 LlamaService 사용
-            List<ChatMessage> history = chatHistories.computeIfAbsent(sessionId, k -> new ArrayList<>());
-            String response = llamaService.chat(message, history);
-
-            ChatMessage userMessage = new ChatMessage("user", message);
-            ChatMessage assistantMessage = new ChatMessage("assistant", response);
-            history.add(userMessage);
-            history.add(assistantMessage);
-
-            if (history.size() > 10) {
-                history = history.subList(history.size() - 10, history.size());
-                chatHistories.put(sessionId, history);
-            }
+            String response = llamaService.chat(message, sessionId);
 
             ChatResponseDTO.Data data = new ChatResponseDTO.Data();
             data.setMessage(message);

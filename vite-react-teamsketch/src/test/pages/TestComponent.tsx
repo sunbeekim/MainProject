@@ -74,6 +74,13 @@ const TestComponent = () => {
             className="max-w-md mx-auto"
           />
         </div>
+        <div>
+          <h2 className="text-xl font-semibold mb-4">이미지 업로드 테스트</h2>
+          <ImageUpload 
+            onUpload={CloudOCR}
+            className="max-w-md mx-auto"
+          />
+        </div>
       </section>
       <div>
         <h2 className="text-xl font-semibold mb-4">카운터 테스트</h2>
