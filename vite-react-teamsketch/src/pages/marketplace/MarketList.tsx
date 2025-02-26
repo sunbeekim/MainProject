@@ -1,11 +1,15 @@
 import { testAPI } from '../../services/api/testAPI';
 import { useState } from 'react';
+import FloatingButton from '../../components/common/FloatingButton';
+import { useNavigate } from 'react-router-dom';
 
 //test api 호출 페이지
 const MarketList = () => {
   const [testResponse, setTestResponse] = useState<any>(null);
   const [testResponse2, setTestResponse2] = useState<any>(null);
   const [testResponse3, setTestResponse3] = useState<any>(null);
+
+  const navigate = useNavigate();
   
   const handleSendtest = async () => {
     const response = await testAPI.getHello();
@@ -25,6 +29,9 @@ const MarketList = () => {
     setTestResponse3(response);
   };
 
+  const handleNavigateToProductRegister = () => {
+    navigate('/product/register');
+  }
   return (
     <div>
       <h1>MarketList [test api 호출]</h1>
@@ -62,6 +69,13 @@ const MarketList = () => {
           </div>
         )}
       </div>
+      <FloatingButton
+        onClick={handleNavigateToProductRegister}  
+        icon={<span style={{ fontSize: '2rem' }}>+</span>}
+        label="상품 등록" 
+        position="bottom-right"  
+        color="primary" 
+      />
     </div>
   );
 };
