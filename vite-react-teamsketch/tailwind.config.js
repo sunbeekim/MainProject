@@ -33,23 +33,28 @@ export default {
       // 색상 시스템
       colors: {
         primary: {
-          light: '#4C86F9',
-          DEFAULT: '#2563EB',
-          dark: '#1E40AF',
+          light: '#F6CED8',    // 연한 핑크
+          DEFAULT: '#ECCEF5',  // 연한 보라
+          dark: '#CEF6E3',     // 연한 민트
         },
         secondary: {
-          light: '#9CA3AF',
-          DEFAULT: '#6B7280',
-          dark: '#4B5563',
+          light: '#F6E3CE',    // 연한 오렌지
+          DEFAULT: '#F6CED8',  // 연한 핑크
+          dark: '#ECCEF5',     // 연한 보라
         },
         background: {
-          light: '#FFFFFF',
-          dark: '#1F2937',
+          light: '#FFFFFF',    // 흰색
+          dark: '#2D2D2D',     // 어두운 회색
         },
         text: {
-          light: '#1F2937',
-          dark: '#F9FAFB',
+          light: '#4A4A4A',    // 진한 회색
+          dark: '#F6CED8',     // 연한 핑크
+          deeppink: '#FA58F4',    // 진한 
         },
+        border: {
+          light: '#ECCEF5',    // 연한 보라
+          dark: '#F6CED8',     // 연한 핑크
+        }
       },
       // 간격 시스템
       spacing: {

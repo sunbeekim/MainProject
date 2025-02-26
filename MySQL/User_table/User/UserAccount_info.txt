@@ -1,0 +1,11 @@
+-- 3. 테이블 생성 (사용자 계정 정보 테이블)
+
+CREATE TABLE User_Account_info (
+    user_id INT(11) NOT NULL,
+    account_status ENUM('Active','Deactivated','Dormant','Withdrawal') DEFAULT NULL,
+    authority ENUM('1','2') DEFAULT '1',   -- '1': 일반, '2': 관리자
+    authority_name VARCHAR(255) DEFAULT NULL,
+    PRIMARY KEY (user_id),
+    CONSTRAINT fk_user_account_info_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM User_Account_info;
