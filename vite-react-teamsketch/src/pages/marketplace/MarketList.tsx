@@ -5,7 +5,8 @@ const MarketList = () => {
   const [testResponse, setTestResponse] = useState<any>(null);
   const [testResponse2, setTestResponse2] = useState<any>(null);
   const [testResponse3, setTestResponse3] = useState<any>(null);
-  
+  // eslint가 any를 권장하지 않아서 에러줄 뜸 
+  // eslint config에 any를 무시하도록 추가해주면 에러줄 사라짐
   const handleSendtest = async () => {
     const response = await testAPI.getHello();
     console.log(response);
