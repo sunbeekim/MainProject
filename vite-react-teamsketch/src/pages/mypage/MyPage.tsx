@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import LogoutModal from '../../components/common/LogoutModal';
 const MyPage = () => {
 
