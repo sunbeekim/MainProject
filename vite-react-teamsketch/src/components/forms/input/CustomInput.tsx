@@ -12,48 +12,53 @@ const CustomInput = ({ label, helperText, prefix, suffix, ...props }: CustomInpu
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <BaseInput
-      {...props}
-      type="text"
-      variant={props.error ? 'error' : props.variant}
-      className={`${prefix ? 'pl-8' : ''} ${suffix ? 'pr-8' : ''} ${props.className || ''}`}
-      onFocus={(e) => {
-        setIsFocused(true);
-        props.onFocus?.(e);
-      }}
-      onBlur={(e) => {
-        setIsFocused(false);
-        props.onBlur?.(e);
-      }}
-    >
-      {/* Label */}
+    <div className="w-full">
       {label && (
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
           {label}
         </label>
       )}
       
-      {/* Prefix */}
-      {prefix && (
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-          {prefix}
-        </div>
-      )}
-      
-      {/* Suffix */}
-      {suffix && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-          {suffix}
-        </div>
-      )}
-      
-      {/* Helper Text */}
+      <div className="relative flex items-center w-full">
+        {prefix && (
+          <span className="flex-shrink-0 text-gray-500 pl-3">
+            {prefix}
+          </span>
+        )}
+        
+        <BaseInput
+          {...props}
+          type="text"
+          variant={props.error ? 'error' : props.variant}
+          className={`
+            flex-grow
+            ${prefix ? 'pl-2' : 'pl-3'}
+            ${suffix ? 'pr-2' : 'pr-3'}
+            ${props.className || ''}
+          `}
+          onFocus={(e) => {
+            setIsFocused(true);
+            props.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            props.onBlur?.(e);
+          }}
+        />
+        
+        {suffix && (
+          <span className="flex-shrink-0 text-gray-500 pr-3">
+            {suffix}
+          </span>
+        )}
+      </div>
+
       {helperText && !props.error && (
         <p className={`text-xs mt-1 ${isFocused ? 'text-primary-light' : 'text-gray-500'}`}>
           {helperText}
         </p>
       )}
-    </BaseInput>
+    </div>
   );
 };
 

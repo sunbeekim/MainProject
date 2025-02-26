@@ -47,6 +47,7 @@ const TestComponent = () => {
             <Card
               title="테스트 카드 1"
               description="카드 컴포넌트 테스트입니다."
+              image="https://picsum.photos/200/300"
             />
             <Card
               title="테스트 카드 2"
@@ -105,19 +106,20 @@ const TestComponent = () => {
           suffix="원"
           helperText="1,000원 단위로 입력해주세요"
         />
-          
-          
+      </div>
+      <div>
         <CustomInput
           label="웹사이트"
           prefix="https://"
           suffix=".com"
           helperText="도메인 이름만 입력해주세요"
         />
-          
-          
+      </div>
+      <div>
         <CustomInput
           label="사용자 이름"
-          prefix="@"
+          prefix="이름->"
+          suffix="입니다."
           helperText="영문, 숫자, 밑줄(_)만 사용 가능합니다"
         />
       </div>
