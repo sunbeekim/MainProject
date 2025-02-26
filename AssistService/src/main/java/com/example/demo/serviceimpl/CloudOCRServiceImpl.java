@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.serviceimpl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +14,7 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CloudOCRService {
+public class CloudOCRServiceImpl {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;

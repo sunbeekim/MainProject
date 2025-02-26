@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.serviceimpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import com.example.demo.dao.ChatMessageDAO;
 import com.example.demo.model.ChatMessage;
-import com.example.demo.service.CloudChatBotService;
+import com.example.demo.serviceimpl.CloudChatBotServiceImpl;
 
 @Service
 @RequiredArgsConstructor
-public class LlamaService {
-    private final CloudChatBotService cloudChatBotService;
+public class LlamaServiceImpl {
+    private final CloudChatBotServiceImpl cloudChatBotServiceImpl;
     private final ChatMessageDAO chatMessageDAO;
     private final ObjectMapper objectMapper = new ObjectMapper();
     
@@ -116,29 +116,49 @@ public class LlamaService {
         return translatedText;
     }
 
-    public String chat(String message, String sessionId) {
+    public String chat(String message, String sessionId, List<ChatMessage> history) {
+        System.out.println("=== LlamaService 채팅 요청 시작 ===");
+        System.out.println("받은 메시지: " + message);
+        System.out.println("히스토리 크기: " + history.size());
+        
+        String response = null;
+        
         try {
-            String response;
-            
-            // CloudChatBot 먼저 시도
+            // CloudChatBot 먼저 시도            
             try {
-                response = cloudChatBotService.getResponse(message);
+                response = cloudChatBotServiceImpl.getResponse(message);
                 if (response != null && !response.trim().isEmpty()) {
                     // CloudChatBot 응답이 성공적으로 왔을 때 DB에 저장
                     saveChat(message, response, sessionId);
                     return response;
                 }
             } catch (Exception e) {
-                System.err.println("CloudChatBot 서비스 호출 실패: " + e.getMessage());
+                System.err.println("CloudChatBot 서비스 호출 실패, Llama 서비스로 전환: " + e.getMessage());
+                // CloudChatBot 실패 시 계속 진행 (Llama 사용)
             }
 
-            // CloudChatBot 실패 시 Llama 모델 사용          
+            // CloudChatBot이 실패했거나 응답이 비어있는 경우 Llama 모델 사용
             // 한글 -> 영어 번역
             String translatedMessage = translate(message, "ko", "en");
-        
+
+            // 히스토리도 번역하여 파이썬 서버가 기대하는 형식으로 변환
+            List<Map<String, String>> translatedHistory = new ArrayList<>();
+            for (int i = 0; i < history.size(); i += 2) {
+                Map<String, String> conversation = new HashMap<>();
+                // 사용자 메시지
+                String userMessage = translate(history.get(i).getContent(), "ko", "en");
+                conversation.put("user", userMessage);
+                
+                // 어시스턴트 응답이 있는 경우
+                if (i + 1 < history.size()) {
+                    String assistantMessage = translate(history.get(i + 1).getContent(), "ko", "en");
+                    conversation.put("assistant", assistantMessage);
+                }
+                translatedHistory.add(conversation);
+            }
             
             // LLaMA 서버에 영어로 요청 (히스토리 포함)
-            String englishResponse = processWithLlama(translatedMessage);
+            String englishResponse = processWithLlama(translatedMessage, sessionId, translatedHistory);
             
             // 영어 -> 한글 번역
             response = translate(englishResponse, "en", "ko");
@@ -174,7 +194,7 @@ public class LlamaService {
         chatMessageDAO.saveMessage(assistantChatMessage);
     }
 
-    private String processWithLlama(String englishMessage) {
+    private String processWithLlama(String englishMessage, String sessionId, List<Map<String, String>> history) {
         try {
             URL url = new URL(gatewayUri + "/api/fastapi/chat");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -184,6 +204,8 @@ public class LlamaService {
 
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("message", englishMessage);
+            requestBody.put("sessionId", sessionId);
+            requestBody.put("history", history);          
            
 
             String jsonInputString = objectMapper.writeValueAsString(requestBody);

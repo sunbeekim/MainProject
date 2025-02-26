@@ -3,8 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.dto.ChatRequestDTO;
 import com.example.demo.dto.ChatResponseDTO;
 import com.example.demo.model.ChatMessage;
-import com.example.demo.service.LlamaService;
-import com.example.demo.service.CloudChatBotService;
+import com.example.demo.serviceimpl.LlamaServiceImpl;
+import com.example.demo.dao.ChatMessageDAO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +30,8 @@ import java.util.Map;
 @Tag(name = "Tiny Llama Chat API", description = "LlamaService 기반 AI 채팅 API")
 public class LlamaController {
 
-    private final LlamaService llamaService;
-    private final CloudChatBotService cloudChatBotService;
-    private final Map<String, List<ChatMessage>> chatHistories = new HashMap<>();
+    private final LlamaServiceImpl llamaServiceImpl;
+    private final ChatMessageDAO chatMessageDAO;
 
     @Operation(summary = "AI 챗봇과 대화")
     @PostMapping("/chat")
@@ -45,7 +45,11 @@ public class LlamaController {
             String message = request.getMessage();
             String sessionId = request.getSessionId() != null ? request.getSessionId() : "default";
 
-            String response = llamaService.chat(message, sessionId);
+            // DB에서 히스토리 가져오기
+            List<ChatMessage> history = chatMessageDAO.getMessagesBySessionId(sessionId);
+
+            // LlamaService 호출 시 히스토리 전달
+            String response = llamaServiceImpl.chat(message, sessionId, history);
 
             ChatResponseDTO.Data data = new ChatResponseDTO.Data();
             data.setMessage(message);
