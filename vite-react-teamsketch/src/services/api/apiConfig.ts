@@ -9,6 +9,7 @@ export const apiConfig = {
     assist: {
       base: `${BASE_URL}/assist`,
       chat: `${BASE_URL}/assist/tinylamanaver/chat`,
+      cloudOCR: `${BASE_URL}/assist/cloudocr/process`,
       // 다른 assist 서비스 엔드포인트들...
     },
     core: {

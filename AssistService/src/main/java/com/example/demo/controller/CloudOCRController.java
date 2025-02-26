@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/assist/ocr")
+@RequestMapping("/api/assist/cloudocr")
 public class CloudOCRController {
 
     private final CloudOCRService cloudOCRService;
