@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { IconSetting } from '../common/Icons';
 import BackButton from '../forms/button/BackButton';
+import { Iconalarm } from '../common/Icons';
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const Header = () => {
               <button onClick={() => navigate('/test/pages')}>테스트 페이지</button>
               <button onClick={() => navigate('/test/component')}>테스트 컴포넌트</button>     
               <button onClick={() => navigate('/test/func')}>테스트 함수</button>
+              <Iconalarm className="text-gray-500 cursor-pointer" onClick={() => console.log("Alarm icon clicked!")} />
+
             </div>
           )
         };
