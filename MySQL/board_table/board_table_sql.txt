@@ -1,0 +1,86 @@
+use haru_db;
+
+-- 1. 테이블 생성 (게시판 테이블)
+CREATE TABLE Boards (
+    board_id INT PRIMARY KEY,                               
+    board_name VARCHAR(255) NOT NULL,                        
+    board_views INT NOT NULL DEFAULT 0,                       
+    board_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,    
+    board_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+    board_type_id INT,                                      
+    FOREIGN KEY (board_type_id) REFERENCES BoardTypes(board_type_id) 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Boards;
+
+-- 2. 테이블 생성 (게시판 유형 테이블)
+CREATE TABLE BoardTypes (
+    board_type_id INT PRIMARY KEY,                            
+    board_type_name ENUM('전용', '후기', '신고') NOT NULL,       
+    board_type_description TEXT                                
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM BoardTypes;
+
+-- 3. 테이블 생성 (게시글 테이블)
+CREATE TABLE Posts (
+    post_id INT PRIMARY KEY,                                
+    post_title VARCHAR(255) NOT NULL,                        
+    post_content TEXT NOT NULL,                              
+    view_count INT NOT NULL DEFAULT 0,                       
+    view_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,     
+    view_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    user_id INT(11),                                       
+    board_id INT,                                            
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),       
+    FOREIGN KEY (board_id) REFERENCES Boards(board_id)      
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Posts;
+
+-- 4. 테이블 생성 (댓글 테이블)
+CREATE TABLE Comments (
+    comment_id INT PRIMARY KEY,                                 
+    parent_comment_id INT,                                    
+    comment_content TEXT NOT NULL,                             
+    comment_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,     
+    comment_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+    post_id INT,                                              
+    user_id INT(11),                                          
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id),           
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),         
+    FOREIGN KEY (parent_comment_id) REFERENCES Comments(comment_id) 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Comments;
+
+-- 5. 테이블 생성 (리뷰 테이블)
+CREATE TABLE Reviews (
+    review_id INT PRIMARY KEY,                              
+    review_rating INT NOT NULL,                               
+    review_content TEXT NOT NULL,                            
+    review_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,     
+    user_id INT(11),                                          
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)         
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Reviews;
+
+-- 5. 테이블 생성 (신고 유형 테이블)
+CREATE TABLE ReportTypes (
+    report_type_id INT PRIMARY KEY,                             
+    report_type_types ENUM('Post', 'Comment') NOT NULL,        
+    type_name VARCHAR(255) NOT NULL                           
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM ReportTypes;
+
+-- 6. 테이블 생성 (신고 테이블)
+CREATE TABLE Reports (
+    report_id INT PRIMARY KEY,                                
+    report_reason TEXT NOT NULL,                              
+    report_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,      
+    user_id INT(11),                                           
+    post_id INT,                                               
+    comment_id INT,                                            
+    report_type_id INT,                                        
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),           
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id),          
+    FOREIGN KEY (comment_id) REFERENCES Comments(comment_id), 
+    FOREIGN KEY (report_type_id) REFERENCES ReportTypes(report_type_id) 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Reports;

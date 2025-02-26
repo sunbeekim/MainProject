@@ -1,0 +1,12 @@
+-- 5. 테이블 생성 (마켓 거래 유형 테이블)
+
+CREATE TABLE TransactionTypes (
+    transaction_type_id BIGINT PRIMARY KEY,                   
+    transaction_type_name ENUM('BUY_REGISTRATION', 'SELL_REGISTRATION', 'BUY_REQUEST', 'SELL_REQUEST') NOT NULL,  
+    transaction_type_description TEXT,                        
+    service_id BIGINT,                                          
+    user_id INT(11),                                            
+    FOREIGN KEY (service_id) REFERENCES Services(service_id),   
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)           
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM   TransactionTypes;
