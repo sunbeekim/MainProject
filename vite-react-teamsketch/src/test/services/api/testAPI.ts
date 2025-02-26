@@ -30,7 +30,7 @@ interface OCRResponse {
 export const CloudOCR = async (formData: FormData): Promise<OCRResponse> => {
   try {
     const response = await uploadInstance.post(
-      `${apiConfig.endpoints.assist.base}/ocr/process`, 
+      `${apiConfig.endpoints.assist.base}/cloudocr/process`, 
       formData
     );
 
