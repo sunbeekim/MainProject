@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.repository.UserMapper">
+    
+    <insert id="insertUser" parameterType="com.example.demo.model.User" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO Users (
+            name, 
+            phone_number, 
+            email, 
+            nickname, 
+            bio, 
+            signup_date, 
+            last_update_date, 
+            last_login_time
+        ) VALUES (
+            #{name}, 
+            #{phoneNumber}, 
+            #{email}, 
+            #{nickname}, 
+            #{bio}, 
+            #{signupDate}, 
+            #{lastUpdateDate}, 
+            #{lastLoginTime}
+        )
+    </insert>
+    
+    <insert id="insertUserLogin" parameterType="com.example.demo.model.UserLogin">
+        INSERT INTO Users_login (
+            password_hash, 
+            password_salt, 
+            login_method, 
+            social_provider, 
+            user_last_login_at, 
+            login_failed_attempts, 
+            login_is_locked, 
+            user_id
+        ) VALUES (
+            #{passwordHash}, 
+            #{passwordSalt}, 
+            #{loginMethod}, 
+            #{socialProvider}, 
+            #{userLastLoginAt}, 
+            #{loginFailedAttempts}, 
+            #{loginIsLocked}, 
+            #{userId}
+        )
+    </insert>
+    
+    <insert id="insertUserAccountInfo" parameterType="com.example.demo.model.UserAccountInfo">
+        INSERT INTO User_Account_info (
+            user_id, 
+            account_status, 
+            authority, 
+            authority_name
+        ) VALUES (
+            #{userId}, 
+            #{accountStatus}, 
+            #{authority}, 
+            #{authorityName}
+        )
+    </insert>
+    
+    <select id="findByEmail" parameterType="string" resultType="com.example.demo.model.User">
+        SELECT * FROM Users WHERE email = #{email}
+    </select>
+    
+    <select id="findByPhoneNumber" parameterType="string" resultType="com.example.demo.model.User">
+        SELECT * FROM Users WHERE phone_number = #{phoneNumber}
+    </select>
+    
+    <select id="findByNickname" parameterType="string" resultType="com.example.demo.model.User">
+        SELECT * FROM Users WHERE nickname = #{nickname}
+    </select>
+</mapper>
