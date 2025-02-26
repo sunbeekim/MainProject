@@ -1,0 +1,16 @@
+-- 6. 테이블 생성 (신고 테이블)
+
+CREATE TABLE Reports (
+    report_id INT PRIMARY KEY,                                
+    report_reason TEXT NOT NULL,                              
+    report_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,      
+    user_id INT(11),                                           
+    post_id INT,                                               
+    comment_id INT,                                            
+    report_type_id INT,                                        
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),           
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id),          
+    FOREIGN KEY (comment_id) REFERENCES Comments(comment_id), 
+    FOREIGN KEY (report_type_id) REFERENCES ReportTypes(report_type_id) 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Reports;

@@ -1,0 +1,10 @@
+-- 7. 테이블 생성 (사용자 위치 테이블)
+
+CREATE TABLE UserLocation (
+    location_id INT PRIMARY KEY,           
+    user_id INT(11),                        
+    location_info_id INT,                   
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),           
+    FOREIGN KEY (location_info_id) REFERENCES LocationInfo(location_info_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM UserLocation;

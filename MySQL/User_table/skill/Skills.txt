@@ -1,0 +1,11 @@
+-- 14. 테이블 생성 (사용자 재능 테이블)
+
+CREATE TABLE Skills (
+    skill_id INT PRIMARY KEY,                       
+    skills_name VARCHAR(255) NOT NULL,               
+    skills_created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
+    skills_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+    user_id INT(11),                                
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM  Skills;

@@ -1,0 +1,15 @@
+-- 4. 테이블 생성 (댓글 테이블)
+
+CREATE TABLE Comments (
+    comment_id INT PRIMARY KEY,                                 
+    parent_comment_id INT,                                    
+    comment_content TEXT NOT NULL,                             
+    comment_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,     
+    comment_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+    post_id INT,                                              
+    user_id INT(11),                                          
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id),           
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),         
+    FOREIGN KEY (parent_comment_id) REFERENCES Comments(comment_id) 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Comments;

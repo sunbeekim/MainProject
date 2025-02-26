@@ -1,0 +1,10 @@
+-- 16. 테이블 생성 (읽지않은 알람 테이블)
+
+CREATE TABLE UnreadNotices (
+    unread_id BIGINT PRIMARY KEY AUTO_INCREMENT,             
+    notice_id BIGINT NOT NULL,                                 
+    user_id INT(11),                                          
+    FOREIGN KEY (notice_id) REFERENCES Notices(notice_id),     
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)          
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM  UnreadNotices;

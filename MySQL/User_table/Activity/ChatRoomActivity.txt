@@ -1,0 +1,10 @@
+-- 13. 테이블 생성 (사용자 활동(채팅방) 테이블)
+
+CREATE TABLE ChatRoomActivity (
+    chat_room_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,      
+    chat_rooms_joined_count INT NOT NULL,                         
+    chat_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,       
+    user_id INT(11),                                             
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)              
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM  ChatRoomActivity;
