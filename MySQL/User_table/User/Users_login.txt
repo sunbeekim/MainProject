@@ -1,0 +1,16 @@
+-- 2. 테이블 생성 (사용자 로그인 테이블)
+
+CREATE TABLE Users_login (
+    user_login_id BIGINT NOT NULL AUTO_INCREMENT,
+    password_hash VARCHAR(255) DEFAULT NULL,
+    password_salt VARCHAR(255) DEFAULT NULL,
+    login_method ENUM('EMAIL','SOCIAL') DEFAULT NULL,
+    social_provider ENUM('GOOGLE','KAKAO','NAVER') DEFAULT NULL,
+    user_last_login_at TIMESTAMP NULL DEFAULT NULL,
+    login_failed_attempts INT DEFAULT 0,
+    login_is_locked BOOLEAN DEFAULT FALSE,
+    user_id INT(11) NOT NULL,
+    PRIMARY KEY (user_login_id),
+    CONSTRAINT fk_users_login_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Users_login;

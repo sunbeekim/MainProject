@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '../../store/slices/authSlice';
 import { useLogin } from '../services/api/testAPI';
-import BackButton from '../components/common/button/BackButton';
 
 interface LoginForm {
   email: string;
@@ -43,7 +42,6 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background-light dark:bg-background-dark">
-      <BackButton />
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 p-8">
             <h1 className="text-center text-2xl font-bold">로그인</h1>
             

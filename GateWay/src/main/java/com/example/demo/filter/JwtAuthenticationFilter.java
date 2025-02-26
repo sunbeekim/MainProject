@@ -28,8 +28,8 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
 
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
         "/api/core/**",          
-        "/api/assist/tinylamanaver/chat",  // 테스트 채팅
-        "/api/fastapi/chat"
+        "/api/assist/**",  // 테스트 채팅
+        "/api/fastapi/**"
     );
     
     public static class Config {
