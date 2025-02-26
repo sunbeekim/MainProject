@@ -38,12 +38,20 @@ print("모델 로딩 완료!")
 
 class ChatRequest(BaseModel):
     message: str
-    history: list = []  # 대화 히스토리 추가
+    history: list = []
+    sessionId: str  # sessionId 추가
+
+# 세션별 대화 기록을 저장할 딕셔너리
+session_histories = {}
 
 @app.post("/api/fastapi/chat")
 async def chat(request: ChatRequest) -> Dict[str, str]:
     try:
-        # 더 구체적인 시스템 프롬프트 설정
+        # 세션별 히스토리 관리
+        if request.sessionId not in session_histories:
+            session_histories[request.sessionId] = []
+        
+        # 시스템 프롬프트는 그대로 유지
         system_prompt = """You are a knowledgeable AI assistant. 
 
 1. Always respond clearly.
@@ -55,7 +63,7 @@ async def chat(request: ChatRequest) -> Dict[str, str]:
         # 대화 히스토리를 포함한 프롬프트 구성
         full_prompt = f"<system>{system_prompt}</system>\n"
 
-        print("\n=== 대화 히스토리 시작 ===")
+        print(f"\n=== 세션 {request.sessionId}의 대화 히스토리 시작 ===")
         print(f"히스토리 메시지 수: {len(request.history)}")
 
         # 이전 대화 내용 추가 (최근 4개 메시지만 사용)

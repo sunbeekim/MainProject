@@ -5,22 +5,68 @@
 @layer base {
   body {
     @apply min-h-screen min-w-[320px] m-0;
-    @apply bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark;
+    @apply bg-white text-text-light transition-colors duration-300;
+    @apply dark:bg-[#2D2D2D];
   }
 
   a {
-    @apply font-medium text-primary-light hover:text-primary-dark no-underline;
+    @apply font-medium text-[#ECCEF5] hover:text-[#F6CED8] no-underline transition-colors duration-300;
   }
 
   button {
-    @apply rounded-lg border border-transparent px-5 py-2.5;
+    @apply rounded-lg px-5 py-2.5;
     @apply text-base font-medium;
-    @apply bg-[#f9f9f9] dark:bg-[#1a1a1a] cursor-pointer;
-    @apply transition-colors duration-200;
-    @apply hover:border-primary-light focus:outline-none focus:ring-4;
+    @apply bg-[#ECCEF5] text-[#4A4A4A] hover:bg-[#F6CED8];
+    @apply dark:bg-[#F6CED8] dark:text-white dark:hover:bg-[#ECCEF5];
+    @apply transition-all duration-300;
+    @apply focus:outline-none;
   }
 
-  h1 {
-    @apply text-5xl leading-tight;
+  input {
+    @apply bg-white border-[#ECCEF5] text-[#4A4A4A];
+    @apply dark:bg-[#2D2D2D] dark:border-[#F6CED8] dark:text-white;
+    @apply focus:border-[#CEF6E3] dark:focus:border-[#CEF6E3];
+    @apply placeholder-[#ECCEF5]/70;
+    @apply transition-colors duration-300;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-[#4A4A4A] dark:text-white transition-colors duration-300;
+  }
+}
+
+/* 추가 커스텀 스타일 */
+.card {
+  @apply bg-white dark:bg-[#2D2D2D];
+  @apply border-[#ECCEF5] dark:border-[#F6CED8];
+  @apply text-[#4A4A4A] dark:text-white;
+  @apply shadow-lg hover:shadow-xl;
+  @apply transition-all duration-300;
+}
+
+.nav-link {
+  @apply text-[#4A4A4A] dark:text-white opacity-80;
+  @apply hover:text-[#ECCEF5] dark:hover:text-[#F6CED8] hover:opacity-100;
+  @apply transition-colors duration-300;
+}
+
+/* 그라데이션 효과 */
+.gradient-bg {
+  @apply bg-gradient-to-r from-[#ECCEF5] via-[#F6CED8] to-[#CEF6E3];
+}
+
+/* 버튼 특수 효과 */
+.button-glow {
+  @apply relative overflow-hidden;
+  @apply before:absolute before:inset-0;
+  @apply before:bg-[#F6E3CE]/20;
+  @apply before:transform before:scale-x-0;
+  @apply hover:before:scale-x-100;
+  @apply before:transition-transform before:duration-300;
+}
+
+/* 입력 필드 포커스 효과 */
+.input-focus-effect {
+  @apply focus-within:ring-2 focus-within:ring-[#CEF6E3]/50;
+  @apply focus-within:border-[#CEF6E3];
 }

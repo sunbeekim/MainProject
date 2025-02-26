@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.service.CloudOCRService;
+import com.example.demo.serviceimpl.CloudOCRServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,16 +10,16 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/assist/ocr")
+@RequestMapping("/api/assist/cloudocr")
 public class CloudOCRController {
 
-    private final CloudOCRService cloudOCRService;
+    private final CloudOCRServiceImpl cloudOCRServiceImpl;
 
     @PostMapping("/process")
     public ResponseEntity<Map<String, String>> processImage(
             @RequestParam("file") MultipartFile file) {
         try {
-            String result = cloudOCRService.processImage(file);
+            String result = cloudOCRServiceImpl.processImage(file);
             return ResponseEntity.ok(Map.of(
                 "text", result,
                 "status", "success"

@@ -1,0 +1,11 @@
+-- 5. 테이블 생성 (리뷰 테이블)
+
+CREATE TABLE Reviews (
+    review_id INT PRIMARY KEY,                              
+    review_rating INT NOT NULL,                               
+    review_content TEXT NOT NULL,                            
+    review_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,     
+    user_id INT(11),                                          
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)         
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Reviews;
