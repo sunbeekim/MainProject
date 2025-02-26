@@ -10,6 +10,7 @@ CREATE DATABASE haru_db;
 use haru_db;
 
 -- 1. 테이블 생성 (사용자 테이블)
+<<<<<<< HEAD
 
 CREATE TABLE Users (
     user_id INT(11) NOT NULL AUTO_INCREMENT,
@@ -22,10 +23,23 @@ CREATE TABLE Users (
     last_update_date DATETIME DEFAULT NULL,
     last_login_time DATETIME DEFAULT NULL,
     PRIMARY KEY (user_id)
+=======
+CREATE TABLE Users (
+    user_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(15),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    nickname VARCHAR(50) UNIQUE NOT NULL,
+    bio TEXT,
+    signup_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_update_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login_time DATETIME NULL
+>>>>>>> 32cfb22da74167a0ec0ad13732bb4f496dad7630
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 SELECT * FROM Users;
 
 -- 2. 테이블 생성 (사용자 로그인 테이블)
+<<<<<<< HEAD
 
 CREATE TABLE Users_login (
     user_login_id BIGINT NOT NULL AUTO_INCREMENT,
@@ -53,6 +67,30 @@ CREATE TABLE User_Account_info (
     CONSTRAINT fk_user_account_info_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 SELECT * FROM User_Account_info;
+=======
+CREATE TABLE Users_login (
+    user_login_id BIGINT PRIMARY KEY AUTO_INCREMENT,        
+    password_hash VARCHAR(255) NOT NULL,                                    
+    login_method ENUM('EMAIL', 'SOCIAL') NOT NULL,           
+    social_provider ENUM('GOOGLE', 'KAKAO', 'NAVER') NULL,  
+    user_last_login_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    login_failed_attempts INT DEFAULT 0,                     
+    login_is_locked BOOLEAN DEFAULT FALSE,                   
+    user_id INT(11),                                         
+    CONSTRAINT fk_users_login_user FOREIGN KEY (user_id) REFERENCES Users(user_id)        
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Users_login;
+
+-- 3. 테이블 생성 (사용자 계정 정보 테이블)
+CREATE TABLE UserAccount (
+    user_id INT(11) PRIMARY KEY,                              
+    account_status ENUM('Active', 'Deactivated', 'Dormant', 'Withdrawal') NOT NULL,
+    authority ENUM('1', '2') NOT NULL,  -- '1': 일반, '2': 관리자                         
+    authority_name VARCHAR(255) NOT NULL,                     
+    CONSTRAINT fk_user_account_info_user FOREIGN KEY (user_id) REFERENCES Users(user_id)        
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SELECT * FROM Users_login;
+>>>>>>> 32cfb22da74167a0ec0ad13732bb4f496dad7630
 
 -- 4. 테이블 생성 (사용자 취미 테이블)
 CREATE TABLE Hobbies (
