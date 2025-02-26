@@ -14,7 +14,8 @@ export const apiConfig = {
     },
     core: {
       base: `${BASE_URL}/core`,
-      auth: `${BASE_URL}/core/auth`,
+      signup: `${BASE_URL}/core/auth/signup`,
+      login: `${BASE_URL}/core/auth/login`,
       user: `${BASE_URL}/core/user`,
       test: `${BASE_URL}/core/test`,
       // 다른 core 서비스 엔드포인트들...
