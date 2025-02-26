@@ -3,8 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.ChatRequestDTO;
 import com.example.demo.dto.ChatResponseDTO;
 import com.example.demo.model.ChatMessage;
-import com.example.demo.service.LlamaService;
-import com.example.demo.service.CloudChatBotService;
+import com.example.demo.serviceimpl.LlamaServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +29,7 @@ import java.util.Map;
 @Tag(name = "Tiny Llama Chat API", description = "LlamaService 기반 AI 채팅 API")
 public class LlamaController {
 
-    private final LlamaService llamaService;
-    private final CloudChatBotService cloudChatBotService;
+    private final LlamaServiceImpl llamaServiceImpl;
     private final Map<String, List<ChatMessage>> chatHistories = new HashMap<>();
 
     @Operation(summary = "AI 챗봇과 대화")
@@ -45,7 +44,7 @@ public class LlamaController {
             String message = request.getMessage();
             String sessionId = request.getSessionId() != null ? request.getSessionId() : "default";
 
-            String response = llamaService.chat(message, sessionId);
+            String response = llamaServiceImpl.chat(message, sessionId);
 
             ChatResponseDTO.Data data = new ChatResponseDTO.Data();
             data.setMessage(message);

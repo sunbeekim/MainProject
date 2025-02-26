@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.serviceimpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import com.example.demo.dao.ChatMessageDAO;
 import com.example.demo.model.ChatMessage;
-import com.example.demo.service.CloudChatBotService;
+import com.example.demo.serviceimpl.CloudChatBotServiceImpl;
 
 @Service
 @RequiredArgsConstructor
-public class LlamaService {
-    private final CloudChatBotService cloudChatBotService;
+public class LlamaServiceImpl {
+    private final CloudChatBotServiceImpl cloudChatBotServiceImpl;
     private final ChatMessageDAO chatMessageDAO;
     private final ObjectMapper objectMapper = new ObjectMapper();
     
@@ -122,7 +122,7 @@ public class LlamaService {
             
             // CloudChatBot 먼저 시도
             try {
-                response = cloudChatBotService.getResponse(message);
+                response = cloudChatBotServiceImpl.getResponse(message);
                 if (response != null && !response.trim().isEmpty()) {
                     // CloudChatBot 응답이 성공적으로 왔을 때 DB에 저장
                     saveChat(message, response, sessionId);
