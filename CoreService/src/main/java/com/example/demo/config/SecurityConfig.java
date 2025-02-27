@@ -19,7 +19,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/core/auth/signup", "/api/core/test/**").permitAll()
+                .requestMatchers("/api/core/auth/signup", "/api/core/auth/login", "/api/core/test/**").permitAll()
                 .anyRequest().authenticated()
             );
         
