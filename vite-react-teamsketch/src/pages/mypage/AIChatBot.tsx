@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 const AIChatBot = () => {
   const dispatch = useAppDispatch();
-  const { messages, isLoading } = useAppSelector(state => state.chat);
+  const { messages, isLoading } = useAppSelector((state) => state.chat);
   const { mutate: sendChatMessage } = useSendChatMessage();
   const [error, setLocalError] = useState<string | null>(null);
   //  음 잘 되는 거같은데 여기도 적어져요?네 굳
@@ -16,14 +16,15 @@ const AIChatBot = () => {
     //음 날씨 API 호출하는거랑 비슷한데요?네 비슷합니다.
     try {
       setLocalError(null);
-      dispatch(sendMessage(message));  // Show user message immediately
-      
+      dispatch(sendMessage(message)); // Show user message immediately
+
       sendChatMessage(message, {
         onSuccess: (response) => {
           dispatch(receiveMessage(response));
         },
         onError: (err) => {
-          const errorMessage = err instanceof Error ? err.message : 'API 통신 관련 문제가 발생했습니다.';
+          const errorMessage =
+            err instanceof Error ? err.message : 'API 통신 관련 문제가 발생했습니다.';
           setLocalError(errorMessage);
           dispatch(setError(errorMessage));
         }
@@ -44,11 +45,7 @@ const AIChatBot = () => {
         onSendMessage={handleSendMessage}
         isLoading={isLoading}
       />
-      {error && (
-        <div className="text-red-500 text-sm mt-2 text-center">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-red-500 text-sm mt-2 text-center">{error}</div>}
     </div>
   );
 };

@@ -6,15 +6,9 @@ interface CardProps {
   className?: string;
 }
 
-const Card = ({ 
-  title, 
-  description, 
-  image,
-  onClick,
-  className = '' 
-}: CardProps) => {
+const Card = ({ title, description, image, onClick, className = '' }: CardProps) => {
   return (
-    <div 
+    <div
       onClick={onClick}
       className={`
         bg-background-light dark:bg-background-dark
@@ -24,23 +18,15 @@ const Card = ({
         ${className}
       `}
     >
-      {image && (
-        <img 
-          src={image} 
-          alt={title}
-          className="w-full h-48 object-cover"
-        />
-      )}
+      {image && <img src={image} alt={title} className="w-full h-48 object-cover" />}
       <div className="p-4">
         <h3 className="text-lg font-semibold">{title}</h3>
         {description && (
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-            {description}
-          </p>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{description}</p>
         )}
       </div>
     </div>
   );
 };
 
-export default Card; 
+export default Card;

@@ -5,23 +5,16 @@ interface GridItemProps {
   className?: string;
 }
 
-const GridItem = ({ 
-  children, 
-  colSpan = 1, 
-  rowSpan = 1, 
-  className = '' 
-}: GridItemProps) => {
+const GridItem = ({ children, colSpan = 1, rowSpan = 1, className = '' }: GridItemProps) => {
   const itemClasses = [
     colSpan && `col-span-${colSpan}`,
     rowSpan && `row-span-${rowSpan}`,
     className
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  return (
-    <div className={itemClasses}>
-      {children}
-    </div>
-  );
+  return <div className={itemClasses}>{children}</div>;
 };
 
-export default GridItem; 
+export default GridItem;

@@ -9,7 +9,8 @@ export const mockMessages = [
   },
   {
     role: 'assistant',
-    content: '네이버 클라우드의 요금제는 크게 세 가지로 나뉩니다: Basic, Standard, Premium. 어떤 부분이 궁금하신가요?'
+    content:
+      '네이버 클라우드의 요금제는 크게 세 가지로 나뉩니다: Basic, Standard, Premium. 어떤 부분이 궁금하신가요?'
   }
 ];
 

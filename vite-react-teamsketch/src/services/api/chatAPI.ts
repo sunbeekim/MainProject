@@ -2,13 +2,12 @@ import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 
-// 타입 정의
-interface ChatRequest {
+interface IChatRequest {
   message: string;
   type: 'customer_service';
 }
 
-interface ChatResponse {
+interface IChatResponse {
   status: string;
   data: {
     message: string;
@@ -21,12 +20,12 @@ interface ChatResponse {
 export const useSendChatMessage = () => {
   return useMutation({
     mutationFn: async (message: string) => {
-      const request: ChatRequest = {
+      const request: IChatRequest = {
         message,
         type: 'customer_service'
       };
 
-      const response = await axiosInstance.post<ChatResponse>(
+      const response = await axiosInstance.post<IChatResponse>(
         apiConfig.endpoints.assist.chat,
         request
       );
@@ -34,4 +33,3 @@ export const useSendChatMessage = () => {
     }
   });
 };
-

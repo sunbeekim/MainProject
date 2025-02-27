@@ -13,7 +13,6 @@ interface ChatProps {
 }
 
 const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, isLoading }) => {
-
   const [newMessage, setNewMessage] = useState<string>('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +25,7 @@ const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, i
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    
+
     try {
       await onSendMessage(newMessage); // API 호출
       setNewMessage('');
@@ -44,19 +43,21 @@ const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, i
       </div>
 
       {/* 메시지 영역 */}
-      <div 
+      <div
         ref={chatContainerRef}
         className="flex-1 p-2 sm:p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900"
       >
         {messages.map((message, index) => (
-          <div 
-            key={index} 
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-2 sm:mb-4`}
+          <div
+            key={index}
+            className={`flex ${
+              message.role === 'user' ? 'justify-end' : 'justify-start'
+            } mb-2 sm:mb-4`}
           >
-            <div 
+            <div
               className={`max-w-[85%] sm:max-w-[75%] rounded-lg p-2 sm:p-3 ${
-                message.role === 'user' 
-                  ? 'bg-primary-light text-white dark:bg-primary-dark' 
+                message.role === 'user'
+                  ? 'bg-primary-light text-white dark:bg-primary-dark'
                   : 'bg-white dark:bg-gray-700 shadow-md'
               }`}
             >
@@ -84,8 +85,8 @@ const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, i
             placeholder="메시지를 입력하세요..."
             disabled={isLoading}
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base bg-primary-light dark:bg-primary-dark text-white rounded-lg hover:bg-primary-dark dark:hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading || !newMessage.trim()}
           >
