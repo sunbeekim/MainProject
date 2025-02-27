@@ -4,7 +4,7 @@ import Select from '../components/common/Select';
 import Grid from '../components/common/Grid';
 import GridItem from '../components/common/GridItem';
 import ImageUpload from '../components/features/upload/ImageUpload';
-import { CloudOCR, Profile } from '../services/api/testAPI';
+import { fileUpload } from '../services/api/testAPI';
 import { increment, decrement } from '../store/slices/testSlice';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import SearchInput from '../components/forms/input/SearchInput';
@@ -70,11 +70,11 @@ const TestComponent = () => {
         </div>
         <div>
           <h2 className="text-xl font-semibold mb-4">OCR 이미지 업로드 테스트</h2>
-          <ImageUpload onUpload={CloudOCR} className="max-w-md mx-auto" type="ocr" />
+          <ImageUpload onUpload={fileUpload.CloudOCR} className="max-w-md mx-auto" type="ocr" />
         </div>
         <div>
           <h2 className="text-xl font-semibold mb-4">프로필 이미지 업로드 테스트</h2>
-          <ImageUpload onUpload={Profile} className="max-w-md mx-auto" type="profile" />
+          <ImageUpload onUpload={fileUpload.Profile} className="max-w-md mx-auto" type="profile" />
         </div>
       </section>
       <div>

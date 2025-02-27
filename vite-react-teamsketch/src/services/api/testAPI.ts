@@ -24,11 +24,7 @@ interface IEchoResponse {
   timestamp: number;
 }
 
-interface FileResponse {
-  status: string;
-  text: string;
-  confidence?: number;
-}
+
 
 // API 함수들
 const getHelloApi = async (): Promise<IHelloResponse> => {
@@ -44,58 +40,6 @@ const postEchoApi = async (data: IEchoRequest): Promise<IEchoResponse> => {
 const getHealthApi = async (): Promise<IHealthResponse> => {
   const response = await axiosInstance.get(`${apiConfig.endpoints.core.test}/health`);
   return response.data;
-};
-
-export const CloudOCR = async (formData: FormData): Promise<FileResponse> => {
-  try {
-    const response = await uploadInstance.post(apiConfig.endpoints.assist.cloudOCR, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    if (response.data && typeof response.data === 'object') {
-      return {
-        status: 'success',
-        text: response.data.text || '',
-        confidence: response.data.confidence
-      };
-    }
-
-    throw new Error('Invalid response format');
-  } catch (error) {
-    console.error('OCR API Error:', error);
-    return {
-      status: 'error',
-      text: error instanceof Error ? error.message : '이미지 처리 중 오류가 발생했습니다.'
-    };
-  }
-};
-
-export const Profile = async (formData: FormData): Promise<FileResponse> => {
-  try {
-    const response = await uploadInstance.post(apiConfig.endpoints.assist.uploadProfile, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    if (response.data && typeof response.data === 'object') {
-      return {
-        status: 'success',
-        text: response.data.text || '',
-        confidence: response.data.confidence
-      };
-    }
-
-    throw new Error('Invalid response format');
-  } catch (error) {
-    console.error('Profile API Error:', error);
-    return {
-      status: 'error',
-      text: error instanceof Error ? error.message : '이미지 처리 중 오류가 발생했습니다.'
-    };
-  }
 };
 
 // Custom Hooks
@@ -123,3 +67,80 @@ export const useTestApi = () => {
     useHealth
   };
 };
+
+//===============================================================//
+interface FileResponse {
+  status: string;
+  data: {
+    message: string;
+    response: string;
+  };
+  code: string;
+}
+
+export const CloudOCR = async (formData: FormData): Promise<FileResponse> => {
+  try {
+    const response = await uploadInstance.post(apiConfig.endpoints.assist.cloudOCR, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    console.log(response.data);
+
+    if (response.data && typeof response.data === 'object') {
+      return {
+        status: 'success',
+        data: response.data.data,
+        code: response.data.code
+      };
+    }
+
+    throw new Error('Invalid response format');
+  } catch (error) {
+    console.error('OCR API Error:', error);
+    return {
+      status: 'error',
+      data: {
+        message: error instanceof Error ? error.message : '이미지 처리 중 오류가 발생했습니다.',
+        response: ''
+      },
+      code: '500'
+    };
+  }
+};
+
+export const Profile = async (formData: FormData): Promise<FileResponse> => {
+  try {
+    const response = await uploadInstance.post(apiConfig.endpoints.assist.uploadProfile, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    console.log(response.data);
+    if (response.data && typeof response.data === 'object') {
+      return {
+        status: 'success',
+        data: response.data.data,
+        code: response.data.code
+      };
+    }
+
+    throw new Error('Invalid response format');
+  } catch (error) {
+    console.error('Profile API Error:', error);
+    return {
+      status: 'error',
+      data: {
+        message: error instanceof Error ? error.message : '이미지 처리 중 오류가 발생했습니다.',
+        response: ''
+      },
+      code: '500'
+    };
+  }
+};
+
+export const fileUpload = {
+  CloudOCR,
+  Profile
+};
+
