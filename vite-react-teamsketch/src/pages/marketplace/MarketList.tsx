@@ -1,28 +1,30 @@
-import { testAPI } from '../../services/api/testAPI';
-import { useState } from 'react';
+import { useTestApi } from '../../services/api/testAPI';
+import FloatingButton from '../../components/common/FloatingButton';
+import { useNavigate } from 'react-router-dom';
+
 //test api 호출 페이지
 const MarketList = () => {
-  const [testResponse, setTestResponse] = useState<any>(null);
-  const [testResponse2, setTestResponse2] = useState<any>(null);
-  const [testResponse3, setTestResponse3] = useState<any>(null);
-  // eslint가 any를 권장하지 않아서 에러줄 뜸 
-  // eslint config에 any를 무시하도록 추가해주면 에러줄 사라짐
-  const handleSendtest = async () => {
-    const response = await testAPI.getHello();
-    console.log(response);
-    setTestResponse(response);
+  const navigate = useNavigate();
+  const { useHello, useEcho, useHealth } = useTestApi();
+
+  const { data: helloData, refetch: refetchHello } = useHello();
+  const { data: healthData, refetch: refetchHealth } = useHealth();
+  const { mutate: echoMutate, data: echoData } = useEcho();
+
+  const handleSendtest = () => {
+    refetchHello();
   };
 
-  const handleSendtest2 = async () => {
-    const response = await testAPI.postEcho({ message: '안녕하세요' });
-    console.log(response);
-    setTestResponse2(response);
+  const handleSendtest2 = () => {
+    echoMutate({ message: '안녕하세요' });
   };
 
-  const handleSendtest3 = async () => {
-    const response = await testAPI.getHealth();
-    console.log(response);
-    setTestResponse3(response);
+  const handleSendtest3 = () => {
+    refetchHealth();
+  };
+
+  const handleNavigateToProductRegister = () => {
+    navigate('/product/register');
   };
 
   return (
@@ -30,6 +32,7 @@ const MarketList = () => {
       <h1>MarketList [test api 호출]</h1>
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 =======
       반갑습니다 ㅎㅎ
 >>>>>>> 32cfb22da74167a0ec0ad13732bb4f496dad7630
@@ -42,30 +45,46 @@ const MarketList = () => {
       <button onClick={handleSendtest3}>
         health endpoint 호출
       </button>
+=======
+      <button onClick={handleSendtest}>hello endpoint 호출</button>
+      <button onClick={handleSendtest2}>echo endpoint 호출</button>
+      <button onClick={handleSendtest3}>health endpoint 호출</button>
+
+>>>>>>> 81cc369588af6d13e2a9fb8548174aab602a5778
       <div>
-        {testResponse && (
+        {helloData && (
           <div>
             <h3>Hello Endpoint Response:</h3>
-            <pre>{JSON.stringify(testResponse, null, 2)}</pre>
+            <pre>{JSON.stringify(helloData, null, 2)}</pre>
           </div>
         )}
       </div>
+
       <div>
-        {testResponse2 && (
-          <div>
-            <h3>Echo Endpoint Response:</h3>
-            <pre>{JSON.stringify(testResponse2, null, 2)}</pre>
-          </div>
-        )}
-      </div>
-      <div>
-        {testResponse3 && ( 
+        {healthData && (
           <div>
             <h3>Health Endpoint Response:</h3>
-            <pre>{JSON.stringify(testResponse3, null, 2)}</pre>
+            <pre>{JSON.stringify(healthData, null, 2)}</pre>
           </div>
         )}
       </div>
+
+      <div>
+        {echoData && (
+          <div>
+            <h3>Echo Endpoint Response:</h3>
+            <pre>{JSON.stringify(echoData, null, 2)}</pre>
+          </div>
+        )}
+      </div>
+
+      <FloatingButton
+        onClick={handleNavigateToProductRegister}
+        icon={<span style={{ fontSize: '2rem' }}>+</span>}
+        label="상품 등록"
+        position="bottom-right"
+        color="primary"
+      />
     </div>
   );
 };

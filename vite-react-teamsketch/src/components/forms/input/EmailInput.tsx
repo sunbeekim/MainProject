@@ -10,16 +10,18 @@ const EmailInput = ({ label, isNewEmail = false, ...props }: EmailInputProps) =>
     <BaseInput
       {...props}
       type="email"
-      autoComplete={isNewEmail ? "new-email" : "username"} // 로그인용은 username, 새 이메일은 new-email
+      autoComplete={isNewEmail ? 'new-email' : 'username'} // 로그인용은 username, 새 이메일은 new-email
       variant={props.error ? 'error' : props.variant}
       placeholder={props.placeholder || '이메일을 입력하세요'}
-      label={label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-          {label}
-        </label>
-      )}
+      label={
+        label && (
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+            {label}
+          </label>
+        )
+      }
     />
   );
 };
 
-export default EmailInput; 
+export default EmailInput;

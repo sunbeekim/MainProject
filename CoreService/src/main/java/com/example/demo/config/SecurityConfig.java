@@ -17,6 +17,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+<<<<<<< HEAD
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/core/auth/signup", "/api/core/test/**", "/api/core/auth/login").permitAll()
                 .anyRequest().authenticated()
@@ -24,9 +25,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         // OAuth2 configuration will be added here
         
+=======
+            .sessionManagement(session -> 
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()  // 내부 서비스이므로 모든 요청 허용
+            );
+
+>>>>>>> 81cc369588af6d13e2a9fb8548174aab602a5778
         return http.build();
     }
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

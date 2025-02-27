@@ -12,12 +12,12 @@ import Requests from './pages/trading/Requests';
 import Setting from './pages/mypage/Setting';
 
 // test
-import TestComponent from './test/pages/TestComponent';
-import TestLogin from './test/pages/TestLogin';
-import TestMarketplace from './test/pages/TestMarketplace';
-import TestPages from './test/pages/TestPages';
-import TestSignup from './test/pages/TestSignup';
-import TestFunc from './test/pages/TestFunc';
+import TestComponent from './testpages/TestComponent';
+
+import TestMarketplace from './testpages/TestMarketplace';
+import TestPages from './testpages/TestPages';
+import TestSignup from './testpages/TestSignup';
+import TestFunc from './testpages/TestFunc';
 
 const App = () => {
   return (
@@ -36,16 +36,14 @@ const App = () => {
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
-          <Route path="/test/login" element={<TestLogin />} />
-          <Route path="/test/marketplace" element={<TestMarketplace />} />          
+          <Route path="/test/marketplace" element={<TestMarketplace />} />
           <Route path="/test/signup" element={<TestSignup />} />
 
-          {/* test component */}  
-          <Route path="/test/component" element={<TestComponent />} />    
-          
+          {/* test component */}
+          <Route path="/test/component" element={<TestComponent />} />
+
           {/* test func */}
           <Route path="/test/func" element={<TestFunc />} />
-          
         </Routes>
       </main>
       <Footer />

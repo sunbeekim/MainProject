@@ -34,13 +34,15 @@ const TextInput = ({ label, inputType, ...props }: TextInputProps) => {
       type="text"
       autoComplete={getAutoComplete()}
       variant={props.error ? 'error' : props.variant}
-      label={label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-          {label}
-        </label>
-      )}
+      label={
+        label && (
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+            {label}
+          </label>
+        )
+      }
     />
   );
 };
 
-export default TextInput; 
+export default TextInput;

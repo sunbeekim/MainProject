@@ -12,12 +12,18 @@ const Footer = () => {
 
   const getPathForLabel = (label: string) => {
     switch (label) {
-      case '마켓': return '/';
-      case '채팅': return '/chat';
-      case '메뉴': return '/requests';
-      case '위치': return '/location';
-      case '마이': return '/mypage';
-      default: return '/';
+      case '마켓':
+        return '/';
+      case '채팅':
+        return '/chat';
+      case '메뉴':
+        return '/requests';
+      case '위치':
+        return '/location';
+      case '마이':
+        return '/mypage';
+      default:
+        return '/';
     }
   };
 
@@ -28,30 +34,23 @@ const Footer = () => {
       onClick: () => navigate('/')
     },
     {
-      icon: location.pathname === '/chat' 
-        ? <IoChatbubbleEllipses /> 
-        : <IoChatbubbleEllipsesOutline />,
+      icon:
+        location.pathname === '/chat' ? <IoChatbubbleEllipses /> : <IoChatbubbleEllipsesOutline />,
       label: '채팅',
       onClick: () => navigate('/chat')
     },
     {
-      icon: location.pathname === '/requests' 
-        ? <BsGridFill /> 
-        : <BsGrid />,
+      icon: location.pathname === '/requests' ? <BsGridFill /> : <BsGrid />,
       label: '메뉴',
       onClick: () => navigate('/requests')
     },
     {
-      icon: location.pathname === '/location' 
-        ? <HiMapPin /> 
-        : <HiOutlineMapPin />,
+      icon: location.pathname === '/location' ? <HiMapPin /> : <HiOutlineMapPin />,
       label: '위치',
       onClick: () => navigate('/location')
     },
     {
-      icon: location.pathname === '/mypage' 
-        ? <RiUserFill /> 
-        : <CgUser />,
+      icon: location.pathname === '/mypage' ? <RiUserFill /> : <CgUser />,
       label: '마이',
       onClick: () => navigate('/mypage')
     }
@@ -66,13 +65,15 @@ const Footer = () => {
             onClick={item.onClick}
             className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-white/20 dark:hover:bg-[#F6CED8]/10 transition-all duration-300 group focus:outline-none"
           >
-            <div className={`text-4xl duration-300 ${
-              location.pathname === getPathForLabel(item.label)
-                ? 'text-[#59151C]' 
-                : 'text-[#59151C]/70 dark:text-[#59151C]/70'
-            } group-hover:scale-110 transition-transform duration-300`}>
+            <div
+              className={`text-4xl duration-300 ${
+                location.pathname === getPathForLabel(item.label)
+                  ? 'text-[#59151C]'
+                  : 'text-[#59151C]/70 dark:text-[#59151C]/70'
+              } group-hover:scale-110 transition-transform duration-300`}
+            >
               {item.icon}
-            </div>    
+            </div>
           </button>
         ))}
       </nav>

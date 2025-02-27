@@ -12,13 +12,12 @@ export const store = configureStore({
     chat: chatReducer,
     test: testReducer,
     signup: signupReducer,
-    loading: loadingReducer,
+    loading: loadingReducer
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat()
 });
 
 setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch; 
+export type AppDispatch = typeof store.dispatch;

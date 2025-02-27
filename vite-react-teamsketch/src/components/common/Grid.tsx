@@ -6,21 +6,18 @@ interface GridProps {
   className?: string;
 }
 
-const Grid = ({ 
-  children, 
-  cols = 12, 
-  rows, 
-  gap = 'md', 
-  className = '' 
-}: GridProps) => {
+const Grid = ({ children, cols = 12, rows, gap = 'md', className = '' }: GridProps) => {
   return (
-    <div className={`
+    <div
+      className={`
       grid 
       grid-cols-${cols} 
       ${rows ? `grid-rows-${rows}` : ''} 
       gap-${gap}
       ${className}
-    `.trim().replace(/\s+/g, ' ')}
+    `
+        .trim()
+        .replace(/\s+/g, ' ')}
     >
       {children}
     </div>
