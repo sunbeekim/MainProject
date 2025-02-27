@@ -15,7 +15,7 @@ export const axiosInstance = axios.create({
   baseURL: apiConfig.baseURL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   }
 });
 
@@ -78,15 +78,11 @@ export const uploadInstance = axios.create({
   baseURL: apiConfig.baseURL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'multipart/form-data',
+    'Content-Type': 'multipart/form-data'
   }
 });
 
 // uploadInstance에도 동일한 인터셉터 적용
-uploadInstance.interceptors.request.use(
-  axiosInstance.interceptors.request.use as any
-);
+uploadInstance.interceptors.request.use(axiosInstance.interceptors.request.use as any);
 
-uploadInstance.interceptors.response.use(
-  axiosInstance.interceptors.response.use as any
-); 
+uploadInstance.interceptors.response.use(axiosInstance.interceptors.response.use as any);

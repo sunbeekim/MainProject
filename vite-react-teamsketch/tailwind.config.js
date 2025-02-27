@@ -14,8 +14,8 @@ export default {
         sm: '2rem',
         lg: '4rem',
         xl: '5rem',
-        '2xl': '6rem',
-      },
+        '2xl': '6rem'
+      }
     },
     // 타이포그래피 시스템
     fontSize: {
@@ -27,44 +27,44 @@ export default {
       '2xl': ['1.5rem', { lineHeight: '2rem' }],
       '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
       '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
-      '5xl': ['3rem', { lineHeight: '1' }],
+      '5xl': ['3rem', { lineHeight: '1' }]
     },
     extend: {
       // 색상 시스템
       colors: {
         primary: {
-          light: '#F6CED8',    // 연한 핑크
-          DEFAULT: '#ECCEF5',  // 연한 보라
-          dark: '#CEF6E3',     // 연한 민트
+          light: '#F6CED8', // 연한 핑크
+          DEFAULT: '#ECCEF5', // 연한 보라
+          dark: '#CEF6E3' // 연한 민트
         },
         secondary: {
-          light: '#F6E3CE',    // 연한 오렌지
-          DEFAULT: '#F6CED8',  // 연한 핑크
-          dark: '#ECCEF5',     // 연한 보라
+          light: '#F6E3CE', // 연한 오렌지
+          DEFAULT: '#F6CED8', // 연한 핑크
+          dark: '#ECCEF5' // 연한 보라
         },
         background: {
-          light: '#FFFFFF',    // 흰색
-          dark: '#2D2D2D',     // 어두운 회색
+          light: '#FFFFFF', // 흰색
+          dark: '#2D2D2D' // 어두운 회색
         },
         text: {
-          light: '#4A4A4A',    // 진한 회색
-          dark: '#F6CED8',     // 연한 핑크
-          deeppink: '#FA58F4',    // 진한 
+          light: '#4A4A4A', // 진한 회색
+          dark: '#F6CED8', // 연한 핑크
+          deeppink: '#FA58F4' // 진한
         },
         border: {
-          light: '#ECCEF5',    // 연한 보라
-          dark: '#F6CED8',     // 연한 핑크
+          light: '#ECCEF5', // 연한 보라
+          dark: '#F6CED8' // 연한 핑크
         }
       },
       // 간격 시스템
       spacing: {
-        xs: '0.25rem',    // 4px
-        sm: '0.5rem',     // 8px
-        md: '1rem',       // 16px
-        lg: '1.5rem',     // 24px
-        xl: '2rem',       // 32px
-        '2xl': '2.5rem',  // 40px
-        '3xl': '3rem',    // 48px
+        xs: '0.25rem', // 4px
+        sm: '0.5rem', // 8px
+        md: '1rem', // 16px
+        lg: '1.5rem', // 24px
+        xl: '2rem', // 32px
+        '2xl': '2.5rem', // 40px
+        '3xl': '3rem' // 48px
       },
       // 레이아웃 시스템
       layout: {
@@ -72,23 +72,23 @@ export default {
           sm: '640px',
           md: '768px',
           lg: '1024px',
-          xl: '1280px',
+          xl: '1280px'
         },
         gap: {
           xs: '0.5rem',
           sm: '1rem',
           md: '1.5rem',
-          lg: '2rem',
-        },
+          lg: '2rem'
+        }
       },
       gridTemplateColumns: {
-        '1': 'repeat(1, minmax(0, 1fr))',
-        '2': 'repeat(2, minmax(0, 1fr))',
-        '3': 'repeat(3, minmax(0, 1fr))',
-        '4': 'repeat(4, minmax(0, 1fr))',
-        '5': 'repeat(5, minmax(0, 1fr))',
-        '6': 'repeat(6, minmax(0, 1fr))',
-        '12': 'repeat(12, minmax(0, 1fr))',
+        1: 'repeat(1, minmax(0, 1fr))',
+        2: 'repeat(2, minmax(0, 1fr))',
+        3: 'repeat(3, minmax(0, 1fr))',
+        4: 'repeat(4, minmax(0, 1fr))',
+        5: 'repeat(5, minmax(0, 1fr))',
+        6: 'repeat(6, minmax(0, 1fr))',
+        12: 'repeat(12, minmax(0, 1fr))'
       },
       gridColumn: {
         'span-1': 'span 1 / span 1',
@@ -97,7 +97,7 @@ export default {
         'span-4': 'span 4 / span 4',
         'span-5': 'span 5 / span 5',
         'span-6': 'span 6 / span 6',
-        'span-12': 'span 12 / span 12',
+        'span-12': 'span 12 / span 12'
       },
       gridRow: {
         'span-1': 'span 1 / span 1',
@@ -105,9 +105,9 @@ export default {
         'span-3': 'span 3 / span 3',
         'span-4': 'span 4 / span 4',
         'span-5': 'span 5 / span 5',
-        'span-6': 'span 6 / span 6',
+        'span-6': 'span 6 / span 6'
       }
-    },
+    }
   },
   plugins: [],
   safelist: [
@@ -132,4 +132,4 @@ export default {
       variants: ['responsive', 'hover', 'focus', 'active']
     }
   ]
-}
+};

@@ -10,13 +10,13 @@ export const mockAPI = {
   chat: {
     sendMessage: async (message: string) => {
       // 응답 지연 시뮬레이션
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       return createResponse({
         response: '이것은 mock 응답입니다: ' + message
       });
     },
-    
+
     getHistory: async () => {
       return createResponse({
         messages: mockMessages
