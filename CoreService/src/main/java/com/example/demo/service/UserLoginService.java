@@ -64,6 +64,10 @@ public class UserLoginService {
         return response;
     }
 
+    public void invalidateRefreshToken(Long userLoginId) {
+        // Redis 또는 DB에서 해당 userLoginId의 refreshToken을 삭제
+        userLoginMapper.deleteRefreshToken(userLoginId);
+    }
 
 
 }

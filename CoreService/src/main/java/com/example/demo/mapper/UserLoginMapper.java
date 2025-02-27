@@ -15,5 +15,6 @@ public interface UserLoginMapper {
     void updateLoginFailedAttempts(@Param("userLoginId") Long userLoginId, @Param("failedAttempts") int failedAttempts); // 로그인 실패 횟수 업데이트
     void lockUserAccount(@Param("userLoginId") Long userLoginId); // 계정 잠금
     void updateLastLogin(@Param("userLoginId") Long userLoginId); // 마지막 로그인 시간 업데이트
+    void deleteRefreshToken(@Param("userLoginId") Long userLoginId); // 로그아웃 refreshToken 삭제
 
 }

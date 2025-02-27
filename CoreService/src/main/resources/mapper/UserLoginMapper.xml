@@ -29,4 +29,9 @@
         WHERE user_login_id = #{userLoginId}
     </update>
 
+    <!-- 리프레시 토큰 삭제 쿼리 -->
+    <delete id="deleteRefreshToken" parameterType="Long">
+        DELETE FROM user_refresh_tokens WHERE user_login_id = #{userLoginId};
+    </delete>
+
 </mapper>
