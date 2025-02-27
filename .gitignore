@@ -1,7 +1,12 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,java,gradle,eclipse,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,java,gradle,eclipse,visualstudiocode
 
-.Spring/
+.metadata/
+.idea/
+.git/
+.settings/
+.bin/
+.src/
 
 ### Eclipse ###
 .metadata
