@@ -19,10 +19,11 @@ const MarketList = () => {
 
   
   const productData = [
-    { title: '상품 1', description: '상품 설명 1', image: '' },
-    { title: '상품 2', description: '상품 설명 2', image: '' },
-    { title: '상품 3', description: '상품 설명 3', image: '' },
-    { title: '상품 4', description: '상품 설명 4', image: '' },
+    { title: '상품 1', description: '상품 설명 1', image: 'img' },
+    { title: '상품 2', description: '상품 설명 2', image: 'img' },
+    { title: '상품 3', description: '상품 설명 3', image: 'img' },
+    { title: '상품 4', description: '상품 설명 4', image: 'img' },
+   
   ];
   
   // eslint가 any를 권장하지 않아서 에러줄 뜸 
@@ -88,10 +89,15 @@ const MarketList = () => {
         )}
       </div>
 
-      <div>
-        <h2>최신 상품</h2>
+      <div >
+        <h2 className="text-xl font-bold mb-4">최신 상품</h2>       
         <CardList items={productData} />
       </div>
+
+      <div >
+        <h2 className="text-xl font-bold mb-4">추천 상품</h2>       
+        <CardList items={productData} />
+     </div>
 
  
       <FloatingButton

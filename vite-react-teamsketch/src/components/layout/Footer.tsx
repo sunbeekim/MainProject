@@ -58,7 +58,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-[#ECCEF5] dark:bg-[#2D2D2D] shadow-lg backdrop-blur-md bg-opacity-95 dark:bg-opacity-90">
+    <footer className="fixed bottom-0 left-0 right-0 bg-[#E6CCFF] dark:bg-[#2D2D2D] shadow-lg backdrop-blur-md bg-opacity-95 dark:bg-opacity-90">
       <nav className="container mx-auto flex justify-around items-center px-2 py-3">
         {navigationItems.map((item, index) => (
           <button
@@ -68,8 +68,8 @@ const Footer = () => {
           >
             <div className={`text-4xl duration-300 ${
               location.pathname === getPathForLabel(item.label)
-                ? 'text-[#59151C]' 
-                : 'text-[#59151C]/70 dark:text-[#59151C]/70'
+                ? 'text-[#660033]' 
+                : 'text-[#660033]/70 dark:text-[#660033]/70'
             } group-hover:scale-110 transition-transform duration-300`}>
               {item.icon}
             </div>    
