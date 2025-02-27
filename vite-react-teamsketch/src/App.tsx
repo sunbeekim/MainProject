@@ -23,7 +23,7 @@ const App = () => {
   return (
     <div className="min-h-screen pb-16">
       <Header />
-      <main className="main-content">
+      <main className="main-content mb-3">
         <Routes>
           <Route path="/" element={<MarketList />} />
           <Route path="/login" element={<Login />} />

@@ -31,10 +31,16 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`fixed ${positionClasses[position]} ${colorClasses[color]} p-5 rounded-full shadow-lg flex items-center justify-center transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light  z-50 `}
+      className={`fixed ${positionClasses[position]} ${colorClasses[color]} 
+        w-14 h-14 p-5 rounded-full shadow-lg 
+        flex items-center justify-center 
+        transition-colors duration-300 ease-in-out 
+        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light 
+        dark:focus:bg-background-white z-50 
+        dark:hover:bg-[#ffffff]/10`}
       aria-label={label}
     >
-      {icon}
+      <span className="flex items-center justify-center w-full h-full">{icon}</span>
       <span className="sr-only">{label}</span>
     </button>
   );

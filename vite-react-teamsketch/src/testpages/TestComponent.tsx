@@ -25,10 +25,10 @@ const TestComponent = () => {
   const [search, setSearch] = useState('');
 
   return (
-    <div>
+    <div className="p-8 space-y-8 flex flex-col items-center justify-center">
       <h1 className="text-2xl font-bold mb-6">컴포넌트 테스트 페이지</h1>
 
-      <section className="space-y-6">
+      <section className="space-y-6 w-full max-w-3xl p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <div>
           <h2 className="text-xl font-semibold mb-4">버튼 테스트</h2>
           <div className="flex gap-4 flex-wrap">
@@ -110,6 +110,12 @@ const TestComponent = () => {
           suffix="입니다."
           helperText="영문, 숫자, 밑줄(_)만 사용 가능합니다"
         />
+      </div>
+      <div>
+        <button className="bg-border-light">스타일 테스트</button>
+      </div>
+      <div className="bg-purple-level_1">
+        <label className="text-purple_color-level_10">ddddd</label>
       </div>
     </div>
   );
