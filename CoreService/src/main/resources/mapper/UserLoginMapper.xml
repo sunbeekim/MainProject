@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.UserLoginMapper">
+
+    <!-- 사용자 로그인 정보 조회 -->
+    <select id="findByUsername" resultType="com.example.demo.model.UserLogin">
+        SELECT * FROM user_login WHERE username = #{username}
+    </select>
+
+    <!-- 로그인 실패 횟수 업데이트 -->
+    <update id="updateLoginFailedAttempts">
+        UPDATE user_login
+        SET login_failed_attempts = #{failedAttempts}
+        WHERE user_login_id = #{userLoginId}
+    </update>
+
+    <!-- 계정 잠금 -->
+    <update id="lockUserAccount">
+        UPDATE user_login
+        SET login_is_locked = true
+        WHERE user_login_id = #{userLoginId}
+    </update>
+
+    <!-- 마지막 로그인 시간 업데이트 -->
+    <update id="updateLastLogin">
+        UPDATE user_login
+        SET user_last_login_at = CURRENT_TIMESTAMP
+        WHERE user_login_id = #{userLoginId}
+    </update>
+
+</mapper>

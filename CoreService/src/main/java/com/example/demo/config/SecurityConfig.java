@@ -17,12 +17,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/core/auth/signup", "/api/core/test/**").permitAll()
+                .requestMatchers("/api/core/auth/signup", "/api/core/test/**", "/api/core/auth/login").permitAll()
                 .anyRequest().authenticated()
-            );
-        
+            )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         // OAuth2 configuration will be added here
         
         return http.build();

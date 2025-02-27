@@ -73,7 +73,7 @@ public class UserService {
         UserLogin userLogin = UserLogin.builder()
                 .userId(user.getUserId())
                 .passwordHash(passwordInfo.get("hashedPassword"))
-                .passwordSalt(salt)
+               // .passwordSalt(salt)
                 .loginMethod(request.getLoginMethod() != null ? request.getLoginMethod() : "EMAIL")
                 .socialProvider(request.getSocialProvider())
                 .userLastLoginAt(now)
