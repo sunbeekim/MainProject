@@ -18,14 +18,10 @@ const CustomInput = ({ label, helperText, prefix, suffix, ...props }: CustomInpu
           {label}
         </label>
       )}
-      
+
       <div className="relative flex items-center w-full">
-        {prefix && (
-          <span className="flex-shrink-0 text-gray-500 pl-3">
-            {prefix}
-          </span>
-        )}
-        
+        {prefix && <span className="flex-shrink-0 text-gray-500 pl-3">{prefix}</span>}
+
         <BaseInput
           {...props}
           type="text"
@@ -45,12 +41,8 @@ const CustomInput = ({ label, helperText, prefix, suffix, ...props }: CustomInpu
             props.onBlur?.(e);
           }}
         />
-        
-        {suffix && (
-          <span className="flex-shrink-0 text-gray-500 pr-3">
-            {suffix}
-          </span>
-        )}
+
+        {suffix && <span className="flex-shrink-0 text-gray-500 pr-3">{suffix}</span>}
       </div>
 
       {helperText && !props.error && (
@@ -62,4 +54,4 @@ const CustomInput = ({ label, helperText, prefix, suffix, ...props }: CustomInpu
   );
 };
 
-export default CustomInput; 
+export default CustomInput;

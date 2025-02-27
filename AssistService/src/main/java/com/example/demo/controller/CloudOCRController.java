@@ -18,6 +18,7 @@ public class CloudOCRController {
     @PostMapping("/process")
     public ResponseEntity<Map<String, String>> processImage(
             @RequestParam("file") MultipartFile file) {
+        System.out.println("CloudOCRController processImage");
         try {
             String result = cloudOCRServiceImpl.processImage(file);
             return ResponseEntity.ok(Map.of(

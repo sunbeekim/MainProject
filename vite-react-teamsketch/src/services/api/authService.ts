@@ -34,14 +34,17 @@ const loginApi = async (credentials: LoginCredentials) => {
 
 // 회원가입 API
 const signupApi = async (userData: SignupRequest) => {
-  const response = await axiosInstance.post<SignupResponse>(apiConfig.endpoints.core.signup, userData);
+  const response = await axiosInstance.post<SignupResponse>(
+    apiConfig.endpoints.core.signup,
+    userData
+  );
   return response.data;
 };
 
 // 로그인 Hook
 export const useLogin = () => {
   return useMutation({
-    mutationFn: loginApi,
+    mutationFn: loginApi
   });
 };
 
@@ -61,4 +64,4 @@ export const useSignup = () => {
       throw error;
     }
   });
-}; 
+};

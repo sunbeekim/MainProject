@@ -54,7 +54,8 @@ const signupSlice = createSlice({
       state.formData[action.payload.name as keyof SignupForm] = action.payload.value;
     },
     setValidationError: (state, action: PayloadAction<{ field: string; message: string }>) => {
-      state.validationErrors[action.payload.field as keyof ValidationErrors] = action.payload.message;
+      state.validationErrors[action.payload.field as keyof ValidationErrors] =
+        action.payload.message;
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
@@ -62,6 +63,5 @@ const signupSlice = createSlice({
   }
 });
 
-export const { updateField, setValidationError, setError} = signupSlice.actions;
+export const { updateField, setValidationError, setError } = signupSlice.actions;
 export default signupSlice.reducer;
-

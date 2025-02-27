@@ -16,17 +16,16 @@ const BaseButton: React.FC<BaseButtonProps> = ({
   children,
   ...props
 }) => {
-  const buttonClassName = baseClassName || `
+  const buttonClassName =
+    baseClassName ||
+    `
     ${BUTTON_STYLES.variants[variant]}
     ${BUTTON_STYLES.sizes[buttonSize]}
     ${BUTTON_STYLES.base}
   `;
 
   return (
-    <button
-      className={`${buttonClassName} ${className}`}
-      {...props}
-    >
+    <button className={`${buttonClassName} ${className}`} {...props}>
       {children}
     </button>
   );

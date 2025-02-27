@@ -24,7 +24,9 @@ const BaseInput: React.FC<BaseInputProps> = ({
   children,
   ...props
 }) => {
-  const inputClassName = baseClassName || `
+  const inputClassName =
+    baseClassName ||
+    `
     ${INPUT_STYLES.variants[variant]}
     ${INPUT_STYLES.sizes[inputSize]}
     ${INPUT_STYLES.base}
@@ -35,14 +37,9 @@ const BaseInput: React.FC<BaseInputProps> = ({
     <div className={`space-y-1 ${wrapperClassName}`}>
       {label}
       <div className="relative">
-        <input
-          className={`${inputClassName} ${className}`}
-          {...props}
-        />
+        <input className={`${inputClassName} ${className}`} {...props} />
         {rightElement && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {rightElement}
-          </div>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</div>
         )}
       </div>
       {children}

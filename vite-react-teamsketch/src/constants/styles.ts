@@ -43,4 +43,4 @@ export const INPUT_STYLES = {
     disabled:opacity-50
     disabled:cursor-not-allowed
   `
-} as const; 
+} as const;
