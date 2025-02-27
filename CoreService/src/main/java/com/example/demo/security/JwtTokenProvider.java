@@ -13,6 +13,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,9 +53,27 @@ public class JwtTokenProvider {
         Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build()
                 .parseClaimsJws(token).getBody();
         
-        List<SimpleGrantedAuthority> authorities = Arrays.stream(claims.get("roles", String.class).split(","))
+        // "roles" claim을 올바른 타입으로 가져오도록 수정
+        List<SimpleGrantedAuthority> authorities;
+        
+        // roles가 ArrayList인 경우 처리
+        Object rolesObj = claims.get("roles");
+        if (rolesObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<String> roles = (List<String>) rolesObj;
+            authorities = roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+        } else if (rolesObj instanceof String) {
+            // 이전 방식과의 호환성을 위해 String인 경우도 처리
+            String rolesStr = (String) rolesObj;
+            authorities = Arrays.stream(rolesStr.split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        } else {
+            // 역할이 없거나 알 수 없는 형식인 경우 빈 목록 사용
+            authorities = Collections.emptyList();
+        }
         
         User principal = new User(claims.getSubject(), "", authorities);
         
@@ -80,5 +99,17 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    /**
+     * 토큰의 만료 시간을 가져오는 메소드
+     */
+    public Date getExpirationDate(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
     }
 }

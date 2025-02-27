@@ -2,29 +2,36 @@ package com.example.demo.service;
 
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.LoginResponse;
+import com.example.demo.dto.LogoutResponse;
 import com.example.demo.dto.SignupRequest;
 import com.example.demo.dto.SignupResponse;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.model.UserAccountInfo;
 import com.example.demo.model.UserLogin;
+import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.util.PasswordUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     
     private final UserMapper userMapper;
     private final PasswordUtils passwordUtils;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenBlacklistService jwtTokenBlacklistService;
     
     // 최대 로그인 실패 횟수
     private static final int MAX_FAILED_ATTEMPTS = 5;
@@ -36,7 +43,7 @@ public class UserService {
         if (existingUserByEmail != null) {
             return SignupResponse.builder()
                     .success(false)
-                    .message("Email already in use")
+                    .message("중복된 이메일 입니다.")
                     .build();
         }
         
@@ -44,7 +51,7 @@ public class UserService {
         if (existingUserByNickname != null) {
             return SignupResponse.builder()
                     .success(false)
-                    .message("Nickname already in use")
+                    .message("중복된 닉네임 입니다.")
                     .build();
         }
         
@@ -53,7 +60,7 @@ public class UserService {
             if (existingUserByPhone != null) {
                 return SignupResponse.builder()
                         .success(false)
-                        .message("Phone number already in use")
+                        .message("중복된 전화번호입니다.")
                         .build();
             }
         }
@@ -104,7 +111,7 @@ public class UserService {
         return SignupResponse.builder()
                 .success(true)
                 .userId(user.getUserId())
-                .message("User registered successfully")
+                .message("회원가입이 완료되었습니다.")
                 .build();
     }
     
@@ -115,7 +122,7 @@ public class UserService {
         if (user == null) {
             return LoginResponse.builder()
                     .success(false)
-                    .message("Invalid email or password")
+                    .message("잘못된 이메일 또는 비밀번호입니다.")
                     .build();
         }
         
@@ -124,7 +131,7 @@ public class UserService {
         if (accountInfo == null || !"Active".equals(accountInfo.getAccountStatus())) {
             return LoginResponse.builder()
                     .success(false)
-                    .message("Account is not active")
+                    .message("활성화된 계정이 아닙니다.")
                     .build();
         }
         
@@ -133,7 +140,7 @@ public class UserService {
         if (userLogin == null) {
             return LoginResponse.builder()
                     .success(false)
-                    .message("Login information not found")
+                    .message("로그인 정보를 찾을 수 없습니다.")
                     .build();
         }
         
@@ -141,7 +148,7 @@ public class UserService {
         if (Boolean.TRUE.equals(userLogin.getLoginIsLocked())) {
             return LoginResponse.builder()
                     .success(false)
-                    .message("Account is locked due to multiple failed login attempts")
+                    .message("반복된 로그인 실패로 계정이 잠금되었습니다.")
                     .build();
         }
         
@@ -162,7 +169,7 @@ public class UserService {
                 userMapper.updateLoginLockStatus(user.getUserId(), true);
                 return LoginResponse.builder()
                         .success(false)
-                        .message("Account locked due to multiple failed login attempts")
+                        .message("반복된 로그인 실패로 계정이 잠금되었습니다.")
                         .build();
             }
             
@@ -195,5 +202,71 @@ public class UserService {
                 .nickname(user.getNickname())
                 .message("Login successful")
                 .build();
+    }
+    
+    /**
+     * 로그아웃 메소드
+     */
+    @Transactional
+    public LogoutResponse logout(String token) {
+        if (token == null || token.isEmpty()) {
+            log.warn("Logout attempt with no token provided");
+            return LogoutResponse.builder()
+                    .success(false)
+                    .message("No token provided")
+                    .build();
+        }
+        
+        try {
+            // 토큰에서 JWT 부분만 추출
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            
+            // 토큰 검증
+            if (!jwtTokenProvider.validateToken(token)) {
+                log.warn("Logout attempt with invalid token");
+                return LogoutResponse.builder()
+                        .success(false)
+                        .message("Invalid token")
+                        .build();
+            }
+            
+            // 이미 블랙리스트에 있는지 확인
+            if (jwtTokenBlacklistService.isBlacklisted(token)) {
+                log.info("Token already in blacklist during logout");
+                return LogoutResponse.builder()
+                        .success(true)
+                        .message("Already logged out")
+                        .build();
+            }
+            
+            // JWT의 만료 시간 가져오기
+            Date expiration = jwtTokenProvider.getExpirationDate(token);
+            Long expiryMillis = expiration.getTime();
+            
+            // 토큰 블랙리스트에 추가
+            jwtTokenBlacklistService.addToBlacklist(token, expiryMillis);
+            
+            // 로그아웃 시간을 LocalDateTime으로 변환
+            LocalDateTime expiryDateTime = LocalDateTime.ofInstant(
+                    expiration.toInstant(), ZoneId.systemDefault());
+            
+            // 사용자 ID 로깅
+            Integer userId = jwtTokenProvider.getUserId(token);
+            log.info("User ID {} successfully logged out", userId);
+            
+            return LogoutResponse.builder()
+                    .success(true)
+                    .message("Successfully logged out")
+                    .invalidatedUntil(expiryDateTime)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error during logout process", e);
+            return LogoutResponse.builder()
+                    .success(false)
+                    .message("Logout failed: " + e.getMessage())
+                    .build();
+        }
     }
 }
