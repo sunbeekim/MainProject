@@ -23,7 +23,7 @@ const Category = ( ) => {
                     >
                 <span className="text-xl">{category.icon}</span>
                 
-                <span className="absolute bottom-[590px] mt-2 z-50">{category.name}</span>
+                <span className="absolute bottom-[590px] mt-2">{category.name}</span>
                   </button>
                 ))}
             </div>

@@ -19,15 +19,15 @@ const LogoutModal: React.FC<LogoutModalProps> = ({ isOpen, onClose, onLogout }) 
                 <div className="self-stretch justify-start items-start gap-2 inline-flex">
                     <button 
                         onClick={onClose}
-                        className="grow shrink basis-0 h-10 px-4 py-3 rounded-xl border border-[#02343F justify-center items-center gap-2 flex overflow-hidden"
+                        className="grow shrink basis-0 h-10 px-4 py-3 rounded-xl border border-[#4A4A4A justify-center items-center gap-2 flex overflow-hidden"
                     >
-                        <div className="text-[#02343F] text-xs font-semibold font-['Inter']">취소</div>
+                        <div className="text-[#4A4A4A] text-xs font-semibold font-['Inter']">취소</div>
                     </button>
                     <button 
                         onClick={onLogout}
-                        className="grow shrink basis-0 h-10 px-4 py-3 bg-[#02343F] rounded-xl justify-center items-center gap-2 flex overflow-hidden"
+                        className="grow shrink basis-0 h-10 px-4 py-3 bg-[#F6CED8] rounded-xl justify-center items-center gap-2 flex overflow-hidden"
                     >
-                        <div className="text-white text-xs font-semibold font-['Inter']">로그아웃</div>
+                        <div className="text-#4A4A4A text-xs font-semibold font-['Inter']">로그아웃</div>
                     </button>
                 </div>
             </div>

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import FloatingButton from '../../components/common/FloatingButton';
 import { useNavigate } from 'react-router-dom';
 import Category from '../../components/common/categoryicon';
+import CardList from '../../test/components/features/card/CardList';
+
 
 //test api 호출 페이지
 
@@ -14,8 +16,15 @@ const MarketList = () => {
 
  
   const navigate = useNavigate();
-  
 
+  
+  const productData = [
+    { title: '상품 1', description: '상품 설명 1', image: '' },
+    { title: '상품 2', description: '상품 설명 2', image: '' },
+    { title: '상품 3', description: '상품 설명 3', image: '' },
+    { title: '상품 4', description: '상품 설명 4', image: '' },
+  ];
+  
   // eslint가 any를 권장하지 않아서 에러줄 뜸 
   // eslint config에 any를 무시하도록 추가해주면 에러줄 사라짐
 
@@ -78,6 +87,13 @@ const MarketList = () => {
           </div>
         )}
       </div>
+
+      <div>
+        <h2>최신 상품</h2>
+        <CardList items={productData} />
+      </div>
+
+ 
       <FloatingButton
         onClick={handleNavigateToProductRegister}  
         icon={<span style={{ fontSize: '2rem' }}>+</span>}
