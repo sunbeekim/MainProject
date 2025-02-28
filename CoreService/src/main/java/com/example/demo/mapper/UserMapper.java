@@ -13,4 +13,11 @@ public interface UserMapper {
     User findByEmail(String email);
     User findByPhoneNumber(String phoneNumber);
     User findByNickname(String nickname);
+    
+    // 로그인에 필요한 메소드 추가
+    UserLogin findUserLoginByUserId(Integer userId);
+    UserAccountInfo findUserAccountInfoByUserId(Integer userId);
+    int updateLoginTime(Integer userId);
+    int updateFailedLoginAttempts(Integer userId, Integer attempts);
+    int updateLoginLockStatus(Integer userId, Boolean isLocked);
 }
