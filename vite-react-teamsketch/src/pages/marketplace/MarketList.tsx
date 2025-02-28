@@ -15,10 +15,10 @@ const MarketList = () => {
 
   
   const productData = [
-    { title: '상품 1', description: '상품 설명 1', image: 'img' },
-    { title: '상품 2', description: '상품 설명 2', image: 'img' },
-    { title: '상품 3', description: '상품 설명 3', image: 'img' },
-    { title: '상품 4', description: '상품 설명 4', image: 'img' },   
+    { title: '상품 1', description: '상품 설명 1', image: 'https://picsum.photos/600/400' },
+    { title: '상품 2', description: '상품 설명 2', image: 'https://picsum.photos/600/400' },
+    { title: '상품 3', description: '상품 설명 3', image: 'https://picsum.photos/600/400' },
+    { title: '상품 4', description: '상품 설명 4', image: 'https://picsum.photos/600/400' },   
   ];
   
 
