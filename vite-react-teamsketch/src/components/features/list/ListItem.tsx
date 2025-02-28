@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
+
 
 interface ListItemProps{
   title: string;          
@@ -7,6 +9,12 @@ interface ListItemProps{
 }
 
 const ListItem: React.FC<ListItemProps> = ({ title, description, points }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/test/productdetails');
+  };
+
     return (
         <div className="w-[600px] h-[150px] bg-white rounded-2xl shadow-lg flex items-center p-4 gap-4">
        
@@ -23,7 +31,7 @@ const ListItem: React.FC<ListItemProps> = ({ title, description, points }) => {
           </div>
         </div>
         
-        <button className="bg-[#FBCCC5] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#F9B0BA]">
+        <button className="bg-[#FBCCC5] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#F9B0BA]" onClick={handleClick}>
           상세보기
         </button>
       </div>
