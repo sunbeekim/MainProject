@@ -2,7 +2,7 @@ name: Deploy All Services
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
     inputs:
       job_name:
@@ -11,8 +11,8 @@ on:
         default: 'all'
         type: choice
         options:
-        - all
-        - deploy-locally
+          - all
+          - deploy-locally
 
 jobs:
   cleanup:
@@ -49,7 +49,7 @@ jobs:
           else
             echo "Workspace not found"
           fi
-          
+
   docker-login:
     runs-on: self-hosted
     needs: cleanup
@@ -73,43 +73,43 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker-login
     steps:
-    - uses: actions/checkout@v3
-    
-    # Docker 로그인 재시도
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}
-    
-    # Docker 캐시 설정
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-      
-    - name: Cache Docker layers
-      uses: actions/cache@v3
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+      - uses: actions/checkout@v3
 
-    # FastAPI Dockerfile 빌드 및 푸시 (재시도 로직 추가)
-    - name: Build and Push FastAPI Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: ./FastAPI
-        push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-        builder: ${{ steps.buildx.outputs.name }}
-      
-    # 캐시 정리
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      # Docker 로그인 재시도
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      # Docker 캐시 설정
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # FastAPI Dockerfile 빌드 및 푸시 (재시도 로직 추가)
+      - name: Build and Push FastAPI Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./FastAPI
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          builder: ${{ steps.buildx.outputs.name }}
+
+      # 캐시 정리
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   build-and-deploy-gateway:
     runs-on: self-hosted
@@ -201,7 +201,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          
+
       - name: Setup SSL certificates
         shell: bash
         run: |
@@ -212,21 +212,21 @@ jobs:
           echo "${{ secrets.SSL_KEY }}" > nginx/ssl/live/sunbee.world/privkey.pem
           # 권한 설정
           chmod 600 nginx/ssl/live/sunbee.world/*.pem
-          
+
       - name: Build Frontend
         shell: bash
         run: |
           cd vite-react-teamsketch
           npm install
           npm run build
-          
+
       - name: Build & Push Frontend Docker Image
         shell: bash
         run: |
           # 최대 3번 재시도
           max_attempts=3
           attempt=1
-          
+
           while [ $attempt -le $max_attempts ]; do
             echo "시도 $attempt/$max_attempts: Docker 이미지 빌드 및 푸시"
             
@@ -247,7 +247,7 @@ jobs:
             sleep 10
             attempt=$((attempt + 1))
           done
-          
+
           echo "모든 시도 실패"
           docker logout
           exit 1
@@ -265,14 +265,14 @@ jobs:
           docker rm -f assist-container || true
           docker rm -f fastapi-container || true
           docker rm -f frontend-container || true
-          
+
       - name: Create Docker network
         run: |
           # 기존 네트워크 제거 (있다면)
           docker network rm teamsketch-network || true
           # 새 네트워크 생성
           docker network create teamsketch-network || true
-          
+
       - name: Deploy containers
         run: |
           # 게이트웨이 서버 먼저 실행
@@ -280,7 +280,7 @@ jobs:
             --network teamsketch-network \
             -p 8080:8080 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
-          
+
           # 다른 백엔드 서버들 실행
           docker run -d --name core-container \
             --network teamsketch-network \
@@ -296,7 +296,7 @@ jobs:
             --network teamsketch-network \
             -p 8001:8001 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-ai:latest
-          
+
           # 백엔드 서버들이 모두 준비된 후 프론트엔드 실행
           sleep 30
           docker run -d --name frontend-container \

@@ -61,7 +61,12 @@ const MarketList = () => {
           </div>
         )}
       </div>
-
+      {/* ======================================== */}
+      <div className="gap-4 pt-10 pl-10 flex items-center">
+        <button onClick={() => navigate('/test/pages')}>테스트 페이지</button>
+        <button onClick={() => navigate('/test/component')}>테스트 컴포넌트</button>
+        <button onClick={() => navigate('/test/func')}>테스트 함수</button>
+      </div>
       <FloatingButton
         onClick={handleNavigateToProductRegister}
         icon={<span style={{ fontSize: '2rem' }}>+</span>}

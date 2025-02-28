@@ -10,12 +10,9 @@ import java.nio.charset.StandardCharsets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.*;
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+
 import com.example.demo.dao.ChatMessageDAO;
 import com.example.demo.model.ChatMessage;
-import com.example.demo.serviceimpl.CloudChatBotServiceImpl;
 
 @Service
 @RequiredArgsConstructor

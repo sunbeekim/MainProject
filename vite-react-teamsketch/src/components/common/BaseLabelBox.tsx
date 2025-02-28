@@ -1,5 +1,3 @@
-import React from 'react';
-
 // 1. 기본 props 인터페이스 정의
 interface BaseLabelBoxProps {
   label: string;
