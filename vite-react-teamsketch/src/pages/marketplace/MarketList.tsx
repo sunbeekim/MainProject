@@ -87,13 +87,20 @@ const MarketList = () => {
           </div>
         )}
       </div>
-      <div >
-        <h2 className="text-xl font-bold mb-4">최신 상품</h2>       
+      
+      <div className="mt-4 h-[20px] pl-2 flex justify-between items-center">       
+        <h2 className="text-xl font-bold mb-4">최신 상품</h2>   
+        <a href="#" className="text-[#9FB29E] text-xs font-semibold font-['Inter'] underline cursor-pointer h-[17px] pl-2 justify-between items-center">See more</a>  
+        </div>
+        <div>
         <CardList items={productData} />
       </div>
 
-      <div >
-        <h2 className="text-xl font-bold mb-4">추천 상품</h2>       
+      <div className=" mt-4 h-[20px] pl-2 flex justify-between items-center">
+        <h2 className="text-xl font-bold mb-4">추천 상품</h2>   
+        <a href="#" className="text-[#9FB29E] text-xs font-semibold font-['Inter'] underline cursor-pointer">See more</a>  
+        </div>
+        <div>
         <CardList items={productData} />
      </div>
 
