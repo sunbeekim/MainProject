@@ -16,9 +16,10 @@ const MyPage = () => {
           <p>이름: 홍길동</p>
           <p>이메일: hong@example.com</p>
         </div>
+
         <span
           onClick={() => setLogoutModalOpen(true)}
-          className="mt-4 px-4 py-2 underline cursor-pointer hover:text-red-600"
+          className="absolute right-4 mt-4 px-4 py-2 underline cursor-pointer hover:text-[#F9B0BA] text-[#4A4A4A]"
         >
           로그아웃
         </span>
