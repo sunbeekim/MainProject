@@ -75,3 +75,16 @@
   @apply focus-within:ring-2 focus-within:ring-[#CEF6E3]/50;
   @apply focus-within:border-[#CEF6E3];
 }
+
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
