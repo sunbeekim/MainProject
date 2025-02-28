@@ -1,33 +1,34 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter as Router } from 'react-router-dom'
-import './assets/styles/index.css'
-import App from './App'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Provider } from 'react-redux'
-import { store } from './store/store'
-import { ThemeProvider } from './contexts/ThemeContext'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter as Router } from 'react-router-dom';
+import './assets/styles/index.css';
+import App from './App';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // PWA 서비스 워커 등록
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker
+      .register('/sw.js')
       .then((registration) => {
-        console.log('ServiceWorker 등록 성공:', registration.scope)
+        console.log('ServiceWorker 등록 성공:', registration.scope);
       })
       .catch((error) => {
-        console.log('ServiceWorker 등록 실패:', error)
-      })
-  })
+        console.log('ServiceWorker 등록 실패:', error);
+      });
+  });
 }
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5분
-    },
-  },
-})
+      staleTime: 1000 * 60 * 5 // 5분
+    }
+  }
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -40,5 +41,5 @@ createRoot(document.getElementById('root')!).render(
         </QueryClientProvider>
       </Provider>
     </ThemeProvider>
-  </StrictMode>,
-)
+  </StrictMode>
+);

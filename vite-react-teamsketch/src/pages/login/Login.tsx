@@ -27,7 +27,7 @@ const Login = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
@@ -57,7 +57,7 @@ const Login = () => {
         }
         loginButton={
           <Button
-            type='submit'
+            type="submit"
             variant="primary"
             className="w-full"
             data-testid="login-button"
@@ -66,11 +66,13 @@ const Login = () => {
             {loginMutation.isPending ? <Loading /> : '로그인'}
           </Button>
         }
-        divider={<div className="relative my-6 h-px bg-gray-300 dark:bg-gray-700">
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 px-4 text-sm text-gray-500">
-            or
-          </span>
-        </div>}
+        divider={
+          <div className="relative my-6 h-px bg-gray-300 dark:bg-gray-700">
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 px-4 text-sm text-gray-500">
+              or
+            </span>
+          </div>
+        }
         socialLogins={
           <div className="flex justify-center items-center gap-6">
             <button type="button" className="w-20 h-20 hover:opacity-80 transition-opacity">
@@ -81,7 +83,7 @@ const Login = () => {
             </button>
             <button type="button" className="w-20 h-20 hover:opacity-80 transition-opacity">
               <img src={naver} alt="네이버 로그인" className="w-full h-full object-contain" />
-            </button>            
+            </button>
           </div>
         }
         signupLink={
@@ -104,7 +106,7 @@ const Login = () => {
           placeholder="이메일"
           data-testid="email-input"
         />
-        <LoginPasswordInput          
+        <LoginPasswordInput
           name="password"
           value={formData.password}
           onChange={handleChange}

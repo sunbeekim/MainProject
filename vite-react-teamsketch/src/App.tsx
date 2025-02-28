@@ -12,18 +12,19 @@ import Requests from './pages/trading/Requests';
 import Setting from './pages/mypage/Setting';
 
 // test
-import TestComponent from './test/pages/TestComponent';
-import TestLogin from './test/pages/TestLogin';
-import TestMarketplace from './test/pages/TestMarketplace';
-import TestPages from './test/pages/TestPages';
-import TestSignup from './test/pages/TestSignup';
-import TestFunc from './test/pages/TestFunc';
+import TestComponent from './testpages/TestComponent';
+
+import TestMarketplace from './testpages/TestMarketplace';
+import TestPages from './testpages/TestPages';
+
+import TestFunc from './testpages/TestFunc';
+import TestProductDetails from './testpages/TestProductDetails';
 
 const App = () => {
   return (
     <div className="min-h-screen pb-16">
       <Header />
-      <main className="main-content">
+      <main className="main-content mb-3">
         <Routes>
           <Route path="/" element={<MarketList />} />
           <Route path="/login" element={<Login />} />
@@ -36,16 +37,15 @@ const App = () => {
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
-          <Route path="/test/login" element={<TestLogin />} />
-          <Route path="/test/marketplace" element={<TestMarketplace />} />          
-          <Route path="/test/signup" element={<TestSignup />} />
+          <Route path="/test/marketplace" element={<TestMarketplace />} />
 
-          {/* test component */}  
-          <Route path="/test/component" element={<TestComponent />} />    
-          
+          <Route path="/test/productdetails" element={<TestProductDetails />} />
+
+          {/* test component */}
+          <Route path="/test/component" element={<TestComponent />} />
+
           {/* test func */}
           <Route path="/test/func" element={<TestFunc />} />
-          
         </Routes>
       </main>
       <Footer />

@@ -1,13 +1,14 @@
 import React from 'react';
 
 interface LogoutModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onLogout: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onLogout: () => void;
 }
 
 const LogoutModal: React.FC<LogoutModalProps> = ({ isOpen, onClose, onLogout }) => {
-    if (!isOpen) return null;
+  if (!isOpen) return null;
+
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -32,7 +33,23 @@ const LogoutModal: React.FC<LogoutModalProps> = ({ isOpen, onClose, onLogout }) 
                 </div>
             </div>
         </div>
-    );
+        <div className="self-stretch justify-start items-start gap-2 inline-flex">
+          <button
+            onClick={onClose}
+            className="grow shrink basis-0 h-10 px-4 py-3 rounded-xl border border-[#02343F justify-center items-center gap-2 flex overflow-hidden"
+          >
+            <div className="text-[#02343F] text-xs font-semibold font-['Inter']">취소</div>
+          </button>
+          <button
+            onClick={onLogout}
+            className="grow shrink basis-0 h-10 px-4 py-3 bg-[#02343F] rounded-xl justify-center items-center gap-2 flex overflow-hidden"
+          >
+            <div className="text-white text-xs font-semibold font-['Inter']">로그아웃</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default LogoutModal;

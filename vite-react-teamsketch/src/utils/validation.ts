@@ -67,4 +67,4 @@ export const validateNickname = (nickname: string): ValidationResult => {
     return { isValid: false, message: '닉네임은 2~10자 사이여야 합니다.' };
   }
   return { isValid: true, message: '' };
-}; 
+};

@@ -15,10 +15,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ items }) => {
       <ul className="flex items-center gap-4">
         {items.map((item, index) => (
           <li key={index}>
-            <label 
-              className="px-4 py-2 text-dark hover:text-primary-dark"
-              onClick={item.onClick}
-            >
+            <label className="px-4 py-2 text-dark hover:text-primary-dark" onClick={item.onClick}>
               {item.label}
             </label>
           </li>
@@ -28,4 +25,4 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ items }) => {
   );
 };
 
-export default NavigationBar; 
+export default NavigationBar;

@@ -1,5 +1,3 @@
-import React from 'react';
-
 // 1. 기본 props 인터페이스 정의
 interface BaseLabelBoxProps {
   label: string;
@@ -11,12 +9,10 @@ interface BaseLabelBoxProps {
 const BaseLabelBox = ({ label, children, className = '' }: BaseLabelBoxProps) => {
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      <label className="text-sm font-medium text-gray-700">
-        {label}
-      </label>
+      <label className="text-sm font-medium text-gray-700">{label}</label>
       {children}
     </div>
   );
 };
 
-export default BaseLabelBox; 
+export default BaseLabelBox;

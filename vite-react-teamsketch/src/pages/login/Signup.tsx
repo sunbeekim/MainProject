@@ -1,17 +1,35 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { updateField, setValidationError, setError} from '../../store/slices/signupSlice';
+import { updateField, setValidationError, setError } from '../../store/slices/signupSlice';
 
 import SignupLayout from '../../components/layout/SignupLayout';
 import Button from '../../components/common/BaseButton';
-import { validateName, validateId, validatePassword, validateEmail, validatePhone, validateNickname} from '../../utils/validation';
+import {
+  validateName,
+  validateId,
+  validatePassword,
+  validateEmail,
+  validatePhone,
+  validateNickname
+} from '../../utils/validation';
 import Grid from '../../components/common/Grid';
 import TextInput from '../../components/forms/input/TextInput';
 import PasswordInput from '../../components/forms/input/PasswordInput';
 import EmailInput from '../../components/forms/input/EmailInput';
+import { useSignup } from '../../services/api/authService';
 
+interface SignupForm {
+  name: string;
+  id: string;
+  password: string;
+  email: string;
+  phone: string;
+  nickname: string;
+  hobby?: string;
+}
 
 const Signup = () => {
+  const signupMutation = useSignup();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { formData, validationErrors, error } = useAppSelector((state) => state.signup);
@@ -48,7 +66,29 @@ const Signup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(setError(''));
-    // TODO: 회원가입 API 호출 로직 구현
+
+    try {
+      // 모든 필수 필드 검증
+      const requiredFields = ['name', 'id', 'password', 'email', 'phone', 'nickname'];
+      const missingFields = requiredFields.filter((field) => !formData[field as keyof SignupForm]);
+
+      if (missingFields.length > 0) {
+        dispatch(setError('모든 필수 항목을 입력해주세요.'));
+        return;
+      }
+
+      // 유효성 검사 에러가 있는지 확인
+      const hasValidationErrors = Object.values(validationErrors).some((error) => error);
+      if (hasValidationErrors) {
+        dispatch(setError('입력 형식을 확인해주세요.'));
+        return;
+      }
+
+      await signupMutation.mutateAsync(formData);
+      navigate('/login');
+    } catch (err) {
+      dispatch(setError(err instanceof Error ? err.message : '회원가입 중 오류가 발생했습니다.'));
+    }
   };
 
   return (
@@ -121,12 +161,7 @@ const Signup = () => {
         />
 
         <Grid cols={2} gap="sm">
-          <TextInput
-            label="취미"
-            name="hobby"
-            value={formData.hobby}
-            onChange={handleChange}
-          />
+          <TextInput label="취미" name="hobby" value={formData.hobby} onChange={handleChange} />
           <TextInput
             label="닉네임"
             name="nickname"
