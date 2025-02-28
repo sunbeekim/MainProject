@@ -2,7 +2,7 @@ import { useTestApi } from '../../services/api/testAPI';
 import FloatingButton from '../../components/common/FloatingButton';
 import { useNavigate } from 'react-router-dom';
 import Category from '../../components/common/categoryicon';
-import CardList from '../../test/components/features/card/CardList';
+import CardList from '../../components/features/card/CardList';
 
 
 //test api 호출 페이지
