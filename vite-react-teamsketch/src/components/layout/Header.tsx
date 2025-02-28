@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { IconSetting } from '../common/Icons';
+import { IconSetting, Iconalarm } from '../common/Icons';
 import BackButton from '../forms/button/BackButton';
-
-import { Iconalarm } from '../common/Icons';
+import Grid from '../common/Grid';
+import GridItem from '../common/GridItem';
 
 const Header = () => {
   const location = useLocation();
@@ -16,12 +16,7 @@ const Header = () => {
           actions: (
             <div className="flex gap-2">
               <button onClick={() => navigate('/test/pages')}>테스트 페이지</button>
-              <button onClick={() => navigate('/test/component')}>테스트 컴포넌트</button>
-              <button onClick={() => navigate('/test/func')}>테스트 함수</button>
-              <Iconalarm
-                className="text-gray-500 cursor-pointer"
-                onClick={() => console.log('Alarm icon clicked!')}
-              />
+              <Iconalarm className="text-gray-500 cursor-pointer " onClick={() => alert("Alarm icon clicked!")} />
             </div>
           )
         };
@@ -65,19 +60,28 @@ const Header = () => {
   const headerContent = getHeaderContent();
 
   return (
-    <header className="sticky top-0 z-50 bg-[#F3F2FF] dark:bg-background-dark border-b border-[#E5E1FF] dark:border-[#6003FF] shadow-sm">
-      <BackButton className="m-5 text-[#FFFFFF] hover:bg-[#59151C] " />
-      <div className="px-4 py-3">
-        <h1 className="text-xl font-bold text-[#59151C] dark:text-text-dark">
-          {headerContent.title}
-        </h1>
-        {headerContent.subtitle && (
-          <p className="text-sm text-[#59151C]/70 dark:text-text-dark/70">
-            {headerContent.subtitle}
-          </p>
-        )}
-        {headerContent.actions}
-      </div>
+    <header className="sticky top-0 z-50 bg-[#F3F2FF] dark:bg-background-dark border-b border-[#E5E1FF] dark:border-[#ffffff]/70 shadow-sm">
+      <Grid cols={3} gap="md" className="items-center px-4 py-3">
+        {/* 왼쪽: 백버튼 */}
+        <GridItem className="flex items-center">
+          <BackButton className="text-[#FFFFFF] hover:bg-[#59151C] p-2 rounded" />
+        </GridItem>
+
+        {/* 중앙: 타이틀 & 서브타이틀 */}
+        <GridItem className="text-center flex flex-col">
+          <h1 className="text-xl font-bold text-[#59151C] dark:text-text-dark">
+            {headerContent.title}
+          </h1>
+          {headerContent.subtitle && (
+            <p className="text-sm text-[#59151C]/70 dark:text-text-dark/70">
+              {headerContent.subtitle}
+            </p>
+          )}
+        </GridItem>
+
+        {/* 오른쪽: 액션 버튼 */}
+        <GridItem className="flex justify-end">{headerContent.actions}</GridItem>
+      </Grid>
     </header>
   );
 };
