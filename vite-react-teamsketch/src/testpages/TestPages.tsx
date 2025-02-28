@@ -5,9 +5,11 @@ const TestPages = () => {
   return (
     <div>
       <h1>TestPages</h1>
-      <button onClick={() => navigate('/test/marketplace')}>marketplace</button>
-
-      <button onClick={() => navigate('/test/productdetails')}>productdetails</button>
+        <button onClick={() => navigate('/test/marketplace')}>marketplace</button>
+        <button onClick={() => navigate('/test/productdetails')}>productdetails</button>         
+        <button onClick={() => navigate('/test/component')}>테스트 컴포넌트</button>
+        <button onClick={() => navigate('/test/func')}>테스트 함수</button>
+    
     </div>
   );
 };

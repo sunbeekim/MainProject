@@ -15,6 +15,7 @@ const Header = () => {
           title: '#대분류',
           actions: (
             <div className="flex gap-2">
+              <button onClick={() => navigate('/test/pages')}>테스트 페이지</button>
               <Iconalarm className="text-gray-500 cursor-pointer " onClick={() => alert("Alarm icon clicked!")} />
             </div>
           )

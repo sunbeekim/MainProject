@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import fs from 'fs'
+import path from 'path'
 
 export default defineConfig({
   base: './', 
@@ -40,9 +42,9 @@ export default defineConfig({
       '@': '/src',
     },
   },
-  server: {
-    host: true,
-    port: 3000,
+  server: {   
+    host: true, // true로 변경 
+    port: 3000, // 3000으로 나중에 변경
     allowedHosts: [
       'sunbee.world',
       'www.sunbee.world',
