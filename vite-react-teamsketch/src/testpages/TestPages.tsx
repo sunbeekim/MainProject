@@ -6,7 +6,8 @@ const TestPages = () => {
     <div>
       <h1>TestPages</h1>
       <button onClick={() => navigate('/test/marketplace')}>marketplace</button>
-      <button onClick={() => navigate('/test/login')}>login</button>
+
+      <button onClick={() => navigate('/test/productdetails')}>productdetails</button>
     </div>
   );
 };

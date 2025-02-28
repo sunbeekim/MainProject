@@ -11,12 +11,13 @@ import SearchInput from '../components/forms/input/SearchInput';
 import { useState } from 'react';
 import InfoBox from '../components/forms/box/InfoBox';
 import CustomInput from '../components/forms/input/CustomInput';
-
+import DaySection from '../components/layout/DaySelect';
 const TestComponent = () => {
   const dispatch = useAppDispatch();
   const value = useAppSelector((state) => state.test.value);
   const count = useAppSelector((state) => state.test.count);
 
+  const [selectedDay, setSelectedDay] = useState('');
   const options = [
     { value: '1', label: '오름차순' },
     { value: '2', label: '내림차순' }
@@ -116,6 +117,9 @@ const TestComponent = () => {
       </div>
       <div className="bg-purple-level_1">
         <label className="text-purple_color-level_10">ddddd</label>
+      </div>
+      <div className="w-full max-w-3xl p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        <DaySection onDaySelect={setSelectedDay} selectedDay={selectedDay} />
       </div>
     </div>
   );

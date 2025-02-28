@@ -1,4 +1,3 @@
-import React from 'react';
 import { BUTTON_STYLES } from '../../constants/styles';
 
 export interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

@@ -24,7 +24,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   };
 
   const colorClasses = {
-    primary: 'bg-green-500 hover:bg-green-900 text-white',
+    primary: 'bg-#FF3399 hover:bg-#660033 text-white',
     secondary: 'bg-blue-500 hover:bg-blue-900 text-white'
   };
 

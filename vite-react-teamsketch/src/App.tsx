@@ -16,8 +16,9 @@ import TestComponent from './testpages/TestComponent';
 
 import TestMarketplace from './testpages/TestMarketplace';
 import TestPages from './testpages/TestPages';
-import TestSignup from './testpages/TestSignup';
+
 import TestFunc from './testpages/TestFunc';
+import TestProductDetails from './testpages/TestProductDetails';
 
 const App = () => {
   return (
@@ -37,7 +38,8 @@ const App = () => {
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
           <Route path="/test/marketplace" element={<TestMarketplace />} />
-          <Route path="/test/signup" element={<TestSignup />} />
+
+          <Route path="/test/productdetails" element={<TestProductDetails />} />
 
           {/* test component */}
           <Route path="/test/component" element={<TestComponent />} />
