@@ -10,7 +10,7 @@ const TestPages = () => {
 
       <button onClick={() => navigate('/test/productdetails')}>productdetails</button>
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">상품 목록</h2>
+        <h2 className="text-xl font-semibold mb-4 text-center">상품 목록</h2>
         <List />
       </div>
     </div>

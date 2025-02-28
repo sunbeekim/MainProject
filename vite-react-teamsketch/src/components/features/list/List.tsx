@@ -18,11 +18,13 @@ const List: React.FC = () => {
     ];
 
     return (
-        <div className="list-container">
+        <div className="flex justify-center">
+        <div className="grid grid-cols-1 gap-4 ">
             {data.map((item, index) => (
                 <ListItem key={index} title={item.title} description={item.description} points={item.points} />                
             ))}
-        </div>
+            </div>
+            </div>
     );
 }
 export default List;
