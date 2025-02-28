@@ -15,10 +15,7 @@ const Header = () => {
           title: '#대분류',
           actions: (
             <div className="flex gap-2">
-              <Iconalarm
-                className="text-gray-500 cursor-pointer"
-                onClick={() => console.log('Alarm icon clicked!')}
-              />
+              <Iconalarm className="text-gray-500 cursor-pointer " onClick={() => alert("Alarm icon clicked!")} />
             </div>
           )
         };

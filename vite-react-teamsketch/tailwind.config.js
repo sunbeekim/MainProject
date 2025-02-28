@@ -36,16 +36,16 @@ export default {
       colors: {
         primary: {
           light: '#F6CED8', // 연한 핑크
-          DEFAULT: '#ECCEF5', // 연한 보라
-          dark: '#CEF6E3' // 연한 민트
+          DEFAULT: '#CADABE', // 연한 보라
+          dark: '#9FB29E ' // 연한 민트
           // #F6CED8 (아주 연한 핑크 - 연핑크 느낌)
           // #ECCEF5 (연한 보라 - 연한 보라)
           // #CEF6E3 (연한 민트 - 연한 민트
         },
         secondary: {
-          light: '#F6E3CE', // 연한 오렌지
-          DEFAULT: '#F6CED8', // 연한 핑크
-          dark: '#ECCEF5' // 연한 보라
+          light: '#F4F2C0', // 연한 오렌지
+          DEFAULT: '#FBCCC5', // 연한 핑크
+          dark: '#F9B0BA' // 연한 보라
           // #F6E3CE (연한 오렌지 - 연한 오렌지)
           // #F6CED8 (연한 핑크 - 연핑크 느낌)
           // #ECCEF5 (연한 보라 - 연한 보라)
@@ -65,8 +65,8 @@ export default {
           // #FA58F4 (진한 핑크 - 진한 핑크)
         },
         border: {
-          light: '#ECCEF5', // 연한 보라
-          dark: '#F6CED8' // 연한 핑크
+          light: '#F9B0BA', // 연한 보라
+          dark: '#FBCCC5' // 연한 핑크
           // #ECCEF5 (연한 보라 - 연한 보라)
           // #F6CED8 (연한 핑크 - 연핑크 느낌)
         },
