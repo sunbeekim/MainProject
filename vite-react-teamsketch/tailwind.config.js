@@ -1,6 +1,4 @@
-import { publicDecrypt } from 'crypto';
-
-const defaultTheme = require('tailwindcss/defaultTheme');
+// const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 export default {
