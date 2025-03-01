@@ -6,7 +6,7 @@ import { mockAPI } from '../../mock/mockAPI';
 import { IProduct } from '../../mock/mockData';
 import Card from '../../components/features/card/Card';
 
-//test api 호출 페이지
+//test api 호출 페이지 무슨 에러지?
 
 const MarketList = () => {
   const navigate = useNavigate();
