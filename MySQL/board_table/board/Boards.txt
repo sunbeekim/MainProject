@@ -1,12 +1,11 @@
 -- 1. 테이블 생성 (게시판 테이블)
 
 CREATE TABLE Boards (
-    board_id INT PRIMARY KEY,                               
-    board_name VARCHAR(255) NOT NULL,                        
-    board_views INT NOT NULL DEFAULT 0,                       
-    board_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,    
-    board_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
-    board_type_id INT,                                      
-    FOREIGN KEY (board_type_id) REFERENCES BoardTypes(board_type_id) 
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM Boards;
+    board_id INT PRIMARY KEY AUTO_INCREMENT,
+    board_name VARCHAR(255) NOT NULL,
+    board_views INT NOT NULL DEFAULT 0,
+    board_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    board_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    board_type_id INT,
+    FOREIGN KEY (board_type_id) REFERENCES BoardTypes(board_type_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

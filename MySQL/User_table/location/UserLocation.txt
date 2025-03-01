@@ -1,10 +1,10 @@
--- 7. 테이블 생성 (사용자 위치 테이블)
-
 CREATE TABLE UserLocation (
-    location_id INT PRIMARY KEY,           
-    user_id INT(11),                        
-    location_info_id INT,                   
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),           
-    FOREIGN KEY (location_info_id) REFERENCES LocationInfo(location_info_id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM UserLocation;
+    product_id BIGINT PRIMARY KEY, -- product_id를 기본 키로 설정
+    email VARCHAR(255) NOT NULL,
+    location_name VARCHAR(255),  -- 위치 이름을 저장할 수 있도록 추가 (선택적)
+    latitude DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 위치 기록 시간 추가
+    FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES Product(product_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

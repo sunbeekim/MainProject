@@ -1,13 +1,12 @@
 -- 12. 테이블 생성 (마켓 채팅방 테이블)
 
 CREATE TABLE ChatRooms (
-    chat_room_id BIGINT PRIMARY KEY,                            
-    chat_created_at TIMESTAMP,                                   
-    chat_updated_at TIMESTAMP,                                    
-    chat_is_group BOOLEAN,                                        
-    transaction_id BIGINT,                                        
-    transaction_type_id BIGINT,                                   
-    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id),  
-    FOREIGN KEY (transaction_type_id) REFERENCES TransactionTypes(transaction_type_id) 
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM ChatRooms;
+    chat_room_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    chat_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    chat_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    chat_is_group BOOLEAN,
+    transaction_id BIGINT,
+    transaction_type_id BIGINT,
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id),
+    FOREIGN KEY (transaction_type_id) REFERENCES TransactionTypes(transaction_type_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
