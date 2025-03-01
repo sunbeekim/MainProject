@@ -1,6 +1,7 @@
 import ThemeToggle from '../../components/common/ThemeToggle';
 import { Link } from 'react-router-dom';
-import ResetPassword from '../account/ResetPassword';
+
+
 
 
 const Setting = () => {
@@ -13,8 +14,7 @@ const Setting = () => {
           <Link to="/servicechat">고객센터 챗봇</Link>
         </button>
       </div>
-     
-    </div>
+     </div>
   );
 };
 
