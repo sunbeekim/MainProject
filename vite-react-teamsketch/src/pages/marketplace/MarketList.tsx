@@ -100,6 +100,7 @@ const MarketList = () => {
         </div>
       )}
 
+
       <FloatingButton
         onClick={handleNavigateToProductRegister}
         icon={<span style={{ fontSize: '2rem' }}>+</span>}

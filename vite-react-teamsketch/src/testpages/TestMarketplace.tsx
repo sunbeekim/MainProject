@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingButton from '../components/common/FloatingButton';
@@ -43,6 +44,7 @@ const MarketList = () => {
       setSelectedCategory(category);
     } catch (error) {
       console.error('카테고리별 상품을 불러오는데 실패했습니다:', error);
+
     }
   };
 
