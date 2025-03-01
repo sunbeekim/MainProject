@@ -35,7 +35,7 @@ public class CloudChatBotServiceImpl implements CloudChatBotService {
     public String getResponse(String message) {
         try {
             String requestBody = getReqMessage(message);
-            String timestamp = String.valueOf(System.currentTimeMillis());
+            
             String signature = makeSignature(requestBody);
 
             HttpHeaders headers = new HttpHeaders();

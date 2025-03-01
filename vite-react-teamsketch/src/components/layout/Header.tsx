@@ -7,6 +7,7 @@ import GridItem from '../common/GridItem';
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isAuthPage = ['/login', '/signup'].includes(location.pathname);
 
   const getHeaderContent = () => {
     switch (location.pathname) {
@@ -48,11 +49,7 @@ const Header = () => {
       case '/setting':
         return {
           title: '설정',         
-          actions: (
-            <div className="flex gap-2">
-              <button onClick={() => navigate('/login')}>로그아웃</button>
-            </div>
-          )
+         
         };
       default:
         return {
@@ -65,21 +62,26 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-[#F3F2FF] dark:bg-background-dark border-b border-[#E5E1FF] dark:border-[#ffffff]/70 shadow-sm">
-      <Grid cols={3} gap="sm" className="items-center px-2 py-1">
+      <Grid cols={3} gap="sm" className="items-center px-2 py-1 h-12">
         {/* 왼쪽: 백버튼 */}
-        <GridItem className="flex items-center">
-          <BackButton className="text-[#FFFFFF] hover:bg-[#59151C] p-1 rounded text-sm" />
+        <GridItem className="flex items-center h-full">
+          {!isAuthPage ? 
+            <BackButton className="text-[#FFFFFF] hover:bg-[#59151C] p-1 rounded text-sm" /> :
+            <div className="w-8" />
+          }
         </GridItem>
 
         {/* 중앙: 타이틀 & 서브타이틀 */}
-        <GridItem className="text-center flex flex-col">
+        <GridItem className="text-center flex flex-col justify-center h-full">
           <h1 className="text-sm font-bold text-[#59151C] dark:text-text-dark">
             {headerContent.title}
           </h1>          
         </GridItem>
 
         {/* 오른쪽: 액션 버튼 */}
-        <GridItem className="flex justify-end text-sm">{headerContent.actions}</GridItem>
+        <GridItem className="flex justify-end items-center h-full text-sm">
+          {headerContent.actions}
+        </GridItem>
       </Grid>
     </header>
   );

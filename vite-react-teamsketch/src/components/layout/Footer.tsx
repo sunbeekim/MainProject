@@ -58,20 +58,20 @@ const Footer = () => {
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 bg-[#E6CCFF] dark:bg-[#2D2D2D] shadow-lg backdrop-blur-md bg-opacity-95 dark:bg-opacity-90">
-      <nav className="container mx-auto flex justify-around items-center px-2 py-1">
+      <nav className="container mx-auto flex justify-around items-center px-3 py-2">
         {navigationItems.map((item, index) => (
           <button
             key={index}
             onClick={item.onClick}
-            className="flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-white/20 dark:hover:bg-[#F6CED8]/10 transition-all duration-300 group focus:outline-none dark:bg-background-dark"
+            className="flex flex-col items-center gap-1 p-1.5 bg-transparent hover:bg-transparent focus:outline-none"
           >
-            <div className={`text-2xl duration-300 ${
+            <div className={`text-3xl ${
               location.pathname === getPathForLabel(item.label)
                 ? 'text-[#660033]' 
-                : 'text-[#660033]/70 dark:text-[#660033]/70'
+                : 'text-[#ffffff]/70'
             } group-hover:scale-110 transition-transform duration-300`}>
               {item.icon}
-            </div>
+            </div>            
           </button>
         ))}
       </nav>

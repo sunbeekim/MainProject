@@ -22,7 +22,7 @@ const LoginLayout = ({
   signupLink
 }: LoginLayoutProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+    <div className="flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8">
       <div className="w-full max-w-md">
         <Grid cols={1} gap="md" className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
           {/* 로고 및 타이틀 */}

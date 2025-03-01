@@ -9,11 +9,9 @@ const AIChatBot = () => {
   const { messages, isLoading } = useAppSelector((state) => state.chat);
   const { mutate: sendChatMessage } = useSendChatMessage();
   const [error, setLocalError] = useState<string | null>(null);
-  //  음 잘 되는 거같은데 여기도 적어져요?네 굳
-  // 이거 TABNIE 자동완성 AI 도 적용 돼요? 왼쪽에 라이브쉐어 누르시면 몇개 안뜨는데 밑에 SESSION CHAT 눌러보세요
+
   const handleSendMessage = async (message: string): Promise<void> => {
     if (!message.trim()) return;
-    //음 날씨 API 호출하는거랑 비슷한데요?네 비슷합니다.
     try {
       setLocalError(null);
       dispatch(sendMessage(message)); // Show user message immediately

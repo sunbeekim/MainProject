@@ -1,12 +1,10 @@
 package com.example.demo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
-import reactor.core.publisher.Mono;
 import com.example.demo.filter.JwtAuthenticationFilter;
 
 @Configuration
@@ -15,7 +13,7 @@ public class RouteConfig {
     private JwtAuthenticationFilter jwtFilter;
 
     
-    private String activeProfile = "local";
+    private String activeProfile = "prod";
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
