@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingButton from '../components/common/FloatingButton';
-import Category from '../components/common/categoryicon';
+import Category from '../components/common/CategoryIcon';
 import CardList from '../components/features/card/CardList';
 import { mockAPI } from '../mock/mockAPI';
 import { IProduct } from '../mock/mockData';
