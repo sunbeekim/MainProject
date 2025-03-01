@@ -1,43 +1,80 @@
-import { useState } from 'react';
-import Card from '../components/features/card/Card';
-import Button from '../components/common/Button';
 
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import FloatingButton from '../components/common/FloatingButton';
+import Category from '../components/common/categoryicon';
+import CardList from '../components/features/card/CardList';
+import { mockAPI } from '../mock/mockAPI';
+import { IProduct } from '../mock/mockData';
 
-const TestMarketplace = () => {
-  const [items] = useState([
-    {
-      id: 1,
-      title: '테스트 상품 1',
-      description: '테스트 상품 설명 1',
-      image: 'test1.jpg'
-    },
-    {
-      id: 2,
-      title: '테스트 상품 2',
-      description: '테스트 상품 설명 2',
-      image: 'test2.jpg'
+//test api 호출 페이지
+
+const MarketList = () => {
+  const navigate = useNavigate();
+  const [latestProducts, setLatestProducts] = useState<IProduct[]>([]);
+  const [recommendedProducts, setRecommendedProducts] = useState<IProduct[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const [latestResponse, recommendedResponse] = await Promise.all([
+          mockAPI.market.getLatestProducts(),
+          mockAPI.market.getRecommendedProducts()
+        ]);
+        
+        setLatestProducts(latestResponse.data.products);
+        setRecommendedProducts(recommendedResponse.data.products);
+      } catch (error) {
+        console.error('상품 목록을 불러오는데 실패했습니다:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleNavigateToProductRegister = () => {
+    navigate('/product/register');
+  };
+
+  const handleCategorySelect = async (category: string) => {
+    try {
+      const response = await mockAPI.market.getProductsByCategory(category);
+      setLatestProducts(response.data.products);
+      setSelectedCategory(category);
+    } catch (error) {
+      console.error('카테고리별 상품을 불러오는데 실패했습니다:', error);
+
     }
-  ]);
+  };
 
   return (
-    <div className="py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">테스트 마켓</h1>
-        <Button variant="primary">상품 등록</Button>
+    <div className="container mx-auto px-4 py-6">
+      <Category onCategorySelect={handleCategorySelect} />
+      
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">
+          {selectedCategory ? `${selectedCategory} 관련 상품` : '최신 상품'}
+        </h2>
+        <CardList items={latestProducts} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map((item) => (
-          <Card
-            key={item.id}
-            title={item.title}
-            description={item.description}
-            image={item.image}
-          />
-        ))}
-      </div>
+      {!selectedCategory && (
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-4">추천 상품</h2>
+          <CardList items={recommendedProducts} />
+        </div>
+      )}
+
+      <FloatingButton
+        onClick={handleNavigateToProductRegister}
+        icon={<span style={{ fontSize: '2rem' }}>+</span>}
+        label="상품 등록"
+        position="bottom-right"
+        color="primary"
+      />
     </div>
   );
 };
 
-export default TestMarketplace;
+export default MarketList;

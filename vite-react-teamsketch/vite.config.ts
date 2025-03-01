@@ -40,9 +40,9 @@ export default defineConfig({
       '@': '/src',
     },
   },
-  server: {
-    host: true,
-    port: 3000,
+  server: {   
+    host: true, // true로 변경 
+    port: 3000, // 3000으로 나중에 변경
     allowedHosts: [
       'sunbee.world',
       'www.sunbee.world',

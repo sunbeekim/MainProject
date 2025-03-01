@@ -6,13 +6,10 @@ const TestPages = () => {
   return (
     <div>
       <h1>TestPages</h1>
-      <button onClick={() => navigate('/test/marketplace')}>marketplace</button>
-
-      <button onClick={() => navigate('/test/productdetails')}>productdetails</button>
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4 text-center">상품 목록</h2>
-        <List />
-      </div>
+        <button onClick={() => navigate('/test/marketplace')}>marketplace</button>
+        <button onClick={() => navigate('/test/productdetails')}>productdetails</button>         
+        <button onClick={() => navigate('/test/component')}>테스트 컴포넌트</button>
+        <button onClick={() => navigate('/test/func')}>테스트 함수</button>
     </div>
   );
 };
