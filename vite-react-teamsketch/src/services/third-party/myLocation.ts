@@ -32,8 +32,8 @@ export const getCurrentLocation = async (): Promise<IGeolocation> => {
     const position = await new Promise<GeolocationPosition>((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
         enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
+        timeout: 10000,        // 10초
+        maximumAge: 30000      // 30초
       });
     });
 
@@ -64,7 +64,7 @@ export const getNearbyRandomLocation = (lat: number, lng: number): { lat: number
   };
 };
 
-// 실시간 위치 추적
+// 실시간 위치 추적 (30초마다 업데이트)
 export const watchCurrentLocation = (
   onSuccess: (position: IGeolocation) => void,
   onError: (error: string) => void
@@ -88,8 +88,8 @@ export const watchCurrentLocation = (
     (error) => onError(error.message),
     {
       enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0
+      timeout: 10000,         // 10초 타임아웃
+      maximumAge: 30000       // 30초마다 업데이트
     }
   );
 
