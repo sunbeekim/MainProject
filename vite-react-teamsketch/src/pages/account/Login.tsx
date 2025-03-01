@@ -10,6 +10,7 @@ import { google, kakao, naver } from '../../assets/images/login';
 import EmailInput from '../../components/forms/input/EmailInput';
 import LoginPasswordInput from '../../components/forms/input/LoginPasswordInput';
 
+
 interface LoginForm {
   email: string;
   password: string;
@@ -46,12 +47,15 @@ const Login = () => {
     }
   };
 
+
+
+
   return (
     <form onSubmit={handleSubmit}>
       <LoginLayout
         title={<h1 className="text-2xl font-bold">로그인</h1>}
         forgotPassword={
-          <a href="/forgot-password" className="text-sm text-primary-light hover:text-primary-dark">
+          <a href="/ForgotPassword" className="text-sm text-primary-light hover:text-primary-dark">
             비밀번호 찾기
           </a>
         }
