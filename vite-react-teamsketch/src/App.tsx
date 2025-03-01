@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import PrivateRoute from './routes/PrivateRoute';
-import Login from './pages/login/Login';
-import Signup from './pages/login/Signup';
+import Login from './pages/account/Login';
+import Signup from './pages/account/Signup';
 import MainLayout from './components/layout/MainLayout';
 
 const App = () => {
