@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import MarketList from '../../pages/marketplace/MarketList';
-import Login from '../../pages/login/Login';
-import Signup from '../../pages/login/Signup';
+import Login from '../../pages/account/Login';
+import Signup from '../../pages/account/Signup';
 import ServiceChat from '../../pages/mypage/AIChatBot';
 import Location from '../../pages/map/Location';
 import MyPage from '../../pages/mypage/MyPage';

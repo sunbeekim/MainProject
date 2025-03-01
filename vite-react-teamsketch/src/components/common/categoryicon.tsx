@@ -92,8 +92,8 @@ const categories: ICategory[] = [
   { name: "DIY", icon: "🔨" },
   { name: "과학", icon: "🔬" }
 ];
-
-interface ICategoryIconProps { // typeScript 인터페이스, 타입 등
+  
+interface ICategoryIconProps {
   onCategorySelect?: (category: string) => void;
 }
 
@@ -112,6 +112,7 @@ const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect }) => {
           선택된 카테고리: {selectedCategory}
         </div>
       )}
+
 
       {/* 메인 카테고리 - 가로 스크롤 적용 */}
       <div className="flex gap-4 overflow-x-auto pb-4 px-2 no-scrollbar">
