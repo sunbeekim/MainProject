@@ -1,5 +1,6 @@
 import ThemeToggle from '../../components/common/ThemeToggle';
 import { Link } from 'react-router-dom';
+import ResetPassword from '../account/ResetPassword';
 
 
 const Setting = () => {
