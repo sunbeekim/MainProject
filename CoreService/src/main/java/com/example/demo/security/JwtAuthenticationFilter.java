@@ -20,6 +20,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenBlacklistService blacklistService;
 
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -51,10 +52,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.warn("Invalid token presented for path: {}", path);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 
+
+    
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {

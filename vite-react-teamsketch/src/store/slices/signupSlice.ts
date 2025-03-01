@@ -1,22 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-interface SignupForm {
-  name: string;
-  id: string;
-  password: string;
-  email: string;
-  phone: string;
-  hobby: string;
-  nickname: string;
-}
+import { SignupForm } from '../../types/auth';
 
 interface ValidationErrors {
   name: string;
-  id: string;
   password: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   nickname: string;
+  hobby: string;
 }
 
 interface SignupState {
@@ -28,20 +19,22 @@ interface SignupState {
 const initialState: SignupState = {
   formData: {
     name: '',
-    id: '',
     password: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
     hobby: '',
-    nickname: ''
+    bio: '',
+    nickname: '',
+    loginMethod: 'EMAIL',
+    socialProvider: null
   },
   validationErrors: {
     name: '',
-    id: '',
     password: '',
     email: '',
-    phone: '',
-    nickname: ''
+    phoneNumber: '',
+    nickname: '',
+    hobby: ''
   },
   error: ''
 };
@@ -50,8 +43,14 @@ const signupSlice = createSlice({
   name: 'signup',
   initialState,
   reducers: {
-    updateField: (state, action: PayloadAction<{ name: string; value: string }>) => {
-      state.formData[action.payload.name as keyof SignupForm] = action.payload.value;
+    updateField: (
+      state,
+      action: PayloadAction<{ 
+        name: keyof SignupForm; 
+        value: string 
+      }>
+    ) => {
+      (state.formData[action.payload.name] as any) = action.payload.value;
     },
     setValidationError: (state, action: PayloadAction<{ field: string; message: string }>) => {
       state.validationErrors[action.payload.field as keyof ValidationErrors] =

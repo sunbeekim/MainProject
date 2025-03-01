@@ -15,3 +15,4 @@ public class LogoutResponse {
     private String message;
     private LocalDateTime invalidatedUntil;
 }
+

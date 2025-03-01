@@ -62,21 +62,21 @@ public class JwtTokenProvider {
             @SuppressWarnings("unchecked")
             List<String> roles = (List<String>) rolesObj;
             authorities = roles.stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+                 .map(SimpleGrantedAuthority::new)
+                 .collect(Collectors.toList());
+
         } else if (rolesObj instanceof String) {
             // 이전 방식과의 호환성을 위해 String인 경우도 처리
             String rolesStr = (String) rolesObj;
             authorities = Arrays.stream(rolesStr.split(","))
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
         } else {
             // 역할이 없거나 알 수 없는 형식인 경우 빈 목록 사용
             authorities = Collections.emptyList();
         }
-
         User principal = new User(claims.getSubject(), "", authorities);
-
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
@@ -84,7 +84,7 @@ public class JwtTokenProvider {
         return Jwts.parserBuilder().setSigningKey(secretKey).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
-
+  
     public Integer getUserId(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build()
                 .parseClaimsJws(token).getBody().get("userId", Integer.class);
@@ -94,7 +94,6 @@ public class JwtTokenProvider {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build()
                     .parseClaimsJws(token);
-
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return false;
@@ -112,4 +111,6 @@ public class JwtTokenProvider {
                 .getBody()
                 .getExpiration();
     }
+
 }
+

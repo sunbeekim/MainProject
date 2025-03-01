@@ -38,7 +38,9 @@ public class PasswordUtils {
         String hashedPassword = bCryptPasswordEncoder.encode(password);
 
         Map<String, String> result = new HashMap<>();
+
         result.put("hashedPassword", hashedPassword);
+        result.put("salt", salt);
         return result;
     }
 

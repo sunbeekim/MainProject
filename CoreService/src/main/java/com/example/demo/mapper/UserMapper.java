@@ -38,3 +38,4 @@ public interface UserMapper {
     // 계정 상태 업데이트
     int updateAccountStatus(@Param("email") String email, @Param("accountStatus") String accountStatus);
 }
+

@@ -49,11 +49,11 @@ export const validateEmail = (email: string): ValidationResult => {
   return { isValid: true, message: '' };
 };
 
-export const validatePhone = (phone: string): ValidationResult => {
-  if (!phone) {
+export const validatePhone = (phoneNumber: string): ValidationResult => {
+  if (!phoneNumber) {
     return { isValid: false, message: '전화번호를 입력해주세요.' };
   }
-  if (!/^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/.test(phone)) {
+  if (!/^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/.test(phoneNumber)) {
     return { isValid: false, message: '올바른 전화번호 형식이 아닙니다.' };
   }
   return { isValid: true, message: '' };

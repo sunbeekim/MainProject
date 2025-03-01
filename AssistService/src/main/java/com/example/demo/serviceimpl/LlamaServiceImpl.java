@@ -10,12 +10,9 @@ import java.nio.charset.StandardCharsets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.*;
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+
 import com.example.demo.dao.ChatMessageDAO;
 import com.example.demo.model.ChatMessage;
-import com.example.demo.serviceimpl.CloudChatBotServiceImpl;
 
 @Service
 @RequiredArgsConstructor
@@ -174,24 +171,31 @@ public class LlamaServiceImpl {
         }
     }
 
+    /**
+     * 채팅 내용을 저장합니다.
+     * @param userMessage 사용자 메시지
+     * @param assistantResponse AI 응답
+     * @param sessionId 사용자 이메일 (세션 식별자)
+     */
     private void saveChat(String userMessage, String assistantResponse, String sessionId) {
-        // 사용자 메시지 저장
-        ChatMessage userChatMessage = new ChatMessage();
-        userChatMessage.setUsername("anonymous");  // 기본값 설정
-        userChatMessage.setRoleId(1);             // 기본값 설정
-        userChatMessage.setMessageType("user");
-        userChatMessage.setContent(userMessage);
-        userChatMessage.setSessionId(sessionId);
-        chatMessageDAO.saveMessage(userChatMessage);
+        try {
+            // 사용자 메시지 저장
+            ChatMessage userChatMessage = new ChatMessage();
+            userChatMessage.setSessionId(sessionId);
+            userChatMessage.setMessageType("user");
+            userChatMessage.setContent(userMessage);
+            chatMessageDAO.saveMessage(userChatMessage);
 
-        // 어시스턴트 응답 저장
-        ChatMessage assistantChatMessage = new ChatMessage();
-        assistantChatMessage.setUsername("anonymous");  // 기본값 설정
-        assistantChatMessage.setRoleId(2);             // assistant는 role_id를 2로 설정
-        assistantChatMessage.setMessageType("assistant");
-        assistantChatMessage.setContent(assistantResponse);
-        assistantChatMessage.setSessionId(sessionId);
-        chatMessageDAO.saveMessage(assistantChatMessage);
+            // AI 응답 저장
+            ChatMessage assistantChatMessage = new ChatMessage();
+            assistantChatMessage.setSessionId(sessionId);
+            assistantChatMessage.setMessageType("assistant");
+            assistantChatMessage.setContent(assistantResponse);
+            chatMessageDAO.saveMessage(assistantChatMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("채팅 저장 중 오류 발생: " + e.getMessage());
+        }
     }
 
     private String processWithLlama(String englishMessage, String sessionId, List<Map<String, String>> history) {

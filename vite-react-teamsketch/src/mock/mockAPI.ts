@@ -1,4 +1,4 @@
-import { mockMessages, mockAuthResponse } from './mockData';
+import { mockLatestProducts, mockRecommendedProducts, IProduct } from './mockData';
 
 // 실제 API 응답 구조를 모방
 const createResponse = <T>(data: T) => ({
@@ -7,29 +7,58 @@ const createResponse = <T>(data: T) => ({
 });
 
 export const mockAPI = {
-  chat: {
-    sendMessage: async (message: string) => {
-      // 응답 지연 시뮬레이션
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+  market: {
+    // 최신 상품 목록 조회
+    getLatestProducts: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return createResponse({
-        response: '이것은 mock 응답입니다: ' + message
+        products: mockLatestProducts
       });
     },
 
-    getHistory: async () => {
+    // 추천 상품 목록 조회
+    getRecommendedProducts: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return createResponse({
-        messages: mockMessages
+        products: mockRecommendedProducts
       });
-    }
-  },
+    },
 
-  auth: {
-    login: async (credentials: { email: string; password: string }) => {
-      if (credentials.email === 'test@test.com' && credentials.password === 'password123') {
-        return createResponse(mockAuthResponse);
+    // 카테고리별 상품 조회
+    getProductsByCategory: async (category: string) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const filteredProducts = [...mockLatestProducts, ...mockRecommendedProducts]
+        .filter(product => product.category === category);
+      return createResponse({
+        products: filteredProducts
+      });
+    },
+
+    // 상품 상세 조회
+    getProductById: async (id: number) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const product = [...mockLatestProducts, ...mockRecommendedProducts]
+        .find(product => product.id === id);
+      
+      if (!product) {
+        throw new Error('상품을 찾을 수 없습니다.');
       }
-      throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
+
+      return createResponse({
+        product
+      });
+    },
+
+    // 상품 등록
+    createProduct: async (productData: Omit<IProduct, 'id'>) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const newProduct = {
+        id: Math.floor(Math.random() * 10000),
+        ...productData
+      };
+      return createResponse({
+        product: newProduct
+      });
     }
   }
 };
