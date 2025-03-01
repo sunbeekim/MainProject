@@ -10,7 +10,6 @@ import { google, kakao, naver } from '../../assets/images/login';
 import EmailInput from '../../components/forms/input/EmailInput';
 import LoginPasswordInput from '../../components/forms/input/LoginPasswordInput';
 
-
 interface LoginForm {
   email: string;
   password: string;
@@ -39,23 +38,26 @@ const Login = () => {
     setError('');
 
     try {
-      const user = await loginMutation.mutateAsync(formData);
-      dispatch(login(user));
+      const response = await loginMutation.mutateAsync(formData);
+      dispatch(login({
+        email: response.email,
+        nickname: response.nickname,
+        userId: response.userId,
+        token: response.token
+      }));
       navigate('/');
+      console.log('로그인 성공');
     } catch (err) {
       setError(err instanceof Error ? err.message : '로그인 중 오류가 발생했습니다.');
     }
   };
-
-
-
 
   return (
     <form onSubmit={handleSubmit}>
       <LoginLayout
         title={<h1 className="text-2xl font-bold">로그인</h1>}
         forgotPassword={
-          <a href="/ForgotPassword" className="text-sm text-primary-light hover:text-primary-dark">
+          <a href="/forgot-password" className="text-sm text-primary-light hover:text-primary-dark">
             비밀번호 찾기
           </a>
         }

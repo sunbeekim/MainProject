@@ -1,20 +1,57 @@
 import ThemeToggle from '../../components/common/ThemeToggle';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import LogoutModal from '../account/LogoutModal';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../store/slices/authSlice';
 
 
 
 
 const Setting = () => {
+  const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    console.log('로그아웃 실행!');
+    dispatch(logout());
+    localStorage.removeItem('token');
+    setLogoutModalOpen(false);
+    navigate('/login');
+  };
+
   return (
-    <div className="p-4">
-      <h1>Setting</h1>
-      모드변경 <ThemeToggle />
-      <div>
-        <button className="m-2  hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF] dark:bg-[#1C1C1C] text-white">
-          <Link to="/servicechat">고객센터 챗봇</Link>
+
+    <div className="p-4 space-y-4">      
+      <div className="flex items-center justify-between p-2 bg-[#F3F2FF] dark:bg-[#1C1C1C] rounded-lg">
+        <span className="text-[#4A4A4A] dark:text-white">모드변경</span>
+        <ThemeToggle />
+      </div>
+
+      <div className="p-2">
+        <button className="w-full text-[#6003FF] hover:text-primary-dark px-4 py-2 rounded-lg bg-[#F3F2FF] dark:bg-[#1C1C1C] dark:text-white transition-colors">
+          <Link to="/servicechat" className="flex items-center justify-center">
+            고객센터 챗봇
+          </Link>
         </button>
       </div>
-     </div>
+
+      <div className="p-2">
+        <button 
+          onClick={() => setLogoutModalOpen(true)}
+          className="w-full px-4 py-2 text-[#4A4A4A] bg-[#F6CED8] hover:bg-[#F9B0BA] rounded-lg transition-colors"
+        >
+          로그아웃
+        </button>
+      </div>
+
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setLogoutModalOpen(false)}
+        onLogout={handleLogout}
+      />
+    </div>
   );
 };
 

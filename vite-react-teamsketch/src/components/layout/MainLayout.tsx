@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import MarketList from '../../pages/marketplace/MarketList';
-import Login from '../../pages/login/Login';
-import Signup from '../../pages/login/Signup';
+import Login from '../../pages/account/Login';
+import Signup from '../../pages/account/Signup';
 import ServiceChat from '../../pages/mypage/AIChatBot';
 import Location from '../../pages/map/Location';
 import MyPage from '../../pages/mypage/MyPage';
@@ -12,6 +12,7 @@ import TestMarketplace from '../../testpages/TestMarketplace';
 import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
 import TestProductDetails from '../../testpages/TestProductDetails';
+import TestAPI from '../../testpages/TestAPI';
 
 const MainLayout = () => {
   return (
@@ -32,6 +33,7 @@ const MainLayout = () => {
         <Route path="/test/productdetails" element={<TestProductDetails />} />
         <Route path="/test/component" element={<TestComponent />} />
         <Route path="/test/func" element={<TestFunc />} />
+        <Route path="/test/api" element={<TestAPI />} />
       </Routes>
     </main>
   );

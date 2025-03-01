@@ -59,7 +59,7 @@ const VerficationCode = () => {
         >
           인증코드 재전송
         </span>
-
+오
           <Button variant="primary" className="w-full">
             다음
           </Button>

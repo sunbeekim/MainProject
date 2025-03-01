@@ -29,6 +29,11 @@ export const useSendChatMessage = () => {
         apiConfig.endpoints.assist.chat,
         request
       );
+
+      if (response.data.status === 'error') {
+        throw new Error(response.data.message || '채팅 요청 중 오류가 발생했습니다.');
+      }
+
       return response.data.data.response;
     }
   });
