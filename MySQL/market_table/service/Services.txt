@@ -1,14 +1,13 @@
 -- 1. 테이블 생성 (마켓 서비스 테이블)
 
 CREATE TABLE Services (
-    service_id BIGINT PRIMARY KEY,                           
-    user_id INT(11) UNIQUE,                                   
-    service_title VARCHAR(255) NOT NULL,                       
-    service_description TEXT NOT NULL,                         
-    service_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,     
+    service_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    service_title VARCHAR(255) NOT NULL,
+    service_description TEXT NOT NULL,
+    service_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     service_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    category_id INT,                                          
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),          
-    FOREIGN KEY (category_id) REFERENCES Categories(category_id) 
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM Services;
+    category_id INT,
+    FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

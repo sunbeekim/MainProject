@@ -1,11 +1,9 @@
 -- 3. 테이블 생성 (사용자 계정 정보 테이블)
 
 CREATE TABLE User_Account_info (
-    user_id INT(11) NOT NULL,
-    account_status ENUM('Active','Deactivated','Dormant','Withdrawal') DEFAULT NULL,
-    authority ENUM('1','2') DEFAULT '1',   -- '1': 일반, '2': 관리자
-    authority_name VARCHAR(255) DEFAULT NULL,
-    PRIMARY KEY (user_id),
-    CONSTRAINT fk_user_account_info_user FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    email VARCHAR(255) NOT NULL PRIMARY KEY, -- email을 PK로 사용
+    account_status ENUM('Active', 'Deactivated', 'Dormant', 'Withdrawal') NOT NULL,
+    authority ENUM('1', '2') NOT NULL,  -- '1': 일반, '2': 관리자
+    authority_name VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_user_account_email FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM User_Account_info;

@@ -1,0 +1,7 @@
+Payments 테이블
+
+CREATE TABLE Payments (
+    payment_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    payment_method VARCHAR(50) NOT NULL UNIQUE -- ENUM 대신 VARCHAR로 관리하여 확장 가능하게 설계
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

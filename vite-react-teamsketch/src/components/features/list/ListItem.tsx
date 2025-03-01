@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 
 
 interface ListItemProps{
+  nickname: string;
   title: string;          
   description: string;    
   points: number;        
 }
 
-const ListItem: React.FC<ListItemProps> = ({ title, description, points }) => {
+const ListItem: React.FC<ListItemProps> = ({nickname, title, description, points }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -23,6 +24,7 @@ const ListItem: React.FC<ListItemProps> = ({ title, description, points }) => {
         </div>
   
         <div className="flex flex-col flex-1 w-full">
+        <span className="text-gray-400 text-xs">{nickname}</span>
           <h3 className="text-lg font-semibold ">{title}</h3>
           <p className="text-gray-500 text-sm">{description}</p>
 

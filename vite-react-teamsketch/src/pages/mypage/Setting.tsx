@@ -1,9 +1,12 @@
 import ThemeToggle from '../../components/common/ThemeToggle';
 import { Link, useNavigate } from 'react-router-dom';
-import LogoutModal from '../login/LogoutModal';
+import LogoutModal from '../account/LogoutModal';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
+
+
+
 
 const Setting = () => {
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -19,6 +22,7 @@ const Setting = () => {
   };
 
   return (
+
     <div className="p-4 space-y-4">      
       <div className="flex items-center justify-between p-2 bg-[#F3F2FF] dark:bg-[#1C1C1C] rounded-lg">
         <span className="text-[#4A4A4A] dark:text-white">모드변경</span>

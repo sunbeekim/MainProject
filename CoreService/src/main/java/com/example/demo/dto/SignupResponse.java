@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SignupResponse {
     private boolean success;
-    private Integer userId;
+    private String email;
     private String message;
 }

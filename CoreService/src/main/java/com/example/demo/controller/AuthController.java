@@ -20,9 +20,9 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/core/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    
+
     private final UserService userService;
-    
+
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
         SignupResponse response = userService.registerUser(signupRequest);
@@ -32,7 +32,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(response);
         }
     }
-    
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse response = userService.login(loginRequest);
@@ -42,7 +42,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(response);
         }
     }
-    
+
     @PostMapping("/logout")
     public ResponseEntity<LogoutResponse> logout(@RequestHeader("Authorization") String token) {
         LogoutResponse response = userService.logout(token);

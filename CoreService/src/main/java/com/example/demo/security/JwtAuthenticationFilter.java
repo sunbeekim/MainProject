@@ -19,23 +19,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenBlacklistService blacklistService;
-    
+
+
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request, 
-            HttpServletResponse response, 
+            HttpServletRequest request,
+            HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        
+
         String token = resolveToken(request);
         String path = request.getRequestURI();
-        
+
         // 로깅 추가
         log.debug("Received request to path: {}", path);
-        
+
         if (token != null) {
             boolean isValid = jwtTokenProvider.validateToken(token);
             boolean isBlacklisted = blacklistService.isBlacklisted(token);
-            
+
             log.debug("Token validation: isValid={}, isBlacklisted={}", isValid, isBlacklisted);
 
             if (isValid && !isBlacklisted) {
@@ -51,9 +52,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.warn("Invalid token presented for path: {}", path);
             }
         }
-        
         filterChain.doFilter(request, response);
     }
+
+
     
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
