@@ -1,4 +1,6 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../store/slices/authSlice';
 
 interface LogoutModalProps {
     isOpen: boolean;
@@ -6,7 +8,27 @@ interface LogoutModalProps {
     onLogout: () => void;
 }
 
-const LogoutModal: React.FC<LogoutModalProps> = ({ isOpen, onClose, onLogout }) => {
+const LogoutModal = ({ isOpen, onClose, onLogout }: LogoutModalProps) => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // 로그아웃 처리
+        dispatch(logout());
+        
+        // 로컬 스토리지의 토큰 제거
+        localStorage.removeItem('token');
+        
+        // 모달 닫기
+        onClose();
+        
+        // 부모 컴포넌트의 로그아웃 핸들러 호출
+        onLogout();
+        
+        // 로그인 페이지로 이동
+        navigate('/login');
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -24,10 +46,10 @@ const LogoutModal: React.FC<LogoutModalProps> = ({ isOpen, onClose, onLogout }) 
                         <div className="text-[#4A4A4A] text-xs font-semibold font-['Inter']">취소</div>
                     </button>
                     <button 
-                        onClick={onLogout}
+                        onClick={handleLogout}
                         className="grow shrink basis-0 h-10 px-4 py-3 bg-[#F6CED8] rounded-xl justify-center items-center gap-2 flex overflow-hidden hover:bg-[#F9B0BA]"
                     >
-                        <div className="text-#4A4A4A text-xs font-semibold font-['Inter']">로그아웃</div>
+                        <div className="text-[#4A4A4A] text-xs font-semibold font-['Inter']">로그아웃</div>
                     </button>
                 </div>
             </div>
@@ -35,4 +57,4 @@ const LogoutModal: React.FC<LogoutModalProps> = ({ isOpen, onClose, onLogout }) 
     );
 };
 
-export default LogoutModal;
+export default LogoutModal; 
