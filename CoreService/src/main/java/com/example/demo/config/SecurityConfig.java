@@ -21,30 +21,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenBlacklistService jwtTokenBlacklistService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> 
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            )
-            .addFilterBefore(
-                new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
-                UsernamePasswordAuthenticationFilter.class
-            );
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/core/auth/signup", "/api/core/auth/login").permitAll() // 회원가입, 로그인 허용
+                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                )
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
 
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12); // 보안 강도 12 권장
     }
 }

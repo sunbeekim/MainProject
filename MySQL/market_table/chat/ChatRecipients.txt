@@ -1,11 +1,10 @@
 -- 15. 테이블 생성 (마켓 메시지 수신 테이블)
 
 CREATE TABLE ChatRecipients (
-    recipient_id BIGINT PRIMARY KEY,                                  
-    chat_read_at TIMESTAMP,                                           
-    chat_message_id BIGINT,                                           
-    user_id INT(11),                                                  
-    FOREIGN KEY (chat_message_id) REFERENCES ChatMessages(chat_message_id), 
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)                   
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM ChatRecipients;
+    recipient_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    chat_read_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    chat_message_id BIGINT,
+    email VARCHAR(255) NOT NULL,
+    FOREIGN KEY (chat_message_id) REFERENCES ChatMessages(chat_message_id),
+    FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

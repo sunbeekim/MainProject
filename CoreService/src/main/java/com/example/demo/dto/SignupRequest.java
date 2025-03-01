@@ -13,7 +13,9 @@ public class SignupRequest {
     private String email;
     private String nickname;
     private String password;
+    private String hobby;
     private String bio;
     private String loginMethod;
     private String socialProvider;
 }
+

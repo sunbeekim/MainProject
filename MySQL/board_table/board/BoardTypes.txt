@@ -1,8 +1,7 @@
 -- 2. 테이블 생성 (게시판 유형 테이블)
-
+sql
 CREATE TABLE BoardTypes (
-    board_type_id INT PRIMARY KEY,                            
-    board_type_name ENUM('전용', '후기', '신고') NOT NULL,       
-    board_type_description TEXT                                
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM BoardTypes;
+    board_type_id INT PRIMARY KEY AUTO_INCREMENT,
+    board_type_name ENUM('전용', '후기', '신고') NOT NULL,
+    board_type_description TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

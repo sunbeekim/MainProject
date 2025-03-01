@@ -1,10 +1,10 @@
 -- 5. 테이블 생성 (사용자 취미 관계 테이블)
 
+-- 취미 관계 테이블
 CREATE TABLE UserHobbies (
-    user_hobby_id INT PRIMARY KEY,        
-    user_id INT(11),                      
-    hobbies_id INT,                        
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),          
-    FOREIGN KEY (hobbies_id) REFERENCES Hobbies(hobbies_id) 
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM UserHobbies;
+    user_hobby_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    hobbies_id INT NOT NULL,
+    FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE,
+    FOREIGN KEY (hobbies_id) REFERENCES Hobbies(hobbies_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

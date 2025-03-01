@@ -1,11 +1,12 @@
 -- 10. 테이블 생성 (사용자 활동(게시글,댓글) 테이블)
 
+
+-- 활동(게시글,댓글) 테이블
 CREATE TABLE PostCommentActivity (
-    post_comment_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,  
-    posts_written_count INT NOT NULL,                               
-    comments_written_count INT NOT NULL,                           
+    post_comment_activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    posts_written_count INT NOT NULL,
+    comments_written_count INT NOT NULL,
     post_comment_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    user_id INT(11),                                               
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)               
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SELECT * FROM PostCommentActivity;
+    email VARCHAR(255) NOT NULL,
+    FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
