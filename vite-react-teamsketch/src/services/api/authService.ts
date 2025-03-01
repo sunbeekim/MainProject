@@ -1,20 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
+import { SignupForm } from '../../types/auth';
 
 interface LoginCredentials {
   email: string;
   password: string;
-}
-
-interface SignupRequest {
-  name: string;
-  id: string;
-  password: string;
-  email: string;
-  phone: string;
-  hobby?: string;
-  nickname: string;
 }
 
 interface SignupResponse {
@@ -29,11 +20,12 @@ interface SignupResponse {
 // 로그인 API
 const loginApi = async (credentials: LoginCredentials) => {
   const response = await axiosInstance.post(apiConfig.endpoints.core.login, credentials);
+  console.log('로그인 응답:', response.data);
   return response.data;
 };
 
 // 회원가입 API
-const signupApi = async (userData: SignupRequest) => {
+const signupApi = async (userData: SignupForm) => {
   const response = await axiosInstance.post<SignupResponse>(
     apiConfig.endpoints.core.signup,
     userData

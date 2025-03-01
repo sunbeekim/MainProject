@@ -38,9 +38,15 @@ const Login = () => {
     setError('');
 
     try {
-      const user = await loginMutation.mutateAsync(formData);
-      dispatch(login(user));
+      const response = await loginMutation.mutateAsync(formData);
+      dispatch(login({
+        email: response.email,
+        nickname: response.nickname,
+        userId: response.userId,
+        token: response.token
+      }));
       navigate('/');
+      console.log('로그인 성공');
     } catch (err) {
       setError(err instanceof Error ? err.message : '로그인 중 오류가 발생했습니다.');
     }

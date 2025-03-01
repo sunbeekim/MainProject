@@ -6,7 +6,6 @@ import SignupLayout from '../../components/layout/SignupLayout';
 import Button from '../../components/common/BaseButton';
 import {
   validateName,
-  validateId,
   validatePassword,
   validateEmail,
   validatePhone,
@@ -17,16 +16,7 @@ import TextInput from '../../components/forms/input/TextInput';
 import PasswordInput from '../../components/forms/input/PasswordInput';
 import EmailInput from '../../components/forms/input/EmailInput';
 import { useSignup } from '../../services/api/authService';
-
-interface SignupForm {
-  name: string;
-  id: string;
-  password: string;
-  email: string;
-  phone: string;
-  nickname: string;
-  hobby?: string;
-}
+import { SignupForm } from '../../types/auth';
 
 const Signup = () => {
   const signupMutation = useSignup();
@@ -36,15 +26,12 @@ const Signup = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    dispatch(updateField({ name, value }));
+    dispatch(updateField({ name: name as keyof SignupForm, value }));
 
     let validationResult = { isValid: true, message: '' };
     switch (name) {
       case 'name':
         validationResult = validateName(value);
-        break;
-      case 'id':
-        validationResult = validateId(value);
         break;
       case 'password':
         validationResult = validatePassword(value);
@@ -52,7 +39,7 @@ const Signup = () => {
       case 'email':
         validationResult = validateEmail(value);
         break;
-      case 'phone':
+      case 'phoneNumber':
         validationResult = validatePhone(value);
         break;
       case 'nickname':
@@ -69,7 +56,7 @@ const Signup = () => {
 
     try {
       // 모든 필수 필드 검증
-      const requiredFields = ['name', 'id', 'password', 'email', 'phone', 'nickname'];
+      const requiredFields = ['name', 'password', 'email', 'phoneNumber', 'nickname'];
       const missingFields = requiredFields.filter((field) => !formData[field as keyof SignupForm]);
 
       if (missingFields.length > 0) {
@@ -84,7 +71,17 @@ const Signup = () => {
         return;
       }
 
-      await signupMutation.mutateAsync(formData);
+      await signupMutation.mutateAsync({
+        name: formData.name,
+        password: formData.password,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        nickname: formData.nickname,
+        hobby: formData.hobby,
+        bio: formData.bio,
+        loginMethod: 'EMAIL',
+        socialProvider: null
+      });
       navigate('/login');
     } catch (err) {
       dispatch(setError(err instanceof Error ? err.message : '회원가입 중 오류가 발생했습니다.'));
@@ -119,22 +116,17 @@ const Signup = () => {
             {error}
           </div>
         )}
-        <Grid cols={2} gap="sm">
-          <TextInput
-            label="이름"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            error={validationErrors.name}
-          />
-          <TextInput
-            label="아이디"
-            name="id"
-            value={formData.id}
-            onChange={handleChange}
-            error={validationErrors.id}
-          />
-        </Grid>
+       
+
+        <EmailInput
+           label="이메일"
+           name="email"
+           value={formData.email}
+           onChange={handleChange}
+           error={validationErrors.email}
+        />
+          
+       
 
         <PasswordInput
           label="비밀번호"
@@ -144,20 +136,20 @@ const Signup = () => {
           error={validationErrors.password}
         />
 
-        <EmailInput
-          label="이메일"
-          name="email"
-          value={formData.email}
+        <TextInput
+          label="이름"
+          name="name"
+          value={formData.name}
           onChange={handleChange}
-          error={validationErrors.email}
+          error={validationErrors.name}
         />
 
         <TextInput
           label="전화번호"
-          name="phone"
-          value={formData.phone}
+          name="phoneNumber"
+          value={formData.phoneNumber}
           onChange={handleChange}
-          error={validationErrors.phone}
+          error={validationErrors.phoneNumber}
         />
 
         <Grid cols={2} gap="sm">
@@ -170,6 +162,8 @@ const Signup = () => {
             error={validationErrors.nickname}
           />
         </Grid>
+        
+        
       </SignupLayout>
     </form>
   );
