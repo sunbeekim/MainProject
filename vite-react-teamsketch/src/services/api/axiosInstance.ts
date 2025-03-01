@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import { apiConfig } from './apiConfig';
 import { toast } from 'react-toastify';
+import { store } from '../../store/store';
+import { logout } from '../../store/slices/authSlice';
 
 // API 응답 타입 정의
 interface ApiResponse<T = any> {
@@ -16,7 +18,8 @@ export const axiosInstance = axios.create({
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true
 });
 
 // 파일 업로드용 인스턴스
@@ -25,7 +28,8 @@ export const uploadInstance = axios.create({
   timeout: 30000,
   headers: {
     'Content-Type': 'multipart/form-data'
-  }
+  },
+  withCredentials: true
 });
 
 // 공통 인터셉터 설정
@@ -56,9 +60,15 @@ const setupInterceptors = (instance: AxiosInstance) => {
       if (error.response) {
         switch (error.response.status) {
           case 401:
-            localStorage.removeItem('token');
-            window.location.href = '/login';
-            toast.error('인증이 만료되었습니다. 다시 로그인해주세요.');
+            // 토큰이 완전히 만료된 경우에만 로그아웃 처리
+            if (error.response.data?.message?.includes('만료')) {
+              store.dispatch(logout());
+              localStorage.removeItem('token');
+              toast.error('인증이 만료되었습니다. 다시 로그인해주세요.');
+            } else {
+              // 다른 401 에러의 경우 메시지만 표시
+              toast.error(error.response.data?.message || '인증 오류가 발생했습니다.');
+            }
             break;
           case 403:
             toast.error('접근 권한이 없습니다.');
