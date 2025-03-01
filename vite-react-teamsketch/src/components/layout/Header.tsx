@@ -12,47 +12,51 @@ const Header = () => {
     switch (location.pathname) {
       case '/':
         return {
-          title: '#대분류',
+          title: 'MarketPlace',
           actions: (
             <div className="flex gap-2">
-              <button onClick={() => navigate('/test/pages')}>테스트 페이지</button>
+              <button onClick={() => navigate('/test/pages')}
+                className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
+              >
+                testpage
+              </button>
               <Iconalarm className="text-gray-500 cursor-pointer " onClick={() => alert("Alarm icon clicked!")} />
             </div>
           )
         };
+     
       case '/login':
         return {
           title: '로그인',
-          subtitle: '서비스를 이용하기 위해 로그인해주세요'
         };
       case '/signup':
         return {
           title: '회원가입',
-          subtitle: '환영합니다! 계정을 생성해주세요'
         };
       case '/mypage':
         return {
           title: '마이페이지',
-          subtitle: '회원 정보를 확인하고 수정할 수 있습니다',
           actions: (
             <div className="flex gap-2">
               <IconSetting
                 onClick={() => navigate('/setting')}
                 className="w-8 h-8 text-[#59151C] hover:text-primary-dark cursor-pointer"
-              />
-              <button
-                onClick={() => navigate('/login')}
-                className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
-              >
-                login
-              </button>
+              />              
+            </div>
+          )
+        };
+      case '/setting':
+        return {
+          title: '설정',         
+          actions: (
+            <div className="flex gap-2">
+              <button onClick={() => navigate('/login')}>로그아웃</button>
             </div>
           )
         };
       default:
         return {
           title: '404',
-          subtitle: '페이지를 찾을 수 없습니다'
         };
     }
   };
@@ -61,26 +65,21 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-[#F3F2FF] dark:bg-background-dark border-b border-[#E5E1FF] dark:border-[#ffffff]/70 shadow-sm">
-      <Grid cols={3} gap="md" className="items-center px-4 py-3">
+      <Grid cols={3} gap="sm" className="items-center px-2 py-1">
         {/* 왼쪽: 백버튼 */}
         <GridItem className="flex items-center">
-          <BackButton className="text-[#FFFFFF] hover:bg-[#59151C] p-2 rounded" />
+          <BackButton className="text-[#FFFFFF] hover:bg-[#59151C] p-1 rounded text-sm" />
         </GridItem>
 
         {/* 중앙: 타이틀 & 서브타이틀 */}
         <GridItem className="text-center flex flex-col">
-          <h1 className="text-xl font-bold text-[#59151C] dark:text-text-dark">
+          <h1 className="text-sm font-bold text-[#59151C] dark:text-text-dark">
             {headerContent.title}
-          </h1>
-          {headerContent.subtitle && (
-            <p className="text-sm text-[#59151C]/70 dark:text-text-dark/70">
-              {headerContent.subtitle}
-            </p>
-          )}
+          </h1>          
         </GridItem>
 
         {/* 오른쪽: 액션 버튼 */}
-        <GridItem className="flex justify-end">{headerContent.actions}</GridItem>
+        <GridItem className="flex justify-end text-sm">{headerContent.actions}</GridItem>
       </Grid>
     </header>
   );
