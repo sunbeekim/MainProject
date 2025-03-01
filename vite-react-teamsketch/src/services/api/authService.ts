@@ -29,6 +29,7 @@ interface SignupResponse {
 // 로그인 API
 const loginApi = async (credentials: LoginCredentials) => {
   const response = await axiosInstance.post(apiConfig.endpoints.core.login, credentials);
+  console.log('로그인 응답:', response.data);
   return response.data;
 };
 
