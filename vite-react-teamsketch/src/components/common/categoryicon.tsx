@@ -93,7 +93,7 @@ const categories: ICategory[] = [
   { name: "과학", icon: "🔬" }
 ];
 
-interface ICategoryIconProps {
+interface ICategoryIconProps { // typeScript 인터페이스, 타입 등
   onCategorySelect?: (category: string) => void;
 }
 

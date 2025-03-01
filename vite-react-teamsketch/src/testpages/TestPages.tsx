@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import List from '../components/features/list/List';
 
 const TestPages = () => {
   const navigate = useNavigate();
@@ -9,7 +10,6 @@ const TestPages = () => {
         <button onClick={() => navigate('/test/productdetails')}>productdetails</button>         
         <button onClick={() => navigate('/test/component')}>테스트 컴포넌트</button>
         <button onClick={() => navigate('/test/func')}>테스트 함수</button>
-    
     </div>
   );
 };
