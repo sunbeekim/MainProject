@@ -3,7 +3,8 @@ import TextInput from '../../components/forms/input/TextInput';
 import RadioButton from '../../components/common/RadioButton'; 
 import InterestSelect from '../../components/forms/select/InterestSelect'; 
 import Button from '../../components/common/Button'; 
-
+import GridItem from "../../components/common/GridItem";
+import BaseLabelBox from "../../components/common/BaseLabelBox";
 const ProductRegister = () => {
   const [productData, setProductData] = useState({
     title: '',
@@ -12,7 +13,9 @@ const ProductRegister = () => {
     transactionType: '', 
     registrationType: '', 
     description: '',
-    location:'',
+    location: '',
+    startDate: '',
+    endDate: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,6 +120,31 @@ const ProductRegister = () => {
             selectedInterest={productData.category} 
           />
         </div>
+
+      {/* 기간 입력 */}
+      <GridItem>
+          <BaseLabelBox label="일정 기간" >
+            <div className="p-4 bg-white rounded-lg shadow-sm">
+              <div className="flex gap-2 items-center">
+                <input
+                  type="date"
+                  name="startDate"
+                  value={productData.startDate}
+                  onChange={handleChange}
+                  className="border p-2"
+                />
+                <span>~</span>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={productData.endDate}
+                  onChange={handleChange}
+                  className="border p-2"
+                />
+              </div>
+            </div>
+          </BaseLabelBox>
+        </GridItem>
 
         {/* 설명 */}
         <div className="relative w-full h-[209px] mt-4">
