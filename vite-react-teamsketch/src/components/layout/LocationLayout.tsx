@@ -60,7 +60,7 @@ const LocationLayout: React.FC<LocationLayoutProps> = ({
                 <div className="w-3 h-3 bg-white rounded-full" />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">내 위치</p>
+                <p className="text-gray-500 text-sm">목적지</p>
                 <p className="font-medium">{endLocation?.address || "위치를 선택해주세요"}</p>
               </div>
             </div>

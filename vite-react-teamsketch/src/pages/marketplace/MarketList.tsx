@@ -105,7 +105,7 @@ const MarketList = () => {
         label="상품 등록"
         position="bottom-right"
         color="primary"
-      />
+      ></FloatingButton>
     </div>
   );
 };

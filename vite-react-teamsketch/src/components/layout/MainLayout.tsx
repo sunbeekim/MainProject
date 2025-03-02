@@ -8,6 +8,9 @@ import Location from '../../pages/map/Location';
 import MyPage from '../../pages/mypage/MyPage';
 import Requests from '../../pages/trading/Requests';
 import Setting from '../../pages/mypage/Setting';
+import ForgotPassword from '../../pages/account/ForgotPassword';
+import ProductRegister from '../../pages/marketplace/ProductRegister';
+//================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestMarketplace from '../../testpages/TestMarketplace';
 import TestPages from '../../testpages/TestPages';
@@ -59,6 +62,8 @@ const MainLayout = () => {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/requests" element={<Requests />} />
           <Route path="/setting" element={<Setting />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/product/register" element={<ProductRegister />} />
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
