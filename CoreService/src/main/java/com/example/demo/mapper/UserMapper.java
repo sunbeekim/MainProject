@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Mapper
 public interface UserMapper {
@@ -62,5 +63,24 @@ public interface UserMapper {
 
     // 위치 정보 업데이트
     void updateUserLocation(UserLocation userLocation);
+
+    // 회원 탈퇴를 위한 사용자 정보 업데이트 (소프트 삭제)
+    void updateUserForWithdrawal(
+            @Param("email") String email,
+            @Param("anonymizedEmail") String anonymizedEmail,
+            @Param("anonymizedPhone") String anonymizedPhone,
+            @Param("randomNickname") String randomNickname,
+            @Param("accountStatus") String accountStatus,
+            @Param("withdrawalDate") LocalDateTime withdrawalDate
+    );
+
+    // 이메일을 변경하지 않는 새 메서드 추가
+    void updateUserForWithdrawalKeepEmail(
+            @Param("email") String email,
+            @Param("anonymizedPhone") String anonymizedPhone,
+            @Param("randomNickname") String randomNickname,
+            @Param("accountStatus") String accountStatus,
+            @Param("withdrawalDate") LocalDateTime withdrawalDate
+    );
 }
 

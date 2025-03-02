@@ -4,6 +4,8 @@ package com.example.demo.service;
 import com.example.demo.dto.*;
 import com.example.demo.dto.ProfileUpdateRequest;
 import com.example.demo.dto.ProfileUpdateResponse;
+import com.example.demo.dto.WithdrawalRequest;
+import com.example.demo.dto.WithdrawalResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,10 @@ public class UserService {
     
     public ProfileUpdateResponse updateProfile(String token, ProfileUpdateRequest request) {
         return profileService.updateProfile(token, request);
+    }
+    
+    public WithdrawalResponse withdrawUser(String token, WithdrawalRequest request) {
+        return authService.withdrawUser(token, request);
     }
 }
 

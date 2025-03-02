@@ -158,4 +158,27 @@
         VALUES (#{email}, #{locationName}, #{latitude}, #{longitude}, #{recordedAt})
     </insert>
 
+    <!-- 회원 탈퇴를 위한 사용자 정보 업데이트 (소프트 삭제) -->
+    <update id="updateUserForWithdrawal">
+        UPDATE Users
+        SET email = #{anonymizedEmail},
+            phone_number = #{anonymizedPhone},
+            nickname = #{randomNickname},
+            account_status = #{accountStatus},
+            last_update_date = #{withdrawalDate},
+            bio = '탈퇴한 회원입니다.'
+        WHERE email = #{email}
+    </update>
+
+    <!-- 회원 탈퇴를 위한 사용자 정보 업데이트 (이메일 유지) -->
+    <update id="updateUserForWithdrawalKeepEmail">
+        UPDATE Users
+        SET phone_number = #{anonymizedPhone},
+            nickname = #{randomNickname},
+            account_status = #{accountStatus},
+            last_update_date = #{withdrawalDate},
+            bio = '탈퇴한 회원입니다.'
+        WHERE email = #{email}
+    </update>
+
 </mapper>

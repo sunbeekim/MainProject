@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Date;
 
@@ -240,5 +242,168 @@ public class AuthService {
                     .message("로그아웃 중 오류 발생: " + e.getMessage())
                     .build();
         }
+    }
+
+    /**
+     * 회원 탈퇴 처리
+     */
+    @Transactional
+    public WithdrawalResponse withdrawUser(String token, WithdrawalRequest request) {
+        if (token == null || token.isEmpty()) {
+            return WithdrawalResponse.builder()
+                    .success(false)
+                    .message("인증 정보가 없습니다.")
+                    .build();
+        }
+        
+        try {
+            // Bearer 접두사 제거
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            
+            // 토큰 검증
+            if (!jwtTokenProvider.validateToken(token)) {
+                return WithdrawalResponse.builder()
+                        .success(false)
+                        .message("유효하지 않은 인증 정보입니다.")
+                        .build();
+            }
+            
+            // 블랙리스트 확인
+            if (jwtTokenBlacklistService.isBlacklisted(token)) {
+                return WithdrawalResponse.builder()
+                        .success(false)
+                        .message("이미 로그아웃된 토큰입니다.")
+                        .build();
+            }
+            
+            // 토큰에서 사용자 이메일 추출
+            String email = jwtTokenProvider.getUsername(token);
+            
+            // 사용자 정보 조회
+            User user = userMapper.findByEmail(email);
+            if (user == null) {
+                return WithdrawalResponse.builder()
+                        .success(false)
+                        .message("사용자를 찾을 수 없습니다.")
+                        .build();
+            }
+            
+            // 비밀번호 검증 (소셜 로그인이 아닌 경우)
+            if ("EMAIL".equals(user.getLoginMethod()) && request.getPassword() != null) {
+                boolean isPasswordValid = passwordUtils.verifyPassword(
+                        request.getPassword(),
+                        user.getPasswordHash(),
+                        null
+                );
+                
+                if (!isPasswordValid) {
+                    return WithdrawalResponse.builder()
+                            .success(false)
+                            .message("비밀번호가 일치하지 않습니다.")
+                            .build();
+                }
+            }
+            
+            // 현재 시간 설정
+            LocalDateTime now = LocalDateTime.now();
+            
+            // 개인정보 마스킹/익명화 처리 (이메일 제외)
+            String anonymizedPhone = (user.getPhoneNumber() != null) ? anonymizePhone(user.getPhoneNumber()) : null;
+            String randomNickname = "탈퇴회원_" + generateRandomString(8);
+            
+            // 이메일은 변경하지 않고 다른 개인정보만 익명화하여 업데이트
+            userMapper.updateUserForWithdrawalKeepEmail(
+                    email,
+                    anonymizedPhone,
+                    randomNickname,
+                    "Withdrawal",
+                    now
+            );
+            
+            // 계정 상태 업데이트
+            userMapper.updateAccountStatus(email, "Withdrawal");
+            
+            // 토큰 무효화 (블랙리스트에 추가)
+            Date expiration = jwtTokenProvider.getExpirationDate(token);
+            Long expiryMillis = expiration.getTime();
+            jwtTokenBlacklistService.addToBlacklist(token, expiryMillis);
+            
+            // 응답 생성 - 마스킹된 이메일 형태로 보여주기만 하고 실제로 DB는 변경하지 않음
+            String displayEmail = anonymizeEmail(email);
+            
+            return WithdrawalResponse.builder()
+                    .success(true)
+                    .message("회원 탈퇴가 완료되었습니다.")
+                    .withdrawalDate(now)
+                    .email(displayEmail) // 표시용 마스킹 이메일
+                    .build();
+            
+        } catch (Exception e) {
+            log.error("회원 탈퇴 중 오류 발생: {}", e.getMessage(), e);
+            return WithdrawalResponse.builder()
+                    .success(false)
+                    .message("회원 탈퇴 처리 중 오류가 발생했습니다: " + e.getMessage())
+                    .build();
+        }
+    }
+    
+    /**
+     * 이메일 익명화 처리 (일부만 표시하고 나머지는 *로 대체)
+     */
+    private String anonymizeEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return null;
+        }
+        
+        int atIndex = email.indexOf('@');
+        if (atIndex <= 1) {
+            return email; // @ 기호가 없거나 첫 글자인 경우 마스킹하지 않음
+        }
+        
+        String username = email.substring(0, atIndex);
+        String domain = email.substring(atIndex);
+        
+        // 첫 2글자만 표시하고 나머지는 *로 대체
+        int visibleChars = Math.min(2, username.length());
+        String maskedUsername = username.substring(0, visibleChars) + 
+                "*".repeat(Math.max(0, username.length() - visibleChars));
+        
+        return maskedUsername + domain;
+    }
+    
+    /**
+     * 전화번호 익명화 처리 (가운데 숫자를 *로 대체)
+     */
+    private String anonymizePhone(String phone) {
+        if (phone == null || phone.isEmpty()) {
+            return null;
+        }
+        
+        // 전화번호 길이에 따라 다르게 마스킹
+        if (phone.length() <= 4) {
+            return phone;
+        } else if (phone.length() <= 8) {
+            return phone.substring(0, 2) + "*".repeat(phone.length() - 4) + phone.substring(phone.length() - 2);
+        } else {
+            return phone.substring(0, 3) + "*".repeat(phone.length() - 6) + phone.substring(phone.length() - 3);
+        }
+    }
+    
+    /**
+     * 랜덤 문자열 생성 (익명화된 닉네임용)
+     */
+    private String generateRandomString(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(length);
+        
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(chars.length());
+            sb.append(chars.charAt(randomIndex));
+        }
+        
+        return sb.toString();
     }
 }
