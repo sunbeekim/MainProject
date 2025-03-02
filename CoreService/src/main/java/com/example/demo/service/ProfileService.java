@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ProfileResponse;
+import com.example.demo.dto.ProfileUpdateRequest;
+import com.example.demo.dto.ProfileUpdateResponse;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.Hobby;
 import com.example.demo.model.User;
@@ -10,7 +12,9 @@ import com.example.demo.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -163,6 +167,140 @@ public class ProfileService {
         
         log.info("Retrieved public profile for user email: {}", email);
         return builder.build();
+    }
+    
+    /**
+     * 사용자 프로필 업데이트
+     */
+    @Transactional
+    public ProfileUpdateResponse updateProfile(String token, ProfileUpdateRequest request) {
+        // 토큰 검증 및 이메일 추출
+        if (token == null || token.isEmpty()) {
+            return createUpdateErrorResponse("인증 정보가 없습니다.");
+        }
+        
+        try {
+            // Bearer 접두사 제거
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            
+            // 토큰 검증
+            if (!jwtTokenProvider.validateToken(token)) {
+                return createUpdateErrorResponse("유효하지 않은 인증 정보입니다.");
+            }
+            
+            // 블랙리스트 확인
+            if (blacklistService.isBlacklisted(token)) {
+                return createUpdateErrorResponse("로그아웃된 토큰입니다.");
+            }
+            
+            // 토큰에서 이메일 추출
+            String email = jwtTokenProvider.getUsername(token);
+            
+            // 사용자 찾기
+            User user = userMapper.findByEmail(email);
+            if (user == null) {
+                return createUpdateErrorResponse("사용자를 찾을 수 없습니다.");
+            }
+
+            // 닉네임 중복 확인 (변경하는 경우)
+            if (request.getNickname() != null && !request.getNickname().equals(user.getNickname())) {
+                User existingUserWithNickname = userMapper.findByNickname(request.getNickname());
+                if (existingUserWithNickname != null) {
+                    return createUpdateErrorResponse("이미 사용 중인 닉네임입니다.");
+                }
+            }
+            
+            // 전화번호 중복 확인 (변경하는 경우)
+            if (request.getPhoneNumber() != null && !request.getPhoneNumber().equals(user.getPhoneNumber())) {
+                User existingUserWithPhone = userMapper.findByPhoneNumber(request.getPhoneNumber());
+                if (existingUserWithPhone != null) {
+                    return createUpdateErrorResponse("이미 등록된 전화번호입니다.");
+                }
+            }
+
+            // 사용자 기본 정보 업데이트
+            boolean userUpdated = false;
+            if (request.getName() != null && !request.getName().isEmpty()) {
+                user.setName(request.getName());
+                userUpdated = true;
+            }
+            
+            if (request.getNickname() != null && !request.getNickname().isEmpty()) {
+                user.setNickname(request.getNickname());
+                userUpdated = true;
+            }
+            
+            if (request.getPhoneNumber() != null) {
+                user.setPhoneNumber(request.getPhoneNumber());
+                userUpdated = true;
+            }
+            
+            if (request.getBio() != null) {
+                user.setBio(request.getBio());
+                userUpdated = true;
+            }
+            
+            if (userUpdated) {
+                user.setLastUpdateDate(LocalDateTime.now());
+                userMapper.updateUser(user);
+            }
+            
+            // 취미 정보 업데이트
+            if (request.getHobbyIds() != null && !request.getHobbyIds().isEmpty()) {
+                // 기존 취미 삭제
+                userMapper.deleteUserHobbies(email);
+                
+                // 새 취미 등록
+                for (Integer hobbyId : request.getHobbyIds()) {
+                    userMapper.insertUserHobby(email, hobbyId);
+                }
+            }
+            
+            // 위치 정보 업데이트
+            if (request.getLocationName() != null && !request.getLocationName().isEmpty()) {
+                UserLocation location = userMapper.findLocationByEmail(email);
+                
+                if (location == null) {
+                    // 새 위치 정보 생성
+                    location = UserLocation.builder()
+                        .email(email)
+                        .locationName(request.getLocationName())
+                        .latitude(request.getLatitude())
+                        .longitude(request.getLongitude())
+                        .recordedAt(LocalDateTime.now())
+                        .build();
+                    
+                    userMapper.insertUserLocation(location);
+                } else {
+                    // 기존 위치 정보 업데이트
+                    location.setLocationName(request.getLocationName());
+                    location.setLatitude(request.getLatitude());
+                    location.setLongitude(request.getLongitude());
+                    location.setRecordedAt(LocalDateTime.now());
+                    
+                    userMapper.updateUserLocation(location);
+                }
+            }
+            
+            return ProfileUpdateResponse.builder()
+                    .success(true)
+                    .email(email)
+                    .message("프로필이 성공적으로 업데이트되었습니다.")
+                    .build();
+            
+        } catch (Exception e) {
+            log.error("프로필 업데이트 중 오류 발생: {}", e.getMessage(), e);
+            return createUpdateErrorResponse("프로필 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    private ProfileUpdateResponse createUpdateErrorResponse(String message) {
+        return ProfileUpdateResponse.builder()
+                .success(false)
+                .message(message)
+                .build();
     }
     
     private ProfileResponse createErrorResponse(String message) {

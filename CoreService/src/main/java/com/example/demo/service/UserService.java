@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 
 import com.example.demo.dto.*;
+import com.example.demo.dto.ProfileUpdateRequest;
+import com.example.demo.dto.ProfileUpdateResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,10 @@ public class UserService {
     
     public ProfileResponse getUserProfile(String email) {
         return profileService.getUserProfile(email);
+    }
+    
+    public ProfileUpdateResponse updateProfile(String token, ProfileUpdateRequest request) {
+        return profileService.updateProfile(token, request);
     }
 }
 

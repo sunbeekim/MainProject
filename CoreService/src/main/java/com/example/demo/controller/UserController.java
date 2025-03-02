@@ -1,7 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ProfileResponse;
+import com.example.demo.dto.ProfileUpdateRequest;
+import com.example.demo.dto.ProfileUpdateResponse;
 import com.example.demo.service.UserService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +35,20 @@ public class UserController {
     public ResponseEntity<ProfileResponse> getUserProfile(@PathVariable String email) {
         log.debug("Received request to get profile for email: {}", email);
         ProfileResponse response = userService.getUserProfile(email);
+        
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @PutMapping("/me")
+    public ResponseEntity<ProfileUpdateResponse> updateProfile(
+            @RequestHeader("Authorization") String token,
+            @Valid @RequestBody ProfileUpdateRequest request) {
+        log.debug("Received request to update user profile");
+        ProfileUpdateResponse response = userService.updateProfile(token, request);
         
         if (response.isSuccess()) {
             return ResponseEntity.ok(response);

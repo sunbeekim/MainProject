@@ -50,5 +50,17 @@ public interface UserMapper {
 
     // 위치 정보 관련 메서드
     UserLocation findLocationByEmail(String email);
+
+    // 사용자 정보 업데이트
+    int updateUser(User user);
+
+    // 사용자의 취미 정보 삭제
+    void deleteUserHobbies(String email);
+
+    // 위치 정보 삽입 (이미 정의되어 있을 수 있음)
+    void insertUserLocation(UserLocation userLocation);
+
+    // 위치 정보 업데이트
+    void updateUserLocation(UserLocation userLocation);
 }
 
