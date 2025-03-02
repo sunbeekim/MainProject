@@ -57,7 +57,7 @@ const Login = () => {
       <LoginLayout
         title={<h1 className="text-2xl font-bold">Haru, 함께 하는 즐거움!</h1>}
         forgotPassword={
-          <a href="/forgot-password" className="text-sm text-primary-light hover:text-primary-dark">
+          <a href="/forgotpassword" className="text-sm text-primary-light hover:text-primary-dark">
             비밀번호 찾기
           </a>
         }
