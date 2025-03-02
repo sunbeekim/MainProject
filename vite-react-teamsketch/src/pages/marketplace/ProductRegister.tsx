@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import TextInput from '../../components/forms/input/TextInput';
 import RadioButton from '../../components/common/RadioButton'; 
 import InterestSelect from '../../components/forms/select/InterestSelect'; 
+import Button from '../../components/common/Button'; 
+
 const ProductRegister = () => {
   const [productData, setProductData] = useState({
     title: '',
@@ -10,6 +12,7 @@ const ProductRegister = () => {
     transactionType: '', 
     registrationType: '', 
     description: '',
+    location:'',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +35,14 @@ const ProductRegister = () => {
       ...prevState,
       category: value,
     }));
+  };
+
+  const handleLocationClick = () => {
+    alert("장소 지정하는 기능 구현"); 
+  };
+  const handleSubmit = () => {
+    console.log("등록하기 버튼 클릭됨", productData);
+   
   };
 
   return (
@@ -71,7 +82,16 @@ const ProductRegister = () => {
             checked={productData.transactionType === 'nonFaceToFace'}
             onChange={(value) => handleRadioButtonChange('transactionType', value)}
           />
+
+           {/* 대면 선택 시 장소 지정하기 버튼 */}
+        {productData.transactionType === 'faceToFace' && (
+          <button onClick={handleLocationClick}              
+           className="bg-primary-light hover:bg-primary text-white font-bold" >장소 지정
+            </button>
+        )}
         </div>
+
+       
 
         {/* 등록 유형 (구매/판매) 라디오 버튼 */}
         <div className="flex gap-4 font-bold">등록 유형
@@ -109,7 +129,14 @@ const ProductRegister = () => {
             className="mt-2 w-[331px] h-[174px]"
           />
         </div>
-      </div>
+
+            {/* 등록하기 버튼 */}
+            <div className="mt-6">
+          <Button  variant="primary" className="w-full" onClick={handleSubmit}>
+            등록하기
+          </Button>
+        </div>
+       </div>
     </div>
   );
 };
