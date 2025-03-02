@@ -1,3 +1,5 @@
+// http://localhost:8081 — 구현 해야하는 code서버 (백엔드 DB, redis, 웹소켓)
+
 package com.example.demo.controller;
 
 import com.example.demo.dto.LoginRequest;
