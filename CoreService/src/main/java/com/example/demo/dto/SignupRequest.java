@@ -3,6 +3,7 @@ package com.example.demo.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,9 +14,9 @@ public class SignupRequest {
     private String email;
     private String nickname;
     private String password;
-    private String hobby;
     private String bio;
     private String loginMethod;
     private String socialProvider;
+    private List<Integer> hobbyIds;
 }
 

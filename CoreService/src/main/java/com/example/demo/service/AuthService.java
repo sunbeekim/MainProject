@@ -66,14 +66,14 @@ public class AuthService {
         // 현재 시간 설정
         LocalDateTime now = LocalDateTime.now();
 
-        // 사용자 정보 생성
+        // 사용자 정보 생성 - hobby 필드 제거됨
         User user = User.builder()
                 .email(request.getEmail())
                 .passwordHash(hashedPassword)
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
                 .nickname(request.getNickname())
-                .hobby(request.getHobby())
+                // hobby 필드 제거됨
                 .bio(request.getBio())
                 .loginMethod(request.getLoginMethod() != null ? request.getLoginMethod() : "EMAIL")
                 .socialProvider(request.getSocialProvider() != null ? request.getSocialProvider() : "NONE")
@@ -98,6 +98,13 @@ public class AuthService {
                 .build();
 
         userMapper.insertUserAccountInfo(accountInfo);
+
+        // 취미 정보 추가 (있는 경우)
+        if (request.getHobbyIds() != null && !request.getHobbyIds().isEmpty()) {
+            for (Integer hobbyId : request.getHobbyIds()) {
+                userMapper.insertUserHobby(user.getEmail(), hobbyId);
+            }
+        }
 
         return SignupResponse.builder()
                 .success(true)

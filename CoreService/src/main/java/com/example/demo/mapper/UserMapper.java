@@ -2,8 +2,12 @@ package com.example.demo.mapper;
 
 import com.example.demo.model.User;
 import com.example.demo.model.UserAccountInfo;
+import com.example.demo.model.Hobby;
+import com.example.demo.model.UserLocation;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -37,5 +41,14 @@ public interface UserMapper {
 
     // 계정 상태 업데이트
     int updateAccountStatus(@Param("email") String email, @Param("accountStatus") String accountStatus);
+
+    // 취미 관련 메서드
+    List<Hobby> findHobbiesByEmail(String email);
+
+    // 취미 저장 메서드 추가
+    void insertUserHobby(@Param("email") String email, @Param("hobbyId") Integer hobbyId);
+
+    // 위치 정보 관련 메서드
+    UserLocation findLocationByEmail(String email);
 }
 
