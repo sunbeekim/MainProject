@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import MarketList from '../../pages/marketplace/MarketList';
 import Login from '../../pages/account/Login';
 import Signup from '../../pages/account/Signup';
@@ -15,26 +16,59 @@ import TestProductDetails from '../../testpages/TestProductDetails';
 import TestAPI from '../../testpages/TestAPI';
 
 const MainLayout = () => {
-  return (
-    <main className="main-content mb-3">
-      <Routes>
-        <Route path="/" element={<MarketList />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/servicechat" element={<ServiceChat />} />
-        <Route path="/location" element={<Location />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/requests" element={<Requests />} />
-        <Route path="/setting" element={<Setting />} />
+  const [footerHeight, setFooterHeight] = useState<number>(0);
+  const [headerHeight, setHeaderHeight] = useState<number>(0);
 
-        {/* test pages */}
-        <Route path="/test/pages" element={<TestPages />} />
-        <Route path="/test/marketplace" element={<TestMarketplace />} />
-        <Route path="/test/productdetails" element={<TestProductDetails />} />
-        <Route path="/test/component" element={<TestComponent />} />
-        <Route path="/test/func" element={<TestFunc />} />
-        <Route path="/test/api" element={<TestAPI />} />
-      </Routes>
+  useEffect(() => {
+    const updateHeights = () => {
+      const footer = document.getElementById('main-footer');
+      const header = document.getElementById('main-header');
+      
+      if (footer) {
+        setFooterHeight(footer.offsetHeight);
+      }
+      if (header) {
+        setHeaderHeight(header.offsetHeight);
+      }
+    };
+
+    updateHeights();
+    window.addEventListener('resize', updateHeights);
+
+    return () => {
+      window.removeEventListener('resize', updateHeights);
+    };
+  }, []);
+
+  return (
+    <main className="fixed inset-0 w-full">
+      <div 
+        className="content-scroll"
+        style={{ 
+          height: `calc(100vh - env(safe-area-inset-bottom))`,
+          paddingBottom: `${footerHeight}px`,
+          paddingTop: `${headerHeight}px`,
+        }}
+      >
+        <Routes>
+          <Route path="/" element={<MarketList />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/servicechat" element={<ServiceChat />} />
+          <Route path="/location" element={<Location />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/requests" element={<Requests />} />
+          <Route path="/setting" element={<Setting />} />
+
+          {/* test pages */}
+          <Route path="/test/pages" element={<TestPages />} />
+          <Route path="/test/marketplace" element={<TestMarketplace />} />
+          <Route path="/test/productdetails" element={<TestProductDetails />} />
+          <Route path="/test/component" element={<TestComponent />} />
+          <Route path="/test/func" element={<TestFunc />} />
+          <Route path="/test/api" element={<TestAPI />} />
+        </Routes>
+      </div>
     </main>
   );
 };

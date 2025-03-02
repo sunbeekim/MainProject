@@ -94,10 +94,11 @@ const categories: ICategory[] = [
 ];
   
 interface ICategoryIconProps {
+  categorySize?: 'sm' | 'md' | 'lg';
   onCategorySelect?: (category: string) => void;
 }
 
-const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect }) => {
+const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect, categorySize = 'md' }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const handleCategoryClick = (category: string) => {
@@ -108,35 +109,40 @@ const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect }) => {
   return (
     <div className="w-full overflow-hidden">
       {selectedCategory && (
-        <div className="text-center mb-4 text-lg font-semibold text-primary-light">
+        <div className="text-center mb-2 text-xs sm:text-sm lg:text-base font-semibold text-primary-light">
           선택된 카테고리: {selectedCategory}
         </div>
       )}
 
-
       {/* 메인 카테고리 - 가로 스크롤 적용 */}
-      <div className="flex gap-4 overflow-x-auto pb-4 px-2 no-scrollbar">
+      <div className="flex gap-1.5 sm:gap-2 lg:gap-3 overflow-x-auto pb-1 sm:pb-2 lg:pb-3 px-1 sm:px-2 no-scrollbar">
         {categories.map((category, index) => (
-          <div key={index} className="flex-shrink-0">
+          <div key={index} className="flex-shrink-0 flex flex-col items-center gap-1">
             <button
               onClick={() => handleCategoryClick(category.name)}
               className={`
-                w-20 h-20
+                ${
+                  categorySize === 'sm' 
+                    ? 'w-8 h-8 sm:w-10 sm:h-10' 
+                    : categorySize === 'lg' 
+                    ? 'w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16' 
+                    : 'w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14'
+                }
                 flex flex-col items-center justify-center
-                border-2 rounded-full
+                border rounded-full
                 transition-all duration-200 ease-in-out
                 ${
                   selectedCategory === category.name
-                    ? 'border-primary-light bg-primary-light/10 scale-110'
+                    ? 'border-primary-light bg-primary-light/10 scale-105'
                     : 'border-gray-300 hover:border-primary-light hover:scale-105'
                 }
               `}
             >
-              <span className="text-2xl">{category.icon}</span>
-              <span className="text-xs font-medium mt-1">
-                {category.name}
-              </span>
+              <span className="text-sm sm:text-base lg:text-lg">{category.icon}</span>
             </button>
+            <span className="text-[6px] sm:text-[10px] lg:text-xs font-medium text-center">
+              {category.name}
+            </span>
           </div>
         ))}
       </div>

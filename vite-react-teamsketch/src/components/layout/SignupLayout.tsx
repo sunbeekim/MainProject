@@ -18,20 +18,41 @@ const SignupLayout = ({
   loginSection
 }: SignupLayoutProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <div className="w-full max-w-lg">
-        <Grid cols={1} gap="md" className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
-          <GridItem className="text-center mb-8">{title}</GridItem>
+    <div className="h-full w-full bg-white dark:bg-gray-800">
+      <Grid cols={1} gap="sm" className="h-full p-3 sm:p-4 lg:p-8 grid grid-rows-[1fr_3fr_1fr_1fr_1fr] items-center">
+        {/* 로고 및 타이틀 */}
+        <GridItem className="flex items-center justify-center">
+          <div className="text-sm sm:text-base lg:text-lg">{title}</div>
+        </GridItem>
 
-          {children}
+        {/* 메인 폼 */}
+        <GridItem className="flex items-center justify-center">
+          <div className="w-[70%] flex flex-col gap-2">
+            {children}
+          </div>
+        </GridItem>
 
-          <GridItem className="mt-6">{signupButton}</GridItem>
+        {/* 회원가입 버튼 */}
+        <GridItem className="flex items-center justify-center">
+          <div className="w-[70%] text-sm sm:text-base">
+            {signupButton}
+          </div>
+        </GridItem>
 
-          <GridItem>{divider}</GridItem>
+        {/* 구분선 */}
+        <GridItem className="flex items-center justify-center">
+          <div className="w-[70%]">
+            {divider}
+          </div>
+        </GridItem>
 
-          <GridItem className="text-center">{loginSection}</GridItem>
-        </Grid>
-      </div>
+        {/* 로그인 섹션 */}
+        <GridItem className="flex items-center justify-center">
+          <div className="text-xs sm:text-sm">
+            {loginSection}
+          </div>
+        </GridItem>
+      </Grid>
     </div>
   );
 };

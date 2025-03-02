@@ -57,8 +57,8 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-[#E6CCFF] dark:bg-[#2D2D2D] shadow-lg backdrop-blur-md bg-opacity-95 dark:bg-opacity-90">
-      <nav className="container mx-auto flex justify-around items-center px-3 py-2">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-[#E6CCFF] dark:bg-[#2D2D2D] shadow-lg backdrop-blur-md bg-opacity-95 dark:bg-opacity-90">
+      <nav className="container mx-auto flex justify-around items-center px-3 py-2" id="main-footer">
         {navigationItems.map((item, index) => (
           <button
             key={index}
