@@ -61,7 +61,10 @@ const Header = () => {
   const headerContent = getHeaderContent();
 
   return (
-    <header className="sticky top-0 z-50 bg-[#F3F2FF] dark:bg-background-dark border-b border-[#E5E1FF] dark:border-[#ffffff]/70 shadow-sm">
+    <header 
+      id="main-header" 
+      className="fixed top-0 left-0 right-0 z-50 bg-[#F3F2FF] dark:bg-background-dark border-b border-[#E5E1FF] dark:border-[#ffffff]/70 shadow-sm"
+    >
       <Grid cols={3} gap="sm" className="items-center px-2 py-1 h-12">
         {/* 왼쪽: 백버튼 */}
         <GridItem className="flex items-center h-full">
@@ -71,7 +74,7 @@ const Header = () => {
           }
         </GridItem>
 
-        {/* 중앙: 타이틀 & 서브타이틀 */}
+        {/* 중앙: 타이틀 */}
         <GridItem className="text-center flex flex-col justify-center h-full">
           <h1 className="text-sm font-bold text-[#59151C] dark:text-text-dark">
             {headerContent.title}

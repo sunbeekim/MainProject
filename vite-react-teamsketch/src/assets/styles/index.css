@@ -2,9 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
   body {
-    @apply min-h-screen min-w-[320px] m-0;
+    @apply min-h-screen min-w-[320px] m-0 overflow-hidden fixed w-full h-full;
     @apply bg-white text-text-light transition-colors duration-300;
     @apply dark:bg-[#2D2D2D];
   }
@@ -37,6 +38,10 @@
   h5,
   h6 {
     @apply text-[#4A4A4A] dark:text-white transition-colors duration-300;
+  }
+
+  #root {
+    @apply h-full overflow-hidden;
   }
 }
 
@@ -77,6 +82,12 @@
 }
 
 @layer utilities {
+  .content-scroll {
+    @apply overflow-y-auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
