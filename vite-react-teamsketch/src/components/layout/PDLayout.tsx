@@ -5,7 +5,7 @@ import DaySelect from './DaySelect';
 import BaseButton from '../common/BaseButton';
 import BaseLabelBox from '../common/BaseLabelBox';
 
-
+// 추상화 작업 하면 편할듯
 interface PDLayoutProps {
   images: string[];
   mainCategory: string;
@@ -18,6 +18,7 @@ interface PDLayoutProps {
   startDate?: string;
   endDate?: string;
   location: string;
+  subTitle: string;
 }
 
 const PDLayout: React.FC<PDLayoutProps> = ({
@@ -31,7 +32,8 @@ const PDLayout: React.FC<PDLayoutProps> = ({
   currentParticipants,
   startDate,
   endDate,
-  location
+  location,
+  subTitle,
 }) => {
   const [selectedDay, setSelectedDay] = useState<string>('');
 
@@ -123,10 +125,10 @@ const PDLayout: React.FC<PDLayoutProps> = ({
           </div>
         </GridItem>
 
-        {/* 신청하기 버튼 */}
+        {/* 신청 or 등록록하기 버튼 */}
         <GridItem>
           <BaseButton variant="primary" className="w-full py-4">
-            신청하기
+            {subTitle}하기
           </BaseButton>
         </GridItem>
       </Grid>
