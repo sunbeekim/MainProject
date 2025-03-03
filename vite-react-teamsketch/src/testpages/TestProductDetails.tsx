@@ -45,6 +45,7 @@ const TestProductDetails = () => {
       startDate={productData.startDate}
       endDate={productData.endDate}
       location={productData.location}
+      subTitle='등록'
     />
   );
 };
