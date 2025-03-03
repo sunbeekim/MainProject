@@ -13,6 +13,7 @@ import ProductRegister from '../../pages/marketplace/ProductRegister';
 import VerifyMethod from '../../pages/account/VerifyMethod';
 import VerficationCode from '../../pages/account/VerificationCode';
 import ResetPassword from '../../pages/account/ResetPassword';
+import ChatList from '../features/list/ChatList';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestMarketplace from '../../testpages/TestMarketplace';
@@ -20,6 +21,7 @@ import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
 import TestProductDetails from '../../testpages/TestProductDetails';
 import TestAPI from '../../testpages/TestAPI';
+
 
 const MainLayout = () => {
   const [footerHeight, setFooterHeight] = useState<number>(0);
@@ -70,7 +72,7 @@ const MainLayout = () => {
           <Route path="/verify-method" element={<VerifyMethod />} />
           <Route path="/reset-password" element={<ResetPassword/>} />
           <Route path="/verfication-code" element={<VerficationCode/>} />
-
+          <Route path="/chat-list" element={<ChatList/>} />
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
