@@ -37,5 +37,26 @@ public interface UserMapper {
 
     // 계정 상태 업데이트
     int updateAccountStatus(@Param("email") String email, @Param("accountStatus") String accountStatus);
+    
+    // 사용자 프로필 업데이트
+    int updateUserProfile(User user);
+    
+    // 이메일 제외한 닉네임 중복 확인
+    User findByNicknameExceptEmail(@Param("nickname") String nickname, @Param("email") String email);
+    
+    // 회원 탈퇴 (소프트 삭제) - 계정 상태 변경
+    int withdrawUser(@Param("email") String email, @Param("withdrawalDate") java.time.LocalDateTime withdrawalDate);
+    
+    // 계정 정보 테이블의 계정 상태 업데이트
+    int updateUserAccountInfoStatus(@Param("email") String email, @Param("accountStatus") String accountStatus);
+    
+    // 회원 탈퇴 시 사용자 정보 익명화
+    int anonymizeUserData(
+        @Param("email") String email, 
+        @Param("nickname") String newNickname, 
+        @Param("phoneNumber") String maskedPhoneNumber,
+        @Param("bio") String newBio,
+        @Param("withdrawalDate") java.time.LocalDateTime withdrawalDate
+    );
 }
 

@@ -18,7 +18,7 @@ public class User {
     private String name;  // 이름
     private String phoneNumber;
     private String nickname;  // 닉네임 (UNIQUE)
-    private String hobby;
+    // hobby 필드 제거 - 이제 별도의 테이블로 관리
     private String bio;
     private String loginMethod;  // 로그인 방식 (EMAIL, SOCIAL)
     private String socialProvider;  // 소셜 로그인 제공자 (GOOGLE, KAKAO, NAVER, NONE)
