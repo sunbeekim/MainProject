@@ -1,11 +1,24 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.*;
+import com.example.demo.service.FileStorageService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.nio.file.Files;
 
 @RestController
 @RequestMapping("/api/core/profiles")
@@ -14,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileController {
     
     private final UserService userService;
+    private final FileStorageService fileStorageService;
     
     /**
      * 자신의 프로필 조회
@@ -93,5 +107,145 @@ public class ProfileController {
         }
         
         return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 프로필 이미지 업로드
+     */
+    @PostMapping("/me/image")
+    public ResponseEntity<ProfileImageResponse> uploadProfileImage(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("file") MultipartFile file) {
+        
+        // 파일 기본 검증
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body(ProfileImageResponse.builder()
+                    .success(false)
+                    .message("업로드할 파일이 비어있습니다.")
+                    .build());
+        }
+        
+        try {
+            ProfileImageResponse response = userService.uploadProfileImageByToken(token, file);
+            
+            if (!response.isSuccess()) {
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            // 파일 형식이나 크기 검증 실패 시
+            return ResponseEntity.badRequest().body(ProfileImageResponse.builder()
+                    .success(false)
+                    .message(e.getMessage())
+                    .build());
+        } catch (Exception e) {
+            log.error("이미지 업로드 중 예상치 못한 오류 발생: {}", e.getMessage());
+            return ResponseEntity.status(500).body(ProfileImageResponse.builder()
+                    .success(false)
+                    .message("이미지 업로드 중 서버 오류가 발생했습니다.")
+                    .build());
+        }
+    }
+    
+    /**
+     * 프로필 이미지 삭제
+     */
+    @DeleteMapping("/me/image")
+    public ResponseEntity<ProfileImageResponse> deleteProfileImage(
+            @RequestHeader("Authorization") String token) {
+        
+        ProfileImageResponse response = userService.deleteProfileImageByToken(token);
+        
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 프로필 이미지 조회 (자신)
+     */
+    @GetMapping("/me/image-info")
+    public ResponseEntity<Map<String, String>> getMyProfileImageInfo(
+            @RequestHeader("Authorization") String token) {
+        
+        String tokenWithoutBearer = token;
+        if (token.startsWith("Bearer ")) {
+            tokenWithoutBearer = token.substring(7);
+        }
+        
+        if (!userService.tokenUtils.isTokenValid(tokenWithoutBearer)) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "유효하지 않은 인증 토큰입니다.");
+            return ResponseEntity.badRequest().body(error);
+        }
+        
+        String email = userService.tokenUtils.getEmailFromToken(tokenWithoutBearer);
+        String imageUrl = userService.getProfileImageUrl(email);
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("imageUrl", imageUrl);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 프로필 이미지 파일 제공 
+     */
+    @GetMapping("/image/{filename:.+}")
+    public ResponseEntity<Resource> getProfileImage(@PathVariable String filename) {
+        try {
+            Path filePath = fileStorageService.getProfileImagePath(filename);
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            if (!resource.exists()) {
+                // 요청한 이미지가 없으면 기본 이미지 반환
+                filePath = fileStorageService.getProfileImagePath(null);
+                resource = new UrlResource(filePath.toUri());
+            }
+            
+            // 파일 타입 확인
+            String contentType = Files.probeContentType(filePath);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+            
+        } catch (IOException ex) {
+            log.error("프로필 이미지 로딩 실패: {}", ex.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    /**
+     * 기본 프로필 이미지 반환
+     */
+    @GetMapping("/image/default")
+    public ResponseEntity<Resource> getDefaultProfileImage() {
+        try {
+            Path filePath = fileStorageService.getProfileImagePath(null);
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            // 파일 타입 확인
+            String contentType = Files.probeContentType(filePath);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+            
+        } catch (IOException ex) {
+            log.error("기본 프로필 이미지 로딩 실패: {}", ex.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 }

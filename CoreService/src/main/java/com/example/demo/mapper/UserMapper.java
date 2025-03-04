@@ -58,5 +58,8 @@ public interface UserMapper {
         @Param("bio") String newBio,
         @Param("withdrawalDate") java.time.LocalDateTime withdrawalDate
     );
+    
+    // 프로필 이미지 경로 업데이트
+    int updateProfileImagePath(@Param("email") String email, @Param("profileImagePath") String profileImagePath);
 }
 

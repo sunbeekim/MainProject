@@ -22,6 +22,7 @@ public class ProfileResponse {
     private String name;
     private String nickname;
     private String phoneNumber;
+    private String profileImageUrl;  // 프로필 이미지 URL 추가
     private String bio;
     private String loginMethod;
     private String accountStatus;

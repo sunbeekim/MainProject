@@ -112,6 +112,7 @@
             <if test="nickname != null">nickname = #{nickname},</if>
             <!-- 전화번호 업데이트 코드 제거 -->
             <if test="bio != null">bio = #{bio},</if>
+            <if test="profileImagePath != null">profile_image_path = #{profileImagePath},</if>
             last_update_date = NOW()
         </set>
         WHERE email = #{email}
@@ -147,6 +148,7 @@
             nickname = #{nickname},
             phone_number = #{phoneNumber},
             bio = #{bio},
+            profile_image_path = NULL, <!-- 프로필 이미지 제거 -->
             account_status = 'Withdrawal',
             last_update_date = #{withdrawalDate}
         WHERE email = #{email}
@@ -156,6 +158,14 @@
     <update id="updateUserAccountInfoStatus">
         UPDATE User_Account_info
         SET account_status = #{accountStatus}
+        WHERE email = #{email}
+    </update>
+
+    <!-- 프로필 이미지 경로 업데이트 -->
+    <update id="updateProfileImagePath">
+        UPDATE Users
+        SET profile_image_path = #{profileImagePath},
+            last_update_date = NOW()
         WHERE email = #{email}
     </update>
 
