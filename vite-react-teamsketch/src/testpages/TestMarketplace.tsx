@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingButton from '../components/common/FloatingButton';
@@ -22,7 +21,7 @@ const MarketList = () => {
           mockAPI.market.getLatestProducts(),
           mockAPI.market.getRecommendedProducts()
         ]);
-        
+
         setLatestProducts(latestResponse.data.products);
         setRecommendedProducts(recommendedResponse.data.products);
       } catch (error) {
@@ -44,14 +43,13 @@ const MarketList = () => {
       setSelectedCategory(category);
     } catch (error) {
       console.error('카테고리별 상품을 불러오는데 실패했습니다:', error);
-
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-6">
       <Category onCategorySelect={handleCategorySelect} />
-      
+
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-4">
           {selectedCategory ? `${selectedCategory} 관련 상품` : '최신 상품'}

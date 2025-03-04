@@ -12,6 +12,8 @@ import { useState } from 'react';
 import InfoBox from '../components/forms/box/InfoBox';
 import CustomInput from '../components/forms/input/CustomInput';
 import DaySection from '../components/layout/DaySelect';
+import ProfileSelector from '../components/features/upload/ProfileSelector';
+
 const TestComponent = () => {
   const dispatch = useAppDispatch();
   const value = useAppSelector((state) => state.test.value);
@@ -75,7 +77,11 @@ const TestComponent = () => {
         </div>
         <div>
           <h2 className="text-xl font-semibold mb-4">프로필 이미지 업로드 테스트</h2>
-          <ImageUpload onUpload={fileUpload.Profile} className="max-w-md mx-auto" type="profile" />
+          <ImageUpload
+            onUpload={fileUpload.assistProfile}
+            className="max-w-md mx-auto"
+            type="image"
+          />
         </div>
       </section>
       <div>
@@ -120,6 +126,16 @@ const TestComponent = () => {
       </div>
       <div className="w-full max-w-3xl p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <DaySection onDaySelect={setSelectedDay} selectedDay={selectedDay} />
+      </div>
+      <div>
+        <ProfileSelector isEditable={false} size="lg" />
+      </div>
+      <div>
+        <ProfileSelector
+          imageUrl="https://picsum.photos/600/400?random=37"
+          isEditable={true}
+          size="md"
+        />
       </div>
     </div>
   );

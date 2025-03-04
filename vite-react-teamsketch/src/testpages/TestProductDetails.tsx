@@ -1,4 +1,3 @@
-
 import PDLayout from '../components/layout/PDLayout';
 
 const TestProductDetails = () => {
@@ -45,7 +44,7 @@ const TestProductDetails = () => {
       startDate={productData.startDate}
       endDate={productData.endDate}
       location={productData.location}
-      subTitle='등록'
+      subTitle="등록"
     />
   );
 };

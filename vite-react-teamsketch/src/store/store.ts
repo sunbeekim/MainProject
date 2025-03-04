@@ -6,6 +6,8 @@ import testReducer from './slices/testSlice';
 import signupReducer from './slices/signupSlice';
 import loadingReducer from './slices/loadingSlice';
 import mapReducer from './slices/mapSlice';
+import userReducer from './slices/userSlice';
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -13,7 +15,8 @@ export const store = configureStore({
     test: testReducer,
     signup: signupReducer,
     loading: loadingReducer,
-    map: mapReducer
+    map: mapReducer,
+    user: userReducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat()
 });
