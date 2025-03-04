@@ -37,7 +37,7 @@ const Footer = () => {
       icon:
         location.pathname === '/chat' ? <IoChatbubbleEllipses /> : <IoChatbubbleEllipsesOutline />,
       label: '채팅',
-      onClick: () => navigate('/chat')
+      onClick: () => navigate('/chat-list')
     },
     {
       icon: location.pathname === '/requests' ? <BsGridFill /> : <BsGrid />,
