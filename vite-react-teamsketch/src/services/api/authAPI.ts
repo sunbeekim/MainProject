@@ -33,6 +33,12 @@ const signupApi = async (userData: SignupForm) => {
   return response.data;
 };
 
+// 로그아웃 API
+const logoutApi = async () => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.logout);
+  return response.data;
+};
+
 // 로그인 Hook
 export const useLogin = () => {
   return useMutation({
@@ -55,5 +61,12 @@ export const useSignup = () => {
       }
       throw error;
     }
+  });
+};
+
+// 로그아웃 Hook
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: logoutApi
   });
 };

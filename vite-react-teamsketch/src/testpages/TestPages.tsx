@@ -17,7 +17,9 @@ const TestPages = () => {
       <button onClick={() => navigate('/test/openmap')}>테스트 오픈맵</button>
       <button onClick={() => navigate('/test/searchlocation')}>테스트 검색 위치</button>
       <button onClick={() => navigate('/test/location')}>테스트 검색 오픈맵 위치</button>
-
+      <button onClick={() => navigate('/test/mypagelayout')}>테스트 마이페이지 레이아웃</button>
+      <button onClick={() => navigate('/test/mypage')}>테스트 마이페이지</button>
+      <button onClick={() => navigate('/test/profilemanage')}>테스트 프로필 관리</button>
       <div>
         <IList />
       </div>
