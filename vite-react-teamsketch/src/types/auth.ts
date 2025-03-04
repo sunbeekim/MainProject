@@ -23,4 +23,4 @@ export const SOCIAL_PROVIDER = {
 export const LOGIN_METHOD = {
   EMAIL: 'EMAIL',
   SOCIAL: 'SOCIAL'
-} as const; 
+} as const;

@@ -17,6 +17,10 @@ import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
 import TestProductDetails from '../../testpages/TestProductDetails';
 import TestAPI from '../../testpages/TestAPI';
+import TestLocation from '../../testpages/TestLocation';
+import TestLocationLayout from '../../testpages/TestLocationLayout';
+import TestSearchLocation from '../../testpages/TestSearchLocation';
+import TestOpenMap from '../../testpages/TestOpenMap';
 
 const MainLayout = () => {
   const [footerHeight, setFooterHeight] = useState<number>(0);
@@ -72,6 +76,10 @@ const MainLayout = () => {
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
           <Route path="/test/api" element={<TestAPI />} />
+          <Route path="/test/location" element={<TestLocation />} />
+          <Route path="/test/locationlayout" element={<TestLocationLayout />} />
+          <Route path="/test/searchlocation" element={<TestSearchLocation />} />
+          <Route path="/test/openmap" element={<TestOpenMap />} />
         </Routes>
       </div>
     </main>
