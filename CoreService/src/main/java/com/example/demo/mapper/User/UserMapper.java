@@ -1,7 +1,7 @@
-package com.example.demo.mapper;
+package com.example.demo.mapper.User;
 
-import com.example.demo.model.User;
-import com.example.demo.model.UserAccountInfo;
+import com.example.demo.model.User.User;
+import com.example.demo.model.User.UserAccountInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -1,13 +1,13 @@
 // http://localhost:8081 — 구현 해야하는 code서버 (백엔드 DB, redis, 웹소켓)
 
-package com.example.demo.controller;
+package com.example.demo.controller.User;
 
-import com.example.demo.dto.LoginRequest;
-import com.example.demo.dto.LoginResponse;
-import com.example.demo.dto.LogoutResponse;
-import com.example.demo.dto.SignupRequest;
-import com.example.demo.dto.SignupResponse;
-import com.example.demo.service.UserService;
+import com.example.demo.dto.User.LoginRequest;
+import com.example.demo.dto.User.LoginResponse;
+import com.example.demo.dto.User.LogoutResponse;
+import com.example.demo.dto.User.SignupRequest;
+import com.example.demo.dto.User.SignupResponse;
+import com.example.demo.service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

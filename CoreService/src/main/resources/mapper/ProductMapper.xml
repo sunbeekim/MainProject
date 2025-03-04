@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.Market.ProductMapper">
+
+    <!-- 상품 추가 -->
+    <insert id="insertProduct" parameterType="com.example.demo.model.Market.Product" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO products (product_code, title, description, price, email, category_id, hobby_id, transaction_type, registration_type, created_at, updated_at)
+        VALUES (#{productCode}, #{title}, #{description}, #{price}, #{email}, #{categoryId}, #{hobbyId}, #{transactionType}, #{registrationType}, NOW(), NOW())
+    </insert>
+
+    <!-- 특정 상품 조회 -->
+    <select id="findById" parameterType="long" resultType="com.example.demo.model.Market.Product">
+        SELECT * FROM products WHERE id = #{id}
+    </select>
+
+    <!-- 모든 상품 조회 -->
+    <select id="findAll" resultType="com.example.demo.model.Market.Product">
+        SELECT * FROM products
+    </select>
+
+</mapper>
