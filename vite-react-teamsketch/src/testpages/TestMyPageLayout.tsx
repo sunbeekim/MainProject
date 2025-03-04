@@ -1,8 +1,8 @@
 import Grid from '../components/common/Grid';
 import GridItem from '../components/common/GridItem';
 import BaseButton from '../components/common/BaseButton';
-import ProfileSelector from '../components/features/upload/ProfileSelector';
 import { FaUserCog, FaBoxOpen, FaCreditCard, FaHistory, FaHeadset } from 'react-icons/fa';
+import ImageUpload from '../components/features/upload/ImageUpload';
 
 interface TestMyPageLayoutProps {
   email?: string;
@@ -17,11 +17,11 @@ interface TestMyPageLayoutProps {
 const TestMyPageLayout = ({
   email,
   nickname,
-  profileImagePath,
+  profileImagePath = null,
   followerCount,
   point,
   dopamine,
-  onProfileUpdate
+  onProfileUpdate = () => {}
 }: TestMyPageLayoutProps) => {
   followerCount = 326;
   point = 1200;
@@ -61,10 +61,11 @@ const TestMyPageLayout = ({
         {/* 프로필 이미지 */}
         <GridItem>
           <div className="flex justify-center px-4">
-            <ProfileSelector
-              file={profileImagePath as File}
+            <ImageUpload
               onFileSelect={onProfileUpdate}
-              isEditable={false}
+              currentImage={profileImagePath}
+              type="profile"
+              isEdit={false}
             />
           </div>
         </GridItem>
