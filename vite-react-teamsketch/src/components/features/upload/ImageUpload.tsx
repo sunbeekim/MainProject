@@ -3,24 +3,29 @@ import Button from '../../common/Button';
 import ImageSelector from './ImageSelector';
 import CameraCapture from './CameraCapture';
 import ProfileSelector from './ProfileSelector';
+import ProdSelector from './ProdSelector';
 import { useDispatch } from 'react-redux';
 import { updateProfileImage } from '../../../store/slices/userSlice';
 
 // test
 interface ImageUploadProps {
-  onUpload: (formData: FormData) => Promise<any>;
+  onUpload?: (formData: FormData) => Promise<any>;
+  onFileSelect?: (file: File) => void;
   className?: string;
   type?: ImageUploadType;
+  isEdit?: boolean;
   currentImage?: File | null;
+  imageUrl?: string;
 }
 
-type ImageUploadType = 'ocr' | 'image' | 'profile';
+type ImageUploadType = 'ocr' | 'image' | 'profile' | 'prod';
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
-  onUpload,
+  onUpload = async () => {},
   className = '',
   type = 'ocr',
-  currentImage
+  currentImage,
+  isEdit = false
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -55,8 +60,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         <div className="flex gap-4">
           {type === 'ocr' && <CameraCapture onCapture={handleFileSelect} />}
           {type === 'image' && <ImageSelector onFileSelect={handleFileSelect} />}
+          {type === 'prod' && <ProdSelector onFileSelect={handleFileSelect} />}
           {type === 'profile' && (
-            <ProfileSelector onFileSelect={handleFileSelect} file={currentImage || undefined} />
+            <ProfileSelector
+              onFileSelect={handleFileSelect}
+              file={currentImage || undefined}
+              isEditable={isEdit}
+              imageUrl={previewUrl || undefined}
+            />
           )}
         </div>
 
