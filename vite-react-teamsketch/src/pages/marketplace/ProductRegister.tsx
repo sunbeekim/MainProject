@@ -4,6 +4,8 @@ import RadioButton from '../../components/common/RadioButton';
 import InterestSelect from '../../components/forms/select/InterestSelect'; 
 import Button from '../../components/common/Button'; 
 import SignupLayout from "../../components/layout/SignupLayout";
+import ImageSelector from '../../components/features/upload/ImageSelector';
+
 const ProductRegister = () => {
   const [productData, setProductData] = useState({
     title: '',
@@ -15,6 +17,7 @@ const ProductRegister = () => {
     location: '',
     startDate: '',
     endDate: '',
+    images:[] as File [],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +39,13 @@ const ProductRegister = () => {
     setProductData((prevState) => ({
       ...prevState,
       category: value,
+    }));
+  };
+
+  const handleFileSelect = (file: File) => {
+    setProductData((prevState) => ({
+      ...prevState,
+      images: [...prevState.images, file], 
     }));
   };
 
@@ -168,8 +178,12 @@ const ProductRegister = () => {
                   className="border p-2 rounded-lg cursor-pointer"
                 />
               </div>
-            </div>
-       
+        </div>
+
+        {/* 이미지 업로드 */}
+        <div className="font-bold mt-5 mb-4">이미지 업로드</div>
+        <ImageSelector onFileSelect={handleFileSelect}/>
+        
         {/* 설명 */}
         <div className="relative w-full h-[209px] mt-5 font-bold">설명
           <TextInput
