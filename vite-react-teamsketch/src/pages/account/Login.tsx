@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { login as setAuthUser } from '../../store/slices/authSlice';
 import { setUser as setUserInfo } from '../../store/slices/userSlice';
 import type { LoginRequest } from '../../types/auth';
-import { useLogin } from '../../services/api/authAPI';
+import { useLogin, useInfoApi } from '../../services/api/authAPI';
 import LoginLayout from '../../components/layout/LoginLayout';
 import Button from '../../components/common/BaseButton';
 import Loading from '../../components/common/Loading';
@@ -23,12 +23,15 @@ const Login = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const loginMutation = useLogin();
+  const userData = useInfoApi();
 
   const handleLogin = async (loginData: LoginRequest) => {
     setIsLoading(true);
     try {
       const response = await loginMutation.mutateAsync(loginData);
+      localStorage.setItem('token', response.token);
 
+      const userinfo = await userData.mutateAsync();
       if (response.success) {
         const decodedToken = decodeJWT(response.token);
         const userId = decodedToken?.userId;
@@ -45,25 +48,24 @@ const Login = () => {
         dispatch(
           setUserInfo({
             id: userId,
-            email: response.email,
-            name: response.nickname,
-            nickname: response.nickname,
-            phoneNumber: null,
-            bio: null,
-            loginMethod: 'EMAIL',
-            socialProvider: 'NONE',
-            accountStatus: 'Active',
-            authority: 'USER',
-            profileImagePath: null,
+            email: userinfo.email,
+            name: userinfo.nickname,
+            nickname: userinfo.nickname,
+            phoneNumber: userinfo.phoneNumber,
+            bio: userinfo.bio,
+            loginMethod: userinfo.loginMethod,
+            socialProvider: userinfo.socialProvider,
+            accountStatus: userinfo.accountStatus,
+            authority: userinfo.authority,
+            profileImagePath: userinfo.profileImagePath,
             signupDate: new Date().toISOString(),
             lastUpdateDate: new Date().toISOString(),
             lastLoginTime: new Date().toISOString(),
             loginFailedAttempts: 0,
-            loginIsLocked: false
+            loginIsLocked: userinfo.loginIsLocked
           })
         );
 
-        localStorage.setItem('token', response.token);
         navigate('/');
       } else {
         throw new Error(response.message || '로그인에 실패했습니다.');
@@ -75,7 +77,6 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-
   const [formData, setFormData] = useState<LoginForm>({
     email: '',
     password: ''

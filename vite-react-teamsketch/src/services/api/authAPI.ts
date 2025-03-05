@@ -39,6 +39,12 @@ const logoutApi = async () => {
   return response.data;
 };
 
+// 유저정보조회 API
+const getUserInfoApi = async () => {
+  const response = await axiosInstance.get(apiConfig.endpoints.core.userinfo);
+  return response.data;
+};
+
 // 로그인 Hook
 export const useLogin = () => {
   return useMutation({
@@ -68,5 +74,12 @@ export const useSignup = () => {
 export const useLogout = () => {
   return useMutation({
     mutationFn: logoutApi
+  });
+};
+
+// 유저정보조회 Hook
+export const useInfoApi = () => {
+  return useMutation({
+    mutationFn: getUserInfoApi
   });
 };

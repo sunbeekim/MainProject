@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+
 import { RootState } from '../store/store';
+
+import { useAppSelector } from '../store/hooks';
 import Grid from '../components/common/Grid';
 import GridItem from '../components/common/GridItem';
 import BaseInput from '../components/common/BaseInput';
@@ -12,15 +14,16 @@ import ImageUpload from '../components/features/upload/ImageUpload';
 import { fileUpload } from '../services/api/testAPI';
 
 const TestProfileManage = () => {
-  const { email, nickname } = useSelector((state: RootState) => state.auth.user);
-  const { profileImagePath } = useSelector((state: RootState) => state.user.user);
+  const user = useAppSelector((state: RootState) => state.user.user);
+
   const [formData, setFormData] = useState({
-    nickname: nickname || '',
+    nickname: '',
     phoneNumber: '',
     interest: '',
     hobby: ''
   });
 
+  console.log('유저 정보:', user);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -65,10 +68,13 @@ const TestProfileManage = () => {
               onUpload={fileUpload.coreProfile}
               className="max-w-md mx-auto"
               type="profile"
-              currentImage={profileImagePath as File | null}
+              isEdit={true}
+              currentImage={user.profileImagePath instanceof File ? user.profileImagePath : null}
             />
           </div>
-          <div className="text-center mt-2 text-gray-600 dark:text-gray-400">{email}</div>
+          <div className="text-center mt-2 text-gray-600 dark:text-gray-400">
+            {user.email ? user.email : 'helloworld@stdio.h'}
+          </div>
         </GridItem>
 
         {/* 기본 정보 섹션 */}
@@ -77,7 +83,7 @@ const TestProfileManage = () => {
             <BaseLabelBox label="닉네임">
               <BaseInput
                 name="nickname"
-                value={formData.nickname}
+                value={user.nickname ? user.nickname : '피카츄'}
                 onChange={handleInputChange}
                 placeholder="닉네임을 입력하세요"
               />

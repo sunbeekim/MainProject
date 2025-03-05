@@ -3,7 +3,7 @@ import { setUser } from '../store/slices/userSlice';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { RootState } from '../store/store';
 import TestMyPageLayout from './TestMyPageLayout';
-import { getProfileImage } from '../services/api/userAPI';
+import { getProfileImage } from '../services/api/imageAPI';
 import { FileResponse } from '../types/fileResponse';
 import { useEffect } from 'react';
 
