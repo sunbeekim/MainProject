@@ -50,3 +50,32 @@ export interface LoginResponse {
   message?: string;
   code: string;
 }
+
+// {
+//   "success": true,
+//   "message": "프로필 조회 성공",
+//   "email": "user@example.com",
+//   "name": "사용자명",
+//   "nickname": "사용자닉네임",
+//   "phoneNumber": "01012345678",
+//   "profileImageUrl": "http://localhost:8081/api/core/profiles/image/user_abc123.jpg",
+//   "bio": "자기소개입니다.",
+//   "loginMethod": "EMAIL",
+//   "accountStatus": "Active",
+//   "signupDate": "2023-06-24T10:15:30",
+//   "lastLoginTime": "2023-06-24T15:30:45",
+//   "hobbies": [
+//     {
+//       "hobbyId": 1,
+//       "hobbyName": "축구",
+//       "categoryId": 1,
+//       "categoryName": "스포츠"
+//     },
+//     {
+//       "hobbyId": 6,
+//       "hobbyName": "피아노",
+//       "categoryId": 3,
+//       "categoryName": "음악"
+//     }
+//   ]
+// }

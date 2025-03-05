@@ -78,6 +78,7 @@ const authSlice = createSlice({
       // localStorage에서 인증 관련 정보 제거
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('persist:root');
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;

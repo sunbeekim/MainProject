@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
-import DaySelect from './DaySelect';
+import DaySelect from '../forms/radiobutton/DaySelect';
 import BaseButton from '../common/BaseButton';
 import BaseLabelBox from '../common/BaseLabelBox';
 
-// 추상화 작업 하면 편할듯
 interface PDLayoutProps {
   images: string[];
   mainCategory: string;
@@ -33,9 +32,9 @@ const PDLayout: React.FC<PDLayoutProps> = ({
   startDate,
   endDate,
   location,
-  subTitle,
+  subTitle
 }) => {
-  const [selectedDay, setSelectedDay] = useState<string>('');
+  const [selectedDay, setSelectedDay] = useState<string[]>([]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -89,7 +88,7 @@ const PDLayout: React.FC<PDLayoutProps> = ({
         {/* 요일 선택 */}
         <GridItem>
           <BaseLabelBox label="요일 선택">
-            <DaySelect selectedDay={selectedDay} onDaySelect={setSelectedDay} />
+            <DaySelect onDaySelect={setSelectedDay} selectedDays={selectedDay} />
           </BaseLabelBox>
         </GridItem>
 

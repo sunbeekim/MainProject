@@ -6,6 +6,7 @@ import ImageUpload from '../components/features/upload/ImageUpload';
 
 interface TestMyPageLayoutProps {
   email?: string;
+  name?: string;
   nickname?: string;
   profileImagePath?: File | null;
   followerCount?: number;
@@ -16,6 +17,7 @@ interface TestMyPageLayoutProps {
 
 const TestMyPageLayout = ({
   email,
+  name,
   nickname,
   profileImagePath = null,
   followerCount,
@@ -73,10 +75,11 @@ const TestMyPageLayout = ({
         {/* 사용자 기본 정보 */}
         <GridItem>
           <div className="text-center space-y-2">
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-xl font-semibold">
               {email ? email : '홍길동@example.com'}
             </p>
-            <p className="text-xl font-semibold">{nickname ? nickname : 'OooO'}</p>
+            <p className="text-gray-600 dark:text-gray-300">{name ? name : '홍길동'}</p>
+            <p className="text-gray-500 dark:text-gray-200">{nickname ? nickname : 'OooO'}</p>
           </div>
         </GridItem>
 

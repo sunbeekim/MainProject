@@ -1,12 +1,37 @@
 export interface RadioButtonProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
   label: string;
   value: string;
   checked: boolean;
   onChange: (value: string) => void;
+  variant?: 'default' | 'circle' | 'square' | 'pill';
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
 }
 
-const RadioButton: React.FC<RadioButtonProps> = ({ label, value, checked, onChange, ...props }) => {
+const RadioButton: React.FC<RadioButtonProps> = ({ 
+  label, 
+  value, 
+  checked, 
+  onChange, 
+  variant = 'default',
+  size = 'md',
+  className = '',
+  ...props 
+}) => {
+  const sizeStyles = {
+    sm: 'w-8 h-8 text-sm',
+    md: 'w-12 h-12 text-lg',
+    lg: 'w-16 h-16 text-xl'
+  };
+
+  const variantStyles = {
+    default: 'rounded-full',
+    circle: 'rounded-full',
+    square: 'rounded-lg',
+    pill: 'rounded-full px-6'
+  };
+
   return (
     <label className="relative">
       <input
@@ -20,6 +45,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({ label, value, checked, onChan
       <div
         className={`
         w-11 h-11
+        cursor-pointer
         flex items-center justify-center
         rounded-full cursor-pointer
         text-xs font-medium
