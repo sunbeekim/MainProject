@@ -18,7 +18,7 @@ public class User {
     private String name;  // 이름
     private String phoneNumber;
     private String nickname;  // 닉네임 (UNIQUE)
-    private String hobby;
+    private String profileImagePath;  // 프로필 이미지 경로 (추가)
     private String bio;
     private String loginMethod;  // 로그인 방식 (EMAIL, SOCIAL)
     private String socialProvider;  // 소셜 로그인 제공자 (GOOGLE, KAKAO, NAVER, NONE)

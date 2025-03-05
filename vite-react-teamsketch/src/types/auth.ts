@@ -9,6 +9,7 @@ export interface SignupForm {
   hobby?: string;
   bio?: string;
   nickname: string;
+  profileImage?: File;
   loginMethod: LoginMethod;
   socialProvider: SocialProvider;
 }
@@ -23,4 +24,29 @@ export const SOCIAL_PROVIDER = {
 export const LOGIN_METHOD = {
   EMAIL: 'EMAIL',
   SOCIAL: 'SOCIAL'
-} as const; 
+} as const;
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  status: 'success' | 'error';
+  data: {
+    id?: number;
+    email?: string;
+    name?: string;
+    nickname?: string;
+    phoneNumber?: string | null;
+    bio?: string | null;
+    loginMethod?: 'EMAIL' | 'SOCIAL';
+    socialProvider?: 'GOOGLE' | 'KAKAO' | 'NAVER' | 'NONE';
+    accountStatus?: 'Active' | 'Deactivated' | 'Dormant' | 'Withdrawal';
+    authority?: 'USER' | 'ADMIN';
+    profileImagePath?: string | null;
+    token?: string;
+  };
+  message?: string;
+  code: string;
+}

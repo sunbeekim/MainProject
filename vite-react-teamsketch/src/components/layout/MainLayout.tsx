@@ -22,7 +22,13 @@ import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
 import TestProductDetails from '../../testpages/TestProductDetails';
 import TestAPI from '../../testpages/TestAPI';
-
+import TestLocation from '../../testpages/TestLocation';
+import TestLocationLayout from '../../testpages/TestLocationLayout';
+import TestSearchLocation from '../../testpages/TestSearchLocation';
+import TestOpenMap from '../../testpages/TestOpenMap';
+import TestMyPageLayout from '../../testpages/TestMyPageLayout';
+import TestMyPage from '../../testpages/TestMyPage';
+import TestProfileManage from '../../testpages/TestProfileManage';
 
 const MainLayout = () => {
   const [footerHeight, setFooterHeight] = useState<number>(0);
@@ -32,7 +38,7 @@ const MainLayout = () => {
     const updateHeights = () => {
       const footer = document.getElementById('main-footer');
       const header = document.getElementById('main-header');
-      
+
       if (footer) {
         setFooterHeight(footer.offsetHeight);
       }
@@ -51,12 +57,12 @@ const MainLayout = () => {
 
   return (
     <main className="fixed inset-0 w-full">
-      <div 
+      <div
         className="content-scroll"
-        style={{ 
+        style={{
           height: `calc(100vh - env(safe-area-inset-bottom))`,
           paddingBottom: `${footerHeight}px`,
-          paddingTop: `${headerHeight}px`,
+          paddingTop: `${headerHeight}px`
         }}
       >
         <Routes>
@@ -75,6 +81,7 @@ const MainLayout = () => {
           <Route path="/verfication-code" element={<VerficationCode/>} />
           <Route path="/chat-list" element={<ChatList/>} />
           <Route path="/chat/:nickname" element={<ChatRoom nickname=""/>} />
+
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
           <Route path="/test/marketplace" element={<TestMarketplace />} />
@@ -82,10 +89,17 @@ const MainLayout = () => {
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
           <Route path="/test/api" element={<TestAPI />} />
+          <Route path="/test/location" element={<TestLocation />} />
+          <Route path="/test/locationlayout" element={<TestLocationLayout />} />
+          <Route path="/test/searchlocation" element={<TestSearchLocation />} />
+          <Route path="/test/openmap" element={<TestOpenMap />} />
+          <Route path="/test/mypagelayout" element={<TestMyPageLayout />} />
+          <Route path="/test/mypage" element={<TestMyPage />} />
+          <Route path="/test/profilemanage" element={<TestProfileManage />} />
         </Routes>
       </div>
     </main>
   );
 };
 
-export default MainLayout; 
+export default MainLayout;
