@@ -2,8 +2,10 @@ import { axiosInstance, uploadInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { FileResponse } from '../../types/fileResponse';
 
+
 export const getProfileImage = async (): Promise<FileResponse | null> => {
   console.log('getProfileImage 함수 호출됨');
+
   try {
     console.log('이미지 정보 요청 URL:', apiConfig.endpoints.core.getProfileImageInfo);
     const infoResponse = await axiosInstance.get(apiConfig.endpoints.core.getProfileImageInfo);

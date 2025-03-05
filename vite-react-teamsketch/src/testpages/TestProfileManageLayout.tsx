@@ -1,37 +1,27 @@
 import Grid from '../components/common/Grid';
 import GridItem from '../components/common/GridItem';
-import BaseLabelBox from '../components/common/BaseLabelBox';
-import ImageUpload from '../components/features/upload/ImageUpload';
-import TextInput from '../components/forms/input/TextInput';
-import InterestSelect from '../components/forms/select/InterestSelect';
-import BaseButton from '../components/common/BaseButton';
 
 interface TestProfileManageLayoutProps {
-  email?: string;
-  profileImagePath?: File | null;
-  onProfileUpdate?: () => void;
-  onInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onInterestSelect?: (value: string) => void;
-  onHobbySelect?: (value: string) => void;
-  onSave?: () => void;
-  formData: {
-    name: string;
-    nickname: string;
-    bio: string;
-    interest: string;
-    hobby: string;
-  };
-}
+    email?: string;
+    image: React.ReactNode;
+    userInfoName: React.ReactNode;
+    userInfoNickname: React.ReactNode;
+    userInfoBio: React.ReactNode;
+    userInfoInterest: React.ReactNode;
+    userInfoHobby: React.ReactNode;
+    saveButton: React.ReactNode;
+};
+
 
 const TestProfileManageLayout = ({
-  email,
-  profileImagePath,
-  onProfileUpdate,
-  onInputChange,
-  onInterestSelect,
-  onHobbySelect,
-  onSave,
-  formData
+    email = 'test@test.com',
+    image,
+    userInfoName,
+    userInfoNickname,
+    userInfoBio,
+    userInfoInterest,
+    userInfoHobby,
+    saveButton,
 }: TestProfileManageLayoutProps) => {
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">
@@ -40,73 +30,27 @@ const TestProfileManageLayout = ({
           {/* 프로필 이미지 섹션 */}
           <GridItem>
             <div className="flex flex-col items-center gap-4">
-              <ImageUpload
-                type="profile"
-                currentImage={profileImagePath}
-                onUpload={async () => {
-                  try {
-                    await onProfileUpdate?.();
-                  } catch (error) {
-                    console.error('프로필 이미지 업로드 실패:', error);
-                  }
-                }}
-              />
+              {image}
+              {email}
             </div>
+           
           </GridItem>
 
           {/* 기본 정보 섹션 */}
           <GridItem>
             <div className="space-y-4 max-w-2xl mx-auto w-full">
-              <BaseLabelBox label="이메일">
-                <TextInput
-                  value={email}
-                  disabled
-                  className="bg-gray-100"
-                />
-              </BaseLabelBox>
-              <BaseLabelBox label="이름">
-                <TextInput
-                  name="name"
-                  value={formData.name}
-                  onChange={onInputChange}
-                  placeholder="이름을 입력하세요"
-                />
-              </BaseLabelBox>
-              <BaseLabelBox label="닉네임">
-                <TextInput
-                  name="nickname"
-                  value={formData.nickname}
-                  onChange={onInputChange}
-                  placeholder="닉네임을 입력하세요"
-                />
-              </BaseLabelBox>
-              <BaseLabelBox label="소개글">
-                <TextInput
-                  name="bio"
-                  value={formData.bio}
-                  onChange={onInputChange}
-                  placeholder="자신을 소개해주세요"
-                />
-              </BaseLabelBox>
               
+              {userInfoName}
+              {userInfoNickname}
+              {userInfoBio}
               
               {/* 관심사 및 취미 섹션 */}
               <Grid cols={2} gap="sm">
                 <GridItem>
-                  <BaseLabelBox label="관심사">
-                    <InterestSelect
-                      onInterestSelect={onInterestSelect || (() => {})}
-                      selectedInterest={formData.interest}
-                    />
-                  </BaseLabelBox>
+                  {userInfoInterest}
                 </GridItem>
                 <GridItem>
-                  <BaseLabelBox label="취미">
-                    <InterestSelect
-                      onInterestSelect={onHobbySelect || (() => {})}
-                      selectedInterest={formData.hobby}
-                    />
-                  </BaseLabelBox>
+                  {userInfoHobby}
                 </GridItem>
               </Grid>
               
@@ -117,14 +61,7 @@ const TestProfileManageLayout = ({
         {/* 저장 버튼 - 항상 하단에 고정 */}
         <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
           <div className="max-w-2xl mx-auto">
-            <BaseButton
-              variant="primary"
-              buttonSize="lg"
-              onClick={onSave}
-              className="w-full"
-            >
-              변경하기
-            </BaseButton>
+            {saveButton}
           </div>
         </div>
       </div>
