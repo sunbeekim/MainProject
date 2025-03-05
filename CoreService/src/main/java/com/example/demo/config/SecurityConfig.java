@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/core/auth/signup", "/api/core/auth/login").permitAll() // 회원가입, 로그인 허용
+                        .requestMatchers("/api/core/auth/signup", "/api/core/auth/login","/api/core/market/**").permitAll() // 회원가입, 로그인 허용
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
                 .addFilterBefore(

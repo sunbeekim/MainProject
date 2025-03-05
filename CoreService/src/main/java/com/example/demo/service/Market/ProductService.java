@@ -9,33 +9,68 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductMapper productMapper;
     private final ProductImageMapper productImageMapper;
 
-    public void createProduct(ProductRequest request) {
-        Product product = Product.builder()
-                .productCode(UUID.randomUUID().toString())
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .price(request.getPrice())
-                .email(request.getEmail())
-                .categoryId(request.getCategoryId())
-                .hobbyId(request.getHobbyId())
-                .transactionType(request.getTransactionType())
-                .registrationType(request.getRegistrationType())
-                .build();
+    public ResponseEntity<Object> createProduct(ProductRequest request) {
+        try {
+            // "대면" 거래일 경우, 위치 정보가 없으면 예외 발생
+            if ("대면".equals(request.getTransactionType())) {
+                if (request.getLatitude() == null || request.getLongitude() == null || request.getMeetingPlace() == null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                            "status", 400,
+                            "error", "Bad Request",
+                            "message", "대면 거래의 경우 위도(latitude), 경도(longitude), 거래 장소(meetingPlace)는 필수 입력 값입니다."
+                    ));
+                }
+            }
 
-        productMapper.insertProduct(product);
+            Product product = Product.builder()
+                    .productCode(UUID.randomUUID().toString())
+                    .title(request.getTitle())
+                    .description(request.getDescription())
+                    .price(request.getPrice())
+                    .email(request.getEmail())
+                    .categoryId(request.getCategoryId())
+                    .transactionType(request.getTransactionType())
+                    .registrationType(request.getRegistrationType())
+                    .latitude(request.getLatitude())
+                    .longitude(request.getLongitude())
+                    .meetingPlace(request.getMeetingPlace())
+                    .address(request.getAddress())
+                    .build();
+
+            productMapper.insertProduct(product);
+
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of(
+                    "status", 200,
+                    "message", "상품이 성공적으로 등록되었습니다.",
+                    "productId", product.getId()
+            ));
+
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", 500,
+                    "error", "Internal Server Error",
+                    "message", ex.getMessage()
+            ));
+        }
     }
+
 
     public ProductResponse getProductById(Long id) {
         Product product = productMapper.findById(id);
+        if (product == null) {
+            throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
+        }
         return ProductResponse.builder()
                 .id(product.getId())
                 .title(product.getTitle())
@@ -43,16 +78,16 @@ public class ProductService {
                 .price(product.getPrice())
                 .email(product.getEmail())
                 .categoryId(product.getCategoryId())
-                .hobbyId(product.getHobbyId())
                 .transactionType(product.getTransactionType())
                 .registrationType(product.getRegistrationType())
+                .latitude(product.getLatitude())
+                .longitude(product.getLongitude())
+                .meetingPlace(product.getMeetingPlace())
+                .address(product.getAddress())
                 .createdAt(product.getCreatedAt())
                 .build();
     }
 
-    /**
-     * 모든 상품 조회 (메서드 추가)
-     */
     public List<ProductResponse> getAllProducts() {
         return productMapper.findAll().stream()
                 .map(product -> ProductResponse.builder()
@@ -62,9 +97,12 @@ public class ProductService {
                         .price(product.getPrice())
                         .email(product.getEmail())
                         .categoryId(product.getCategoryId())
-                        .hobbyId(product.getHobbyId())
                         .transactionType(product.getTransactionType())
                         .registrationType(product.getRegistrationType())
+                        .latitude(product.getLatitude())
+                        .longitude(product.getLongitude())
+                        .meetingPlace(product.getMeetingPlace())
+                        .address(product.getAddress())
                         .createdAt(product.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());

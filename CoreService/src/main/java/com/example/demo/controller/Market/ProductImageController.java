@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/product-images")
+@RequestMapping("/api/core/market/productimages")
 @RequiredArgsConstructor
 public class ProductImageController {
     private final ProductImageService productImageService;
