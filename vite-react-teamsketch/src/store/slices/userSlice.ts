@@ -41,7 +41,7 @@ const initialState: UserState = {
     lastLoginTime: null,
     loginFailedAttempts: 0,
     loginIsLocked: false,
-    profileImagePath: null
+    profileImagePath: null,
   }
 };
 
