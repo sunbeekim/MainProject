@@ -49,6 +49,7 @@ const TestMyPage = () => {
     <div>
       <TestMyPageLayout
         email={user.email || ''}
+        name={user.name || ''}
         nickname={user.nickname || ''}
         profileImagePath={user.profileImagePath as File | null}
         onProfileUpdate={handleProfileUpdate}

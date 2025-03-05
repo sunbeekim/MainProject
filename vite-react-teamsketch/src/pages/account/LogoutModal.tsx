@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
+import { clearUser } from '../../store/slices/userSlice';
 import { useLogout } from '../../services/api/authAPI';
 
 interface LogoutModalProps {
@@ -18,9 +19,7 @@ const LogoutModal = ({ isOpen, onClose, onLogout }: LogoutModalProps) => {
     logoutMutation.mutate();
     // 로그아웃 처리
     dispatch(logout());
-
-    // 로컬 스토리지의 토큰 제거
-    localStorage.removeItem('token');
+    dispatch(clearUser());
 
     // 모달 닫기
     onClose();
