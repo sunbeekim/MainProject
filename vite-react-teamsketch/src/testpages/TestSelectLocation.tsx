@@ -98,7 +98,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
 
   return (
     <div className="bg-white rounded-t-3xl shadow-lg max-h-[12rem] overflow-y-auto">
-      <Grid cols={1} className="p-4 gap-3">
+      <Grid cols={1}>
         {/* 내 위치 */}
         {showMyLocation && (
           <GridItem className="bg-gray-50 rounded-lg p-2.5">

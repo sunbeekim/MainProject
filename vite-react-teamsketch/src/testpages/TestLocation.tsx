@@ -5,7 +5,7 @@ import TestLocationLayout from './TestLocationLayout';
 
 const TestLocation = () => {
   return (
-    <div className="h-screen w-full">
+    <div className="h-full w-full">
       <TestLocationLayout
         childrenTop={<TestSearchLocation />}
         childrenCenter={<TestOpenMap />}

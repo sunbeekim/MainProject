@@ -70,19 +70,23 @@ const SearchLocation = () => {
 
   return (
     <div className="relative w-full p-4">
-      <div className="flex gap-2">
-        <SearchInput
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="장소명, 도로명, 지번 주소로 검색"
-          className="w-full"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              searchAddress(searchQuery);
-            }
-          }}
-        />
+      <div className="flex items-center">
+        <div className="flex-[1] "></div>
+        <div className="flex-[9] ">
+          <SearchInput
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="장소명, 도로명, 지번 주소로 검색"
+            className="w-full"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                searchAddress(searchQuery);
+              }
+            }}
+          />
+        </div>
+        <div className="ml-3 "></div>
         <BaseButton
           onClick={() => searchAddress(searchQuery)}
           variant="primary"
@@ -91,6 +95,7 @@ const SearchLocation = () => {
         >
           {isLoading ? '검색 중...' : '검색'}
         </BaseButton>
+        <div className="flex-[1] "></div>
       </div>
 
       {results.length > 0 && (
