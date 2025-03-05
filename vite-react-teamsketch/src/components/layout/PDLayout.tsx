@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
-import DaySelect from './DaySelect';
+import DaySelect from '../forms/radiobutton/DaySelect';
 import BaseButton from '../common/BaseButton';
 import BaseLabelBox from '../common/BaseLabelBox';
 
@@ -33,7 +33,7 @@ const PDLayout: React.FC<PDLayoutProps> = ({
   startDate,
   endDate,
   location,
-  subTitle,
+  subTitle
 }) => {
   const [selectedDay, setSelectedDay] = useState<string>('');
 
