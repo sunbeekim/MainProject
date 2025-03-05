@@ -4,7 +4,7 @@ import RadioButton from '../../components/common/RadioButton';
 import InterestSelect from '../../components/forms/select/InterestSelect'; 
 import Button from '../../components/common/Button'; 
 import SignupLayout from "../../components/layout/SignupLayout";
-import ImageSelector from '../../components/features/upload/ImageSelector';
+import ImageUpload from "../../components/features/upload/ImageUpload";
 
 const ProductRegister = () => {
   const [productData, setProductData] = useState({
@@ -17,7 +17,8 @@ const ProductRegister = () => {
     location: '',
     startDate: '',
     endDate: '',
-    images:[] as File [],
+    images: [] as File[],
+    
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,12 +43,17 @@ const ProductRegister = () => {
     }));
   };
 
-  const handleFileSelect = (file: File) => {
-    setProductData((prevState) => ({
-      ...prevState,
-      images: [...prevState.images, file], 
-    }));
+  const handleFileUpload = async (formData: FormData): Promise<void> => {
+    const file = formData.get("file") as File;
+  
+    if (file) {
+      setProductData((prevState) => ({
+        ...prevState,
+        images: [...prevState.images, file],
+      }));
+    }
   };
+
 
   const handleLocationClick = () => {
     alert("장소 지정하는 기능 구현"); 
@@ -181,8 +187,10 @@ const ProductRegister = () => {
         </div>
 
         {/* 이미지 업로드 */}
-        <div className="font-bold mt-5 mb-4">이미지 업로드</div>
-        <ImageSelector onFileSelect={handleFileSelect}/>
+        <div>
+          <h2 className=" font-bold mt-5 mb-4">상품 이미지 업로드</h2>
+          <ImageUpload onUpload={handleFileUpload} type="prod" />
+        </div>
         
         {/* 설명 */}
         <div className="relative w-full h-[209px] mt-5 font-bold">설명
