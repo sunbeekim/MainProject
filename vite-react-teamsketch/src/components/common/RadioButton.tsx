@@ -19,14 +19,14 @@ const RadioButton: React.FC<RadioButtonProps> = ({ label, value, checked, onChan
       />
       <div
         className={`
-        w-12 h-12
+        w-11 h-11
         flex items-center justify-center
         rounded-full cursor-pointer
-        text-lg font-medium
+        text-xs font-medium
         transition-all duration-200 ease-in-out
         ${
           checked
-            ? 'bg-primary-light text-white border-2 border-primary-light transform scale-110'
+            ? 'bg-primary-light text-white border-2 border-primary-light transform scale-110 font-bold'
             : 'bg-white text-gray-600 border-2 border-gray-300 hover:border-primary-light hover:text-primary-light'
         }
         peer-focus:ring-2 peer-focus:ring-primary-light peer-focus:ring-opacity-50
