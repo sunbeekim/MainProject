@@ -89,7 +89,7 @@ const VerifyMethod = () => {
                 {method === 'phone' && (
                     <TextInput
                         name="phone"
-                        inputType="tel"
+                        inputType="phoneNumber"
                         label="전화번호"
                         value={inputValue}
                         onChange={handleChange}

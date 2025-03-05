@@ -90,48 +90,66 @@ const ProductRegister = () => {
         />
 
          {/* 대면/비대면 라디오 버튼 */}
-          <div className="flex gap-4 font-bold"> 거래 방식
-                      
-            <RadioButton
-              label="대면"
-              value="faceToFace"
-              checked={productData.transactionType === 'faceToFace'}
-              onChange={(value) => handleRadioButtonChange('transactionType', value)}
-            />
-            <RadioButton
-              label="비대면"
-              value="nonFaceToFace"
-              checked={productData.transactionType === 'nonFaceToFace'}
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-sm font-bold text-gray-700">거래 방식</span>
+            <div className="flex gap-3">
+              <RadioButton
+                label="대면"
+                value="faceToFace"
+                checked={productData.transactionType === 'faceToFace'}
                 onChange={(value) => handleRadioButtonChange('transactionType', value)}
-              
-            />
- 
-           {/* 대면 선택 시 장소 지정하기 버튼 */}
-        {productData.transactionType === 'faceToFace' && (
-          <button onClick={handleLocationClick}              
-           className="bg-primary-light hover:bg-primary text-white font-bold" >장소 지정
-            </button>
-        )}
-        </div>
+                variant="circle"
+                size="sm"
+                className="shadow-sm"
+              />
+              <RadioButton
+                label="비대면"
+                value="nonFaceToFace"
+                checked={productData.transactionType === 'nonFaceToFace'}
+                onChange={(value) => handleRadioButtonChange('transactionType', value)}
+                variant="circle"
+                size="sm"
+                className="shadow-sm"
+              />
+            </div>
+
+            {/* 대면 선택 시 장소 지정하기 버튼 */}
+            {productData.transactionType === 'faceToFace' && (
+              <button 
+                onClick={handleLocationClick}              
+                className="ml-4 px-2 py-1 bg-primary-light hover:bg-primary text-white text-xs font-bold rounded-lg shadow-sm transition-colors duration-200"
+              >
+                장소 지정
+              </button>
+            )}
+          </div>
 
        
 
         {/* 등록 유형 (구매/판매) 라디오 버튼 */}
-          <div className="flex gap-4 font-bold">등록 유형
-            
-          <RadioButton
-            label="판매"
-            value="sale"
-            checked={productData.registrationType === 'sale'}
-            onChange={(value) => handleRadioButtonChange('registrationType', value)}
-          />
-          <RadioButton
-            label="구매"
-            value="buy"
-            checked={productData.registrationType === 'buy'}
-            onChange={(value) => handleRadioButtonChange('registrationType', value)}
-          />
-        </div>
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-sm font-bold text-gray-700">등록 유형</span>
+            <div className="flex gap-3">
+              <RadioButton
+                label="판매"
+                value="sale"
+                checked={productData.registrationType === 'sale'}
+                onChange={(value) => handleRadioButtonChange('registrationType', value)}
+                variant="circle"
+                size="sm"
+                className="shadow-sm"
+              />
+              <RadioButton
+                label="구매"
+                value="buy"
+                checked={productData.registrationType === 'buy'}
+                onChange={(value) => handleRadioButtonChange('registrationType', value)}
+                variant="circle"
+                size="sm"
+                className="shadow-sm"
+              />
+            </div>
+          </div>
 
        
         {/* 카테고리 */}
