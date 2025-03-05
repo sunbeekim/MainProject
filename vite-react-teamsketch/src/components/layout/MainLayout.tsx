@@ -13,7 +13,8 @@ import ProductRegister from '../../pages/marketplace/ProductRegister';
 import VerifyMethod from '../../pages/account/VerifyMethod';
 import VerficationCode from '../../pages/account/VerificationCode';
 import ResetPassword from '../../pages/account/ResetPassword';
-import ChatList from '../features/list/ChatList';
+import ChatList from '../../pages/chatroom/ChatList';
+import ChatRoom from '../../pages/chatroom/ChatRoom';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestMarketplace from '../../testpages/TestMarketplace';
@@ -76,9 +77,10 @@ const MainLayout = () => {
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/product/register" element={<ProductRegister />} />
           <Route path="/verify-method" element={<VerifyMethod />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verfication-code" element={<VerficationCode />} />
-          <Route path="/chat-list" element={<ChatList />} />
+          <Route path="/reset-password" element={<ResetPassword/>} />
+          <Route path="/verfication-code" element={<VerficationCode/>} />
+          <Route path="/chat-list" element={<ChatList/>} />
+          <Route path="/chat/:nickname" element={<ChatRoom nickname=""/>} />
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />

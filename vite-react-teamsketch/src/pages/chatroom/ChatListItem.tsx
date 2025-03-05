@@ -7,9 +7,10 @@ interface ChatListItemProps {
   lastMessage: string;
   time: string;
   imageUrl: string;
+  unreadCount: number;
 }
 
-const ChatListItem: React.FC<ChatListItemProps> = ({nickname, lastMessage, time, imageUrl }) => {
+const ChatListItem: React.FC<ChatListItemProps> = ({nickname, lastMessage, time, imageUrl,unreadCount }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -33,6 +34,13 @@ const ChatListItem: React.FC<ChatListItemProps> = ({nickname, lastMessage, time,
         <p className="text-gray-500 text-xs">{time}</p>
       </div>
         
+        {/* 읽지 않은 메시지 카운트 */}
+        {unreadCount > 0 && (
+        <div className="bg-primary-dark text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+          {unreadCount}
+        </div>
+      )}
+
       {/* 채팅방 이동 버튼 */}
       <button 
         className="bg-[#FBCCC5] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#F9B0BA] transition-colors"
