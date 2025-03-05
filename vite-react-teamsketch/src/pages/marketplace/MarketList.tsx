@@ -6,8 +6,6 @@ import { mockAPI } from '../../mock/mockAPI';
 import { IProduct } from '../../mock/mockData';
 import Card from '../../components/features/card/Card';
 
-//test api 호출 페이지 무슨 에러지?
-
 const MarketList = () => {
   const navigate = useNavigate();
   const [latestProducts, setLatestProducts] = useState<IProduct[]>([]);
@@ -107,7 +105,7 @@ const MarketList = () => {
         label="상품 등록"
         position="bottom-right"
         color="primary"
-      />
+      ></FloatingButton>
     </div>
   );
 };

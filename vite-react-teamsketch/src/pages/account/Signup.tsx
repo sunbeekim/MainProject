@@ -11,11 +11,12 @@ import {
   validatePhone,
   validateNickname
 } from '../../utils/validation';
-import Grid from '../../components/common/Grid';
+
 import TextInput from '../../components/forms/input/TextInput';
 import PasswordInput from '../../components/forms/input/PasswordInput';
 import EmailInput from '../../components/forms/input/EmailInput';
-import { useSignup } from '../../services/api/authService';
+import InterestSelect from '../../components/forms/select/InterestSelect';
+import { useSignup } from '../../services/api/authAPI';
 import { SignupForm } from '../../types/auth';
 
 const Signup = () => {
@@ -88,23 +89,27 @@ const Signup = () => {
     }
   };
 
+  const handleInterestSelect = (value: string) => {
+    dispatch(updateField({ name: 'hobby', value }));
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <SignupLayout
-        title={<h1 className="text-2xl font-bold">회원가입</h1>}
+        title={<h1 className="text-xl font-bold">회원가입</h1>}
         signupButton={
-          <Button type="submit" variant="primary" className="w-full">
+          <Button type="submit" variant="primary" className="w-full py-2.5 text-sm sm:text-base">
             회원가입
           </Button>
         }
-        divider={<div className="relative my-6 h-px bg-gray-300 dark:bg-gray-700" />}
+        divider={<div className="relative h-px bg-gray-300 dark:bg-gray-700 w-full" />}
         loginSection={
           <div className="text-sm">
             이미 계정이 있으신가요?{' '}
             <button
               type="button"
               onClick={() => navigate('/login')}
-              className="text-primary-light hover:text-primary-dark"
+              className="text-primary-light hover:text-primary-dark font-medium"
             >
               로그인
             </button>
@@ -112,48 +117,44 @@ const Signup = () => {
         }
       >
         {error && (
-          <div className="text-red-500 text-sm text-center mt-2" role="alert">
+          <div className="text-red-500 text-sm text-center mb-2" role="alert">
             {error}
           </div>
         )}
-       
 
-        <EmailInput
-           label="이메일"
-           name="email"
-           value={formData.email}
-           onChange={handleChange}
-           error={validationErrors.email}
-        />
-          
-       
+        <div className="flex flex-col gap-2">
+          <EmailInput
+            label="이메일"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            error={validationErrors.email}
+          />
 
-        <PasswordInput
-          label="비밀번호"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          error={validationErrors.password}
-        />
+          <PasswordInput
+            label="비밀번호"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            error={validationErrors.password}
+          />
 
-        <TextInput
-          label="이름"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          error={validationErrors.name}
-        />
+          <TextInput
+            label="이름"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            error={validationErrors.name}
+          />
 
-        <TextInput
-          label="전화번호"
-          name="phoneNumber"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          error={validationErrors.phoneNumber}
-        />
+          <TextInput
+            label="전화번호"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            error={validationErrors.phoneNumber}
+          />
 
-        <Grid cols={2} gap="sm">
-          <TextInput label="취미" name="hobby" value={formData.hobby} onChange={handleChange} />
           <TextInput
             label="닉네임"
             name="nickname"
@@ -161,9 +162,15 @@ const Signup = () => {
             onChange={handleChange}
             error={validationErrors.nickname}
           />
-        </Grid>
-        
-        
+
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">관심사</label>
+            <InterestSelect
+              onInterestSelect={handleInterestSelect}
+              selectedInterest={formData.hobby || ''}
+            />
+          </div>
+        </div>
       </SignupLayout>
     </form>
   );
