@@ -42,6 +42,7 @@ const VerficationCode = () => {
         <div className="flex justify-center space-x-2">
           {code.map((digit, index) => (
             <TextInput
+              inputType="input"
               key={index}
               id={`code-input-${index}`}
               name={`code-${index}`}

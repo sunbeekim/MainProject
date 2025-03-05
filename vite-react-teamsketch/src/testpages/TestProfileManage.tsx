@@ -5,12 +5,12 @@ import { useAppSelector } from '../store/hooks';
 
 import BaseInput from '../components/common/BaseInput';
 import BaseButton from '../components/common/BaseButton';
-import TextInput from '../components/forms/input/TextInput';
 import InterestSelect from '../components/forms/select/InterestSelect';
 import BaseLabelBox from '../components/common/BaseLabelBox';
 import ImageUpload from '../components/features/upload/ImageUpload';
-import { fileUpload } from '../services/api/testAPI';
+import { getProfileImage } from '../services/api/imageAPI';
 import TestProfileManageLayout from './TestProfileManageLayout';
+import TextAreaInput from '../components/forms/textarea/TextAreaInput';
 
 const TestProfileManage = () => {
   const user = useAppSelector((state: RootState) => state.user.user);
@@ -27,6 +27,14 @@ const TestProfileManage = () => {
 
   console.log('유저 정보:', user);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -57,11 +65,11 @@ const TestProfileManage = () => {
     <TestProfileManageLayout
       image={
         <ImageUpload
-          onUpload={fileUpload.coreProfile}
+          onUpload={getProfileImage}
           className="max-w-md mx-auto"
           type="profile"
           isEdit={true} 
-          currentImage={user.profileImage instanceof File ? user.profileImage : null} 
+          currentImage={user.profileImagePath instanceof File ? user.profileImagePath  : null} 
         />
       }
       userInfoName={
@@ -86,10 +94,11 @@ const TestProfileManage = () => {
       }
       userInfoBio={
         <BaseLabelBox label="소개글">
-          <TextInput
+          <TextAreaInput
+            inputType="bio"
             name="bio"
             value={formData.bio}
-            onChange={handleInputChange}
+            onChange={handleTextareaChange}
             placeholder="소개글을 입력하세요"
           />  
         </BaseLabelBox>

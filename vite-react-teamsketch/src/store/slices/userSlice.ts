@@ -17,8 +17,7 @@ export interface IUser {
   lastLoginTime: string | null;
   loginFailedAttempts: number;
   loginIsLocked: boolean;
-  profileImagePath: string | null;
-  profileImage: File | null;
+  profileImagePath: File | null;
 }
 
 interface UserState {
@@ -43,7 +42,6 @@ const initialState: UserState = {
     loginFailedAttempts: 0,
     loginIsLocked: false,
     profileImagePath: null,
-    profileImage: null
   }
 };
 

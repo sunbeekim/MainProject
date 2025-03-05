@@ -1,6 +1,6 @@
 import { INPUT_STYLES } from '../../constants/styles';
 
-export interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface BaseTextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   variant?: 'default' | 'error' | 'success' | 'warning';
   inputSize?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -9,10 +9,11 @@ export interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputEleme
   label?: React.ReactNode;
   rightElement?: React.ReactNode;
   error?: string;
-  type?: string;
+  rows?: number;
+  resize?: boolean;
 }
 
-const BaseInput: React.FC<BaseInputProps> = ({
+const BaseTextArea: React.FC<BaseTextAreaProps> = ({
   variant = 'default',
   inputSize = 'md',
   className = '',
@@ -22,14 +23,17 @@ const BaseInput: React.FC<BaseInputProps> = ({
   rightElement,
   error,
   children,
+  rows = 3,
+  resize = false,
   ...props
 }) => {
-  const inputClassName =
+  const textareaClassName =
     baseClassName ||
     `
     ${INPUT_STYLES.variants[variant]}
     ${INPUT_STYLES.sizes[inputSize]}
     ${INPUT_STYLES.base}
+    ${!resize && 'resize-none'}
     ${rightElement ? 'pr-10' : ''}
   `;
 
@@ -37,7 +41,11 @@ const BaseInput: React.FC<BaseInputProps> = ({
     <div className={`space-y-1 ${wrapperClassName}`}>
       {label}
       <div className="relative">
-        <input className={`${inputClassName} ${className}`} {...props} />
+        <textarea 
+          rows={rows}
+          className={`${textareaClassName} ${className}`} 
+          {...props} 
+        />
         {rightElement && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</div>
         )}
@@ -52,4 +60,4 @@ const BaseInput: React.FC<BaseInputProps> = ({
   );
 };
 
-export default BaseInput;
+export default BaseTextArea;
