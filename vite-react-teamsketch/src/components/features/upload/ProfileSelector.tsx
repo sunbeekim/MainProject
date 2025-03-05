@@ -6,7 +6,7 @@ interface ProfileSelectorProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   isEditable?: boolean;
-  file?: File;
+  file?: File | null;
   imageUrl?: string;
 }
 
@@ -15,33 +15,35 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({
   className = 'relative flex justify-center px-4',
   size = 'md',
   isEditable = true,
-  file,
+  file = null,
   imageUrl = 'https://picsum.photos/600/400?random=33'
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string>(imageUrl);
 
-  // file prop이 변경될 때마다 previewUrl 업데이트
+  // 파일이 변경될 때만 `URL.createObjectURL()` 실행 & 메모리 정리
   useEffect(() => {
-    if (file) {
+    if (file instanceof File) {
       const newPreviewUrl = URL.createObjectURL(file);
       setPreviewUrl(newPreviewUrl);
 
-      // cleanup 함수
+      // 메모리 누수 방지: 기존 ObjectURL 제거
       return () => {
         URL.revokeObjectURL(newPreviewUrl);
       };
+    } else {
+      setPreviewUrl(imageUrl); // 기본 이미지 유지
     }
-  }, [file]);
+  }, [file, imageUrl]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
         alert('파일 크기는 5MB 이하여야 합니다.');
         return;
       }
-      onFileSelect?.(file);
+      onFileSelect?.(selectedFile);
     }
   };
 
@@ -58,7 +60,7 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({
         className={`
           ${sizeStyles[size]}
           rounded-full bg-gray-200 dark:bg-gray-600 overflow-hidden shadow-lg 
-          relative cursor-pointer group
+          relative group
           ${isEditable ? 'cursor-pointer' : 'cursor-default'}
           transition-all duration-300 ease-in-out
           hover:shadow-xl
@@ -74,31 +76,29 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({
             ${isHovered ? 'opacity-70 scale-105' : 'opacity-100 scale-100'}`}
         />
 
-        {/* 수정 가능한 경우에만 오버레이와 입력 필드 표시 */}
+        {/* 수정 가능한 경우에만 오버레이와 파일 입력 필드 표시 */}
         {isEditable && (
-          <>
-            {/* 수정 버튼 오버레이 */}
-            <label
-              className={`
-                absolute inset-0 flex flex-col items-center justify-center
-                bg-black bg-opacity-50 transition-all duration-300
-                cursor-pointer backdrop-blur-sm
-                ${isHovered ? 'opacity-100' : 'opacity-0'}
-              `}
-            >
-              <div className="transform transition-transform duration-300 hover:scale-110">
-                <FaCamera className="text-white text-2xl mb-2" />
-                <span className="text-white text-sm font-medium">프로필 수정</span>
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-                aria-label="프로필 이미지 업로드"
-              />
-            </label>
-          </>
+          <label
+            className={`
+              absolute inset-0 flex flex-col items-center justify-center
+              bg-black bg-opacity-50 transition-all duration-300
+              cursor-pointer backdrop-blur-sm
+              ${isHovered ? 'opacity-100' : 'opacity-0'}
+            `}
+          >
+            <div className="transform transition-transform duration-300 hover:scale-110">
+              <FaCamera className="text-white text-2xl mb-2" />
+              <span className="text-white text-sm font-medium">프로필 수정</span>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+              aria-label="프로필 이미지 업로드"
+              id="profile-upload"
+            />
+          </label>
         )}
       </div>
     </div>

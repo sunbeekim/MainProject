@@ -17,7 +17,7 @@ export interface IUser {
   lastLoginTime: string | null;
   loginFailedAttempts: number;
   loginIsLocked: boolean;
-  profileImagePath: string | null;
+  profileImagePath: File | null;
 }
 
 interface UserState {
@@ -60,6 +60,7 @@ const userSlice = createSlice({
     },
     updateProfileImage: (state, action) => {
       state.user.profileImagePath = action.payload;
+      localStorage.setItem('user', JSON.stringify(state.user));
     }
   }
 });
