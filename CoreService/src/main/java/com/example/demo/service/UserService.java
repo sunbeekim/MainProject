@@ -53,7 +53,7 @@ public class UserService {
     }
     
     /**
-     * 사용자 취미 정보 업데이트
+     * 사용자 취미 정보 업데이트 
      */
     public void updateUserHobbies(String email, List<HobbyRequest> hobbies) {
         hobbyService.registerUserHobbies(email, hobbies);

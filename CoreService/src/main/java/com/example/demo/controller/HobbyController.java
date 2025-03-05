@@ -46,11 +46,22 @@ public class HobbyController {
 
     /**
      * 특정 취미에 속한 카테고리 목록 조회
+     * 참고: 새로운 방식(카테고리->취미)에서는 사용되지 않지만 API 호환성을 위해 유지
+     * @deprecated 카테고리 우선 선택 방식으로 변경됨
      */
     @GetMapping("/{hobbyId}/categories")
     public ResponseEntity<List<Category>> getCategoriesByHobbyId(@PathVariable Long hobbyId) {
         List<Category> categories = hobbyService.getCategoriesByHobbyId(hobbyId);
         return ResponseEntity.ok(categories);
+    }
+    
+    /**
+     * 특정 카테고리에 속한 취미 목록 조회 (추가)
+     */
+    @GetMapping("/categories/{categoryId}")
+    public ResponseEntity<List<Hobby>> getHobbiesByCategoryId(@PathVariable Long categoryId) {
+        List<Hobby> hobbies = hobbyService.getHobbiesByCategoryId(categoryId);
+        return ResponseEntity.ok(hobbies);
     }
 
     /**

@@ -83,6 +83,20 @@ public class ProfileController {
             @RequestHeader("Authorization") String token,
             @RequestBody ProfileUpdateRequest request) {
         
+        // 취미 정보의 기본 유효성 검증 (선택적)
+        if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+            for (HobbyRequest hobby : request.getHobbies()) {
+                if (hobby.getCategoryId() == null || hobby.getHobbyId() == null) {
+                    return ResponseEntity.badRequest().body(
+                        ProfileUpdateResponse.builder()
+                            .success(false)
+                            .message("카테고리 또는 취미 정보가 누락되었습니다.")
+                            .build()
+                    );
+                }
+            }
+        }
+        
         ProfileUpdateResponse response = userService.updateProfileByToken(token, request);
         
         if (!response.isSuccess()) {

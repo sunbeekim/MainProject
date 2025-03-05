@@ -152,6 +152,44 @@ public class ProfileService {
                         .build();
             }
         }
+        
+        // 취미 데이터의 유효성 검증 (카테고리->취미 선택 방식)
+        if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+            for (HobbyRequest hobby : request.getHobbies()) {
+                // 카테고리 ID가 누락된 경우
+                if (hobby.getCategoryId() == null) {
+                    return ProfileUpdateResponse.builder()
+                            .success(false)
+                            .message("카테고리 정보가 누락되었습니다.")
+                            .build();
+                }
+                
+                // 취미 ID가 누락된 경우
+                if (hobby.getHobbyId() == null) {
+                    return ProfileUpdateResponse.builder()
+                            .success(false)
+                            .message("취미 정보가 누락되었습니다.")
+                            .build();
+                }
+                
+                // 취미가 해당 카테고리에 속하는지 검증
+                try {
+                    boolean isValid = hobbyService.getHobbyMapper().isHobbyInCategory(hobby.getHobbyId(), hobby.getCategoryId());
+                    if (!isValid) {
+                        return ProfileUpdateResponse.builder()
+                                .success(false)
+                                .message("선택한 취미가 해당 카테고리에 속하지 않습니다. 취미ID: " + hobby.getHobbyId() + ", 카테고리ID: " + hobby.getCategoryId())
+                                .build();
+                    }
+                } catch (Exception e) {
+                    log.error("취미-카테고리 관계 검증 중 오류 발생: {}", e.getMessage());
+                    return ProfileUpdateResponse.builder()
+                            .success(false)
+                            .message("취미 정보 검증 중 오류가 발생했습니다.")
+                            .build();
+                }
+            }
+        }
                 
         // 프로필 정보 업데이트
         User updatedUser = User.builder()
@@ -167,7 +205,14 @@ public class ProfileService {
         
         // 취미 정보 업데이트 (요청에 포함된 경우)
         if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
-            hobbyService.registerUserHobbies(email, request.getHobbies());
+            try {
+                hobbyService.registerUserHobbies(email, request.getHobbies());
+                log.info("프로필 업데이트 - 사용자 취미 등록 완료 - 이메일: {}, 취미 개수: {}", 
+                         email, request.getHobbies().size());
+            } catch (Exception e) {
+                log.error("프로필 업데이트 - 취미 등록 중 오류 발생 - 이메일: {}, 오류: {}", email, e.getMessage());
+                // 취미 등록 실패해도 프로필 업데이트는 성공으로 처리
+            }
         }
         
         // 업데이트된 프로필 정보 조회
