@@ -4,7 +4,8 @@ import RadioButton from '../../components/common/RadioButton';
 import InterestSelect from '../../components/forms/select/InterestSelect'; 
 import Button from '../../components/common/Button'; 
 import SignupLayout from "../../components/layout/SignupLayout";
-import ImageSelector from '../../components/features/upload/ImageSelector';
+import ImageUpload from "../../components/features/upload/ImageUpload";
+
 
 const ProductRegister = () => {
   const [productData, setProductData] = useState({
@@ -17,8 +18,10 @@ const ProductRegister = () => {
     location: '',
     startDate: '',
     endDate: '',
-    images:[] as File [],
+    images: [] as File[],
+    
   });
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,12 +45,17 @@ const ProductRegister = () => {
     }));
   };
 
-  const handleFileSelect = (file: File) => {
-    setProductData((prevState) => ({
-      ...prevState,
-      images: [...prevState.images, file], 
-    }));
+  const handleFileUpload = async (formData: FormData): Promise<void> => {
+    const file = formData.get("file") as File;
+  
+    if (file) {
+      setProductData((prevState) => ({
+        ...prevState,
+        images: [...prevState.images, file],
+      }));
+    }
   };
+
 
   const handleLocationClick = () => {
     alert("장소 지정하는 기능 구현"); 
@@ -97,31 +105,7 @@ const ProductRegister = () => {
                 onChange={(value) => handleRadioButtonChange('transactionType', value)}
               
             />
-  <input
-      type="radio"
-      id="faceToFace"
-      name="transactionType"
-      value="faceToFace"
-      onChange={() => handleRadioButtonChange('transactionType', 'faceToFace')}
-      checked={productData.transactionType === 'faceToFace'}
-      className="h-4 w-4"
-    />
-  <label htmlFor="faceToFace">대면</label>
-  
-  <input
-      type="radio"
-      id="nonFaceToFace"
-      name="transactionType"
-      value="nonFaceToFace"
-      onChange={() => handleRadioButtonChange('transactionType', 'nonFaceToFace')}
-      checked={productData.transactionType === 'nonFaceToFace'}
-      className="h-4 w-4"
-    />
-    
-  <label htmlFor="nonFaceToFace">비대면</label>
-
-
-
+ 
            {/* 대면 선택 시 장소 지정하기 버튼 */}
         {productData.transactionType === 'faceToFace' && (
           <button onClick={handleLocationClick}              
@@ -158,7 +142,9 @@ const ProductRegister = () => {
             selectedInterest={productData.category} 
           />
         </div>
-
+          {/* 모집 인원 */}
+          <div className=" font-bold mt-3">모집 인원</div>
+          
       {/* 기간 입력 */}
       <div className=" font-bold mt-3">일정 기간</div>
            <div className="flex gap-2 items-center">
@@ -181,8 +167,10 @@ const ProductRegister = () => {
         </div>
 
         {/* 이미지 업로드 */}
-        <div className="font-bold mt-5 mb-4">이미지 업로드</div>
-        <ImageSelector onFileSelect={handleFileSelect}/>
+        <div>
+          <h2 className=" font-bold mt-5 mb-4">상품 이미지 업로드</h2>
+          <ImageUpload onUpload={handleFileUpload} type="prod" />
+        </div>
         
         {/* 설명 */}
         <div className="relative w-full h-[209px] mt-5 font-bold">설명
