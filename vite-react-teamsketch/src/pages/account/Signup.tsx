@@ -96,7 +96,7 @@ const Signup = () => {
   return (
     <form onSubmit={handleSubmit}>
       <SignupLayout
-        title={<h1 className="text-xl font-bold">회원가입</h1>}
+        title={<h1 className="text-xl font-bold">어서오세요. 환영합니다!</h1>}
         signupButton={
           <Button type="submit" variant="primary" className="w-full py-2.5 text-sm sm:text-base">
             회원가입
