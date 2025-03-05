@@ -3,7 +3,15 @@ import BaseInput, { BaseInputProps } from '../../common/BaseInput';
 interface TextInputProps extends Omit<BaseInputProps, 'type'> {
   label?: string;
   error?: string;
-  inputType?: 'username' | 'name' | 'tel' | 'nickname' | 'organization' | 'street-address' | 'off';
+  inputType?:
+    | 'email'
+    | 'name'
+    | 'phoneNumber'
+    | 'nickname'
+    | 'organization'
+    | 'street-address'
+    | 'off'
+    | 'bio';
 }
 
 const TextInput = ({ label, inputType, ...props }: TextInputProps) => {
@@ -11,14 +19,16 @@ const TextInput = ({ label, inputType, ...props }: TextInputProps) => {
   const getAutoComplete = () => {
     switch (props.name) {
       case 'id':
-      case 'username':
-        return 'username';
+      case 'email':
+        return 'email';
       case 'name':
         return 'name';
-      case 'phone':
-        return 'tel';
+      case 'phoneNumber':
+        return 'phoneNumber';
       case 'nickname':
         return 'nickname';
+      case 'bio':
+        return 'bio';
       case 'organization':
         return 'organization';
       case 'address':
