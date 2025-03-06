@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.WithdrawalRequest;
-import com.example.demo.dto.WithdrawalResponse;
+import com.example.demo.dto.auth.WithdrawalRequest;
+import com.example.demo.dto.auth.WithdrawalResponse;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.security.JwtTokenBlacklistService;

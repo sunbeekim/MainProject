@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.WithdrawalRequest;
-import com.example.demo.dto.WithdrawalResponse;
+import com.example.demo.dto.response.ApiResponse;
+import com.example.demo.dto.auth.WithdrawalRequest;
+import com.example.demo.dto.auth.WithdrawalResponse;
 import com.example.demo.service.UserService;
 
 import lombok.RequiredArgsConstructor;

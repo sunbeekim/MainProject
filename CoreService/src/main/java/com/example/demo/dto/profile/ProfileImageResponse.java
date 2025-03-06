@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.profile;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignupResponse {
+public class ProfileImageResponse {
     private boolean success;
-    private String email;
     private String message;
+    private String profileImagePath;
+    private String profileImageUrl;
 }

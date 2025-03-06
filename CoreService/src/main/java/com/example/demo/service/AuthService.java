@@ -1,6 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.auth.LoginRequest;
+import com.example.demo.dto.auth.LoginResponse;
+import com.example.demo.dto.auth.LogoutResponse;
+import com.example.demo.dto.auth.SignupRequest;
+import com.example.demo.dto.auth.SignupResponse;
+import com.example.demo.dto.hobby.HobbyRequest;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.model.UserAccountInfo;

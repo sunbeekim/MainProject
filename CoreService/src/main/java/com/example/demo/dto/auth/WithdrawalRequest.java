@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfileUpdateResponse {
-    private boolean success;
-    private String message;
-    private ProfileResponse updatedProfile;
+public class WithdrawalRequest {
+    private String password; // 비밀번호 확인만 필요
 }

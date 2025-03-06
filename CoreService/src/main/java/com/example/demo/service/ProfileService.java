@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.profile.*;
+import com.example.demo.dto.hobby.*;
+import com.example.demo.dto.auth.*;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.model.UserHobby;
@@ -303,5 +305,52 @@ public class ProfileService {
         
         String email = tokenUtils.getEmailFromToken(tokenWithoutBearer);
         return changePassword(email, request);
+    }
+    
+    /**
+     * 마이페이지 정보 조회
+     */
+    public MyPageResponse getMyPageInfo(String email) {
+        // 사용자 기본 정보 조회
+        User user = userMapper.findByEmail(email);
+        
+        if (user == null) {
+            return MyPageResponse.builder()
+                    .success(false)
+                    .message("존재하지 않는 사용자입니다.")
+                    .build();
+        }
+        
+        // 프로필 이미지 URL 생성
+        String profileImageUrl = profileImageService.getProfileImageUrl(email);
+        
+        // 마이페이지 응답 구성 (제한된 정보만 포함)
+        return MyPageResponse.builder()
+                .success(true)
+                .message("마이페이지 정보 조회 성공")
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .signupDate(user.getSignupDate())
+                .lastLoginTime(user.getLastLoginTime())
+                .profileImageUrl(profileImageUrl)
+                .accountStatus(user.getAccountStatus())
+                .build();
+    }
+    
+    /**
+     * 토큰으로 마이페이지 정보 조회
+     */
+    public MyPageResponse getMyPageInfoByToken(String token) {
+        String tokenWithoutBearer = tokenUtils.extractTokenWithoutBearer(token);
+        
+        if (!tokenUtils.isTokenValid(tokenWithoutBearer)) {
+            return MyPageResponse.builder()
+                    .success(false)
+                    .message("유효하지 않은 인증 토큰입니다.")
+                    .build();
+        }
+        
+        String email = tokenUtils.getEmailFromToken(tokenWithoutBearer);
+        return getMyPageInfo(email);
     }
 }

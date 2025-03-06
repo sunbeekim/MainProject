@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ApiResponse;
-import com.example.demo.dto.HobbyRequest;
+import com.example.demo.dto.response.ApiResponse;
+import com.example.demo.dto.hobby.HobbyRequest;
 import com.example.demo.model.Category;
 import com.example.demo.model.Hobby;
 import com.example.demo.model.UserHobby;

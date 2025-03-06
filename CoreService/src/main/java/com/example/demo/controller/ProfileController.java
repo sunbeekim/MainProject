@@ -1,6 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.response.*;
+import com.example.demo.dto.profile.*;
+import com.example.demo.dto.auth.*;
+import com.example.demo.dto.hobby.*;
 import com.example.demo.service.FileStorageService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -261,5 +264,115 @@ public class ProfileController {
             log.error("기본 프로필 이미지 로딩 실패: {}", ex.getMessage());
             return ResponseEntity.notFound().build();
         }
+    }
+    
+    /**
+     * 마이페이지 정보 조회
+     */
+    @GetMapping("/mypage")
+    public ResponseEntity<ApiResponse<MyPageResponse>> getMyPageInfo(@RequestHeader("Authorization") String token) {
+        MyPageResponse myPage = userService.getMyPageInfoByToken(token);
+        
+        if (!myPage.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(myPage, "400"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success(myPage));
+    }
+    
+    /**
+     * 프로필 관리 - 프로필 상세 조회
+     */
+    @GetMapping("/manage")
+    public ResponseEntity<ApiResponse<ProfileResponse>> getProfileManageInfo(@RequestHeader("Authorization") String token) {
+        // 기존의 내 프로필 조회 메서드 재사용 (완전한 프로필 정보 제공)
+        ProfileResponse profile = userService.getUserProfileByToken(token);
+        
+        if (!profile.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(profile, "400"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success(profile));
+    }
+    
+    /**
+     * 프로필 관리 - 프로필 정보 업데이트 (이름, 닉네임, 취미, 소개글만 변경 가능)
+     */
+    @PutMapping("/manage")
+    public ResponseEntity<ApiResponse<ProfileUpdateResponse>> updateProfileManage(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ProfileUpdateRequest request) {
+        
+        // 취미 정보의 기본 유효성 검증
+        if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+            for (HobbyRequest hobby : request.getHobbies()) {
+                if (hobby.getCategoryId() == null || hobby.getHobbyId() == null) {
+                    Map<String, String> errorData = new HashMap<>();
+                    errorData.put("message", "카테고리 또는 취미 정보가 누락되었습니다.");
+                    return ResponseEntity.badRequest().body(ApiResponse.error(
+                        new ProfileUpdateResponse(false, errorData.get("message"), null), "400"
+                    ));
+                }
+            }
+        }
+        
+        ProfileUpdateResponse response = userService.updateProfileByToken(token, request);
+        
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+    
+    /**
+     * 프로필 이미지 업로드 (프로필 관리에서 사용)
+     */
+    @PostMapping("/manage/image")
+    public ResponseEntity<ApiResponse<ProfileImageResponse>> uploadProfileManageImage(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("file") MultipartFile file) {
+        
+        // 파일 기본 검증
+        if (file.isEmpty()) {
+            ProfileImageResponse errorResponse = ProfileImageResponse.builder()
+                    .success(false)
+                    .message("업로드할 파일이 비어있습니다.")
+                    .build();
+            return ResponseEntity.badRequest().body(ApiResponse.error(errorResponse, "400"));
+        }
+        
+        try {
+            ProfileImageResponse response = userService.uploadProfileImageByToken(token, file);
+            
+            if (!response.isSuccess()) {
+                return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
+            }
+            
+            return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (Exception e) {
+            log.error("이미지 업로드 중 예상치 못한 오류 발생: {}", e.getMessage());
+            ProfileImageResponse errorResponse = ProfileImageResponse.builder()
+                    .success(false)
+                    .message("이미지 업로드 중 서버 오류가 발생했습니다: " + e.getMessage())
+                    .build();
+            return ResponseEntity.status(500).body(ApiResponse.error(errorResponse, "500"));
+        }
+    }
+    
+    /**
+     * 프로필 이미지 삭제 (프로필 관리에서 사용)
+     */
+    @DeleteMapping("/manage/image")
+    public ResponseEntity<ApiResponse<ProfileImageResponse>> deleteProfileManageImage(
+            @RequestHeader("Authorization") String token) {
+        
+        ProfileImageResponse response = userService.deleteProfileImageByToken(token);
+        
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

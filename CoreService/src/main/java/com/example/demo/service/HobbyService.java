@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.HobbyRequest;
+import com.example.demo.dto.hobby.HobbyRequest;
 import com.example.demo.mapper.HobbyMapper;
 import com.example.demo.model.Category;
 import com.example.demo.model.Hobby;
