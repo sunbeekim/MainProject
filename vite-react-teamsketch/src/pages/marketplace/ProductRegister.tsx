@@ -27,19 +27,11 @@ const ProductRegister = () => {
   });
   
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProductData((prevState) => ({
       ...prevState,
       [name]: value,
-    }));
-  };
-
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
     }));
   };
 
@@ -235,7 +227,7 @@ const ProductRegister = () => {
             inputType="bio"
             name="bio"
             value={formData.bio}
-            onChange={handleTextareaChange}
+            onChange={handleChange}
             placeholder="소개글을 입력하세요"
             className="mt-2 h-[140px]"
           />  
