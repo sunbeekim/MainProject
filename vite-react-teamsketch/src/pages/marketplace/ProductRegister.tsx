@@ -5,7 +5,7 @@ import InterestSelect from '../../components/forms/select/InterestSelect';
 import Button from '../../components/common/Button'; 
 import SignupLayout from "../../components/layout/SignupLayout";
 import ImageUpload from "../../components/features/upload/ImageUpload";
-
+import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
 
 const ProductRegister = () => {
   const [productData, setProductData] = useState({
@@ -19,15 +19,27 @@ const ProductRegister = () => {
     startDate: '',
     endDate: '',
     images: [] as File[],
-    
+    participants:0,
   });
-
+ 
+  const [formData, setFormData] = useState<{ bio: string }>({
+    bio: "", 
+  });
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProductData((prevState) => ({
       ...prevState,
       [name]: value,
+    }));
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
     }));
   };
 
@@ -55,7 +67,18 @@ const ProductRegister = () => {
       }));
     }
   };
-
+  const handleIncrement = () => {
+    setProductData((prevState) => ({
+      ...prevState,
+      participants: prevState.participants + 1,
+    }));
+  };
+  const handleDecrement = () => {
+    setProductData((prevState) => ({
+      ...prevState,
+      participants: prevState.participants > 0 ? prevState.participants - 1 : 0,
+    }));
+  };
 
   const handleLocationClick = () => {
     alert("장소 지정하는 기능 구현"); 
@@ -162,7 +185,23 @@ const ProductRegister = () => {
         </div>
           {/* 모집 인원 */}
           <div className=" font-bold mt-3">모집 인원</div>
-          
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={handleDecrement}
+              className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center "
+            >
+              -
+            </button>
+            <span>{productData.participants}</span>
+            <button
+              type="button"
+              onClick={handleIncrement}
+              className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center"
+            >
+              +
+            </button>
+          </div>
       {/* 기간 입력 */}
       <div className=" font-bold mt-3">일정 기간</div>
            <div className="flex gap-2 items-center">
@@ -187,22 +226,23 @@ const ProductRegister = () => {
         {/* 이미지 업로드 */}
         <div>
           <h2 className=" font-bold mt-5 mb-4">상품 이미지 업로드</h2>
-          <ImageUpload onUpload={handleFileUpload} type="prod" />
+          <ImageUpload onUpload={handleFileUpload} type="prod" className="mb-6" />
         </div>
         
         {/* 설명 */}
-        <div className="relative w-full h-[209px] mt-5 font-bold">설명
-          <TextInput
-            name="description"
-            value={productData.description}
-            onChange={handleChange}
-            error={""}
-            className="mt-2 w-[331px] h-[175px]"
-          />
+        <div className="relative w-full h-[209px] font-bold">설명
+        <TextAreaInput
+            inputType="bio"
+            name="bio"
+            value={formData.bio}
+            onChange={handleTextareaChange}
+            placeholder="소개글을 입력하세요"
+            className="mt-2 h-[140px]"
+          />  
         </div>
 
             {/* 등록하기 버튼 */}
-            <div className="mt-6 mb-20">
+            <div className="mb-20">
           <Button  variant="primary" className="w-full " onClick={handleSubmit}>
             등록하기
           </Button>
