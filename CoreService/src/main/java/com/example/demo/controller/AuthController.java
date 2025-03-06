@@ -1,12 +1,16 @@
+// http://localhost:8081 — 구현 해야하는 code서버 (백엔드 DB, redis, 웹소켓)
+
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.response.*;
+import com.example.demo.dto.auth.*;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/core/auth")

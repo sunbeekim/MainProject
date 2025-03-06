@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
                             "/api/core/auth/signup", 
                             "/api/core/auth/login",
@@ -38,8 +39,10 @@ public class SecurityConfig {
                             "/api/core/hobbies/*/categories",
                             "/api/core/hobbies/categories/*",  // 카테고리별 취미 목록 조회 접근 허용
                             "/api/core/profiles/user/*"  // 닉네임으로 공개 프로필 조회는 인증 없이 접근 가능
+                            "/api/core/market/**"
                         ).permitAll() 
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
+
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
                 .addFilterBefore(

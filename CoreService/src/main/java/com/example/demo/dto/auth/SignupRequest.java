@@ -2,8 +2,8 @@ package com.example.demo.dto.auth;
 
 import com.example.demo.dto.hobby.HobbyRequest;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
