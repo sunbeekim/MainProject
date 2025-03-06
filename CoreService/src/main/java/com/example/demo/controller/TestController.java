@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,28 +12,27 @@ import java.util.Map;
 public class TestController {
 
     @GetMapping("/hello")
-    public ResponseEntity<Map<String, String>> hello() {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Hello from Core Service!");
-        response.put("status", "success");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse<Map<String, String>>> hello() {
+        Map<String, String> responseData = new HashMap<>();
+        responseData.put("message", "Hello from Core Service!");
+        return ResponseEntity.ok(ApiResponse.success(responseData));
     }
 
     @PostMapping("/echo")
-    public ResponseEntity<Map<String, Object>> echo(@RequestBody Map<String, Object> request) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Echo from Core Service");
-        response.put("receivedData", request);
-        response.put("timestamp", System.currentTimeMillis());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse<Map<String, Object>>> echo(@RequestBody Map<String, Object> request) {
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("message", "Echo from Core Service");
+        responseData.put("receivedData", request);
+        responseData.put("timestamp", System.currentTimeMillis());
+        return ResponseEntity.ok(ApiResponse.success(responseData));
     }
 
     @GetMapping("/health")
-    public ResponseEntity<Map<String, String>> healthCheck() {
+    public ResponseEntity<ApiResponse<Map<String, String>>> healthCheck() {
         Map<String, String> status = new HashMap<>();
         status.put("service", "Core Service");
         status.put("status", "UP");
         status.put("timestamp", String.valueOf(System.currentTimeMillis()));
-        return ResponseEntity.ok(status);
+        return ResponseEntity.ok(ApiResponse.success(status));
     }
 }

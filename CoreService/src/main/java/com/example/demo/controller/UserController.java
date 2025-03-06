@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ApiResponse;
 import com.example.demo.dto.WithdrawalRequest;
 import com.example.demo.dto.WithdrawalResponse;
 import com.example.demo.service.UserService;
@@ -21,16 +22,16 @@ public class UserController {
      * 회원 탈퇴
      */
     @PostMapping("/me/withdrawal")
-    public ResponseEntity<WithdrawalResponse> withdraw(
+    public ResponseEntity<ApiResponse<WithdrawalResponse>> withdraw(
             @RequestHeader("Authorization") String token,
             @RequestBody WithdrawalRequest request) {
         
         WithdrawalResponse response = userService.withdrawUserByToken(token, request);
         
         if (!response.isSuccess()) {
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
         }
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

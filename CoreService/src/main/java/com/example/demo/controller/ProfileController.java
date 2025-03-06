@@ -33,28 +33,28 @@ public class ProfileController {
      * 자신의 프로필 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ProfileResponse> getMyProfile(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<ProfileResponse>> getMyProfile(@RequestHeader("Authorization") String token) {
         ProfileResponse profile = userService.getUserProfileByToken(token);
         
         if (!profile.isSuccess()) {
-            return ResponseEntity.badRequest().body(profile);
+            return ResponseEntity.badRequest().body(ApiResponse.error(profile, "400"));
         }
         
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.ok(ApiResponse.success(profile));
     }
     
     /**
      * 닉네임으로 다른 사용자의 프로필 조회 (공개 정보만)
      */
     @GetMapping("/user/{nickname}")
-    public ResponseEntity<ProfileResponse> getUserProfile(@PathVariable String nickname) {
+    public ResponseEntity<ApiResponse<ProfileResponse>> getUserProfile(@PathVariable String nickname) {
         ProfileResponse profile = userService.getPublicProfile(nickname);
         
         if (!profile.isSuccess()) {
-            return ResponseEntity.badRequest().body(profile);
+            return ResponseEntity.badRequest().body(ApiResponse.error(profile, "400"));
         }
         
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.ok(ApiResponse.success(profile));
     }
     
     /**
@@ -182,7 +182,7 @@ public class ProfileController {
      * 프로필 이미지 조회 (자신)
      */
     @GetMapping("/me/image-info")
-    public ResponseEntity<Map<String, String>> getMyProfileImageInfo(
+    public ResponseEntity<?> getMyProfileImageInfo(
             @RequestHeader("Authorization") String token) {
         
         String tokenWithoutBearer = token;
@@ -191,18 +191,18 @@ public class ProfileController {
         }
         
         if (!userService.tokenUtils.isTokenValid(tokenWithoutBearer)) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "유효하지 않은 인증 토큰입니다.");
-            return ResponseEntity.badRequest().body(error);
+            Map<String, String> errorData = new HashMap<>();
+            errorData.put("message", "유효하지 않은 인증 토큰입니다.");
+            return ResponseEntity.badRequest().body(ApiResponse.error(errorData, "400"));
         }
         
         String email = userService.tokenUtils.getEmailFromToken(tokenWithoutBearer);
         String imageUrl = userService.getProfileImageUrl(email);
         
-        Map<String, String> response = new HashMap<>();
-        response.put("imageUrl", imageUrl);
+        Map<String, String> responseData = new HashMap<>();
+        responseData.put("imageUrl", imageUrl);
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success(responseData));
     }
     
     /**
