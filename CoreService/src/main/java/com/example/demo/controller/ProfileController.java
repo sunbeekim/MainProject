@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.demo.dto.CommonResponseDTO;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.nio.file.Files;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/api/core/profiles")
@@ -127,15 +129,19 @@ public class ProfileController {
      * 프로필 이미지 업로드
      */
     @PostMapping("/me/image")
-    public ResponseEntity<ProfileImageResponse> uploadProfileImage(
+    public ResponseEntity<CommonResponseDTO<String>> uploadProfileImage(
             @RequestHeader("Authorization") String token,
             @RequestParam("file") MultipartFile file) {
         
         // 파일 기본 검증
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(ProfileImageResponse.builder()
-                    .success(false)
-                    .message("업로드할 파일이 비어있습니다.")
+            return ResponseEntity.badRequest().body(CommonResponseDTO.<String>builder()
+                    .status("error")
+                    .data(CommonResponseDTO.Data.<String>builder()
+                        .message("업로드할 파일이 비어있습니다.")
+                        .response("")
+                        .build())
+                    .code("400")
                     .build());
         }
         
@@ -143,21 +149,43 @@ public class ProfileController {
             ProfileImageResponse response = userService.uploadProfileImageByToken(token, file);
             
             if (!response.isSuccess()) {
-                return ResponseEntity.badRequest().body(response);
+                return ResponseEntity.badRequest().body(CommonResponseDTO.<String>builder()
+                        .status("error")
+                        .data(CommonResponseDTO.Data.<String>builder()
+                            .message(response.getMessage())
+                            .response("")
+                            .build())
+                        .code("400")
+                        .build());
             }
             
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(CommonResponseDTO.<String>builder()
+                    .status("success")
+                    .data(CommonResponseDTO.Data.<String>builder()
+                        .message(response.getMessage())
+                        .response("")
+                        .build())
+                    .code("200")
+                    .build());
         } catch (IllegalArgumentException e) {
             // 파일 형식이나 크기 검증 실패 시
-            return ResponseEntity.badRequest().body(ProfileImageResponse.builder()
-                    .success(false)
-                    .message(e.getMessage())
+                return ResponseEntity.badRequest().body(CommonResponseDTO.<String>builder()
+                    .status("error")
+                    .data(CommonResponseDTO.Data.<String>builder()
+                        .message(e.getMessage())
+                        .response("")
+                        .build())
+                    .code("400")
                     .build());
         } catch (Exception e) {
             log.error("이미지 업로드 중 예상치 못한 오류 발생: {}", e.getMessage());
-            return ResponseEntity.status(500).body(ProfileImageResponse.builder()
-                    .success(false)
-                    .message("이미지 업로드 중 서버 오류가 발생했습니다.")
+            return ResponseEntity.status(500).body(CommonResponseDTO.<String>builder()
+                    .status("error")
+                    .data(CommonResponseDTO.Data.<String>builder()
+                        .message(e.getMessage())
+                        .response("")
+                        .build())
+                    .code("500")
                     .build());
         }
     }
@@ -183,6 +211,7 @@ public class ProfileController {
      */
     @GetMapping("/me/image-info")
     public ResponseEntity<?> getMyProfileImageInfo(
+
             @RequestHeader("Authorization") String token) {
         
         String tokenWithoutBearer = token;
@@ -202,6 +231,7 @@ public class ProfileController {
         Map<String, String> responseData = new HashMap<>();
         responseData.put("imageUrl", imageUrl);
         
+
         return ResponseEntity.ok(ApiResponse.success(responseData));
     }
     
@@ -209,8 +239,9 @@ public class ProfileController {
      * 프로필 이미지 파일 제공 
      */
     @GetMapping("/image/{filename:.+}")
-    public ResponseEntity<Resource> getProfileImage(@PathVariable String filename) {
+    public ResponseEntity<CommonResponseDTO<Map<String, String>>> getProfileImage(@PathVariable String filename) {
         try {
+            System.out.println("getProfileImage 호출됨");
             Path filePath = fileStorageService.getProfileImagePath(filename);
             Resource resource = new UrlResource(filePath.toUri());
             
@@ -223,17 +254,37 @@ public class ProfileController {
             // 파일 타입 확인
             String contentType = Files.probeContentType(filePath);
             if (contentType == null) {
-                contentType = "application/octet-stream";
+                contentType = "image/*";
             }
             
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                    .body(resource);
+            // 리소스를 바이트 배열로 변환
+            byte[] imageBytes = Files.readAllBytes(filePath);
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            
+            Map<String, String> responseData = new HashMap<>();
+            responseData.put("contentType", contentType);
+            responseData.put("filename", resource.getFilename());
+            responseData.put("imageData", base64Image);
+            
+            return ResponseEntity.ok(CommonResponseDTO.<Map<String, String>>builder()
+                    .status("success")
+                    .data(CommonResponseDTO.Data.<Map<String, String>>builder()
+                        .message(resource.getFilename())
+                        .response(responseData)
+                        .build())
+                    .code("200")
+                    .build());
             
         } catch (IOException ex) {
             log.error("프로필 이미지 로딩 실패: {}", ex.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(CommonResponseDTO.<Map<String, String>>builder()
+                    .status("error")
+                    .data(CommonResponseDTO.Data.<Map<String, String>>builder()
+                        .message(ex.getMessage())
+                        .response(null)
+                        .build())
+                    .code("400")
+                    .build());
         }
     }
     

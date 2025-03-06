@@ -9,6 +9,7 @@ export interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputEleme
   label?: React.ReactNode;
   rightElement?: React.ReactNode;
   error?: string;
+  type?: string;
 }
 
 const BaseInput: React.FC<BaseInputProps> = ({
