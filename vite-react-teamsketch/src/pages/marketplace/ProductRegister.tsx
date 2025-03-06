@@ -22,9 +22,7 @@ const ProductRegister = () => {
     participants:0,
   });
  
-  const [formData, setFormData] = useState<{ bio: string }>({
-    bio: "", 
-  });
+
   
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -223,10 +221,9 @@ const ProductRegister = () => {
         
         {/* 설명 */}
         <div className="relative w-full h-[209px] font-bold">설명
-        <TextAreaInput
-            inputType="bio"
-            name="bio"
-            value={formData.bio}
+        <TextAreaInput            
+            name="description"
+            value={productData.description}
             onChange={handleChange}
             placeholder="소개글을 입력하세요"
             className="mt-2 h-[140px]"
