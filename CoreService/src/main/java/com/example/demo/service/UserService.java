@@ -1,8 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.*;
-import com.example.demo.model.UserHobby;
-import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
