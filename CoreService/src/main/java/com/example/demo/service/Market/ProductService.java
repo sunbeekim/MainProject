@@ -8,12 +8,14 @@ import com.example.demo.model.Market.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -65,7 +67,6 @@ public class ProductService {
         }
     }
 
-
     public ProductResponse getProductById(Long id) {
         Product product = productMapper.findById(id);
         if (product == null) {
@@ -88,8 +89,27 @@ public class ProductService {
                 .build();
     }
 
-    public List<ProductResponse> getAllProducts() {
-        return productMapper.findAll().stream()
+    // 카테고리 필터 + 가격순/최신순 정렬 추가
+    public List<ProductResponse> getProducts(Long categoryId, String sort) {
+        List<Product> products;
+
+        // 카테고리 필터링
+        if (categoryId != null) {
+            products = productMapper.findByCategory(categoryId);
+        } else {
+            products = productMapper.findAll();
+        }
+
+        // 정렬 기능 추가
+        if ("price".equals(sort)) {
+            products.sort(Comparator.comparingInt(Product::getPrice));
+        } else if ("createdAt".equals(sort)) {
+            products.sort(Comparator.comparing(Product::getCreatedAt).reversed());
+        } else if (sort != null) {
+            throw new IllegalArgumentException("잘못된 정렬 옵션입니다. 'price' 또는 'createdAt'만 사용할 수 있습니다.");
+        }
+
+        return products.stream()
                 .map(product -> ProductResponse.builder()
                         .id(product.getId())
                         .title(product.getTitle())
