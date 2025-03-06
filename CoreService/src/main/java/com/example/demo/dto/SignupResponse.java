@@ -1,4 +1,4 @@
-package com.example.demo.dto.User;
+package com.example.demo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponse {
+public class SignupResponse {
     private boolean success;
-    private String token;
     private String email;
-    private String nickname;
     private String message;
 }

@@ -1,9 +1,9 @@
-package com.example.demo.service.User;
+package com.example.demo.service;
 
-import com.example.demo.dto.User.*;
-import com.example.demo.mapper.User.UserMapper;
-import com.example.demo.model.User.User;
-import com.example.demo.model.User.UserAccountInfo;
+import com.example.demo.dto.*;
+import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.User;
+import com.example.demo.model.UserAccountInfo;
 import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.util.PasswordUtils;
