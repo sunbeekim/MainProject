@@ -8,7 +8,7 @@ interface MessageInputProps {
 
 const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
     const [message, setMessage] = useState("");
-    // const [showUploadOptions, setShowUploadOptions] = useState(false);
+  
 
     const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMessage(e.target.value);
@@ -21,10 +21,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
         }
     };
 
-    // const toggleUploadOptions = () => {
-    //     setShowUploadOptions(!showUploadOptions);
-    // };
-
+ 
     return (
         <div className="bg-white p-4 border-t flex items-center gap-2 relative">
         
