@@ -26,6 +26,7 @@ public class AuthService {
     private final PasswordUtils passwordUtils;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenBlacklistService jwtTokenBlacklistService;
+    private final HobbyService hobbyService;  // 추가된 의존성
 
     private static final int MAX_FAILED_ATTEMPTS = 5;
 
@@ -73,7 +74,7 @@ public class AuthService {
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
                 .nickname(request.getNickname())
-                .hobby(request.getHobby())
+                // hobby 필드 제거
                 .bio(request.getBio())
                 .loginMethod(request.getLoginMethod() != null ? request.getLoginMethod() : "EMAIL")
                 .socialProvider(request.getSocialProvider() != null ? request.getSocialProvider() : "NONE")
@@ -99,6 +100,18 @@ public class AuthService {
 
         userMapper.insertUserAccountInfo(accountInfo);
 
+        // 취미 및 카테고리 등록
+        try {
+            if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+                hobbyService.registerUserHobbies(user.getEmail(), request.getHobbies());
+                log.info("사용자 취미 등록 완료 - 이메일: {}, 취미 개수: {}", 
+                         user.getEmail(), request.getHobbies().size());
+            }
+        } catch (Exception e) {
+            log.error("취미 등록 중 오류 발생 - 이메일: {}, 오류: {}", user.getEmail(), e.getMessage());
+            // 취미 등록 실패해도 회원가입은 성공으로 처리
+        }
+
         return SignupResponse.builder()
                 .success(true)
                 .email(user.getEmail())
@@ -121,7 +134,12 @@ public class AuthService {
         }
 
         // 계정 상태 확인
-        if (!"Active".equals(user.getAccountStatus())) {
+        if ("Withdrawal".equals(user.getAccountStatus())) {
+            return LoginResponse.builder()
+                    .success(false)
+                    .message("탈퇴한 계정입니다.")
+                    .build();
+        } else if (!"Active".equals(user.getAccountStatus())) {
             return LoginResponse.builder()
                     .success(false)
                     .message("현재 계정이 활성 상태가 아닙니다.")

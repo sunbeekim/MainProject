@@ -93,6 +93,6 @@ const setupInterceptors = (instance: AxiosInstance) => {
   );
 };
 
-// 인터셉터 적용
+// 일반 인터셉터 적용
 setupInterceptors(axiosInstance);
 setupInterceptors(uploadInstance);

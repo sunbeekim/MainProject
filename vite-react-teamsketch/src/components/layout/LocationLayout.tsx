@@ -40,7 +40,7 @@ const LocationLayout: React.FC<LocationLayoutProps> = ({
       {/* 위치 정보 영역 */}
       <div className="bg-white rounded-t-3xl -mt-6 shadow-lg">
         <Grid cols={1} className="p-6 gap-6">
-          {/* 출발 위치 */}
+          {/* 나의 위치 */}
           <GridItem>
             <div className="grid grid-cols-[auto,1fr] gap-4 items-center">
               <div className="w-8 h-8 bg-primary rounded-full grid place-items-center">
@@ -60,7 +60,7 @@ const LocationLayout: React.FC<LocationLayoutProps> = ({
                 <div className="w-3 h-3 bg-white rounded-full" />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">내 위치</p>
+                <p className="text-gray-500 text-sm">목적지</p>
                 <p className="font-medium">{endLocation?.address || "위치를 선택해주세요"}</p>
               </div>
             </div>

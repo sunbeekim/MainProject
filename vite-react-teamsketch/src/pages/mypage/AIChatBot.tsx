@@ -33,9 +33,9 @@ const AIChatBot = () => {
       dispatch(setError(errorMessage));
     }
   };
-
+  // 채팅 시 footer 가 같이 올라오는 현상이니까 stick
   return (
-    <div className="container mx-auto h-[calc(100vh-theme(spacing.16))] px-4 py-8">
+    <div className="h-full">
       <Chat
         title="네이버 클라우드 + TinyLlama 고객센터"
         subtitle="AI 기반 고객 상담 서비스"

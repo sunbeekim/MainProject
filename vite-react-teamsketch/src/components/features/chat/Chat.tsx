@@ -35,7 +35,7 @@ const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, i
   };
 
   return (
-    <div className="flex flex-col h-[calc(90vh-theme(spacing.32))] bg-background-light dark:bg-background-dark rounded-lg shadow-lg">
+    <div className=" flex flex-col h-full w-full bg-background-light dark:bg-background-dark rounded-lg shadow-lg">
       {/* 채팅 헤더 */}
       <div className="p-2 sm:p-4 bg-primary-light dark:bg-primary-dark text-white">
         <h2 className="text-lg sm:text-xl font-bold">{title}</h2>

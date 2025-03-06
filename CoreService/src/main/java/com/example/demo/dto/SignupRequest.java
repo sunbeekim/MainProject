@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,9 +15,11 @@ public class SignupRequest {
     private String email;
     private String nickname;
     private String password;
-    private String hobby;
     private String bio;
     private String loginMethod;
     private String socialProvider;
+    
+    // 취미는 이제 문자열이 아닌 객체 리스트로 관리
+    private List<HobbyRequest> hobbies;
 }
 

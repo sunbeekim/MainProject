@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
-import DaySelect from './DaySelect';
+import DaySelect from '../forms/radiobutton/DaySelect';
 import BaseButton from '../common/BaseButton';
 import BaseLabelBox from '../common/BaseLabelBox';
-
 
 interface PDLayoutProps {
   images: string[];
@@ -18,6 +17,7 @@ interface PDLayoutProps {
   startDate?: string;
   endDate?: string;
   location: string;
+  subTitle: string;
 }
 
 const PDLayout: React.FC<PDLayoutProps> = ({
@@ -31,9 +31,10 @@ const PDLayout: React.FC<PDLayoutProps> = ({
   currentParticipants,
   startDate,
   endDate,
-  location
+  location,
+  subTitle
 }) => {
-  const [selectedDay, setSelectedDay] = useState<string>('');
+  const [selectedDay, setSelectedDay] = useState<string[]>([]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -87,7 +88,7 @@ const PDLayout: React.FC<PDLayoutProps> = ({
         {/* 요일 선택 */}
         <GridItem>
           <BaseLabelBox label="요일 선택">
-            <DaySelect selectedDay={selectedDay} onDaySelect={setSelectedDay} />
+            <DaySelect onDaySelect={setSelectedDay} selectedDays={selectedDay} />
           </BaseLabelBox>
         </GridItem>
 
@@ -123,10 +124,10 @@ const PDLayout: React.FC<PDLayoutProps> = ({
           </div>
         </GridItem>
 
-        {/* 신청하기 버튼 */}
+        {/* 신청 or 등록록하기 버튼 */}
         <GridItem>
           <BaseButton variant="primary" className="w-full py-4">
-            신청하기
+            {subTitle}하기
           </BaseButton>
         </GridItem>
       </Grid>

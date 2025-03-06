@@ -42,6 +42,7 @@ const VerficationCode = () => {
         <div className="flex justify-center space-x-2">
           {code.map((digit, index) => (
             <TextInput
+              inputType="input"
               key={index}
               id={`code-input-${index}`}
               name={`code-${index}`}
@@ -59,7 +60,7 @@ const VerficationCode = () => {
         >
           인증코드 재전송
         </span>
-오
+
           <Button variant="primary" className="w-full">
             다음
           </Button>
