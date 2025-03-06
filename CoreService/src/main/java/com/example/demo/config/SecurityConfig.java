@@ -37,7 +37,8 @@ public class SecurityConfig {
                             "/api/core/hobbies",
                             "/api/core/hobbies/categories",
                             "/api/core/hobbies/*/categories",
-                            "/api/core/profiles/user/*",  // 닉네임으로 공개 프로필 조회는 인증 없이 접근 가능
+                            "/api/core/hobbies/categories/*",  // 카테고리별 취미 목록 조회 접근 허용
+                            "/api/core/profiles/user/*"  // 닉네임으로 공개 프로필 조회는 인증 없이 접근 가능
                             "/api/core/market/**"
                         ).permitAll() 
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API

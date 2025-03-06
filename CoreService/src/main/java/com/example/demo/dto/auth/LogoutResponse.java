@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,4 +16,3 @@ public class LogoutResponse {
     private String message;
     private LocalDateTime invalidatedUntil;
 }
-
