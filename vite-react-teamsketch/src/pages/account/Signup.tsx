@@ -16,7 +16,7 @@ import TextInput from '../../components/forms/input/TextInput';
 import PasswordInput from '../../components/forms/input/PasswordInput';
 import EmailInput from '../../components/forms/input/EmailInput';
 import InterestSelect from '../../components/forms/select/InterestSelect';
-import { useSignup } from '../../services/api/authService';
+import { useSignup } from '../../services/api/authAPI';
 import { SignupForm } from '../../types/auth';
 
 const Signup = () => {
@@ -96,19 +96,13 @@ const Signup = () => {
   return (
     <form onSubmit={handleSubmit}>
       <SignupLayout
-        title={<h1 className="text-xl font-bold">회원가입</h1>}
+        title={<h1 className="text-xl font-bold">어서오세요. 환영합니다!</h1>}
         signupButton={
-          <Button 
-            type="submit" 
-            variant="primary" 
-            className="w-full py-2.5 text-sm sm:text-base"
-          >
+          <Button type="submit" variant="primary" className="w-full py-2.5 text-sm sm:text-base">
             회원가입
           </Button>
         }
-        divider={
-          <div className="relative h-px bg-gray-300 dark:bg-gray-700 w-full" />
-        }
+        divider={<div className="relative h-px bg-gray-300 dark:bg-gray-700 w-full" />}
         loginSection={
           <div className="text-sm">
             이미 계정이 있으신가요?{' '}
@@ -127,7 +121,7 @@ const Signup = () => {
             {error}
           </div>
         )}
-        
+
         <div className="flex flex-col gap-2">
           <EmailInput
             label="이메일"
@@ -136,7 +130,7 @@ const Signup = () => {
             onChange={handleChange}
             error={validationErrors.email}
           />
-          
+
           <PasswordInput
             label="비밀번호"
             name="password"
@@ -161,7 +155,7 @@ const Signup = () => {
             error={validationErrors.phoneNumber}
           />
 
-          <TextInput 
+          <TextInput
             label="닉네임"
             name="nickname"
             value={formData.nickname}
@@ -171,7 +165,7 @@ const Signup = () => {
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">관심사</label>
-            <InterestSelect 
+            <InterestSelect
               onInterestSelect={handleInterestSelect}
               selectedInterest={formData.hobby || ''}
             />

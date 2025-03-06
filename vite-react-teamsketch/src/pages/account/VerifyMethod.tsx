@@ -20,7 +20,7 @@ const VerifyMethod = () => {
             alert(`${method === 'email' ? '이메일' : '전화번호'}를 입력해주세요!`);
             return;
         }
-        navigate('/reset-password'); 
+        navigate('/verfication-code'); 
     }; 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +89,7 @@ const VerifyMethod = () => {
                 {method === 'phone' && (
                     <TextInput
                         name="phone"
-                        inputType="tel"
+                        inputType="phoneNumber"
                         label="전화번호"
                         value={inputValue}
                         onChange={handleChange}

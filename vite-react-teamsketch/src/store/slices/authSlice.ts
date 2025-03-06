@@ -35,12 +35,15 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<{
-      email: string;
-      nickname: string;
-      userId: number;
-      token: string;
-    }>) => {
+    login: (
+      state,
+      action: PayloadAction<{
+        email: string;
+        nickname: string;
+        userId: number;
+        token: string;
+      }>
+    ) => {
       state.isAuthenticated = true;
       state.user = {
         email: action.payload.email,
@@ -49,15 +52,18 @@ const authSlice = createSlice({
       };
       state.token = action.payload.token;
       state.error = null;
-      
+
       // 토큰을 localStorage에 저장
       localStorage.setItem('token', action.payload.token);
       // 사용자 기본 정보도 localStorage에 저장
-      localStorage.setItem('user', JSON.stringify({
-        email: action.payload.email,
-        nickname: action.payload.nickname,
-        userId: action.payload.userId
-      }));
+      localStorage.setItem(
+        'user',
+        JSON.stringify({
+          email: action.payload.email,
+          nickname: action.payload.nickname,
+          userId: action.payload.userId
+        })
+      );
     },
     logout: (state) => {
       state.isAuthenticated = false;
@@ -68,10 +74,11 @@ const authSlice = createSlice({
       };
       state.token = null;
       state.error = null;
-      
+
       // localStorage에서 인증 관련 정보 제거
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('persist:root');
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
