@@ -18,11 +18,11 @@ export interface RadioButtonProps
   className?: string;
 }
 
-const RadioButton: React.FC<RadioButtonProps> = ({ 
-  label, 
-  value, 
-  checked, 
-  onChange, 
+const RadioButton: React.FC<RadioButtonProps> = ({
+  label,
+  value,
+  checked,
+  onChange,
   variant = 'default',
   size = 'md',
   textSize = 'sm',
@@ -35,7 +35,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   checkedBackgroundColor = 'bg-primary-light',
   checkedTextColor = 'text-white',
   className = '',
-  ...props 
+  ...props
 }) => {
   const sizeStyles = {
     sm: 'w-12 h-12',
@@ -77,9 +77,10 @@ const RadioButton: React.FC<RadioButtonProps> = ({
           ${textStyles[textSize]}
           ${variantStyles[variant]}
           border-2
-          ${checked
-            ? `${checkedBackgroundColor} ${checkedTextColor} ${checkedBorderColor} transform scale-110 font-bold`
-            : `${backgroundColor} ${textColor} ${borderColor} ${hoverBorderColor} ${hoverTextColor}`
+          ${
+            checked
+              ? `${checkedBackgroundColor} ${checkedTextColor} ${checkedBorderColor} transform scale-110 font-bold`
+              : `${backgroundColor} ${textColor} ${borderColor} ${hoverBorderColor} ${hoverTextColor}`
           }
           peer-focus:ring-2 peer-focus:ring-primary-light peer-focus:ring-opacity-50
           ${className}

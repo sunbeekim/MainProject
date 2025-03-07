@@ -1,4 +1,4 @@
-import { useState} from 'react';
+import { useState } from 'react';
 
 import { RootState } from '../store/store';
 import { useAppSelector } from '../store/hooks';
@@ -14,7 +14,6 @@ import TextAreaInput from '../components/forms/textarea/TextAreaInput';
 
 const TestProfileManage = () => {
   const user = useAppSelector((state: RootState) => state.user.user);
- 
 
   const [formData, setFormData] = useState({
     name: user.name || '지우',
@@ -68,14 +67,14 @@ const TestProfileManage = () => {
           onUpload={getProfileImage}
           className="max-w-md mx-auto"
           type="profile"
-          isEdit={true} 
-          currentImage={user.profileImagePath instanceof File ? user.profileImagePath  : null} 
+          isEdit={true}
+          currentImage={user.profileImagePath instanceof File ? user.profileImagePath : null}
         />
       }
       userInfoName={
         <BaseLabelBox label="이름">
           <BaseInput
-            name="name" 
+            name="name"
             value={formData.name}
             onChange={handleInputChange}
             placeholder="이름을 입력하세요"
@@ -87,7 +86,7 @@ const TestProfileManage = () => {
           <BaseInput
             name="nickname"
             value={formData.nickname}
-            onChange={handleInputChange}  
+            onChange={handleInputChange}
             placeholder="닉네임을 입력하세요"
           />
         </BaseLabelBox>
@@ -100,7 +99,7 @@ const TestProfileManage = () => {
             value={formData.bio}
             onChange={handleTextareaChange}
             placeholder="소개글을 입력하세요"
-          />  
+          />
         </BaseLabelBox>
       }
       userInfoInterest={
@@ -112,21 +111,14 @@ const TestProfileManage = () => {
         </BaseLabelBox>
       }
       userInfoHobby={
-        <BaseLabelBox label="취미"> 
-          <InterestSelect
-            onInterestSelect={handleHobbySelect}
-            selectedInterest={formData.hobby}
-          />
+        <BaseLabelBox label="취미">
+          <InterestSelect onInterestSelect={handleHobbySelect} selectedInterest={formData.hobby} />
         </BaseLabelBox>
-      } 
+      }
       saveButton={
-        <BaseButton
-          
-          variant="primary"
-          buttonSize="lg"
-          onClick={handleSave}
-          className="w-full"  
-        >수정</BaseButton>
+        <BaseButton variant="primary" buttonSize="lg" onClick={handleSave} className="w-full">
+          수정
+        </BaseButton>
       }
     />
   );

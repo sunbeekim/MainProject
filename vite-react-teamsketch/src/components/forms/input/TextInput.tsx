@@ -9,22 +9,20 @@ interface TextInputProps extends Omit<BaseInputProps, 'type'> {
 
 const TextInput = ({ label, type = 'input', ...props }: TextInputProps) => {
   // 입력 필드 타입에 따른 autoComplete 값 설정
-  
 
   return (
-
-      <BaseInput
-        {...props}
-        type={type}   
-        variant={props.error ? 'error' : props.variant}
-        label={
-          label && (
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-              {label}
-            </label>
-          )
-        }
-      />  
+    <BaseInput
+      {...props}
+      type={type}
+      variant={props.error ? 'error' : props.variant}
+      label={
+        label && (
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+            {label}
+          </label>
+        )
+      }
+    />
   );
 };
 
