@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import TextInput from '../../components/forms/input/TextInput';
 
-import RadioButton from '../../components/common/RadioButton'; 
-import InterestSelect from '../../components/forms/select/InterestSelect'; 
-import Button from '../../components/common/Button'; 
-import SignupLayout from "../../components/layout/SignupLayout";
-import ImageUpload from "../../components/features/upload/ImageUpload";
+import RadioButton from '../../components/common/RadioButton';
+import InterestSelect from '../../components/forms/select/InterestSelect';
+import Button from '../../components/common/Button';
+import SignupLayout from '../../components/layout/SignupLayout';
+import ImageUpload from '../../components/features/upload/ImageUpload';
 import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
-
 
 const ProductRegister = () => {
   const [productData, setProductData] = useState({
@@ -21,15 +20,10 @@ const ProductRegister = () => {
     startDate: '',
     endDate: '',
     images: [] as File[],
-    participants:0,
+    participants: 0
   });
- 
-  const [formData, setFormData] = useState<{ bio: string }>({
-    bio: "", 
-  });
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProductData((prevState) => ({
       ...prevState,
@@ -65,13 +59,13 @@ const ProductRegister = () => {
   const handleIncrement = () => {
     setProductData((prevState) => ({
       ...prevState,
-      participants: prevState.participants + 1,
+      participants: prevState.participants + 1
     }));
   };
   const handleDecrement = () => {
     setProductData((prevState) => ({
       ...prevState,
-      participants: prevState.participants > 0 ? prevState.participants - 1 : 0,
+      participants: prevState.participants > 0 ? prevState.participants - 1 : 0
     }));
   };
 
@@ -183,25 +177,25 @@ const ProductRegister = () => {
               +
             </button>
           </div>
-      {/* 기간 입력 */}
-      <div className=" font-bold mt-3">일정 기간</div>
-           <div className="flex gap-2 items-center">
-                <input
-                  type="date"
-                  name="startDate"
-                  value={productData.startDate}
-                  onChange={handleChange}
-                  className="border p-2 rounded-lg cursor-pointer"
-                />
-                <span>~</span>
-                <input
-                  type="date"
-                  name="endDate"
-                  value={productData.endDate}
-                  onChange={handleChange}
-                  className="border p-2 rounded-lg cursor-pointer"
-                />
-              </div>
+          {/* 기간 입력 */}
+          <div className=" font-bold mt-3">일정 기간</div>
+          <div className="flex gap-2 items-center">
+            <input
+              type="date"
+              name="startDate"
+              value={productData.startDate}
+              onChange={handleChange}
+              className="border p-2 rounded-lg cursor-pointer"
+            />
+            <span>~</span>
+            <input
+              type="date"
+              name="endDate"
+              value={productData.endDate}
+              onChange={handleChange}
+              className="border p-2 rounded-lg cursor-pointer"
+            />
+          </div>
         </div>
 
         {/* 이미지 업로드 */}
@@ -211,20 +205,20 @@ const ProductRegister = () => {
         </div>
 
         {/* 설명 */}
-        <div className="relative w-full h-[209px] font-bold">설명
-        <TextAreaInput
-            inputType="bio"
-            name="bio"
-            value={formData.bio}
+        <div className="relative w-full h-[209px] font-bold">
+          설명
+          <TextAreaInput
+            name="description"
+            value={productData.description}
             onChange={handleChange}
             placeholder="소개글을 입력하세요"
             className="mt-2 h-[140px]"
-          />  
+          />
         </div>
 
-            {/* 등록하기 버튼 */}
-            <div className="mb-20">
-          <Button  variant="primary" className="w-full " onClick={handleSubmit}>
+        {/* 등록하기 버튼 */}
+        <div className="mb-20">
+          <Button variant="primary" className="w-full " onClick={handleSubmit}>
             등록하기
           </Button>
         </div>
