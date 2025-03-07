@@ -1,6 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.auth.LoginRequest;
+import com.example.demo.dto.auth.LoginResponse;
+import com.example.demo.dto.auth.LogoutResponse;
+import com.example.demo.dto.auth.SignupRequest;
+import com.example.demo.dto.auth.SignupResponse;
+import com.example.demo.dto.hobby.HobbyRequest;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.model.UserAccountInfo;
@@ -31,7 +36,7 @@ public class AuthService {
     private static final int MAX_FAILED_ATTEMPTS = 5;
 
     /**
-     * 회원가입
+     * 회원가입 - 카테고리->취미 선택 방식으로 수정
      */
     @Transactional
     public SignupResponse registerUser(SignupRequest request) {
@@ -61,6 +66,60 @@ public class AuthService {
             }
         }
 
+        // 취미 데이터의 유효성 검증
+        if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+            for (HobbyRequest hobby : request.getHobbies()) {
+                // 카테고리 ID가 누락된 경우
+                if (hobby.getCategoryId() == null) {
+                    return SignupResponse.builder()
+                            .success(false)
+                            .message("카테고리 정보가 누락되었습니다.")
+                            .build();
+                }
+                
+                // 취미 ID가 누락된 경우
+                if (hobby.getHobbyId() == null) {
+                    return SignupResponse.builder()
+                            .success(false)
+                            .message("취미 정보가 누락되었습니다.")
+                            .build();
+                }
+                
+                // 카테고리 유효성 검증
+                if (!hobbyService.isValidCategory(hobby.getCategoryId())) {
+                    return SignupResponse.builder()
+                            .success(false)
+                            .message("유효하지 않은 카테고리입니다: " + hobby.getCategoryId())
+                            .build();
+                }
+                
+                // 취미 유효성 검증
+                if (!hobbyService.isValidHobby(hobby.getHobbyId())) {
+                    return SignupResponse.builder()
+                            .success(false)
+                            .message("유효하지 않은 취미입니다: " + hobby.getHobbyId())
+                            .build();
+                }
+                
+                // 취미가 해당 카테고리에 속하는지 검증
+                try {
+                    boolean isValid = hobbyService.getHobbyMapper().isHobbyInCategory(hobby.getHobbyId(), hobby.getCategoryId());
+                    if (!isValid) {
+                        return SignupResponse.builder()
+                                .success(false)
+                                .message("선택한 취미가 해당 카테고리에 속하지 않습니다. 취미ID: " + hobby.getHobbyId() + ", 카테고리ID: " + hobby.getCategoryId())
+                                .build();
+                    }
+                } catch (Exception e) {
+                    log.error("취미-카테고리 관계 검증 중 오류 발생: {}", e.getMessage());
+                    return SignupResponse.builder()
+                            .success(false)
+                            .message("취미 정보 검증 중 오류가 발생했습니다.")
+                            .build();
+                }
+            }
+        }
+
         // 비밀번호 해싱
         String hashedPassword = passwordUtils.hashPassword(request.getPassword(), null).get("hashedPassword");
 
@@ -74,7 +133,6 @@ public class AuthService {
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
                 .nickname(request.getNickname())
-                // hobby 필드 제거
                 .bio(request.getBio())
                 .loginMethod(request.getLoginMethod() != null ? request.getLoginMethod() : "EMAIL")
                 .socialProvider(request.getSocialProvider() != null ? request.getSocialProvider() : "NONE")

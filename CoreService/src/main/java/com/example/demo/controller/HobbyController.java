@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.HobbyRequest;
+import com.example.demo.dto.response.ApiResponse;
+import com.example.demo.dto.hobby.HobbyRequest;
 import com.example.demo.model.Category;
 import com.example.demo.model.Hobby;
 import com.example.demo.model.UserHobby;
@@ -30,27 +31,38 @@ public class HobbyController {
      * 모든 취미 목록 조회 (카테고리 정보 포함)
      */
     @GetMapping
-    public ResponseEntity<List<Hobby>> getAllHobbies() {
+    public ResponseEntity<ApiResponse<List<Hobby>>> getAllHobbies() {
         List<Hobby> hobbies = hobbyService.getAllHobbiesWithCategories();
-        return ResponseEntity.ok(hobbies);
+        return ResponseEntity.ok(ApiResponse.success(hobbies));
     }
 
     /**
      * 모든 카테고리 목록 조회
      */
     @GetMapping("/categories")
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<ApiResponse<List<Category>>> getAllCategories() {
         List<Category> categories = hobbyService.getAllCategories();
-        return ResponseEntity.ok(categories);
+        return ResponseEntity.ok(ApiResponse.success(categories));
     }
 
     /**
      * 특정 취미에 속한 카테고리 목록 조회
+     * 참고: 새로운 방식(카테고리->취미)에서는 사용되지 않지만 API 호환성을 위해 유지
+     * @deprecated 카테고리 우선 선택 방식으로 변경됨
      */
     @GetMapping("/{hobbyId}/categories")
-    public ResponseEntity<List<Category>> getCategoriesByHobbyId(@PathVariable Long hobbyId) {
+    public ResponseEntity<ApiResponse<List<Category>>> getCategoriesByHobbyId(@PathVariable Long hobbyId) {
         List<Category> categories = hobbyService.getCategoriesByHobbyId(hobbyId);
-        return ResponseEntity.ok(categories);
+        return ResponseEntity.ok(ApiResponse.success(categories));
+    }
+    
+    /**
+     * 특정 카테고리에 속한 취미 목록 조회 (추가)
+     */
+    @GetMapping("/categories/{categoryId}")
+    public ResponseEntity<ApiResponse<List<Hobby>>> getHobbiesByCategoryId(@PathVariable Long categoryId) {
+        List<Hobby> hobbies = hobbyService.getHobbiesByCategoryId(categoryId);
+        return ResponseEntity.ok(ApiResponse.success(hobbies));
     }
 
     /**
@@ -61,14 +73,14 @@ public class HobbyController {
         String tokenWithoutBearer = tokenUtils.extractTokenWithoutBearer(token);
         
         if (!tokenUtils.isTokenValid(tokenWithoutBearer)) {
-            Map<String, String> response = new HashMap<>();
-            response.put("error", "인증되지 않은 요청입니다.");
-            return ResponseEntity.status(401).body(response);
+            Map<String, String> errorData = new HashMap<>();
+            errorData.put("message", "인증되지 않은 요청입니다.");
+            return ResponseEntity.status(401).body(ApiResponse.error(errorData, "401"));
         }
         
         String email = jwtTokenProvider.getUsername(tokenWithoutBearer);
         List<UserHobby> userHobbies = hobbyService.getUserHobbies(email);
-        return ResponseEntity.ok(userHobbies);
+        return ResponseEntity.ok(ApiResponse.success(userHobbies));
     }
 
     /**
@@ -82,9 +94,9 @@ public class HobbyController {
         String tokenWithoutBearer = tokenUtils.extractTokenWithoutBearer(token);
         
         if (!tokenUtils.isTokenValid(tokenWithoutBearer)) {
-            Map<String, String> response = new HashMap<>();
-            response.put("error", "인증되지 않은 요청입니다.");
-            return ResponseEntity.status(401).body(response);
+            Map<String, String> errorData = new HashMap<>();
+            errorData.put("message", "인증되지 않은 요청입니다.");
+            return ResponseEntity.status(401).body(ApiResponse.error(errorData, "401"));
         }
         
         String email = jwtTokenProvider.getUsername(tokenWithoutBearer);
@@ -92,18 +104,19 @@ public class HobbyController {
         try {
             hobbyService.registerUserHobbies(email, hobbies);
             
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "취미 정보가 업데이트되었습니다.");
-            response.put("count", hobbies.size());
-            return ResponseEntity.ok(response);
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("message", "취미 정보가 업데이트되었습니다.");
+            responseData.put("count", hobbies.size());
+            
+            return ResponseEntity.ok(ApiResponse.success(responseData));
             
         } catch (Exception e) {
             log.error("취미 업데이트 중 오류 발생: {}", e.getMessage());
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "취미 정보 업데이트 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            
+            Map<String, Object> errorData = new HashMap<>();
+            errorData.put("message", "취미 정보 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+            
+            return ResponseEntity.badRequest().body(ApiResponse.error(errorData, "400"));
         }
     }
 }

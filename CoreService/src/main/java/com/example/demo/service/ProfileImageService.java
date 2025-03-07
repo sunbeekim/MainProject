@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.ProfileImageResponse;
+import com.example.demo.dto.profile.ProfileImageResponse;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.util.TokenUtils;

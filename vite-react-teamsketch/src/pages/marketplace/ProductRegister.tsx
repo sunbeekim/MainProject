@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import TextInput from '../../components/forms/input/TextInput';
-import RadioButton from '../../components/common/RadioButton';
-import InterestSelect from '../../components/forms/select/InterestSelect';
-import Button from '../../components/common/Button';
-import SignupLayout from '../../components/layout/SignupLayout';
-import ImageUpload from '../../components/features/upload/ImageUpload';
+
+import RadioButton from '../../components/common/RadioButton'; 
+import InterestSelect from '../../components/forms/select/InterestSelect'; 
+import Button from '../../components/common/Button'; 
+import SignupLayout from "../../components/layout/SignupLayout";
+import ImageUpload from "../../components/features/upload/ImageUpload";
+import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
+
 
 const ProductRegister = () => {
   const [productData, setProductData] = useState({
@@ -17,10 +20,16 @@ const ProductRegister = () => {
     location: '',
     startDate: '',
     endDate: '',
-    images: [] as File[]
+    images: [] as File[],
+    participants:0,
   });
+ 
+  const [formData, setFormData] = useState<{ bio: string }>({
+    bio: "", 
+  });
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProductData((prevState) => ({
       ...prevState,
@@ -51,6 +60,19 @@ const ProductRegister = () => {
         images: [...prevState.images, file]
       }));
     }
+  };
+
+  const handleIncrement = () => {
+    setProductData((prevState) => ({
+      ...prevState,
+      participants: prevState.participants + 1,
+    }));
+  };
+  const handleDecrement = () => {
+    setProductData((prevState) => ({
+      ...prevState,
+      participants: prevState.participants > 0 ? prevState.participants - 1 : 0,
+    }));
   };
 
   const handleLocationClick = () => {
@@ -144,49 +166,65 @@ const ProductRegister = () => {
           </div>
           {/* 모집 인원 */}
           <div className=" font-bold mt-3">모집 인원</div>
-
-          {/* 기간 입력 */}
-          <div className=" font-bold mt-3">일정 기간</div>
-          <div className="flex gap-2 items-center">
-            <input
-              type="date"
-              name="startDate"
-              value={productData.startDate}
-              onChange={handleChange}
-              className="border p-2 rounded-lg cursor-pointer"
-            />
-            <span>~</span>
-            <input
-              type="date"
-              name="endDate"
-              value={productData.endDate}
-              onChange={handleChange}
-              className="border p-2 rounded-lg cursor-pointer"
-            />
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={handleDecrement}
+              className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center "
+            >
+              -
+            </button>
+            <span>{productData.participants}</span>
+            <button
+              type="button"
+              onClick={handleIncrement}
+              className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center"
+            >
+              +
+            </button>
           </div>
+      {/* 기간 입력 */}
+      <div className=" font-bold mt-3">일정 기간</div>
+           <div className="flex gap-2 items-center">
+                <input
+                  type="date"
+                  name="startDate"
+                  value={productData.startDate}
+                  onChange={handleChange}
+                  className="border p-2 rounded-lg cursor-pointer"
+                />
+                <span>~</span>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={productData.endDate}
+                  onChange={handleChange}
+                  className="border p-2 rounded-lg cursor-pointer"
+                />
+              </div>
         </div>
 
         {/* 이미지 업로드 */}
         <div>
           <h2 className=" font-bold mt-5 mb-4">상품 이미지 업로드</h2>
-          <ImageUpload onUpload={handleFileUpload} type="prod" />
+          <ImageUpload onUpload={handleFileUpload} type="prod" className="mb-6" />
         </div>
 
         {/* 설명 */}
-        <div className="relative w-full h-[209px] mt-5 font-bold">
-          설명
-          <TextInput
-            name="description"
-            value={productData.description}
+        <div className="relative w-full h-[209px] font-bold">설명
+        <TextAreaInput
+            inputType="bio"
+            name="bio"
+            value={formData.bio}
             onChange={handleChange}
-            error={''}
-            className="mt-2 w-[331px] h-[175px]"
-          />
+            placeholder="소개글을 입력하세요"
+            className="mt-2 h-[140px]"
+          />  
         </div>
 
-        {/* 등록하기 버튼 */}
-        <div className="mt-6 mb-20">
-          <Button variant="primary" className="w-full " onClick={handleSubmit}>
+            {/* 등록하기 버튼 */}
+            <div className="mb-20">
+          <Button  variant="primary" className="w-full " onClick={handleSubmit}>
             등록하기
           </Button>
         </div>

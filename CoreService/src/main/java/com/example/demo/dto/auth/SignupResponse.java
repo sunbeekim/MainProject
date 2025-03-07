@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordChangeResponse {
+public class SignupResponse {
     private boolean success;
+    private String email;
     private String message;
 }

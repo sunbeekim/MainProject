@@ -1,8 +1,9 @@
-package com.example.demo.dto;
+package com.example.demo.dto.auth;
 
+import com.example.demo.dto.hobby.HobbyRequest;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -18,8 +19,5 @@ public class SignupRequest {
     private String bio;
     private String loginMethod;
     private String socialProvider;
-    
-    // 취미는 이제 문자열이 아닌 객체 리스트로 관리
     private List<HobbyRequest> hobbies;
 }
-
