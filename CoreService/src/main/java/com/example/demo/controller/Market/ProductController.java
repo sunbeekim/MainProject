@@ -54,4 +54,40 @@ public class ProductController {
             @RequestParam(required = false) String sort) { // 정렬 옵션 (price, createdAt))
         return ResponseEntity.ok(productService.getProducts(categoryId, sort));
     }
+
+    /**
+     * 내가 등록한 상품 목록 조회 (구매만)
+     */
+    @GetMapping("/my_registered_products/buy")
+    public ResponseEntity<List<ProductResponse>> getMyRegisteredBuyProducts(@RequestParam String email) {
+        return ResponseEntity.ok(productService.getMyRegisteredBuyProducts(email));
+    }
+
+    /**
+     * 내가 등록한 상품 목록 조회 (판매만)
+     */
+    @GetMapping("/my_registered_products/sell")
+    public ResponseEntity<List<ProductResponse>> getMyRegisteredSellProducts(@RequestParam String email) {
+        return ResponseEntity.ok(productService.getMyRegisteredSellProducts(email));
+    }
+
+    /**
+     * 내가 요청한 상품 목록 조회 (구매 요청만)
+     */
+    @GetMapping("/my_requested_products/buy_request")
+    public ResponseEntity<List<ProductResponse>> getMyRequestedBuyProducts(@RequestParam String email) {
+        return ResponseEntity.ok(productService.getMyRequestedBuyProducts(email));
+    }
+
+    /**
+     * 내가 요청한 상품 목록 조회 (판매 요청만)
+     */
+    @GetMapping("/my_requested_products/sell_request")
+    public ResponseEntity<List<ProductResponse>> getMyRequestedSellProducts(@RequestParam String email) {
+        return ResponseEntity.ok(productService.getMyRequestedSellProducts(email));
+    }
 }
+
+
+
+

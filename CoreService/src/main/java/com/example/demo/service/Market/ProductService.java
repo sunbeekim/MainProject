@@ -145,4 +145,33 @@ public class ProductService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 내가 등록한 상품 목록 조회 (구매만)
+     */
+    public List<ProductResponse> getMyRegisteredBuyProducts(String email) {
+        return productMapper.findProductsByEmailAndType(email, List.of("구매"));
+    }
+
+    /**
+     * 내가 등록한 상품 목록 조회 (판매만)
+     */
+    public List<ProductResponse> getMyRegisteredSellProducts(String email) {
+        return productMapper.findProductsByEmailAndType(email, List.of("판매"));
+    }
+
+    /**
+     * 내가 요청한 상품 목록 조회 (구매 요청만)
+     */
+    public List<ProductResponse> getMyRequestedBuyProducts(String email) {
+        return productMapper.findProductsByEmailAndType(email, List.of("구매 요청"));
+    }
+
+    /**
+     * 내가 요청한 상품 목록 조회 (판매 요청만)
+     */
+    public List<ProductResponse> getMyRequestedSellProducts(String email) {
+        return productMapper.findProductsByEmailAndType(email, List.of("판매 요청"));
+    }
 }
+

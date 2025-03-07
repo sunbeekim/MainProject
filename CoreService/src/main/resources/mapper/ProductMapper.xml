@@ -91,6 +91,58 @@
         </choose>
     </select>
 
+    <!-- 내가 등록한 상품 목록 조회 (구매만) -->
+    <select id="findMyRegisteredBuyProducts" parameterType="string" resultMap="ProductWithImagesMap">
+        SELECT * FROM products
+        WHERE email = #{email} AND registration_type = '구매'
+        ORDER BY created_at DESC;
+    </select>
+
+    <!-- 내가 등록한 상품 목록 조회 (판매만) -->
+    <select id="findMyRegisteredSellProducts" parameterType="string" resultMap="ProductWithImagesMap">
+        SELECT * FROM products
+        WHERE email = #{email} AND registration_type = '판매'
+        ORDER BY created_at DESC;
+    </select>
+
+    <!-- 내가 요청한 상품 목록 조회 (구매 요청만) -->
+    <select id="findMyRequestedBuyProducts" parameterType="string" resultMap="ProductWithImagesMap">
+        SELECT * FROM products
+        WHERE email = #{email} AND registration_type = '구매 요청'
+        ORDER BY created_at DESC;
+    </select>
+
+    <!-- 내가 요청한 상품 목록 조회 (판매 요청만) -->
+    <select id="findMyRequestedSellProducts" parameterType="string" resultMap="ProductWithImagesMap">
+        SELECT * FROM products
+        WHERE email = #{email} AND registration_type = '판매 요청'
+        ORDER BY created_at DESC;
+    </select>
+
+    <!--사용자(이메일)가 등록한 상품별 목록 조회 (구매, 판매, 구매 요청, 판매 요청) -->
+    <select id="findProductsByEmailAndType" parameterType="map" resultMap="ProductWithImagesMap">
+        SELECT
+        p.id, p.product_code, p.title, p.description, p.price, p.email, p.category_id,
+        p.transaction_type, p.registration_type, p.latitude, p.longitude,
+        p.meeting_place, p.address, p.created_at, p.updated_at,
+        -- 대표 이미지 설정 (썸네일이 있으면 우선, 없으면 첫 번째 이미지, 없으면 기본 이미지)
+        COALESCE(
+        (SELECT image_path FROM productimages WHERE product_id = p.id AND is_thumbnail = TRUE LIMIT 1),
+        (SELECT image_path FROM productimages WHERE product_id = p.id LIMIT 1),
+        '/uploads/default_thumbnail.jpg'
+        ) AS thumbnail_path,
+        pi.image_path
+        FROM products p
+        LEFT JOIN productimages pi ON p.id = pi.product_id
+        WHERE p.email = #{email}
+        AND p.registration_type IN
+        <foreach item="type" collection="types" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+        ORDER BY p.created_at DESC;
+    </select>
+
+
     <!-- 전체 상품 조회 (상품별 대표 이미지 포함) -->
     <select id="findAll" resultMap="ProductWithImagesMap">
         SELECT
