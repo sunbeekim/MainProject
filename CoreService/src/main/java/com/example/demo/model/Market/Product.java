@@ -2,6 +2,7 @@ package com.example.demo.model.Market;
 
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,4 +25,10 @@ public class Product {
     private String address; // 거래 장소 주소 (선택적)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    // 이미지 경로 리스트 추가
+    private List<String> imagePaths;
+
+    // 대표 이미지 추가
+    private String thumbnailPath;
 }

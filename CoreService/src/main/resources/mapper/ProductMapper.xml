@@ -17,19 +17,134 @@
                  )
     </insert>
 
-    <!-- 특정 상품 조회 -->
-    <select id="findById" parameterType="long" resultType="com.example.demo.model.Market.Product">
-        SELECT * FROM products WHERE id = #{id}
+    <!-- 특정 상품 조회 (productCode 포함 & thumbnailPath 기본값 설정) -->
+    <select id="findById" parameterType="long" resultMap="ProductWithImagesMap">
+        SELECT
+            p.id,
+            p.product_code,
+            p.title,
+            p.description,
+            p.price,
+            p.email,
+            p.category_id,
+            p.transaction_type,
+            p.registration_type,
+            p.latitude,
+            p.longitude,
+            p.meeting_place,
+            p.address,
+            p.created_at,
+            p.updated_at,
+            -- 대표 이미지 (thumbnailPath) 설정 (NULL 방지)
+            COALESCE(
+                    (SELECT image_path FROM productimages pi WHERE product_id = p.id AND is_thumbnail = TRUE LIMIT 1),
+                    (SELECT image_path FROM productimages pi WHERE product_id = p.id LIMIT 1),
+                    '/uploads/default_thumbnail.jpg'
+            ) AS thumbnail_path,
+            pi.image_path
+        FROM products p
+                 LEFT JOIN productimages pi ON p.id = pi.product_id
+        WHERE p.id = #{id}
     </select>
 
-    <!-- 모든 상품 조회 -->
-    <select id="findAll" resultType="com.example.demo.model.Market.Product">
-        SELECT * FROM products
+    <!-- 특정 카테고리 상품 조회 + 정렬 (이미지 포함) -->
+    <select id="findFilteredProducts" resultMap="ProductWithImagesMap">
+        SELECT
+        p.id,
+        p.product_code,
+        p.title,
+        p.description,
+        p.price,
+        p.email,
+        p.category_id,
+        p.transaction_type,
+        p.registration_type,
+        p.latitude,
+        p.longitude,
+        p.meeting_place,
+        p.address,
+        p.created_at,
+        p.updated_at,
+        COALESCE(
+        (SELECT image_path FROM productimages WHERE product_id = p.id AND is_thumbnail = TRUE LIMIT 1),
+        (SELECT image_path FROM productimages WHERE product_id = p.id LIMIT 1),
+        '/uploads/default_thumbnail.jpg'
+        ) AS thumbnail_path,
+        pi.image_path
+        FROM products p
+        LEFT JOIN productimages pi ON p.id = pi.product_id
+        <where>
+            <if test="categoryId != null">
+                p.category_id = #{categoryId}
+            </if>
+        </where>
+        <choose>
+            <when test="sort == 'price'">
+                ORDER BY p.price
+            </when>
+            <when test="sort == 'createdAt'">
+                ORDER BY p.created_at DESC
+            </when>
+            <otherwise>
+                ORDER BY p.id DESC
+            </otherwise>
+        </choose>
     </select>
 
-    <!-- 특정 카테고리 상품 조회 -->
-    <select id="findByCategory" parameterType="long" resultType="com.example.demo.model.Market.Product">
-        SELECT * FROM Products WHERE category_id = #{categoryId}
+    <!-- 전체 상품 조회 (상품별 대표 이미지 포함) -->
+    <select id="findAll" resultMap="ProductWithImagesMap">
+        SELECT
+            p.id,
+            p.product_code,
+            p.title,
+            p.description,
+            p.price,
+            p.email,
+            p.category_id,
+            p.transaction_type,
+            p.registration_type,
+            p.latitude,
+            p.longitude,
+            p.meeting_place,
+            p.address,
+            p.created_at,
+            p.updated_at,
+            COALESCE(
+                    (SELECT image_path FROM productimages WHERE product_id = p.id AND is_thumbnail = TRUE LIMIT 1),
+                    (SELECT image_path FROM productimages WHERE product_id = p.id LIMIT 1),
+                    '/uploads/default_thumbnail.jpg'
+            ) AS thumbnail_path,
+            pi.image_path
+        FROM products p
+                 LEFT JOIN productimages pi ON p.id = pi.product_id
+        ORDER BY p.id DESC
     </select>
+
+    <!-- 결과 매핑: 이미지 리스트와 대표 이미지 포함 -->
+    <resultMap id="ProductWithImagesMap" type="com.example.demo.model.Market.Product">
+        <id property="id" column="id"/>
+        <result property="productCode" column="product_code"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="email" column="email"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="transactionType" column="transaction_type"/>
+        <result property="registrationType" column="registration_type"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="meetingPlace" column="meeting_place"/>
+        <result property="address" column="address"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+        <!-- 대표 이미지 (thumbnailPath) 추가 -->
+        <result property="thumbnailPath" column="thumbnail_path"/>
+
+        <!-- imagePaths를 collection으로 올바르게 매핑 -->
+        <collection property="imagePaths" ofType="java.lang.String">
+            <result column="image_path"/>
+        </collection>
+    </resultMap>
 
 </mapper>

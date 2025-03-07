@@ -12,6 +12,10 @@ import java.util.List;
 public interface ProductMapper {
     void insertProduct(Product product);
     Product findById(Long id);
-    List<Product> findAll();
-    List<Product> findByCategory(@Param("categoryId") Long categoryId);  // 특정 카테고리 상품 조회
+
+    // 정렬 추가
+    List<Product> findAll(@Param("sort") String sort);
+
+    // 특정 카테고리 필터링 + 정렬 추가
+    List<Product> findFilteredProducts(@Param("categoryId") Long categoryId, @Param("sort") String sort);
 }

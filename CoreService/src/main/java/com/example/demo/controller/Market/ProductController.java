@@ -3,13 +3,11 @@ package com.example.demo.controller.Market;
 import com.example.demo.dto.Market.ProductRequest;
 import com.example.demo.dto.Market.ProductResponse;
 import com.example.demo.service.Market.ProductService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/core/market/products")
@@ -18,12 +16,13 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Object> createProduct(@Valid @RequestBody ProductRequest request) {
+    public ResponseEntity<Object> createProduct(@RequestBody ProductRequest request) {
         return productService.createProduct(request);
+
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
+    public ResponseEntity<Object> getProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
@@ -34,4 +33,5 @@ public class ProductController {
             @RequestParam(required = false) String sort) {    // 정렬 옵션 (price, createdAt)
         return ResponseEntity.ok(productService.getProducts(categoryId, sort));
     }
+
 }
