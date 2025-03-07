@@ -1,11 +1,11 @@
-import Grid from '../components/common/Grid';
-import GridItem from '../components/common/GridItem';
-import { ILocation } from '../types/map';
+import Grid from '../../common/Grid';
+import GridItem from '../../common/GridItem';
+import { ILocation } from '../../../types/map';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMyLocation, setEndLocation } from '../store/slices/mapSlice';
+import { setMyLocation, setEndLocation } from '../../../store/slices/mapSlice';
 import { useEffect } from 'react';
-import { RootState } from '../store/store';
-import { getAddressFromCoords } from '../services/third-party/myLocation';
+import { RootState } from '../../../store/store';
+import { getAddressFromCoords } from '../../../services/third-party/myLocation';
 
 interface LocationInfoProps {
   myLocation?: ILocation;
@@ -97,11 +97,30 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
   }, [endLocation.lat, endLocation.lng]); // endLocation의 위도나 경도가 변경될 때마다 실행
 
   return (
-    <div className="bg-white rounded-t-3xl shadow-lg max-h-[12rem] overflow-y-auto">
+    <div className="bg-white rounded-t-3xl shadow-lg max-h-[18rem] ">
       <Grid cols={1}>
+
+        
+        {/* 목적지 위치 */}
+        {showEndLocation && (
+          <GridItem className="bg-green-50 p-2.5 mt-[-15px]">
+            <div className="grid grid-cols-[auto,1fr] gap-3 items-center">
+              <div className="w-8 h-8 bg-primary rounded-full grid place-items-center">
+                <div className="w-3 h-3 bg-white rounded-full" />
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm">목적지</p>
+                <p className="font-medium text-sm truncate">
+                  {endLocation?.address || '위치를 선택해주세요'}
+                </p>
+              </div>
+            </div>
+          </GridItem>
+        )}
+        
         {/* 내 위치 */}
         {showMyLocation && (
-          <GridItem className="bg-gray-50 rounded-lg p-2.5">
+          <GridItem className="bg-blue-50 p-2.5 mt-[-15px]">
             <div className="grid grid-cols-[auto,1fr] gap-3 items-center">
               <div className="w-8 h-8 bg-blue-500 rounded-full grid place-items-center">
                 <div className="w-3 h-3 bg-white rounded-full" />
@@ -118,7 +137,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
 
         {/* 상대방 위치 */}
         {showYourLocation && (
-          <GridItem className="bg-gray-50 rounded-lg p-2.5">
+          <GridItem className="bg-grat-50 p-2.5 mt-[-15px]">
             <div className="grid grid-cols-[auto,1fr] gap-3 items-center">
               <div className="w-8 h-8 bg-green-500 rounded-full grid place-items-center">
                 <div className="w-3 h-3 bg-white rounded-full" />
@@ -141,29 +160,13 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
           </GridItem>
         )}
 
-        {/* 목적지 위치 */}
-        {showEndLocation && (
-          <GridItem className="bg-gray-50 rounded-lg p-2.5">
-            <div className="grid grid-cols-[auto,1fr] gap-3 items-center">
-              <div className="w-8 h-8 bg-primary rounded-full grid place-items-center">
-                <div className="w-3 h-3 bg-white rounded-full" />
-              </div>
-              <div>
-                <p className="text-gray-500 text-sm">목적지</p>
-                <p className="font-medium text-sm truncate">
-                  {endLocation?.address || '위치를 선택해주세요'}
-                </p>
-              </div>
-            </div>
-          </GridItem>
-        )}
 
         {/* 위치 공유 버튼 */}
         {onCopyLocation && (
           <GridItem>
             <button
               onClick={onCopyLocation}
-              className="w-full py-2.5 bg-primary text-white rounded-lg text-sm font-medium
+              className="w-full bg-primary text-white mt-[-15px] rounded-none text-mb font-medium
                        hover:bg-primary-dark transition-colors duration-200"
             >
               현재 위치 공유하기

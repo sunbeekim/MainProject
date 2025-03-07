@@ -94,7 +94,8 @@ const Signup = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    
+    <form className="h-full w-full bg-white dark:bg-gray-800 flex flex-col" onSubmit={handleSubmit}>
       <SignupLayout
         title={<h1 className="text-xl font-bold">어서오세요. 환영합니다!</h1>}
         signupButton={

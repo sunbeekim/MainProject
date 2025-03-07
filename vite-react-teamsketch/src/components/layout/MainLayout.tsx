@@ -4,7 +4,7 @@ import MarketList from '../../pages/marketplace/MarketList';
 import Login from '../../pages/account/Login';
 import Signup from '../../pages/account/Signup';
 import ServiceChat from '../../pages/mypage/AIChatBot';
-import Location from '../../pages/map/Location';
+import ShareLocationMap from '../../pages/map/ShareLocationMap';
 import MyPage from '../../pages/mypage/MyPage';
 import Requests from '../../pages/trading/Requests';
 import Setting from '../../pages/mypage/Setting';
@@ -15,6 +15,7 @@ import VerficationCode from '../../pages/account/VerificationCode';
 import ResetPassword from '../../pages/account/ResetPassword';
 import ChatList from '../../pages/chatroom/ChatList';
 import ChatRoom from '../../pages/chatroom/ChatRoom';
+import ProdLocationMap from '../../pages/marketplace/ProdLocationMap';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestMarketplace from '../../testpages/TestMarketplace';
@@ -22,10 +23,10 @@ import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
 import TestProductDetails from '../../testpages/TestProductDetails';
 import TestAPI from '../../testpages/TestAPI';
-import TestLocation from '../../testpages/TestLocation';
-import TestLocationLayout from '../../testpages/TestLocationLayout';
+
+import TestLocationLayout from './LocationLayout';
 import TestSearchLocation from '../../testpages/TestSearchLocation';
-import TestOpenMap from '../../testpages/TestOpenMap';
+import TestOpenMap from '../features/location/OpenMap';
 import TestMyPageLayout from '../../testpages/TestMyPageLayout';
 import TestMyPage from '../../testpages/TestMyPage';
 import TestProfileManage from '../../testpages/TestProfileManage';
@@ -70,7 +71,7 @@ const MainLayout = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/servicechat" element={<ServiceChat />} />
-          <Route path="/location" element={<Location />} />
+          <Route path="/location" element={<ShareLocationMap />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/requests" element={<Requests />} />
           <Route path="/setting" element={<Setting />} />
@@ -81,6 +82,7 @@ const MainLayout = () => {
           <Route path="/verfication-code" element={<VerficationCode/>} />
           <Route path="/chat-list" element={<ChatList/>} />
           <Route path="/chat/:nickname" element={<ChatRoom nickname=""/>} />
+          <Route path="/product/location" element={<ProdLocationMap />} />
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
@@ -89,7 +91,7 @@ const MainLayout = () => {
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
           <Route path="/test/api" element={<TestAPI />} />
-          <Route path="/test/location" element={<TestLocation />} />
+          
           <Route path="/test/locationlayout" element={<TestLocationLayout />} />
           <Route path="/test/searchlocation" element={<TestSearchLocation />} />
           <Route path="/test/openmap" element={<TestOpenMap />} />
