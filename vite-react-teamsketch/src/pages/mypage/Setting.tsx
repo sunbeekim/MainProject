@@ -13,12 +13,17 @@ const Setting = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+
   const handleLogout = () => {
     console.log('로그아웃 실행!');
     dispatch(logout());
     localStorage.removeItem('token');
     setLogoutModalOpen(false);
     navigate('/login');
+  };
+
+  const handleChangePassword = () => {
+    navigate('/change-password'); 
   };
 
   return (
@@ -36,7 +41,7 @@ const Setting = () => {
           </Link>
         </button>
       </div>
-
+{/* 로그아웃 */}
       <div className="p-2">
         <button 
           onClick={() => setLogoutModalOpen(true)}
@@ -46,6 +51,17 @@ const Setting = () => {
         </button>
       </div>
 
+{/* 비밀번호 변경 */}
+      <div className="p-2">
+        <button 
+          onClick={handleChangePassword}
+          className="w-full px-4 py-2 text-[#4A4A4A] bg-[#F6CED8] hover:bg-[#F9B0BA] rounded-lg transition-colors"
+        >
+          비밀번호 변경
+        </button>
+      </div>
+      
+{/* 로그아웃모달 */}
       <LogoutModal
         isOpen={isLogoutModalOpen}
         onClose={() => setLogoutModalOpen(false)}

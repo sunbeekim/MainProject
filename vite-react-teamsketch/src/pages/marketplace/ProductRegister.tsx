@@ -25,6 +25,7 @@ const ProductRegister = () => {
     participants: 0
   });
 
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProductData((prevState) => ({
