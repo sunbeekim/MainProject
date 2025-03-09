@@ -1,18 +1,18 @@
 import { useState } from 'react';
 
-import { RootState } from '../store/store';
-import { useAppSelector } from '../store/hooks';
+import { RootState } from '../../store/store';
+import { useAppSelector } from '../../store/hooks';
 
-import BaseInput from '../components/common/BaseInput';
-import BaseButton from '../components/common/BaseButton';
-import InterestSelect from '../components/forms/select/InterestSelect';
-import BaseLabelBox from '../components/common/BaseLabelBox';
-import ImageUpload from '../components/features/upload/ImageUpload';
-import { getProfileImage } from '../services/api/imageAPI';
-import TestProfileManageLayout from './TestProfileManageLayout';
-import TextAreaInput from '../components/forms/textarea/TextAreaInput';
+import BaseInput from '../../components/common/BaseInput';
+import BaseButton from '../../components/common/BaseButton';
+import InterestSelect from '../../components/forms/select/InterestSelect';
+import BaseLabelBox from '../../components/common/BaseLabelBox';
+import ImageUpload from '../../components/features/upload/ImageUpload';
+import { getProfileImage } from '../../services/api/imageAPI';
+import TestProfileManageLayout from '../../components/layout/ProfileManageLayout';
+import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
 
-const TestProfileManage = () => {
+const ProfileManage = () => {
   const user = useAppSelector((state: RootState) => state.user.user);
 
   const [formData, setFormData] = useState({
@@ -124,4 +124,4 @@ const TestProfileManage = () => {
   );
 };
 
-export default TestProfileManage;
+export default ProfileManage;

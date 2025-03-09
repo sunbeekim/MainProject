@@ -6,7 +6,6 @@ import Signup from '../../pages/account/Signup';
 import ServiceChat from '../../pages/mypage/AIChatBot';
 import ShareLocationMap from '../../pages/map/ShareLocationMap';
 import MyPage from '../../pages/mypage/MyPage';
-import Requests from '../../pages/trading/Requests';
 import Setting from '../../pages/mypage/Setting';
 import ForgotPassword from '../../pages/account/ForgotPassword';
 import ProductRegister from '../../pages/marketplace/ProductRegister';
@@ -17,21 +16,15 @@ import ChatList from '../../pages/chatroom/ChatList';
 import ChatRoom from '../../pages/chatroom/ChatRoom';
 import ProdLocationMap from '../../pages/marketplace/ProdLocationMap';
 import ChangePassword from '../../pages/account/ChangePassword';
-
+import ProductDetails from '../../pages/marketplace/ProductDetails';
+import ProfileManage from '../../pages/mypage/ProfileManage';
+import NotificationList from '../../pages/notification/NotificationList';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
-import TestMarketplace from '../../testpages/TestMarketplace';
 import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
-import TestProductDetails from '../../testpages/TestProductDetails';
 import TestAPI from '../../testpages/TestAPI';
-
-import TestLocationLayout from './LocationLayout';
-import TestSearchLocation from '../../testpages/TestSearchLocation';
-import TestOpenMap from '../features/location/OpenMap';
-import TestMyPageLayout from '../../testpages/TestMyPageLayout';
-import TestMyPage from '../../testpages/TestMyPage';
-import TestProfileManage from '../../testpages/TestProfileManage';
+import TestGrid from '../../testpages/TestGrid';
 
 const MainLayout = () => {
   const [footerHeight, setFooterHeight] = useState<number>(0);
@@ -75,7 +68,7 @@ const MainLayout = () => {
           <Route path="/servicechat" element={<ServiceChat />} />
           <Route path="/location" element={<ShareLocationMap />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/requests" element={<Requests />} />
+          <Route path="/notification" element={<NotificationList />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/product/register" element={<ProductRegister />} />
@@ -86,22 +79,16 @@ const MainLayout = () => {
           <Route path="/product/location" element={<ProdLocationMap />} />
           <Route path="/chat/:email" element={<ChatRoom/>} />
           <Route path="/change-password" element={<ChangePassword />} />
-
+          <Route path="/profile-manage" element={<ProfileManage />} />
+          <Route path="/product-details" element={<ProductDetails />} />
 
           {/* test pages */}
-          <Route path="/test/pages" element={<TestPages />} />
-          <Route path="/test/marketplace" element={<TestMarketplace />} />
-          <Route path="/test/productdetails" element={<TestProductDetails />} />
+          <Route path="/test/pages" element={<TestPages />} />      
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
-          <Route path="/test/api" element={<TestAPI />} />
+          <Route path="/test/api" element={<TestAPI />} />          
+          <Route path="/test/grid" element={<TestGrid />} />
           
-          <Route path="/test/locationlayout" element={<TestLocationLayout />} />
-          <Route path="/test/searchlocation" element={<TestSearchLocation />} />
-          <Route path="/test/openmap" element={<TestOpenMap />} />
-          <Route path="/test/mypagelayout" element={<TestMyPageLayout />} />
-          <Route path="/test/mypage" element={<TestMyPage />} />
-          <Route path="/test/profilemanage" element={<TestProfileManage />} />
         </Routes>
       </div>
     </main>

@@ -1,10 +1,10 @@
-import Grid from '../components/common/Grid';
-import GridItem from '../components/common/GridItem';
-import BaseButton from '../components/common/BaseButton';
-import { FaUserCog, FaBoxOpen, FaCreditCard, FaHistory, FaHeadset } from 'react-icons/fa';
-import ImageUpload from '../components/features/upload/ImageUpload';
+import Grid from '../common/Grid';
+import GridItem from '../common/GridItem';
+import BaseButton from '../common/BaseButton';
+import ImageUpload from '../features/upload/ImageUpload';
+import { FaArrowRight } from "react-icons/fa";
 
-interface TestMyPageLayoutProps {
+interface MyPageLayoutProps {
   email?: string;
   name?: string;
   nickname?: string;
@@ -13,9 +13,15 @@ interface TestMyPageLayoutProps {
   point?: number;
   dopamine?: number;
   onProfileUpdate?: () => void;
+  menuItems?: {
+    icon: React.ReactNode;
+    label: string;
+    color: string;
+    onClick?: () => void;
+  }[];
 }
 
-const TestMyPageLayout = ({
+const MyPageLayout = ({
   email,
   name,
   nickname,
@@ -23,39 +29,14 @@ const TestMyPageLayout = ({
   followerCount,
   point,
   dopamine,
-  onProfileUpdate = () => {}
-}: TestMyPageLayoutProps) => {
+  onProfileUpdate = () => {},
+  menuItems = []
+}: MyPageLayoutProps) => {
   followerCount = 326;
   point = 1200;
   dopamine = 85;
 
-  const menuItems = [
-    {
-      icon: <FaUserCog size={20} />,
-      label: '프로필 관리',
-      color: 'hover:bg-blue-50 dark:hover:bg-blue-900/30'
-    },
-    {
-      icon: <FaBoxOpen size={20} />,
-      label: '상품 관리',
-      color: 'hover:bg-purple-50 dark:hover:bg-purple-900/30'
-    },
-    {
-      icon: <FaCreditCard size={20} />,
-      label: '결제 수단',
-      color: 'hover:bg-green-50 dark:hover:bg-green-900/30'
-    },
-    {
-      icon: <FaHistory size={20} />,
-      label: '거래 내역',
-      color: 'hover:bg-yellow-50 dark:hover:bg-yellow-900/30'
-    },
-    {
-      icon: <FaHeadset size={20} />,
-      label: '고객 센터',
-      color: 'hover:bg-pink-50 dark:hover:bg-pink-900/30'
-    }
-  ];
+  
 
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800">
@@ -108,6 +89,7 @@ const TestMyPageLayout = ({
               <BaseButton
                 key={index}
                 variant="outline"
+                onClick={item.onClick}
                 className={`
                   w-full py-4 px-6
                   flex items-center justify-between
@@ -140,7 +122,7 @@ const TestMyPageLayout = ({
                   group-hover:transform group-hover:translate-x-1 
                   transition-all duration-300"
                 >
-                  →
+                  <FaArrowRight />
                 </div>
               </BaseButton>
             ))}
@@ -151,4 +133,4 @@ const TestMyPageLayout = ({
   );
 };
 
-export default TestMyPageLayout;
+export default MyPageLayout;
