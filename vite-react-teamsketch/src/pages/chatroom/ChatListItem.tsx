@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
 
-
 interface ChatListItemProps {
   nickname: string;
   lastMessage: string;
@@ -18,8 +17,10 @@ const ChatListItem: React.FC<ChatListItemProps> = ({nickname, lastMessage, time,
     navigate(`/chat/${email}`); 
   };
 
+
   return (
-    
+
+  
     <div className="w-[500px] h-[100px] bg-white rounded-2xl shadow-lg flex items-center p-4 gap-4">
       {/* 프로필 이미지 */}
       <div className="w-[50px] h-[50px] bg-gray-200 rounded-full overflow-hidden">
