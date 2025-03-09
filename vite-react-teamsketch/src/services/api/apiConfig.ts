@@ -23,6 +23,7 @@ export const apiConfig = {
       uploadProfile: `${BASE_URL}/core/profiles/me/image`,
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,
       getProfileImage: `${BASE_URL}/core/profiles/image`,
+      getCategory: `${BASE_URL}/core/hobbies/categories`,
       test: `${BASE_URL}/core/test`
       // 다른 core 서비스 엔드포인트들...
     },
