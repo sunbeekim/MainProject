@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SignupForm } from '../../types/auth';
+import { SignupForm, HobbiesRequest } from '../../types/auth';
 
 interface ValidationErrors {
   name: string;
@@ -21,12 +21,12 @@ const initialState: SignupState = {
     name: '',
     password: '',
     email: '',
-    phoneNumber: '',  
+    phoneNumber: '',
     bio: '',
     nickname: '',
     hobbies: [],
     loginMethod: 'EMAIL',
-    socialProvider: null
+    socialProvider: 'NONE'
   },
   validationErrors: {
     name: '',
@@ -58,9 +58,31 @@ const signupSlice = createSlice({
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
+    },
+    addHobby: (state, action: PayloadAction<HobbiesRequest>) => {
+      const exists = state.formData.hobbies?.some(
+        hobby => hobby.hobbyId === action.payload.hobbyId && 
+                hobby.categoryId === action.payload.categoryId
+      );
+      
+      if (!exists) {
+        state.formData.hobbies?.push(action.payload);
+      }
+    },
+    removeHobby: (state, action: PayloadAction<HobbiesRequest>) => {
+      state.formData.hobbies = state.formData.hobbies?.filter(
+        hobby => !(hobby.hobbyId === action.payload.hobbyId && 
+                  hobby.categoryId === action.payload.categoryId)
+      );
     }
   }
 });
 
-export const { updateField, setValidationError, setError } = signupSlice.actions;
+export const { 
+  updateField, 
+  setValidationError, 
+  setError, 
+  addHobby, 
+  removeHobby 
+} = signupSlice.actions;
 export default signupSlice.reducer;

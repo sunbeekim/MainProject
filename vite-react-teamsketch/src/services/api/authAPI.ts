@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
-import { SignupForm } from '../../types/auth';
+import { SignupForm, ProfileUpdateRequest } from '../../types/auth';
 
 interface LoginCredentials {
   email: string;
@@ -75,6 +75,12 @@ const verifyOtpApi = async ({ phoneNumber, otp }: VerifyOtpRequest): Promise<Ver
   return response.data;
 };
 
+// 프로필 수정 API
+const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
+  const response = await axiosInstance.put(apiConfig.endpoints.core.updateProfile, profileData);
+  return response.data;
+};
+
 // 로그인 Hook
 export const useLogin = () => {
   return useMutation({
@@ -135,3 +141,11 @@ export const useVerifyOtp = () => {
     }
   });
 };
+
+// 프로필 수정 Hook
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: updateProfileApi
+  });
+};
+

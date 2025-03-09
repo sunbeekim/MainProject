@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { updateField, setValidationError, setError } from '../../store/slices/signupSlice';
+import { updateField, setValidationError, setError, addHobby, removeHobby } from '../../store/slices/signupSlice';
 //import { Category } from '../../types/auth';
 import SignupLayout from '../../components/layout/SignupLayout';
 import Button from '../../components/common/BaseButton';
@@ -15,17 +15,22 @@ import {
 import TextInput from '../../components/forms/input/TextInput';
 import PasswordInput from '../../components/forms/input/PasswordInput';
 import EmailInput from '../../components/forms/input/EmailInput';
-// import InterestSelect from '../../components/forms/select/InterestSelect';
+import InterestSelect from '../../components/forms/select/InterestSelect';
 import { useSignup } from '../../services/api/authAPI';
-import { SignupForm } from '../../types/auth';
-// import HobbySelect from '../../components/forms/select/HobbySelect';
-import useCategoryApi from '../../services/api/commonAPI';
+import { SignupForm, HobbiesRequest } from '../../types/auth';
+import HobbySelect from '../../components/forms/select/HobbySelect';
+import { useState } from 'react';
+
 const Signup = () => {
   const signupMutation = useSignup();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { formData, validationErrors, error } = useAppSelector((state) => state.signup);
 
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [selectedHobbies, setSelectedHobbies] = useState<HobbiesRequest[]>([]);
+  
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     dispatch(updateField({ name: name as keyof SignupForm, value }));
@@ -51,10 +56,31 @@ const Signup = () => {
 
     dispatch(setValidationError({ field: name, message: validationResult.message }));
   };
-  const { useCategory } = useCategoryApi();  // useCategoryApi() 실행 후 반환된 객체에서 useCategory 가져오기
-  const response = useCategory();  // useCategory 사용
-  console.log("카테고리 목록 조회 :",response.data);
-  // 백엔드 실행 안해보시고 병합요청 하셨나보네요요
+
+  const handleInterestSelect = (categoryId: number) => {
+    setSelectedCategoryId(categoryId);
+  };
+
+  const handleHobbySelect = (categoryId: number, hobbyId: number) => {
+    setSelectedHobbies(prev => {
+      const exists = prev.some(hobby => 
+        hobby.categoryId === categoryId && hobby.hobbyId === hobbyId
+      );
+
+      if (exists) {
+        const newHobbies = prev.filter(hobby => 
+          !(hobby.categoryId === categoryId && hobby.hobbyId === hobbyId)
+        );
+        dispatch(removeHobby({ categoryId, hobbyId }));
+        return newHobbies;
+      } else {
+        const newHobby = { categoryId, hobbyId };
+        dispatch(addHobby(newHobby));
+        return [...prev, newHobby];
+      }
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(setError(''));
@@ -69,36 +95,32 @@ const Signup = () => {
         return;
       }
 
-      // 유효성 검사 에러가 있는지 확인
-      const hasValidationErrors = Object.values(validationErrors).some((error) => error);
-      if (hasValidationErrors) {
-        dispatch(setError('입력 형식을 확인해주세요.'));
-        return;
-      }
-
-      await signupMutation.mutateAsync({
+      // formData.hobbies 대신 selectedHobbies 사용
+      const signupData = {
         name: formData.name,
         password: formData.password,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
         nickname: formData.nickname,      
-        bio: formData.bio,
-        hobbies: formData.hobbies,
-        loginMethod: 'EMAIL',
-        socialProvider: null
-      });
+        bio: formData.bio || '',
+        hobbies: selectedHobbies.map(hobby => ({
+          hobbyId: hobby.hobbyId,
+          categoryId: hobby.categoryId
+        })),
+        loginMethod: 'EMAIL' as const,
+        socialProvider: 'NONE' as const
+      };
+
+      console.log('회원가입 요청 데이터:', signupData); // 요청 데이터 로깅
+      const response = await signupMutation.mutateAsync(signupData);
+      console.log('회원가입 응답:', response); // 응답 데이터 로깅
+
       navigate('/login');
     } catch (err) {
       dispatch(setError(err instanceof Error ? err.message : '회원가입 중 오류가 발생했습니다.'));
+      console.error('회원가입 에러:', err); // 에러 로깅
     }
   };
-
-  // const handleInterestSelect = (value: string) => {
-  //   dispatch(updateField({ name: 'category', value }));
-  // };
-  // const handleHobbySelect = (value: string) => {
-  //   dispatch(updateField({ name: 'hobby', value }));
-  // };
 
   return (
     
@@ -174,18 +196,19 @@ const Signup = () => {
         <div className="flex flex-row gap-3">
           <div className="flex flex-col gap-1 w-1/2">
             <label className="text-sm font-medium text-gray-700">관심사</label>
-            {/* <InterestSelect
+            <InterestSelect
               onInterestSelect={handleInterestSelect}
-              
-            /> */}
+              selectedCategory={selectedCategoryId || undefined}              
+            />
           </div>
 
           <div className="flex flex-col gap-1 w-1/2">
             <label className="text-sm font-medium text-gray-700">취미</label>
-            {/* <HobbySelect
+            <HobbySelect
               onHobbySelect={handleHobbySelect}
-              
-            /> */}
+              selectedHobbies={selectedHobbies}
+              categoryId={selectedCategoryId || undefined}             
+            />
             </div>
             </div>
         </div>

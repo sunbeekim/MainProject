@@ -9,7 +9,7 @@ const ShareLocationMap = () => {
     return (
         <div className="h-full w-full">
             <LocationLayout
-                childrenTop={<SearchLocation />}
+                childrenTop={<SearchLocation onLocationSelect={() => {}} />}
                 childrenCenter={<OpenMap />}
                 childrenBottom={
                     <LocationInfo 
