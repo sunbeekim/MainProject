@@ -8,13 +8,14 @@ interface ChatListItemProps {
   time: string;
   imageUrl: string;
   unreadCount: number;
+  email: string; 
 }
 
-const ChatListItem: React.FC<ChatListItemProps> = ({nickname, lastMessage, time, imageUrl,unreadCount }) => {
+const ChatListItem: React.FC<ChatListItemProps> = ({nickname, lastMessage, time, imageUrl,unreadCount,email }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/chat/${nickname}`); 
+    navigate(`/chat/${email}`); 
   };
 
   return (
