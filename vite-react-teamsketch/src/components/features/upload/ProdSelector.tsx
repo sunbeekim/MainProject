@@ -3,9 +3,10 @@ import React from 'react';
 interface ImageSelectorProps {
   onFileSelect: (file: File) => void;
   className?: string;
+  text?: string;
 }
 
-const ProdSelector: React.FC<ImageSelectorProps> = ({ onFileSelect, className = '' }) => {
+const ProdSelector: React.FC<ImageSelectorProps> = ({ onFileSelect, className = '', text = '상품 사진 등록' }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -30,7 +31,7 @@ const ProdSelector: React.FC<ImageSelectorProps> = ({ onFileSelect, className = 
         htmlFor="prod-upload"
         className="cursor-pointer flex items-center justify-center px-4 py-2 border-2 border-dashed border-primary rounded-lg hover:bg-primary-lightest transition-colors"
       >
-        상품 사진 등록?
+        {text}
       </label>
     </div>
   );

@@ -1,39 +1,64 @@
+import { useEffect } from 'react';
 import Select from "../../common/Select";   
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { axiosInstance } from "../../../services/api/axiosInstance";
+import { apiConfig } from "../../../services/api/apiConfig";
+import { setHobbies } from "../../../store/slices/categorySlice";
 
 interface HobbySelectProps {
-    onHobbySelect: (value: string) => void;
-  selectedExtraHobby?: string;
-  hobby: [];
+  onHobbySelect: (categoryId: number, hobbyId: number) => void;
+  selectedHobbies?: Array<{
+    hobbyId: number;
+    categoryId: number;
+  }>;
+  categoryId?: number;
 }
 
+const HobbySelect: React.FC<HobbySelectProps> = ({ 
+  onHobbySelect,
+  selectedHobbies = [],
+  categoryId,
+}) => {
+  const dispatch = useAppDispatch();
+  const { hobbies } = useAppSelector(state => state.category);
 
-const HobbySelect: React.FC<HobbySelectProps> = ({ onHobbySelect, selectedExtraHobby,
-  hobby = [
-    { value: '예술', label: '🎨예술' },
-    { value: '음악', label: '🎤음악' },
-    { value: '스포츠', label: '🏋️‍♂️스포츠' },
-    { value: '게임', label: '🎮게임' },
-    { value: '여행', label: '🚗여행' },
-    { value: '요리', label: '🍽️요리' },
-    { value: '독서', label: '📚독서' },
-    { value: '수집', label: '🎁수집' },
-    { value: 'DIY', label: '🛠️DIY' },
-    { value: '과학', label: '🔍과학' },
-  ]
- }) => { 
+  // 카테고리 ID가 변경될 때마다 해당 카테고리의 취미 목록을 가져옴
+  useEffect(() => {
+    const fetchHobbies = async () => {
+      if (categoryId) {
+        try {
+          const response = await axiosInstance.get(
+            apiConfig.endpoints.core.getHobbiesByCategory(categoryId)
+          );
+          if (response.data.status === 'success') {
+            dispatch(setHobbies(response.data.data));
+          }
+        } catch (error) {
+          console.error('취미 목록 로딩 중 오류:', error);
+        }
+      }
+    };
 
-  const handleHobbySelect = (selectedValue: string) => { 
-    onHobbySelect(selectedValue);
-    console.log('선택된 관심사:', selectedValue);
-  }
+    fetchHobbies();
+  }, [categoryId, dispatch]);
+
+  const handleHobbySelect = (value: string) => {
+    if (categoryId) {
+      onHobbySelect(categoryId, Number(value));
+    }
+  };
 
   return (
     <Select 
-        options={hobby}
-        onChange={handleHobbySelect}
-        className="w-full"
-        placeholder="취미를 선택해주세요"
-        value={selectedExtraHobby}
+      options={hobbies.map(hobby => ({
+        value: hobby.hobbyId.toString(),
+        label: hobby.hobbyName
+      }))}
+      onChange={handleHobbySelect}
+      className="w-full"
+      placeholder="취미를 선택해주세요"
+      value={selectedHobbies.find(h => h.categoryId === categoryId)?.hobbyId.toString()}
+      disabled={!categoryId} // 카테고리가 선택되지 않았으면 비활성화
     />
   );
 };

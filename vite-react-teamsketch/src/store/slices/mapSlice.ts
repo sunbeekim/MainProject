@@ -2,9 +2,9 @@ import { createSlice } from '@reduxjs/toolkit';
 import { ILocationState } from '../../types/map';
 
 const initialState: ILocationState = {
-  myLocation: { id: '', name: '', address: '', lat: 0, lng: 0 },
-  yourLocation: { id: '', name: '', address: '', lat: 0, lng: 0 },
-  endLocation: { id: '', name: '', address: '', lat: 0, lng: 0 }
+  myLocation: { id: '', meetingPlace: '', address: '', lat: 0, lng: 0 },
+  yourLocation: { id: '', meetingPlace: '', address: '', lat: 0, lng: 0 },
+  endLocation: { id: '', meetingPlace: '', address: '', lat: 0, lng: 0 }
 };
 
 const mapSlice = createSlice({

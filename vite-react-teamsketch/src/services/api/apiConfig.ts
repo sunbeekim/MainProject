@@ -10,7 +10,9 @@ export const apiConfig = {
       cloudOCR: `${BASE_URL}/assist/cloudocr/process`,
       uploadProfile: `${BASE_URL}/assist/upload/profile`,
       sendSms: `${BASE_URL}/assist/sms/send-sms`,
-      verifyOtp: `${BASE_URL}/assist/sms/verify-otp`
+      verifyOtp: `${BASE_URL}/assist/sms/verify-otp`,
+      coordToAddress: `${BASE_URL}/assist/location/coord-to-address`,
+      searchAddress: `${BASE_URL}/assist/location/search`
       // 다른 assist 서비스 엔드포인트들...
     },
     core: {
@@ -24,7 +26,13 @@ export const apiConfig = {
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,
       getProfileImage: `${BASE_URL}/core/profiles/image`,
       getCategory: `${BASE_URL}/core/hobbies/categories`,
-      test: `${BASE_URL}/core/test`
+      getHobbies: `${BASE_URL}/core/hobbies/categories/`,
+      getHobbiesByCategory: (categoryId: number) => `${BASE_URL}/core/hobbies/categories/${categoryId}`,
+      updateProfile: `${BASE_URL}/core/profiles/me`,
+      registerProduct: `${BASE_URL}/core/market/products/registers`,
+      uploadProductImages: `${BASE_URL}/core/market/images/upload`,
+      test: `${BASE_URL}/core/test`,
+      
       // 다른 core 서비스 엔드포인트들...
     },
     ai: {

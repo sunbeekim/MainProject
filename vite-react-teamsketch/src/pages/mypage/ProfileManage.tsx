@@ -1,67 +1,123 @@
 import { useState } from 'react';
 
 import { RootState } from '../../store/store';
-import { useAppSelector } from '../../store/hooks';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { axiosInstance } from '../../services/api/axiosInstance';
+import { apiConfig } from '../../services/api/apiConfig';
+import { setUser } from '../../store/slices/userSlice';
 
 import BaseInput from '../../components/common/BaseInput';
 import BaseButton from '../../components/common/BaseButton';
 import InterestSelect from '../../components/forms/select/InterestSelect';
+import HobbySelect from '../../components/forms/select/HobbySelect';
 import BaseLabelBox from '../../components/common/BaseLabelBox';
 import ImageUpload from '../../components/features/upload/ImageUpload';
 import { getProfileImage } from '../../services/api/imageAPI';
-import TestProfileManageLayout from '../../components/layout/ProfileManageLayout';
+import ProfileManageLayout from '../../components/layout/ProfileManageLayout';
 import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
+import { useNavigate } from 'react-router-dom';
+
+interface UserHobby {
+  hobbyId: number;
+  categoryId: number;
+}
+
+interface ProfileUpdateRequest {
+  name: string;
+  nickname: string;
+  bio: string;
+  hobbies: UserHobby[];
+}
 
 const ProfileManage = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state: RootState) => state.user.user);
+  
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(
+    user.hobby?.[0]?.categoryId
+  );
+  
+  const [selectedHobbies, setSelectedHobbies] = useState<UserHobby[]>(
+    user.hobby?.map(({ hobbyId, categoryId }) => ({ hobbyId, categoryId })) || []
+  );
+  
+  const [error, setError] = useState<string>('');
 
-  const [formData, setFormData] = useState({
-    name: user.name || '지우',
-    nickname: user.nickname || '피카츄',
-    phoneNumber: user.phoneNumber || '01012345678',
-    interest: '',
-    hobby: '',
-    bio: user.bio || '안녕하세요! 반가워요! 다음다롱다운입니다!'
-  });
-
-  console.log('유저 정보:', user);
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 입력 핸들러 통합
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    dispatch(setUser({ ...user, [name]: value }));
+    console.log(user);
   };
 
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleInterestSelect = (categoryId: number) => {
+    setSelectedCategoryId(categoryId);
+    // 카테고리 변경 시 모든 이전 선택 초기화
+    setSelectedHobbies([]);
   };
 
-  const handleInterestSelect = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      interest: value
-    }));
+  const handleHobbySelect = (categoryId: number, hobbyId: number) => {
+    // 새로운 취미 선택 시 이전 선택은 모두 제거하고 현재 선택만 유지
+    setSelectedHobbies([{ categoryId, hobbyId }]);
+    console.log('현재 선택된 취미:', { categoryId, hobbyId });
   };
 
-  const handleHobbySelect = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      hobby: value
-    }));
-  };
+  const handleSave = async () => {
+    try {
+      const updateData: ProfileUpdateRequest = {
+        name: user.name,
+        nickname: user.nickname,
+        bio: user.bio || '',
+        hobbies: selectedHobbies.length > 0 ? selectedHobbies : []
+      };
 
-  const handleSave = () => {
-    // 저장 로직 구현
-    console.log('저장된 데이터:', { ...formData });
+      console.log('프로필 업데이트 요청 데이터:', updateData);
+
+      const response = await axiosInstance.put(
+        apiConfig.endpoints.core.updateProfile,
+        updateData
+      );
+
+      console.log('프로필 업데이트 응답:', response.data);
+
+      if (response.data.success === true) {
+        // updatedProfile에서 데이터를 가져오도록 수정
+        const updatedProfile = response.data.updatedProfile;
+        
+        dispatch(setUser({
+          ...user,
+          name: updatedProfile.name,
+          nickname: updatedProfile.nickname,
+          bio: updatedProfile.bio,
+          hobby: updatedProfile.hobbies.map((hobby: any) => ({
+            hobbyId: hobby.hobbyId,
+            hobbyName: hobby.hobbyName,
+            categoryId: hobby.categoryId,
+            categoryName: hobby.categoryName
+          }))
+        }));
+
+        setSelectedHobbies(updatedProfile.hobbies.map((hobby: any) => ({
+          hobbyId: hobby.hobbyId,
+          categoryId: hobby.categoryId
+        })));
+
+        navigate('/mypage');
+      } else {
+        throw new Error(response.data.message || '프로필 수정에 실패했습니다.');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '프로필 수정 중 오류가 발생했습니다.');
+      console.error('프로필 수정 에러:', err);
+    }
   };
 
   return (
-    <TestProfileManageLayout
+    <ProfileManageLayout
+      error={error && <div className="text-red-500 text-sm text-center mb-2">{error}</div>}
       image={
         <ImageUpload
           onUpload={getProfileImage}
@@ -75,8 +131,8 @@ const ProfileManage = () => {
         <BaseLabelBox label="이름">
           <BaseInput
             name="name"
-            value={formData.name}
-            onChange={handleInputChange}
+            value={user.name}
+            onChange={handleChange}
             placeholder="이름을 입력하세요"
           />
         </BaseLabelBox>
@@ -85,8 +141,8 @@ const ProfileManage = () => {
         <BaseLabelBox label="닉네임">
           <BaseInput
             name="nickname"
-            value={formData.nickname}
-            onChange={handleInputChange}
+            value={user.nickname}
+            onChange={handleChange}
             placeholder="닉네임을 입력하세요"
           />
         </BaseLabelBox>
@@ -96,8 +152,8 @@ const ProfileManage = () => {
           <TextAreaInput
             inputType="bio"
             name="bio"
-            value={formData.bio}
-            onChange={handleTextareaChange}
+            value={user.bio || ''}
+            onChange={handleChange}
             placeholder="소개글을 입력하세요"
           />
         </BaseLabelBox>
@@ -106,13 +162,17 @@ const ProfileManage = () => {
         <BaseLabelBox label="관심사">
           <InterestSelect
             onInterestSelect={handleInterestSelect}
-            selectedInterest={formData.interest}
+            selectedCategory={selectedCategoryId}
           />
         </BaseLabelBox>
       }
       userInfoHobby={
         <BaseLabelBox label="취미">
-          <InterestSelect onInterestSelect={handleHobbySelect} selectedInterest={formData.hobby} />
+          <HobbySelect
+            onHobbySelect={handleHobbySelect}
+            selectedHobbies={selectedHobbies}
+            categoryId={selectedCategoryId}
+          />
         </BaseLabelBox>
       }
       saveButton={

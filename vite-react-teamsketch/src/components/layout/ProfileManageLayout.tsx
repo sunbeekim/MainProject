@@ -10,6 +10,7 @@ interface ProfileManageLayoutProps {
   userInfoInterest: React.ReactNode;
   userInfoHobby: React.ReactNode;
   saveButton: React.ReactNode;
+  error: React.ReactNode;
 }
 
 const ProfileManageLayout = ({
@@ -20,7 +21,8 @@ const ProfileManageLayout = ({
   userInfoBio,
   userInfoInterest,
   userInfoHobby,
-  saveButton
+  saveButton,
+  error
 }: ProfileManageLayoutProps) => {
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">
@@ -54,6 +56,7 @@ const ProfileManageLayout = ({
         <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
           <div className="max-w-2xl mx-auto">{saveButton}</div>
         </div>
+        {error}
       </div>
     </div>
   );

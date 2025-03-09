@@ -40,55 +40,53 @@ const PRLayout = ({
         <GridItem className="space-y-6">
           {/* 제목 입력 */}
           <div className="space-y-2">
-            <h2 className="font-bold">제목</h2>
+          
             {productTitle}
           </div>
 
           {/* 가격 입력 */}
           <div className="space-y-2">
-            <h2 className="font-bold">가격</h2>
+            
             {price}
           </div>
 
           {/* 거래 방식 & 등록 유형 */}
-          <Grid cols={2} gap="sm">
-            <GridItem className="space-y-2">
-              <h2 className="font-bold text-sm text-gray-700">거래 방식</h2>
+          <Grid cols={12} gap="sm">
+            <GridItem className="col-span-8 space-y-2">
               {transactionType}
             </GridItem>
-            <GridItem className="space-y-2">
-              <h2 className="font-bold text-sm text-gray-700">등록 유형</h2>
+            <GridItem className="col-span-4 space-y-2 flex justify-end">
               {registrationType}
             </GridItem>
           </Grid>
 
           {/* 카테고리 */}
           <div className="space-y-2">
-            <h2 className="font-bold">카테고리</h2>
+          
             {category}
           </div>
 
           {/* 모집 인원 */}
           <div className="space-y-2">
-            <h2 className="font-bold">모집 인원</h2>
+            
             {participants}
           </div>
 
           {/* 일정 기간 */}
           <div className="space-y-2">
-            <h2 className="font-bold">일정 기간</h2>
+           
             {schedule}
           </div>
 
           {/* 이미지 업로드 */}
           <div className="space-y-2">
-            <h2 className="font-bold">상품 이미지 업로드</h2>
+            
             {images}
           </div>
 
           {/* 설명 */}
           <div className="space-y-2">
-            <h2 className="font-bold">설명</h2>
+           
             {description}
           </div>
         </GridItem>
