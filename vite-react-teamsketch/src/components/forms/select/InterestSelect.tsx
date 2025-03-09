@@ -1,5 +1,5 @@
-import Select from "../../common/Select";   
-import { useAppSelector } from "../../../store/hooks";
+import Select from '../../common/Select';
+import { useAppSelector } from '../../../store/hooks';
 
 interface InterestSelectProps {
   onInterestSelect: (categoryId: number) => void;
@@ -10,18 +10,15 @@ interface InterestSelectProps {
   }>;
 }
 
-const InterestSelect: React.FC<InterestSelectProps> = ({ 
-  onInterestSelect,
-  selectedCategory,
-}) => {
-  const { categories } = useAppSelector(state => state.category);
+const InterestSelect: React.FC<InterestSelectProps> = ({ onInterestSelect, selectedCategory }) => {
+  const { categories } = useAppSelector((state) => state.category);
   const handleCategorySelect = (value: string) => {
     onInterestSelect(Number(value));
   };
 
   return (
-    <Select 
-      options={categories.map(category => ({
+    <Select
+      options={categories.map((category) => ({
         value: category.categoryId.toString(),
         label: category.categoryName
       }))}
@@ -34,4 +31,3 @@ const InterestSelect: React.FC<InterestSelectProps> = ({
 };
 
 export default InterestSelect;
-

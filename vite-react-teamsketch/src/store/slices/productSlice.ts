@@ -5,7 +5,6 @@ interface ProductState {
   registerForm: IProductRegister;
   isLoading: boolean;
   error: string | null;
-  selectedDays: string[];
 }
 
 const initialState: ProductState = {
@@ -14,23 +13,22 @@ const initialState: ProductState = {
     description: '',
     price: 0,
     email: '',
-    categoryId: null,
-    hobbyId: null,
+    categoryId: 0,
     transactionType: '',
     registrationType: '',
+    meetingPlace: '',
+    latitude: 0,
+    longitude: 0,
+    address: '',
+    images: [],
     maxParticipants: 1,
+    selectedDays: [],
     startDate: '',
     endDate: '',
-    selectedDays: [],
-    images: [],
-    latitude: undefined,
-    longitude: undefined,
-    address: undefined,
-    meetingPlace: undefined
+    hobbyId: 0
   },
   isLoading: false,
-  error: null,
-  selectedDays: []
+  error: null
 };
 
 const productSlice = createSlice({
@@ -38,19 +36,19 @@ const productSlice = createSlice({
   initialState,
   reducers: {
     updateProductForm: (state, action: PayloadAction<Partial<IProductRegister>>) => {
-      state.registerForm = { ...state.registerForm, ...action.payload };     
+      state.registerForm = {
+        ...state.registerForm,
+        ...action.payload
+      };
     },
     addProductImage: (state, action: PayloadAction<File>) => {
-      state.registerForm.images.push(action.payload);
+      state.registerForm.images = [...(state.registerForm.images || []), action.payload];
     },
     removeProductImage: (state, action: PayloadAction<number>) => {
-      state.registerForm.images.splice(action.payload, 1);
+      state.registerForm.images = state.registerForm.images?.filter((_, index) => index !== action.payload);
     },
     resetProductForm: (state) => {
       state.registerForm = initialState.registerForm;
-    },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
@@ -63,7 +61,7 @@ export const {
   addProductImage,
   removeProductImage,
   resetProductForm,
-  setLoading,
   setError
 } = productSlice.actions;
+
 export default productSlice.reducer;

@@ -6,7 +6,11 @@ interface ImageSelectorProps {
   text?: string;
 }
 
-const ProdSelector: React.FC<ImageSelectorProps> = ({ onFileSelect, className = '', text = '상품 사진 등록' }) => {
+const ProdSelector: React.FC<ImageSelectorProps> = ({
+  onFileSelect,
+  className = '',
+  text = '상품 사진 등록'
+}) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {

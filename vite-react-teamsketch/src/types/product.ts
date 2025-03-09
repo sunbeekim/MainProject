@@ -3,23 +3,35 @@ export interface IProductRegister {
   description: string;
   price: number;
   email: string;
-  categoryId: number | null;
-  hobbyId: number | null;
-  transactionType: '대면' | '비대면' | '';
-  registrationType: '판매' | '구매' | '';
-  maxParticipants: number;
-  startDate: string;
-  endDate: string;
-  selectedDays: string[];
+  categoryId?: number;
+  transactionType: string;
+  registrationType: string;
+  meetingPlace?: string;
   latitude?: number;
   longitude?: number;
-  meetingPlace?: string;
   address?: string;
-  images: File[];
+  images?: File[];
+  maxParticipants?: number;
+  selectedDays?: string[];
+  startDate?: string;
+  endDate?: string;
+  hobbyId?: number;
 }
 
 export interface IProductResponse {
-  status: number;
-  message: string;
-  productId: number;
+  status: 'success' | 'error';
+  data: {
+    productId: number;
+    message: string;
+  };
+  code?: string;
+}
+
+export interface IImageResponse {
+  status: 'success' | 'error';
+  data: {
+    message: string;
+    response: any;
+  };
+  code: string;
 }
