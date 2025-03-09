@@ -124,7 +124,7 @@ const Login = () => {
               data-testid="login-button"
               disabled={isLoading}
             >
-              {isLoading ? '로그인 중...' : '로그인'}
+              {isLoading ? <Loading /> : '로그인'}
             </Button>
           }
           divider={

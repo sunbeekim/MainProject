@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.dto.profile;
 
 import com.example.demo.model.UserHobby;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class ProfileResponse {
     private String name;
     private String nickname;
     private String phoneNumber;
-    private String profileImageUrl;  // 프로필 이미지 URL 추가
+    private String profileImageUrl;
     private String bio;
     private String loginMethod;
     private String accountStatus;

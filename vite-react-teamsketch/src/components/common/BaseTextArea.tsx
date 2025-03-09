@@ -41,11 +41,7 @@ const BaseTextArea: React.FC<BaseTextAreaProps> = ({
     <div className={`space-y-1 ${wrapperClassName}`}>
       {label}
       <div className="relative">
-        <textarea 
-          rows={rows}
-          className={`${textareaClassName} ${className}`} 
-          {...props} 
-        />
+        <textarea rows={rows} className={`${textareaClassName} ${className}`} {...props} />
         {rightElement && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</div>
         )}

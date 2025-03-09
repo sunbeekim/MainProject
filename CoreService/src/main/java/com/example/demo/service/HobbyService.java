@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.HobbyRequest;
+import com.example.demo.dto.hobby.HobbyRequest;
 import com.example.demo.mapper.HobbyMapper;
 import com.example.demo.model.Category;
 import com.example.demo.model.Hobby;
 import com.example.demo.model.UserHobby;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 @Slf4j
 public class HobbyService {
 
+    @Getter // AuthService에서 접근할 수 있도록 getter 추가
     private final HobbyMapper hobbyMapper;
 
     /**
@@ -50,9 +52,18 @@ public class HobbyService {
 
     /**
      * 취미 ID로 해당 취미에 속한 카테고리 목록을 조회합니다.
+     * @deprecated 카테고리 우선 선택 방식으로 변경됨
      */
+    @Deprecated
     public List<Category> getCategoriesByHobbyId(Long hobbyId) {
         return hobbyMapper.getCategoriesByHobbyId(hobbyId);
+    }
+
+    /**
+     * 카테고리 ID로 취미 목록을 조회합니다.
+     */
+    public List<Hobby> getHobbiesByCategoryId(Long categoryId) {
+        return hobbyMapper.getHobbiesByCategoryId(categoryId);
     }
 
     /**
@@ -95,6 +106,7 @@ public class HobbyService {
 
     /**
      * 사용자의 여러 취미를 등록합니다.
+     * 카테고리 -> 취미 선택 방식에 맞게 검증 로직 강화
      */
     @Transactional
     public void registerUserHobbies(String email, List<HobbyRequest> hobbies) {
@@ -109,11 +121,34 @@ public class HobbyService {
         // 새로운 취미 등록
         for (HobbyRequest hobby : hobbies) {
             try {
+                // categoryId를 기반으로 해당 카테고리에 속하는 취미인지 검증
+                if (hobby.getCategoryId() == null) {
+                    log.warn("카테고리 ID가 누락되었습니다 - 이메일: {}, 취미ID: {}", 
+                             email, hobby.getHobbyId());
+                    continue;
+                }
+                
                 registerUserHobby(email, hobby.getHobbyId(), hobby.getCategoryId());
+                
             } catch (Exception e) {
                 log.error("취미 등록 실패 - 이메일: {}, 취미ID: {}, 카테고리ID: {}, 오류: {}", 
                           email, hobby.getHobbyId(), hobby.getCategoryId(), e.getMessage());
             }
         }
+    }
+
+    /**
+     * 취미 ID가 유효한지 확인합니다.
+     */
+    public boolean isValidHobby(Long hobbyId) {
+        return hobbyMapper.getHobbyById(hobbyId) != null;
+    }
+
+    /**
+     * 카테고리 ID가 유효한지 확인합니다.
+     */
+    public boolean isValidCategory(Long categoryId) {
+        List<Category> categories = hobbyMapper.getAllCategories();
+        return categories.stream().anyMatch(c -> c.getCategoryId().equals(categoryId));
     }
 }
