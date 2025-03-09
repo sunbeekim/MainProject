@@ -21,10 +21,10 @@ const initialState: SignupState = {
     name: '',
     password: '',
     email: '',
-    phoneNumber: '',
-    hobby: '',
+    phoneNumber: '',  
     bio: '',
     nickname: '',
+    hobbies: [],
     loginMethod: 'EMAIL',
     socialProvider: null
   },

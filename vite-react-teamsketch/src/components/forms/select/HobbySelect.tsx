@@ -2,12 +2,13 @@ import Select from "../../common/Select";
 
 interface HobbySelectProps {
     onHobbySelect: (value: string) => void;
-    selectedExtraHobby: string;
+  selectedExtraHobby?: string;
+  hobby: [];
 }
 
 
-const HobbySelect: React.FC<HobbySelectProps> = ({ onHobbySelect, selectedExtraHobby }) => {
-  const hobby = [
+const HobbySelect: React.FC<HobbySelectProps> = ({ onHobbySelect, selectedExtraHobby,
+  hobby = [
     { value: '예술', label: '🎨예술' },
     { value: '음악', label: '🎤음악' },
     { value: '스포츠', label: '🏋️‍♂️스포츠' },
@@ -19,6 +20,7 @@ const HobbySelect: React.FC<HobbySelectProps> = ({ onHobbySelect, selectedExtraH
     { value: 'DIY', label: '🛠️DIY' },
     { value: '과학', label: '🔍과학' },
   ]
+ }) => { 
 
   const handleHobbySelect = (selectedValue: string) => { 
     onHobbySelect(selectedValue);

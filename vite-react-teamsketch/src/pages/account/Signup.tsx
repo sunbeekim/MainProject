@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { updateField, setValidationError, setError } from '../../store/slices/signupSlice';
-
+//import { Category } from '../../types/auth';
 import SignupLayout from '../../components/layout/SignupLayout';
 import Button from '../../components/common/BaseButton';
 import {
@@ -15,11 +15,11 @@ import {
 import TextInput from '../../components/forms/input/TextInput';
 import PasswordInput from '../../components/forms/input/PasswordInput';
 import EmailInput from '../../components/forms/input/EmailInput';
-import InterestSelect from '../../components/forms/select/InterestSelect';
+// import InterestSelect from '../../components/forms/select/InterestSelect';
 import { useSignup } from '../../services/api/authAPI';
 import { SignupForm } from '../../types/auth';
-import HobbySelect from '../../components/forms/select/HobbySelect';
-
+// import HobbySelect from '../../components/forms/select/HobbySelect';
+import useCategoryApi from '../../services/api/commonAPI';
 const Signup = () => {
   const signupMutation = useSignup();
   const navigate = useNavigate();
@@ -51,7 +51,10 @@ const Signup = () => {
 
     dispatch(setValidationError({ field: name, message: validationResult.message }));
   };
-
+  const { useCategory } = useCategoryApi();  // useCategoryApi() 실행 후 반환된 객체에서 useCategory 가져오기
+  const response = useCategory();  // useCategory 사용
+  console.log("카테고리 목록 조회 :",response.data);
+  // 백엔드 실행 안해보시고 병합요청 하셨나보네요요
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(setError(''));
@@ -78,10 +81,9 @@ const Signup = () => {
         password: formData.password,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
-        nickname: formData.nickname,
-        hobby: formData.hobby,
-        extraHobby:formData.extraHobby,
+        nickname: formData.nickname,      
         bio: formData.bio,
+        hobbies: formData.hobbies,
         loginMethod: 'EMAIL',
         socialProvider: null
       });
@@ -91,12 +93,12 @@ const Signup = () => {
     }
   };
 
-  const handleInterestSelect = (value: string) => {
-    dispatch(updateField({ name: 'hobby', value }));
-  };
-  const handleHobbySelect = (value: string) => {
-    dispatch(updateField({ name: 'extraHobby', value }));
-  };
+  // const handleInterestSelect = (value: string) => {
+  //   dispatch(updateField({ name: 'category', value }));
+  // };
+  // const handleHobbySelect = (value: string) => {
+  //   dispatch(updateField({ name: 'hobby', value }));
+  // };
 
   return (
     
@@ -168,21 +170,22 @@ const Signup = () => {
             onChange={handleChange}
             error={validationErrors.nickname}
           />
-<div className="flex flex-row gap-3">
+
+        <div className="flex flex-row gap-3">
           <div className="flex flex-col gap-1 w-1/2">
             <label className="text-sm font-medium text-gray-700">관심사</label>
-            <InterestSelect
+            {/* <InterestSelect
               onInterestSelect={handleInterestSelect}
-              selectedInterest={formData.hobby || ''}
-            />
+              
+            /> */}
           </div>
 
           <div className="flex flex-col gap-1 w-1/2">
             <label className="text-sm font-medium text-gray-700">취미</label>
-            <HobbySelect
+            {/* <HobbySelect
               onHobbySelect={handleHobbySelect}
-              selectedExtraHobby={formData.extraHobby || ''}
-            />
+              
+            /> */}
             </div>
             </div>
         </div>

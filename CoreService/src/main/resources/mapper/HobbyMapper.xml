@@ -5,8 +5,8 @@
     <!-- 모든 취미 목록 조회 -->
     <select id="getAllHobbies" resultType="com.example.demo.model.Hobby">
         SELECT hobby_id as hobbyId, hobby_name as hobbyName
-        FROM hobbies
-        ORDER BY hobby_name
+        FROM hobbies        
+        ORDER BY hobby_name        
     </select>
 
     <!-- 취미 ID로 취미 조회 -->
@@ -29,7 +29,7 @@
     <select id="getAllCategories" resultType="com.example.demo.model.Category">
         SELECT category_id as categoryId, category_name as categoryName
         FROM categories
-        ORDER BY category_name
+        ORDER BY category_id ASC
     </select>
 
     <!-- 사용자의 취미 추가 -->

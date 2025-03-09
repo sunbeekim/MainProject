@@ -35,7 +35,7 @@ public class HobbyController {
         List<Hobby> hobbies = hobbyService.getAllHobbiesWithCategories();
         return ResponseEntity.ok(ApiResponse.success(hobbies));
     }
-
+    
     /**
      * 모든 카테고리 목록 조회
      */

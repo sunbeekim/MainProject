@@ -1,13 +1,15 @@
 import Select from "../../common/Select";   
 
 interface InterestSelectProps {
-    onInterestSelect: (value: string) => void;
-    selectedInterest: string;
+  onInterestSelect: (value: string) => void;
+  selectedInterest?: string;
+  interest: [];
 }
 
 
-const InterestSelect: React.FC<InterestSelectProps> = ({ onInterestSelect, selectedInterest }) => {
-  const interest = [
+const InterestSelect: React.FC<InterestSelectProps> = ({ onInterestSelect,
+  selectedInterest,
+  interest = [
     { value: '예술', label: '🎨예술' },
     { value: '음악', label: '🎤음악' },
     { value: '스포츠', label: '🏋️‍♂️스포츠' },
@@ -19,6 +21,8 @@ const InterestSelect: React.FC<InterestSelectProps> = ({ onInterestSelect, selec
     { value: 'DIY', label: '🛠️DIY' },
     { value: '과학', label: '🔍과학' },
   ]
+}) => {
+ 
 
   const handleInterestSelect = (value: string) => { 
     onInterestSelect(value);

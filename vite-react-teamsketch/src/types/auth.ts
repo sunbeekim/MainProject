@@ -1,20 +1,31 @@
 export type LoginMethod = 'EMAIL' | 'SOCIAL';
 export type SocialProvider = 'GOOGLE' | 'KAKAO' | 'NAVER' | null;
 
+export interface Hobbies{
+  hobbyId: number;
+  catetoryId: number;
+}
+export interface Hobby{
+  hobbyId: number;
+  hobbyName: string;
+}
+
+export interface Category{
+  categoryId: number;
+  categoryName: string;
+}
 export interface SignupForm {
   name: string;
   password: string;
   email: string;
   phoneNumber: string;
-  hobby?: string;
   bio?: string;
   nickname: string;
+  hobbies?: Hobbies[];
   profileImage?: File;
   loginMethod: LoginMethod;
   socialProvider: SocialProvider;
-  extraHobby: string;
 }
-
 // 백엔드 ENUM과 매핑하기 위한 상수 추가
 export const SOCIAL_PROVIDER = {
   GOOGLE: 'GOOGLE',
