@@ -32,7 +32,7 @@ public class ProductController {
     @PostMapping("/requests")
     public ResponseEntity<Object> createRequest(@RequestBody ProductRequest request) {
         if (!request.getRegistrationType().equals("구매 요청") && !request.getRegistrationType().equals("판매 요청")) {
-            return ResponseEntity.badRequest().body("잘못된 요청 등록입니다.");
+            return ResponseEntity.badRequest().body("잘못된 요청 등록입니다.(구매 요청, 판매 요청은 필수 입력 값입니다.)");
         }
         return productService.createProduct(request);  // 동일한 서비스 로직 재사용 가능
     }
@@ -58,7 +58,7 @@ public class ProductController {
     /**
      * 내가 등록한 상품 목록 조회 (구매만)
      */
-    @GetMapping("/my_registered_products/buy")
+    @GetMapping("/registers/my/buy")
     public ResponseEntity<List<ProductResponse>> getMyRegisteredBuyProducts(@RequestParam String email) {
         return ResponseEntity.ok(productService.getMyRegisteredBuyProducts(email));
     }
@@ -66,7 +66,7 @@ public class ProductController {
     /**
      * 내가 등록한 상품 목록 조회 (판매만)
      */
-    @GetMapping("/my_registered_products/sell")
+    @GetMapping("/registers/my/sell")
     public ResponseEntity<List<ProductResponse>> getMyRegisteredSellProducts(@RequestParam String email) {
         return ResponseEntity.ok(productService.getMyRegisteredSellProducts(email));
     }
@@ -74,7 +74,7 @@ public class ProductController {
     /**
      * 내가 요청한 상품 목록 조회 (구매 요청만)
      */
-    @GetMapping("/my_requested_products/buy_request")
+    @GetMapping("/requests/my/buy")
     public ResponseEntity<List<ProductResponse>> getMyRequestedBuyProducts(@RequestParam String email) {
         return ResponseEntity.ok(productService.getMyRequestedBuyProducts(email));
     }
@@ -82,7 +82,7 @@ public class ProductController {
     /**
      * 내가 요청한 상품 목록 조회 (판매 요청만)
      */
-    @GetMapping("/my_requested_products/sell_request")
+    @GetMapping("/requests/my/sell")
     public ResponseEntity<List<ProductResponse>> getMyRequestedSellProducts(@RequestParam String email) {
         return ResponseEntity.ok(productService.getMyRequestedSellProducts(email));
     }
