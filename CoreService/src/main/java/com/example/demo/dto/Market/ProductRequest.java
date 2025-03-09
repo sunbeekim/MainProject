@@ -20,7 +20,6 @@ public class ProductRequest {
     @NotNull private Integer price;
     @NotBlank private String email;
     @NotNull private Long categoryId;
-
     private Long hobbyId;  // 취미 ID 추가
     @NotBlank private String transactionType;
     @NotBlank private String registrationType;
@@ -34,9 +33,6 @@ public class ProductRequest {
     private Double latitude;
     private Double longitude;
     private String address;
-    @NotNull private Integer maxParticipants;
-    private String startDate;
-    private String endDate;
 
     // 이미지 URL 리스트
     private List<String> imagePaths;

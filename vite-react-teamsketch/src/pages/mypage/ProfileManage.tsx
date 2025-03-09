@@ -33,21 +33,19 @@ const ProfileManage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: RootState) => state.user.user);
-  
+
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(
     user.hobby?.[0]?.categoryId
   );
-  
+
   const [selectedHobbies, setSelectedHobbies] = useState<UserHobby[]>(
     user.hobby?.map(({ hobbyId, categoryId }) => ({ hobbyId, categoryId })) || []
   );
-  
+
   const [error, setError] = useState<string>('');
 
   // 입력 핸들러 통합
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     dispatch(setUser({ ...user, [name]: value }));
     console.log(user);
@@ -76,34 +74,35 @@ const ProfileManage = () => {
 
       console.log('프로필 업데이트 요청 데이터:', updateData);
 
-      const response = await axiosInstance.put(
-        apiConfig.endpoints.core.updateProfile,
-        updateData
-      );
+      const response = await axiosInstance.put(apiConfig.endpoints.core.updateProfile, updateData);
 
       console.log('프로필 업데이트 응답:', response.data);
 
       if (response.data.success === true) {
         // updatedProfile에서 데이터를 가져오도록 수정
         const updatedProfile = response.data.updatedProfile;
-        
-        dispatch(setUser({
-          ...user,
-          name: updatedProfile.name,
-          nickname: updatedProfile.nickname,
-          bio: updatedProfile.bio,
-          hobby: updatedProfile.hobbies.map((hobby: any) => ({
-            hobbyId: hobby.hobbyId,
-            hobbyName: hobby.hobbyName,
-            categoryId: hobby.categoryId,
-            categoryName: hobby.categoryName
-          }))
-        }));
 
-        setSelectedHobbies(updatedProfile.hobbies.map((hobby: any) => ({
-          hobbyId: hobby.hobbyId,
-          categoryId: hobby.categoryId
-        })));
+        dispatch(
+          setUser({
+            ...user,
+            name: updatedProfile.name,
+            nickname: updatedProfile.nickname,
+            bio: updatedProfile.bio,
+            hobby: updatedProfile.hobbies.map((hobby: any) => ({
+              hobbyId: hobby.hobbyId,
+              hobbyName: hobby.hobbyName,
+              categoryId: hobby.categoryId,
+              categoryName: hobby.categoryName
+            }))
+          })
+        );
+
+        setSelectedHobbies(
+          updatedProfile.hobbies.map((hobby: any) => ({
+            hobbyId: hobby.hobbyId,
+            categoryId: hobby.categoryId
+          }))
+        );
 
         navigate('/mypage');
       } else {

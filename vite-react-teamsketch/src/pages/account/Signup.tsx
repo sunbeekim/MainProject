@@ -1,6 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { updateField, setValidationError, setError, addHobby, removeHobby } from '../../store/slices/signupSlice';
+import {
+  updateField,
+  setValidationError,
+  setError,
+  addHobby,
+  removeHobby
+} from '../../store/slices/signupSlice';
 //import { Category } from '../../types/auth';
 import SignupLayout from '../../components/layout/SignupLayout';
 import Button from '../../components/common/BaseButton';
@@ -29,8 +35,7 @@ const Signup = () => {
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [selectedHobbies, setSelectedHobbies] = useState<HobbiesRequest[]>([]);
-  
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     dispatch(updateField({ name: name as keyof SignupForm, value }));
@@ -62,14 +67,14 @@ const Signup = () => {
   };
 
   const handleHobbySelect = (categoryId: number, hobbyId: number) => {
-    setSelectedHobbies(prev => {
-      const exists = prev.some(hobby => 
-        hobby.categoryId === categoryId && hobby.hobbyId === hobbyId
+    setSelectedHobbies((prev) => {
+      const exists = prev.some(
+        (hobby) => hobby.categoryId === categoryId && hobby.hobbyId === hobbyId
       );
 
       if (exists) {
-        const newHobbies = prev.filter(hobby => 
-          !(hobby.categoryId === categoryId && hobby.hobbyId === hobbyId)
+        const newHobbies = prev.filter(
+          (hobby) => !(hobby.categoryId === categoryId && hobby.hobbyId === hobbyId)
         );
         dispatch(removeHobby({ categoryId, hobbyId }));
         return newHobbies;
@@ -101,9 +106,9 @@ const Signup = () => {
         password: formData.password,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
-        nickname: formData.nickname,      
+        nickname: formData.nickname,
         bio: formData.bio || '',
-        hobbies: selectedHobbies.map(hobby => ({
+        hobbies: selectedHobbies.map((hobby) => ({
           hobbyId: hobby.hobbyId,
           categoryId: hobby.categoryId
         })),
@@ -123,7 +128,6 @@ const Signup = () => {
   };
 
   return (
-    
     <form className="h-full w-full bg-white dark:bg-gray-800 flex flex-col" onSubmit={handleSubmit}>
       <SignupLayout
         title={<h1 className="text-xl font-bold">어서오세요. 환영합니다!</h1>}
@@ -193,24 +197,24 @@ const Signup = () => {
             error={validationErrors.nickname}
           />
 
-        <div className="flex flex-row gap-3">
-          <div className="flex flex-col gap-1 w-1/2">
-            <label className="text-sm font-medium text-gray-700">관심사</label>
-            <InterestSelect
-              onInterestSelect={handleInterestSelect}
-              selectedCategory={selectedCategoryId || undefined}              
-            />
-          </div>
+          <div className="flex flex-row gap-3">
+            <div className="flex flex-col gap-1 w-1/2">
+              <label className="text-sm font-medium text-gray-700">관심사</label>
+              <InterestSelect
+                onInterestSelect={handleInterestSelect}
+                selectedCategory={selectedCategoryId || undefined}
+              />
+            </div>
 
-          <div className="flex flex-col gap-1 w-1/2">
-            <label className="text-sm font-medium text-gray-700">취미</label>
-            <HobbySelect
-              onHobbySelect={handleHobbySelect}
-              selectedHobbies={selectedHobbies}
-              categoryId={selectedCategoryId || undefined}             
-            />
+            <div className="flex flex-col gap-1 w-1/2">
+              <label className="text-sm font-medium text-gray-700">취미</label>
+              <HobbySelect
+                onHobbySelect={handleHobbySelect}
+                selectedHobbies={selectedHobbies}
+                categoryId={selectedCategoryId || undefined}
+              />
             </div>
-            </div>
+          </div>
         </div>
       </SignupLayout>
     </form>

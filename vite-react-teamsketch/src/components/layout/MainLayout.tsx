@@ -73,22 +73,21 @@ const MainLayout = () => {
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/product/register" element={<ProductRegister />} />
           <Route path="/verify-method" element={<VerifyMethod />} />
-          <Route path="/reset-password" element={<ResetPassword/>} />
-          <Route path="/verfication-code" element={<VerficationCode/>} />
-          <Route path="/chat-list" element={<ChatList/>} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verfication-code" element={<VerficationCode />} />
+          <Route path="/chat-list" element={<ChatList />} />
           <Route path="/product/location" element={<ProdLocationMap />} />
-          <Route path="/chat/:email" element={<ChatRoom/>} />
+          <Route path="/chat/:email" element={<ChatRoom />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/profile-manage" element={<ProfileManage />} />
           <Route path="/product-details" element={<ProductDetails />} />
 
           {/* test pages */}
-          <Route path="/test/pages" element={<TestPages />} />      
+          <Route path="/test/pages" element={<TestPages />} />
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
-          <Route path="/test/api" element={<TestAPI />} />          
+          <Route path="/test/api" element={<TestAPI />} />
           <Route path="/test/grid" element={<TestGrid />} />
-          
         </Routes>
       </div>
     </main>

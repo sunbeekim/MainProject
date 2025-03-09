@@ -2,7 +2,7 @@ import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
 import BaseButton from '../common/BaseButton';
 import ImageUpload from '../features/upload/ImageUpload';
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight } from 'react-icons/fa';
 
 interface MyPageLayoutProps {
   email?: string;
@@ -36,8 +36,6 @@ const MyPageLayout = ({
   point = 1200;
   dopamine = 85;
 
-  
-
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800">
       <Grid cols={1} className="p-4 gap-6">
@@ -56,9 +54,7 @@ const MyPageLayout = ({
         {/* 사용자 기본 정보 */}
         <GridItem>
           <div className="text-center space-y-2">
-            <p className="text-xl font-semibold">
-              {email ? email : '홍길동@example.com'}
-            </p>
+            <p className="text-xl font-semibold">{email ? email : '홍길동@example.com'}</p>
             <p className="text-gray-600 dark:text-gray-300">{name ? name : '홍길동'}</p>
             <p className="text-gray-500 dark:text-gray-200">{nickname ? nickname : 'OooO'}</p>
           </div>

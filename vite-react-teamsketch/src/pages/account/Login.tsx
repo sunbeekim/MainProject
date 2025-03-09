@@ -33,45 +33,50 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await loginMutation.mutateAsync(loginData);
-      
+
       if (response.status === 'success' && response.data) {
         // 1. 로그인 성공 시 토큰과 기본 정보 저장
-        dispatch(login({
-          email: response.data.email || '',
-          nickname: response.data.nickname || '',
-          userId: response.data.id || 0,
-          token: response.data.token || ''
-        }));
+        dispatch(
+          login({
+            email: response.data.email || '',
+            nickname: response.data.nickname || '',
+            userId: response.data.id || 0,
+            token: response.data.token || ''
+          })
+        );
 
         const userinfo = await userData.mutateAsync();
         console.log('사용자 정보:', userinfo.data);
 
         // 2. 사용자 정보를 userSlice에 저장
-        dispatch(setUser({
-          id: userinfo.data.id || 0,
-          email: userinfo.data.email || '',
-          name: userinfo.data.name || '',
-          nickname: userinfo.data.nickname || '',
-          phoneNumber: userinfo.data.phoneNumber || null,
-          bio: userinfo.data.bio || null,
-          loginMethod: userinfo.data.loginMethod || 'EMAIL',
-          socialProvider: userinfo.data.socialProvider || 'NONE',
-          accountStatus: userinfo.data.accountStatus || 'Active',
-          authority: userinfo.data.authority || 'USER',
-          profileImagePath: null,
-          signupDate: userinfo.data.signupDate || '',
-          lastUpdateDate: userinfo.data.lastUpdateDate || '',
-          lastLoginTime: userinfo.data.lastLoginTime || null,
-          loginFailedAttempts: 0,
-          loginIsLocked: false,
-          interest: userinfo.data.hobbies?.map((hobby: any) => hobby.categoryName) || [],
-          hobby: userinfo.data.hobbies?.map((hobby: any) => ({
-            hobbyId: hobby.hobbyId,
-            hobbyName: hobby.hobbyName,
-            categoryId: hobby.categoryId,
-            categoryName: hobby.categoryName
-          })) || []
-        }));
+        dispatch(
+          setUser({
+            id: userinfo.data.id || 0,
+            email: userinfo.data.email || '',
+            name: userinfo.data.name || '',
+            nickname: userinfo.data.nickname || '',
+            phoneNumber: userinfo.data.phoneNumber || null,
+            bio: userinfo.data.bio || null,
+            loginMethod: userinfo.data.loginMethod || 'EMAIL',
+            socialProvider: userinfo.data.socialProvider || 'NONE',
+            accountStatus: userinfo.data.accountStatus || 'Active',
+            authority: userinfo.data.authority || 'USER',
+            profileImagePath: null,
+            signupDate: userinfo.data.signupDate || '',
+            lastUpdateDate: userinfo.data.lastUpdateDate || '',
+            lastLoginTime: userinfo.data.lastLoginTime || null,
+            loginFailedAttempts: 0,
+            loginIsLocked: false,
+            interest: userinfo.data.hobbies?.map((hobby: any) => hobby.categoryName) || [],
+            hobby:
+              userinfo.data.hobbies?.map((hobby: any) => ({
+                hobbyId: hobby.hobbyId,
+                hobbyName: hobby.hobbyName,
+                categoryId: hobby.categoryId,
+                categoryName: hobby.categoryName
+              })) || []
+          })
+        );
 
         navigate('/');
       } else {
@@ -129,7 +134,10 @@ const Login = () => {
   return (
     <>
       {isLoading && <Loading />}
-      <form className="h-full w-full bg-white dark:bg-gray-800 flex flex-col" onSubmit={handleSubmit}>
+      <form
+        className="h-full w-full bg-white dark:bg-gray-800 flex flex-col"
+        onSubmit={handleSubmit}
+      >
         <LoginLayout
           title={<h1 className="text-2xl font-bold">Haru, 함께 하는 즐거움!</h1>}
           forgotPassword={

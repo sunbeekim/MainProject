@@ -18,7 +18,9 @@ export const useCategories = () => {
         dispatch(setCategories(response.data.data));
       }
     } catch (error) {
-      dispatch(setError(error instanceof Error ? error.message : '카테고리 로딩 중 오류가 발생했습니다.'));
+      dispatch(
+        setError(error instanceof Error ? error.message : '카테고리 로딩 중 오류가 발생했습니다.')
+      );
     } finally {
       dispatch(setLoading(false));
     }
@@ -34,7 +36,9 @@ export const useCategories = () => {
         dispatch(setHobbies(response.data.data));
       }
     } catch (error) {
-      dispatch(setError(error instanceof Error ? error.message : '취미 로딩 중 오류가 발생했습니다.'));
+      dispatch(
+        setError(error instanceof Error ? error.message : '취미 로딩 중 오류가 발생했습니다.')
+      );
     } finally {
       dispatch(setLoading(false));
     }

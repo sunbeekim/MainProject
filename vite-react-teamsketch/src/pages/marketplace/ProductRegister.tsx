@@ -5,21 +5,20 @@ import InterestSelect from '../../components/forms/select/InterestSelect';
 import ImageUpload from '../../components/features/upload/ImageUpload';
 import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
 import PRLayout from '../../components/layout/PRLayout';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import BaseLabelBox from '../../components/common/BaseLabelBox';
 import HobbySelect from '../../components/forms/select/HobbySelect';
 import BaseButton from '../../components/common/BaseButton';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import DaySelect from '../../components/forms/radiobutton/DaySelect';
-import { 
-  updateProductForm, 
-  addProductImage, 
+import {
+  updateProductForm,
+  addProductImage,
   removeProductImage,
   resetProductForm,
-  setLoading,
-  setError 
+  setError
 } from '../../store/slices/productSlice';
-import { registerProduct} from '../../services/api/productAPI';
+import { registerProduct } from '../../services/api/productAPI';
 import { useEffect } from 'react';
 
 const ProductRegister = () => {
@@ -38,10 +37,12 @@ const ProductRegister = () => {
   };
 
   const handleInterestSelect = (categoryId: number) => {
-    dispatch(updateProductForm({ 
-      categoryId,
-      hobbyId: null 
-    }));
+    dispatch(
+      updateProductForm({
+        categoryId,
+        hobbyId: undefined
+      })
+    );
   };
 
   const handleHobbySelect = (categoryId: number, hobbyId: number) => {
@@ -61,45 +62,53 @@ const ProductRegister = () => {
   console.log('meetingPlace', registerForm.meetingPlace);
   const handleSubmit = async () => {
     try {
-      dispatch(setLoading(true));
-      dispatch(setError(null));
+      if (!user?.email) {
+        throw new Error('로그인이 필요합니다.');
+      }
 
-      // 폼 데이터 검증
-      if (!registerForm.title || !registerForm.description || !registerForm.price) {
-        throw new Error('필수 필드를 모두 입력해주세요.');
+      // 필수 필드 검증
+      if (!registerForm.title || !registerForm.description || !registerForm.price || 
+          !registerForm.categoryId || !registerForm.transactionType || !registerForm.registrationType) {
+        throw new Error('필수 항목을 모두 입력해주세요.');
+      }
+
+      // 대면 거래인 경우 위치 정보 검증
+      if (registerForm.transactionType === '대면' && 
+          (!registerForm.meetingPlace || !registerForm.latitude || !registerForm.longitude || !registerForm.address)) {
+        throw new Error('대면 거래의 경우 위치 정보가 필요합니다.');
       }
 
       const productData = {
-        ...registerForm,
-        email: user.email,
-        categoryId: Number(registerForm.categoryId),
-        transactionType: registerForm.transactionType,
-        registrationType: registerForm.registrationType,
-        latitude: registerForm.latitude || undefined,
-        longitude: registerForm.longitude || undefined,
-        meetingPlace: registerForm.meetingPlace || undefined,
-        address: registerForm.address || undefined,
         title: registerForm.title,
         description: registerForm.description,
         price: Number(registerForm.price),
+        email: user.email,
+        hobbyId: registerForm.hobbyId,
+        categoryId: registerForm.categoryId,
+        transactionType: registerForm.transactionType,
+        registrationType: registerForm.registrationType,
+        meetingPlace: registerForm.meetingPlace,
+        latitude: registerForm.latitude,
+        longitude: registerForm.longitude,
+        address: registerForm.address,
         maxParticipants: Number(registerForm.maxParticipants) || 1,
         selectedDays: registerForm.selectedDays || [],
-        imagePaths: []
+        startDate: registerForm.startDate,
+        endDate: registerForm.endDate
       };
+
       console.log('productData', productData);
 
-      const response = await registerProduct(productData, registerForm.images);
-      
-      if (response.status === 200) {
+      const response = await registerProduct(productData, registerForm.images || []);
+
+      if (response.status === 'success') {
         dispatch(resetProductForm());
-        navigate('/marketplace');
+        navigate('/');
       } else {
-        throw new Error(response.message || '상품 등록에 실패했습니다.');
+        throw new Error(response.data.message || '상품 등록에 실패했습니다.');
       }
     } catch (error) {
       dispatch(setError(error instanceof Error ? error.message : '상품 등록에 실패했습니다.'));
-    } finally {
-      dispatch(setLoading(false));
     }
   };
 
@@ -111,35 +120,40 @@ const ProductRegister = () => {
       주소: registerForm.address,
       장소명: registerForm.meetingPlace
     });
-  }, [registerForm.latitude, registerForm.longitude, registerForm.address, registerForm.meetingPlace]);
+  }, [
+    registerForm.latitude,
+    registerForm.longitude,
+    registerForm.address,
+    registerForm.meetingPlace
+  ]);
 
   return (
     <PRLayout
       title={<h1>상품 등록</h1>}
       productTitle={
         <BaseLabelBox label="제목">
-          <TextInput 
-            name="title" 
-            value={registerForm.title} 
-            onChange={handleChange} 
+          <TextInput
+            name="title"
+            value={registerForm.title}
+            onChange={handleChange}
             placeholder="상품 제목을 입력하세요"
-            error={''} 
+            error={''}
           />
         </BaseLabelBox>
       }
       price={
         <BaseLabelBox label="가격">
-          <TextInput 
-            name="price" 
-            value={registerForm.price} 
-            onChange={handleChange} 
+          <TextInput
+            name="price"
+            value={registerForm.price}
+            onChange={handleChange}
             type="number"
             placeholder="가격을 입력하세요"
-            error={''} 
+            error={''}
           />
         </BaseLabelBox>
       }
-      transactionType={        
+      transactionType={
         <div className="flex flex-col gap-2">
           <div className="flex gap-3">
             <RadioButton
@@ -161,15 +175,12 @@ const ProductRegister = () => {
               className="shadow-sm"
             />
             {registerForm.transactionType === '대면' && (
-              <BaseButton 
-                variant="primary" 
-                onClick={() => navigate('/product/location')}                  
-              >
+              <BaseButton variant="primary" onClick={() => navigate('/product/location')}>
                 {registerForm.address ? '위치 변경' : '위치 선택'}
-              </BaseButton>                
+              </BaseButton>
             )}
-          </div>            
-        </div>     
+          </div>
+        </div>
       }
       registrationType={
         <div className="flex gap-3 justify-end">
@@ -193,7 +204,6 @@ const ProductRegister = () => {
           />
         </div>
       }
-      
       category={
         <div className="flex flex-col gap-2">
           <BaseLabelBox label="카테고리">
@@ -205,7 +215,11 @@ const ProductRegister = () => {
           <BaseLabelBox label="취미">
             <HobbySelect
               onHobbySelect={handleHobbySelect}
-              selectedHobbies={registerForm.hobbyId ? [{ hobbyId: registerForm.hobbyId, categoryId: registerForm.categoryId || 0 }] : []}
+              selectedHobbies={
+                registerForm.hobbyId
+                  ? [{ hobbyId: registerForm.hobbyId, categoryId: registerForm.categoryId || 0 }]
+                  : []
+              }
               categoryId={registerForm.categoryId || 0}
             />
           </BaseLabelBox>
@@ -215,7 +229,14 @@ const ProductRegister = () => {
         <div className="flex items-center gap-4">
           <button
             type="button"
-            onClick={() => dispatch(updateProductForm({ maxParticipants: registerForm.maxParticipants > 0 ? registerForm.maxParticipants - 1 : 0 }))}
+            onClick={() =>
+              dispatch(
+                updateProductForm({
+                  maxParticipants:
+                    registerForm.maxParticipants ? registerForm.maxParticipants - 1 : 0
+                })
+              )
+            }
             className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center "
           >
             -
@@ -223,7 +244,9 @@ const ProductRegister = () => {
           <span>{registerForm.maxParticipants}</span>
           <button
             type="button"
-            onClick={() => dispatch(updateProductForm({ maxParticipants: registerForm.maxParticipants + 1 }))}
+            onClick={() =>
+              dispatch(updateProductForm({ maxParticipants: registerForm.maxParticipants ? registerForm.maxParticipants + 1 : 1 }))
+            }
             className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center"
           >
             +
@@ -254,23 +277,22 @@ const ProductRegister = () => {
                 />
               </div>
             </div>
-            
+
             {/* 요일 선택 */}
             <div>
               <label className="text-sm text-gray-600 mb-2 block">진행 요일</label>
-              <DaySelect 
-              onDaySelect={(days: string[]) => {
-                dispatch(updateProductForm({ selectedDays: days }));
-              }}
-              selectedDays={registerForm.selectedDays || []}
-            />
+              <DaySelect
+                onDaySelect={(days: string[]) => {
+                  dispatch(updateProductForm({ selectedDays: days }));
+                }}
+                selectedDays={registerForm.selectedDays || []}
+              />
             </div>
           </div>
         </BaseLabelBox>
       }
       images={
         <ImageUpload
-          
           type="prod"
           multiple={true}
           images={registerForm.images}
