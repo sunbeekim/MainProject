@@ -43,8 +43,12 @@ public class ProductService {
                     .price(request.getPrice())
                     .email(request.getEmail())
                     .categoryId(request.getCategoryId())
+                    .hobbyId(request.getHobbyId()) // 취미 ID 추가
                     .transactionType(request.getTransactionType())
                     .registrationType(request.getRegistrationType())
+                    .maxParticipants(request.getMaxParticipants()) // 모집인원 추가
+                    .startDate(request.getStartDate()) // 일정 시작일 추가
+                    .endDate(request.getEndDate()) // 일정 종료일 추가
                     .latitude(request.getLatitude())
                     .longitude(request.getLongitude())
                     .meetingPlace(request.getMeetingPlace())
@@ -102,8 +106,12 @@ public class ProductService {
                 .price(product.getPrice())
                 .email(product.getEmail())
                 .categoryId(product.getCategoryId())
+                .hobbyId(product.getHobbyId()) // 취미 ID 추가
                 .transactionType(product.getTransactionType())
                 .registrationType(product.getRegistrationType())
+                .maxParticipants(product.getMaxParticipants()) // 모집인원 추가
+                .startDate(product.getStartDate()) // 일정 시작일 추가
+                .endDate(product.getEndDate()) // 일정 종료일 추가
                 .latitude(product.getLatitude())
                 .longitude(product.getLongitude())
                 .meetingPlace(product.getMeetingPlace())
@@ -133,8 +141,12 @@ public class ProductService {
                         .price(product.getPrice())
                         .email(product.getEmail())
                         .categoryId(product.getCategoryId())
+                        .hobbyId(product.getHobbyId()) // 취미 ID 추가
                         .transactionType(product.getTransactionType())
                         .registrationType(product.getRegistrationType())
+                        .maxParticipants(product.getMaxParticipants()) // 모집인원 추가
+                        .startDate(product.getStartDate()) // 일정 시작일 추가
+                        .endDate(product.getEndDate()) // 일정 종료일 추가
                         .latitude(product.getLatitude())
                         .longitude(product.getLongitude())
                         .meetingPlace(product.getMeetingPlace())

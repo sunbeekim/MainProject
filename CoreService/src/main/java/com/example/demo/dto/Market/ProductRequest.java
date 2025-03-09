@@ -1,9 +1,12 @@
 package com.example.demo.dto.Market;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -17,9 +20,16 @@ public class ProductRequest {
     @NotNull private Integer price;
     @NotBlank private String email;
     @NotNull private Long categoryId;
-    @NotNull private Long hobbyId;
+
+    private Long hobbyId;  // 취미 ID 추가
     @NotBlank private String transactionType;
     @NotBlank private String registrationType;
+
+    @Min(1) // 최소 1명 이상
+    private int maxParticipants = 1;  // 모집 인원 추가
+
+    private LocalDateTime startDate;  // 일정 시작일 추가
+    private LocalDateTime endDate;  // 일정 종료일 추가
     private String meetingPlace;
     private Double latitude;
     private Double longitude;
