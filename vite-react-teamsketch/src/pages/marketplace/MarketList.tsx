@@ -44,6 +44,28 @@ const MarketList = () => {
     }
   };
 
+  const handleProductClick = (product: IProduct) => {
+    navigate('/product-details', {
+      state: {
+        productData: {
+          images: [product.image],
+          mainCategory: product.category,
+          subCategory: '',
+          dopamine: product.dopamine,
+          number: product.id,
+          description: product.description,
+          maxParticipants: product.maxParticipants,
+          currentParticipants: product.currentParticipants,
+          location: product.location,
+          startDate: product.createdAt,
+          endDate: '',
+          title: product.title,
+          price: product.price
+        }
+      }
+    });
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <Category onCategorySelect={handleCategorySelect} categorySize="lg" />
@@ -66,6 +88,7 @@ const MarketList = () => {
                   currentParticipants={product.currentParticipants}
                   maxParticipants={product.maxParticipants}
                   location={product.location}
+                  onClick={() => handleProductClick(product)}
                 />
               </div>
             ))}
@@ -90,6 +113,7 @@ const MarketList = () => {
                     currentParticipants={product.currentParticipants}
                     maxParticipants={product.maxParticipants}
                     location={product.location}
+                    onClick={() => handleProductClick(product)}
                   />
                 </div>
               ))}

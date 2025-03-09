@@ -5,8 +5,8 @@ import { useState } from "react";
 import { useRef, useEffect } from "react";
 
 interface ChatRoomProps{
-    nickname: string;
-    imageUrl: string;
+    nickname?: string;
+    imageUrl?: string;
 }
 
 interface Message {

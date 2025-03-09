@@ -1,7 +1,7 @@
-import Grid from '../../components/common/Grid';
-import GridItem from '../../components/common/GridItem';
+import Grid from '../components/common/Grid';
+import GridItem from '../components/common/GridItem';
 
-const Requests = () => {
+const TestGrid = () => {
   return (
     <div className="p-8 space-y-8">
       <h1 className="text-3xl font-bold mb-8 text-center">그리드 시스템 테스트</h1>
@@ -104,4 +104,4 @@ const Requests = () => {
   );
 };
 
-export default Requests;
+export default TestGrid;

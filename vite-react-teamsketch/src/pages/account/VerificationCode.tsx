@@ -48,29 +48,14 @@ const VerficationCode = () => {
           } else {
             alert('인증 실패');
           }
+        }
+      }
+    );
   };
-  
+
   //   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //     setEmail(e.target.value); // 이메일 입력값 상태 업데이트
   // };
-
-
-
-
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const enteredCode = code.join('');
-        if (enteredCode.length !== 4) {
-          alert('인증코드는 4자리여야 합니다.');
-          return;
-        }
-        // 여기에 인증 API 연동을 추가
-        alert('인증이 완료되었습니다.');
-        navigate('/reset-password'); // 비밀번호 재설정 페이지로 이동
-  };
-  
-
 
       return (
     <LoginLayout

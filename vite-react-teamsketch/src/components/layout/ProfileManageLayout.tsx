@@ -1,7 +1,7 @@
-import Grid from '../components/common/Grid';
-import GridItem from '../components/common/GridItem';
+import Grid from '../common/Grid';
+import GridItem from '../common/GridItem';
 
-interface TestProfileManageLayoutProps {
+interface ProfileManageLayoutProps {
   email?: string;
   image: React.ReactNode;
   userInfoName: React.ReactNode;
@@ -12,7 +12,7 @@ interface TestProfileManageLayoutProps {
   saveButton: React.ReactNode;
 }
 
-const TestProfileManageLayout = ({
+const ProfileManageLayout = ({
   email = 'test@test.com',
   image,
   userInfoName,
@@ -21,7 +21,7 @@ const TestProfileManageLayout = ({
   userInfoInterest,
   userInfoHobby,
   saveButton
-}: TestProfileManageLayoutProps) => {
+}: ProfileManageLayoutProps) => {
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">
       <div className="min-h-full flex flex-col">
@@ -59,4 +59,4 @@ const TestProfileManageLayout = ({
   );
 };
 
-export default TestProfileManageLayout;
+export default ProfileManageLayout;

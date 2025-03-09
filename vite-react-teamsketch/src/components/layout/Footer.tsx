@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiStore2Line, RiStore2Fill } from 'react-icons/ri';
-import { IoChatbubbleEllipsesOutline, IoChatbubbleEllipses } from 'react-icons/io5';
-import { BsGrid, BsGridFill } from 'react-icons/bs';
+import { IoChatbubbleEllipsesOutline, IoChatbubbleEllipses, IoNotificationsOutline, IoNotifications } from 'react-icons/io5';
 import { HiOutlineMapPin, HiMapPin } from 'react-icons/hi2';
 import { CgUser } from 'react-icons/cg';
 import { RiUserFill } from 'react-icons/ri';
@@ -16,8 +15,8 @@ const Footer = () => {
         return '/';
       case '채팅':
         return '/chat';
-      case '메뉴':
-        return '/requests';
+      case '알림':
+        return '/notification';
       case '위치':
         return '/location';
       case '마이':
@@ -40,9 +39,9 @@ const Footer = () => {
       onClick: () => navigate('/chat-list')
     },
     {
-      icon: location.pathname === '/requests' ? <BsGridFill /> : <BsGrid />,
-      label: '메뉴',
-      onClick: () => navigate('/requests')
+      icon: location.pathname === '/notification' ? <IoNotifications /> : <IoNotificationsOutline />,
+      label: '알림',
+      onClick: () => navigate('/notification')
     },
     {
       icon: location.pathname === '/location' ? <HiMapPin /> : <HiOutlineMapPin />,
