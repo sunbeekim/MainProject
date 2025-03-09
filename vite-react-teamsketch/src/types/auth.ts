@@ -12,6 +12,7 @@ export interface SignupForm {
   profileImage?: File;
   loginMethod: LoginMethod;
   socialProvider: SocialProvider;
+  extraHobby: string;
 }
 
 // 백엔드 ENUM과 매핑하기 위한 상수 추가

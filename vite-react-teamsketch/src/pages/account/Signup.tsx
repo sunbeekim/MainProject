@@ -18,6 +18,7 @@ import EmailInput from '../../components/forms/input/EmailInput';
 import InterestSelect from '../../components/forms/select/InterestSelect';
 import { useSignup } from '../../services/api/authAPI';
 import { SignupForm } from '../../types/auth';
+import HobbySelect from '../../components/forms/select/HobbySelect';
 
 const Signup = () => {
   const signupMutation = useSignup();
@@ -79,6 +80,7 @@ const Signup = () => {
         phoneNumber: formData.phoneNumber,
         nickname: formData.nickname,
         hobby: formData.hobby,
+        extraHobby:formData.extraHobby,
         bio: formData.bio,
         loginMethod: 'EMAIL',
         socialProvider: null
@@ -91,6 +93,9 @@ const Signup = () => {
 
   const handleInterestSelect = (value: string) => {
     dispatch(updateField({ name: 'hobby', value }));
+  };
+  const handleHobbySelect = (value: string) => {
+    dispatch(updateField({ name: 'extraHobby', value }));
   };
 
   return (
@@ -163,14 +168,23 @@ const Signup = () => {
             onChange={handleChange}
             error={validationErrors.nickname}
           />
-
-          <div className="flex flex-col gap-1">
+<div className="flex flex-row gap-3">
+          <div className="flex flex-col gap-1 w-1/2">
             <label className="text-sm font-medium text-gray-700">관심사</label>
             <InterestSelect
               onInterestSelect={handleInterestSelect}
               selectedInterest={formData.hobby || ''}
             />
           </div>
+
+          <div className="flex flex-col gap-1 w-1/2">
+            <label className="text-sm font-medium text-gray-700">취미</label>
+            <HobbySelect
+              onHobbySelect={handleHobbySelect}
+              selectedExtraHobby={formData.extraHobby || ''}
+            />
+            </div>
+            </div>
         </div>
       </SignupLayout>
     </form>
