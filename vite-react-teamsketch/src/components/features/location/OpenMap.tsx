@@ -3,14 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Leaflet 기본 CSS
 import './Leaflet.css'; // 커스텀 CSS
-import { RootState } from '../store/store';
-import { setEndLocation } from '../store/slices/mapSlice';
+import { RootState } from '../../../store/store';
+import { setEndLocation } from '../../../store/slices/mapSlice';
 
 interface OpenStreetMapProps {
   children?: React.ReactNode;
 }
 
-const TestOpenMap: React.FC<OpenStreetMapProps> = () => {
+const OpenMap: React.FC<OpenStreetMapProps> = () => {
   const dispatch = useDispatch();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -109,4 +109,4 @@ const TestOpenMap: React.FC<OpenStreetMapProps> = () => {
   return <div ref={mapRef} className="w-full h-full" />;
 };
 
-export default TestOpenMap;
+export default OpenMap;

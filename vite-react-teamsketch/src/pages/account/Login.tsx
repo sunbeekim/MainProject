@@ -105,7 +105,7 @@ const Login = () => {
   return (
     <>
       {isLoading && <Loading />}
-      <form onSubmit={handleSubmit}>
+      <form className="h-full w-full bg-white dark:bg-gray-800 flex flex-col" onSubmit={handleSubmit}>
         <LoginLayout
           title={<h1 className="text-2xl font-bold">Haru, 함께 하는 즐거움!</h1>}
           forgotPassword={

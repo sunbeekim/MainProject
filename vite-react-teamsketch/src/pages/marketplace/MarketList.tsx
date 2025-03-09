@@ -19,7 +19,7 @@ const MarketList = () => {
           mockAPI.market.getLatestProducts(),
           mockAPI.market.getRecommendedProducts()
         ]);
-        
+
         setLatestProducts(latestResponse.data.products);
         setRecommendedProducts(recommendedResponse.data.products);
       } catch (error) {
@@ -46,8 +46,8 @@ const MarketList = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <Category onCategorySelect={handleCategorySelect} />
-      
+      <Category onCategorySelect={handleCategorySelect} categorySize="lg" />
+
       {/* 최신 상품 */}
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-4">
@@ -97,7 +97,6 @@ const MarketList = () => {
           </div>
         </div>
       )}
-
 
       <FloatingButton
         onClick={handleNavigateToProductRegister}

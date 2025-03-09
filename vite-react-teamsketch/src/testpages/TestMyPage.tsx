@@ -46,7 +46,7 @@ const TestMyPage = () => {
   };
 
   return (
-    <div>
+    <div className="h-full w-full bg-white dark:bg-gray-800 flex flex-col">
       <TestMyPageLayout
         email={user.email || ''}
         name={user.name || ''}
