@@ -11,3 +11,4 @@ export interface CategoryState {
   error: string | null;
   selectedCategoryId: number | null;
 }
+

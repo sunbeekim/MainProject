@@ -21,7 +21,6 @@ interface LocationInfoProps {
 
 const LocationInfo: React.FC<LocationInfoProps> = ({
   yourLocation,
-
   onGetYourLocation,
   onCopyLocation,
   showMyLocation = false,
