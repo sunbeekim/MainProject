@@ -63,12 +63,14 @@ const MyPage = () => {
     {
       icon: <FaCreditCard size={20} />,
       label: '결제 수단',
-      color: 'hover:bg-green-50 dark:hover:bg-green-900/30'
+      color: 'hover:bg-green-50 dark:hover:bg-green-900/30',
+      onClick: () => navigate('/registered-card')
     },
     {
       icon: <FaHistory size={20} />,
       label: '거래 내역',
-      color: 'hover:bg-yellow-50 dark:hover:bg-yellow-900/30'
+      color: 'hover:bg-yellow-50 dark:hover:bg-yellow-900/30',
+      onClick: () => navigate('/transaction-list')
     },
     {
       icon: <FaHeadset size={20} />,

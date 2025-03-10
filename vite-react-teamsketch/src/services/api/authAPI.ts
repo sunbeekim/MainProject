@@ -75,6 +75,21 @@ const verifyOtpApi = async ({ phoneNumber, otp }: VerifyOtpRequest): Promise<Ver
   return response.data;
 };
 
+// //이메일 전송 API
+// const sendEmailApi = async (email: string): Promise<EmailResponse> => { 
+//   const response = await axiosInstance.post(apiConfig.endpoints.assist.sendEmail, { email });
+//   return response.data;
+// }
+
+// //이메일 인증 API
+// const verifyOtpEmailApi = async ({ email, otp }: VerifyOtpRequest): Promise<VerifyOtpResponse> => { 
+//   const response = await axiosInstance.post(apiConfig.endpoints.assist.verifyOtpEmail, {
+//     email,
+//     otp
+//   });
+//   return response.data;
+// }
+
 // 프로필 수정 API
 const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
   const response = await axiosInstance.put(apiConfig.endpoints.core.updateProfile, profileData);
@@ -141,6 +156,29 @@ export const useVerifyOtp = () => {
     }
   });
 };
+
+// //이메일 전송 Hook
+// export const useSendEmail = () => {
+//   return useMutation({
+//     mutationFn: sendEmailApi,
+//     onError: (error: any) => {
+//       console.error('Email 전송 실패:', error);
+//       throw new Error(error.response?.data?.message || 'Email 전송에 실패했습니다.');
+//     }
+//   });
+// };
+
+// //이메일 인증 Hook
+// export const userVerifyOtpEmail = () => {
+//   return useMutation({
+//     mutationFn: verifyOtpEmailApi,
+//     onError: (error: any) => {
+//       console.error('OTP 검증 실패:', error);
+//       throw new Error(error.response?.data?.message || '인증번호 확인에 실패했습니다.');
+//     }
+//   });
+// };
+
 
 // 프로필 수정 Hook
 export const useUpdateProfile = () => {

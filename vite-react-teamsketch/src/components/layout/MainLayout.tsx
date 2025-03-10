@@ -19,6 +19,8 @@ import ChangePassword from '../../pages/account/ChangePassword';
 import ProductDetails from '../../pages/marketplace/ProductDetails';
 import ProfileManage from '../../pages/mypage/ProfileManage';
 import NotificationList from '../../pages/notification/NotificationList';
+import RegisteredCard from '../../pages/payment/RegisteredCard';
+import CardDetails from '../../pages/payment/CardDetails';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
@@ -81,7 +83,9 @@ const MainLayout = () => {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/profile-manage" element={<ProfileManage />} />
           <Route path="/product-details" element={<ProductDetails />} />
-
+          <Route path="/registered-card" element={<RegisteredCard />} />
+          <Route path="/card-details/:cardId" element={<CardDetails />} />
+         
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
           <Route path="/test/component" element={<TestComponent />} />
