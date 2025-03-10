@@ -5,9 +5,7 @@ const ProductDetails = () => {
   const location = useLocation();
   const productData = location.state?.productData || {
     // 기본값 설정 (데이터가 없을 경우를 대비)
-    images: [
-      'https://via.placeholder.com/800x600/3498db/ffffff?text=기본+이미지'
-    ],
+    images: ['https://via.placeholder.com/800x600/3498db/ffffff?text=기본+이미지'],
     mainCategory: '',
     subCategory: '',
     dopamine: 0,

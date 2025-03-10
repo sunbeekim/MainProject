@@ -1,6 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiStore2Line, RiStore2Fill } from 'react-icons/ri';
-import { IoChatbubbleEllipsesOutline, IoChatbubbleEllipses, IoNotificationsOutline, IoNotifications } from 'react-icons/io5';
+import {
+  IoChatbubbleEllipsesOutline,
+  IoChatbubbleEllipses,
+  IoNotificationsOutline,
+  IoNotifications
+} from 'react-icons/io5';
 import { HiOutlineMapPin, HiMapPin } from 'react-icons/hi2';
 import { CgUser } from 'react-icons/cg';
 import { RiUserFill } from 'react-icons/ri';
@@ -39,7 +44,8 @@ const Footer = () => {
       onClick: () => navigate('/chat-list')
     },
     {
-      icon: location.pathname === '/notification' ? <IoNotifications /> : <IoNotificationsOutline />,
+      icon:
+        location.pathname === '/notification' ? <IoNotifications /> : <IoNotificationsOutline />,
       label: '알림',
       onClick: () => navigate('/notification')
     },

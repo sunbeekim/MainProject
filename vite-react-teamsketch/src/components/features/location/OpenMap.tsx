@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css'; // Leaflet 기본 CSS
 import './Leaflet.css'; // 커스텀 CSS
 import { RootState } from '../../../store/store';
 import { setEndLocation } from '../../../store/slices/mapSlice';
+import { getAddressFromCoord } from '../../../services/api/productAPI';
 
 interface OpenStreetMapProps {
   children?: React.ReactNode;
@@ -31,11 +32,13 @@ const OpenMap: React.FC<OpenStreetMapProps> = () => {
       // 지도 클릭 이벤트 처리
       newMap.on('click', async (e) => {
         const { lat, lng } = e.latlng;
+        const meetingPlace = await getAddressFromCoord(lat, lng);
         dispatch(
           setEndLocation({
             lat,
             lng,
-            address: `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`
+            address: `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`,
+            meetingPlace: meetingPlace.name
           })
         );
       });

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { login as setAuthUser } from '../../store/slices/authSlice';
-import { setUser as setUserInfo } from '../../store/slices/userSlice';
+import { useAppDispatch } from '../../store/hooks';
+import { login } from '../../store/slices/authSlice';
+import { setUser } from '../../store/slices/userSlice';
 import type { LoginRequest } from '../../types/auth';
 import { useLogin, useInfoApi } from '../../services/api/authAPI';
 import LoginLayout from '../../components/layout/LoginLayout';
@@ -11,58 +11,70 @@ import Loading from '../../components/common/Loading';
 import { google, kakao, naver } from '../../assets/images/login';
 import EmailInput from '../../components/forms/input/EmailInput';
 import LoginPasswordInput from '../../components/forms/input/LoginPasswordInput';
-import { decodeJWT } from '../../utils/jwt';
-
-interface LoginForm {
-  email: string;
-  password: string;
-}
+import { validateEmail, validatePassword } from '../../utils/validation';
 
 const Login = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const loginMutation = useLogin();
   const userData = useInfoApi();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [validationErrors, setValidationErrors] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
 
   const handleLogin = async (loginData: LoginRequest) => {
     setIsLoading(true);
     try {
       const response = await loginMutation.mutateAsync(loginData);
-      localStorage.setItem('token', response.token);
 
-      const userinfo = await userData.mutateAsync();
-      if (response.success) {
-        const decodedToken = decodeJWT(response.token);
-        const userId = decodedToken?.userId;
-
+      if (response.status === 'success' && response.data) {
+        // 1. 로그인 성공 시 토큰과 기본 정보 저장
         dispatch(
-          setAuthUser({
-            email: response.email,
-            nickname: response.nickname,
-            userId: userId,
-            token: response.token
+          login({
+            email: response.data.email || '',
+            nickname: response.data.nickname || '',
+            userId: response.data.id || 0,
+            token: response.data.token || ''
           })
         );
 
+        const userinfo = await userData.mutateAsync();
+        console.log('사용자 정보:', userinfo.data);
+
+        // 2. 사용자 정보를 userSlice에 저장
         dispatch(
-          setUserInfo({
-            id: userId,
-            email: userinfo.email,
-            name: userinfo.nickname,
-            nickname: userinfo.nickname,
-            phoneNumber: userinfo.phoneNumber,
-            bio: userinfo.bio,
-            loginMethod: userinfo.loginMethod,
-            socialProvider: userinfo.socialProvider,
-            accountStatus: userinfo.accountStatus,
-            authority: userinfo.authority,
-            profileImagePath: userinfo.profileImagePath,
-            signupDate: new Date().toISOString(),
-            lastUpdateDate: new Date().toISOString(),
-            lastLoginTime: new Date().toISOString(),
+          setUser({
+            id: userinfo.data.id || 0,
+            email: userinfo.data.email || '',
+            name: userinfo.data.name || '',
+            nickname: userinfo.data.nickname || '',
+            phoneNumber: userinfo.data.phoneNumber || null,
+            bio: userinfo.data.bio || null,
+            loginMethod: userinfo.data.loginMethod || 'EMAIL',
+            socialProvider: userinfo.data.socialProvider || 'NONE',
+            accountStatus: userinfo.data.accountStatus || 'Active',
+            authority: userinfo.data.authority || 'USER',
+            profileImagePath: null,
+            signupDate: userinfo.data.signupDate || '',
+            lastUpdateDate: userinfo.data.lastUpdateDate || '',
+            lastLoginTime: userinfo.data.lastLoginTime || null,
             loginFailedAttempts: 0,
-            loginIsLocked: userinfo.loginIsLocked
+            loginIsLocked: false,
+            interest: userinfo.data.hobbies?.map((hobby: any) => hobby.categoryName) || [],
+            hobby:
+              userinfo.data.hobbies?.map((hobby: any) => ({
+                hobbyId: hobby.hobbyId,
+                hobbyName: hobby.hobbyName,
+                categoryId: hobby.categoryId,
+                categoryName: hobby.categoryName
+              })) || []
           })
         );
 
@@ -70,18 +82,13 @@ const Login = () => {
       } else {
         throw new Error(response.message || '로그인에 실패했습니다.');
       }
-    } catch (error) {
-      console.error('로그인 실패:', error);
-      throw error;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '로그인 중 오류가 발생했습니다.');
+      console.error('로그인 에러:', err);
     } finally {
       setIsLoading(false);
     }
   };
-  const [formData, setFormData] = useState<LoginForm>({
-    email: '',
-    password: ''
-  });
-  const [error, setError] = useState<string>('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -89,23 +96,48 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
+
+    // 실시간 유효성 검사
+    let validationResult = { isValid: true, message: '' };
+    if (name === 'email') {
+      validationResult = validateEmail(value);
+    } else if (name === 'password') {
+      validationResult = validatePassword(value);
+    }
+
+    setValidationErrors((prev) => ({
+      ...prev,
+      [name]: validationResult.message
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    try {
-      await handleLogin(formData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '로그인 중 오류가 발생했습니다.');
+    // 입력값 유효성 검사
+    const emailValidation = validateEmail(formData.email);
+    const passwordValidation = validatePassword(formData.password);
+
+    setValidationErrors({
+      email: emailValidation.message,
+      password: passwordValidation.message
+    });
+
+    if (!emailValidation.isValid || !passwordValidation.isValid) {
+      return;
     }
+
+    await handleLogin(formData);
   };
 
   return (
     <>
       {isLoading && <Loading />}
-      <form className="h-full w-full bg-white dark:bg-gray-800 flex flex-col" onSubmit={handleSubmit}>
+      <form
+        className="h-full w-full bg-white dark:bg-gray-800 flex flex-col"
+        onSubmit={handleSubmit}
+      >
         <LoginLayout
           title={<h1 className="text-2xl font-bold">Haru, 함께 하는 즐거움!</h1>}
           forgotPassword={
@@ -167,6 +199,7 @@ const Login = () => {
             placeholder="이메일"
             data-testid="email-input"
             disabled={isLoading}
+            error={validationErrors.email}
           />
           <LoginPasswordInput
             name="password"
@@ -175,6 +208,7 @@ const Login = () => {
             placeholder="비밀번호"
             data-testid="password-input"
             disabled={isLoading}
+            error={validationErrors.password}
           />
         </LoginLayout>
         {error && (

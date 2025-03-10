@@ -11,6 +11,7 @@ interface SelectProps {
   onChange?: (value: string) => void;
   className?: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -18,7 +19,8 @@ const Select: React.FC<SelectProps> = ({
   value,
   onChange,
   className = '',
-  placeholder
+  placeholder,
+  disabled = false
 }) => {
   return (
     <select
@@ -34,6 +36,7 @@ const Select: React.FC<SelectProps> = ({
         focus:outline-none focus:ring-2 focus:ring-primary-light
         ${className}
       `}
+      disabled={disabled}
     >
       {placeholder && (
         <option value="" disabled>
