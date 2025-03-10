@@ -63,7 +63,8 @@ const MyPage = () => {
     {
       icon: <FaCreditCard size={20} />,
       label: '결제 수단',
-      color: 'hover:bg-green-50 dark:hover:bg-green-900/30'
+      color: 'hover:bg-green-50 dark:hover:bg-green-900/30',
+      onClick: () => navigate('/registered-card')
     },
     {
       icon: <FaHistory size={20} />,
