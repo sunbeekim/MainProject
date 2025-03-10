@@ -1,64 +1,82 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import FloatingButton from '../../components/common/FloatingButton';
 import Category from '../../components/common/CategoryIcon';
 import { mockAPI } from '../../mock/mockAPI';
 import { IProduct } from '../../mock/mockData';
 import Card from '../../components/features/card/Card';
+import { IGetProduct } from '../../types/product';
+import { getProducts } from '../../services/api/productAPI';
+
+// 타입 정의 추가
+type ProductType = IGetProduct | IProduct;
 
 const MarketList = () => {
   const navigate = useNavigate();
-  const [latestProducts, setLatestProducts] = useState<IProduct[]>([]);
-  const [recommendedProducts, setRecommendedProducts] = useState<IProduct[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
+  // 최신 상품 Query
+  const { data: latestProducts = [], isLoading: isLatestLoading } = useQuery<ProductType[]>({
+    queryKey: ['latestProducts', selectedCategory],
+    queryFn: async () => {
       try {
-        const [latestResponse, recommendedResponse] = await Promise.all([
-          mockAPI.market.getLatestProducts(),
-          mockAPI.market.getRecommendedProducts()
-        ]);
-
-        setLatestProducts(latestResponse.data.products);
-        setRecommendedProducts(recommendedResponse.data.products);
+        const filter = selectedCategory ? { categoryId: selectedCategory } : undefined;
+        const response = await getProducts(filter);
+        console.log(response);
+        return response || [];
       } catch (error) {
-        console.error('상품 목록을 불러오는데 실패했습니다:', error);
+        console.error('API 요청 실패:', error);
+        const mockResponse = await mockAPI.market.getLatestProducts();
+        return mockResponse.data.products;
       }
-    };
+    },
+    gcTime: 600000,
+    staleTime: 300000
+  });
 
-    fetchProducts();
-  }, []);
+  // 추천 상품 Query (동일한 API 사용)
+  const { data: recommendedProducts = [], isLoading: isRecommendedLoading } = useQuery<ProductType[]>({
+    queryKey: ['recommendedProducts'],
+    queryFn: async () => {
+      try {
+        const response = await getProducts();
+        return response || [];
+      } catch (error) {
+        console.error('추천 상품 API 요청 실패:', error);
+        const mockResponse = await mockAPI.market.getRecommendedProducts();
+        return mockResponse.data.products;
+      }
+    },
+    gcTime: 600000,
+    staleTime: 300000
+  });
 
   const handleNavigateToProductRegister = () => {
     navigate('/product/register');
   };
 
-  const handleCategorySelect = async (category: string) => {
-    try {
-      const response = await mockAPI.market.getProductsByCategory(category);
-      setLatestProducts(response.data.products);
-      setSelectedCategory(category);
-    } catch (error) {
-      console.error('카테고리별 상품을 불러오는데 실패했습니다:', error);
-    }
+  const handleCategorySelect = (categoryId: number) => {
+    setSelectedCategory(categoryId === 0 ? null : categoryId);
   };
 
-  const handleProductClick = (product: IProduct) => {
+  const handleProductClick = (product: ProductType) => {
     navigate('/product-details', {
       state: {
         productData: {
-          images: [product.image],
-          mainCategory: product.category,
+          images: 'imagePaths' in product && Array.isArray(product.imagePaths)
+            ? product.imagePaths
+            : ['image' in product ? product.image : ''],
+          mainCategory: 'category' in product ? product.category : '',
           subCategory: '',
-          dopamine: product.dopamine,
+          dopamine: 'dopamine' in product ? product.dopamine : 0,
           number: product.id,
           description: product.description,
-          maxParticipants: product.maxParticipants,
-          currentParticipants: product.currentParticipants,
-          location: product.location,
-          startDate: product.createdAt,
-          endDate: '',
+          maxParticipants: 'maxParticipants' in product ? product.maxParticipants : 0,
+          currentParticipants: 'currentParticipants' in product ? product.currentParticipants : 0,
+          location: 'location' in product ? product.location : ('meetingPlace' in product ? product.meetingPlace || '' : ''),
+          startDate: 'createdAt' in product ? product.createdAt : '',
+          endDate: 'endDate' in product ? product.endDate : '',
           title: product.title,
           price: product.price
         }
@@ -66,28 +84,38 @@ const MarketList = () => {
     });
   };
 
+  if (isLatestLoading || isRecommendedLoading) {
+    return <div className="container mx-auto px-4 py-6">로딩 중...</div>;
+  }
+
   return (
     <div className="container mx-auto px-4 py-6">
-      <Category onCategorySelect={handleCategorySelect} categorySize="lg" />
+      <Category categorySize="md" onCategorySelect={handleCategorySelect} />
 
       {/* 최신 상품 */}
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-4">
-          {selectedCategory ? `${selectedCategory} 관련 상품` : '최신 상품'}
+          {selectedCategory ? '카테고리별 상품' : '최신 상품'}
         </h2>
         <div className="overflow-x-auto no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
           <div className="flex gap-4 pb-4 min-w-max">
-            {latestProducts.map((product) => (
+            {latestProducts.map((product: ProductType) => (
               <div key={product.id} className="w-[280px] flex-shrink-0">
                 <Card
                   title={product.title}
                   description={product.description}
-                  image={product.image}
+                  image={
+                    'thumbnailPath' in product && product.thumbnailPath
+                      ? `http://localhost:8081/api/core/market/images/${product.thumbnailPath}`
+                      : ('image' in product ? product.image : '')
+                  }
                   price={product.price}
-                  dopamine={product.dopamine}
-                  currentParticipants={product.currentParticipants}
-                  maxParticipants={product.maxParticipants}
-                  location={product.location}
+                  dopamine={'dopamine' in product ? product.dopamine : 0}
+                  currentParticipants={
+                    'currentParticipants' in product ? product.currentParticipants : 0
+                  }
+                  maxParticipants={'maxParticipants' in product ? product.maxParticipants : 0}
+                  location={'location' in product ? product.location : ('meetingPlace' in product ? product.meetingPlace || '' : '')}
                   onClick={() => handleProductClick(product)}
                 />
               </div>
@@ -96,23 +124,29 @@ const MarketList = () => {
         </div>
       </div>
 
-      {/* 추천 상품 */}
+      {/* 추천 상품 - 카테고리가 선택되지 않았을 때만 표시 */}
       {!selectedCategory && (
         <div className="mt-8">
           <h2 className="text-xl font-bold mb-4">추천 상품</h2>
           <div className="overflow-x-auto no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
             <div className="flex gap-4 pb-4 min-w-max">
-              {recommendedProducts.map((product) => (
+              {recommendedProducts.map((product: ProductType) => (
                 <div key={product.id} className="w-[280px] flex-shrink-0">
                   <Card
                     title={product.title}
                     description={product.description}
-                    image={product.image}
+                    image={
+                      'thumbnailPath' in product && product.thumbnailPath
+                        ? `http://localhost:8080/api/core/market/images${product.thumbnailPath}`
+                        : ('image' in product ? product.image : '')
+                    }
                     price={product.price}
-                    dopamine={product.dopamine}
-                    currentParticipants={product.currentParticipants}
-                    maxParticipants={product.maxParticipants}
-                    location={product.location}
+                    dopamine={'dopamine' in product ? product.dopamine : 0}
+                    currentParticipants={
+                      'currentParticipants' in product ? product.currentParticipants : 0
+                    }
+                    maxParticipants={'maxParticipants' in product ? product.maxParticipants : 0}
+                    location={'location' in product ? product.location : ('meetingPlace' in product ? product.meetingPlace || '' : '')}
                     onClick={() => handleProductClick(product)}
                   />
                 </div>
@@ -128,7 +162,7 @@ const MarketList = () => {
         label="상품 등록"
         position="bottom-right"
         color="primary"
-      ></FloatingButton>
+      />
     </div>
   );
 };

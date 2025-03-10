@@ -31,6 +31,8 @@ export const apiConfig = {
       updateProfile: `${BASE_URL}/core/profiles/me`,
       registerProduct: `${BASE_URL}/core/market/products/registers`,
       uploadProductImages: `${BASE_URL}/core/market/images/upload`,
+      getProducts: `${BASE_URL}/core/market/products`,
+      getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       test: `${BASE_URL}/core/test`,
       
       // 다른 core 서비스 엔드포인트들...

@@ -12,7 +12,7 @@ import InterestSelect from '../../components/forms/select/InterestSelect';
 import HobbySelect from '../../components/forms/select/HobbySelect';
 import BaseLabelBox from '../../components/common/BaseLabelBox';
 import ImageUpload from '../../components/features/upload/ImageUpload';
-import { getProfileImage } from '../../services/api/imageAPI';
+import { coreProfile} from '../../services/api/imageAPI';
 import ProfileManageLayout from '../../components/layout/ProfileManageLayout';
 import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
 import { useNavigate } from 'react-router-dom';
@@ -119,7 +119,7 @@ const ProfileManage = () => {
       error={error && <div className="text-red-500 text-sm text-center mb-2">{error}</div>}
       image={
         <ImageUpload
-          onUpload={getProfileImage}
+          onUpload={coreProfile}
           className="max-w-md mx-auto"
           type="profile"
           isEdit={true}
