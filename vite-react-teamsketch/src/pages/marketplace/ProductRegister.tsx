@@ -58,7 +58,7 @@ const ProductRegister = () => {
   const handleRemoveImage = (index: number) => {
     dispatch(removeProductImage(index));
   };
-  console.log('meetingPlace', registerForm.meetingPlace);
+
   const handleSubmit = async () => {
     try {
       if (!user?.email) {

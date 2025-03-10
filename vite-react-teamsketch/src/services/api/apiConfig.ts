@@ -26,7 +26,7 @@ export const apiConfig = {
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,
       getProfileImage: `${BASE_URL}/core/profiles/image`,
       getCategory: `${BASE_URL}/core/hobbies/categories`,
-      getHobbies: `${BASE_URL}/core/hobbies/categories/`,
+      getHobbies: `${BASE_URL}/core/hobbies`,
       getHobbiesByCategory: (categoryId: number) => `${BASE_URL}/core/hobbies/categories/${categoryId}`,
       updateProfile: `${BASE_URL}/core/profiles/me`,
       registerProduct: `${BASE_URL}/core/market/products/registers`,
