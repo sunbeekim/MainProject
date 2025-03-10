@@ -99,7 +99,7 @@ const Signup = () => {
   // const handleHobbySelect = (value: string) => {
   //   dispatch(updateField({ name: 'hobby', value }));
   // };
-
+// 일단 좀 이따가 해보고 api 연결하는 거 정리해서 알려드릴게요
   return (
     
     <form className="h-full w-full bg-white dark:bg-gray-800 flex flex-col" onSubmit={handleSubmit}>

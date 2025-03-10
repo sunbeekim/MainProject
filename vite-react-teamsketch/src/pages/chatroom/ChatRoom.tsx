@@ -66,7 +66,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname,imageUrl }) => {
       </div>
 
        {/* 채팅 메시지 목록 */}
-       <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto bg-gray-100">
+       <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto bg-gray-100 h-full">
         {messages.map((msg, index) => (
           <div key={index} className="mb-5">
             {/* 파일이 있을 경우, 파일을 렌더링 */}
