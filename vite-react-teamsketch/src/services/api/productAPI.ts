@@ -1,6 +1,8 @@
 import { axiosInstance, uploadInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { IProductRegister, IProductResponse } from '../../types/product';
+import { IGetProductListResponse, IGetProductDetailResponse } from '../../types/product';
+import { IProductFilter } from '../../types/product';
 
 export const registerProduct = async (
   productData: Omit<IProductRegister, 'images'>,
@@ -135,3 +137,41 @@ export const searchAddress = async (query: string) => {
   );
   return response.data;
 };
+
+// 전체 상품 조회 (수정)
+export const getProducts = async (filter?: IProductFilter): Promise<IGetProductListResponse> => {
+  try {
+    let url = apiConfig.endpoints.core.getProducts;
+    
+    // 필터 옵션이 있는 경우 쿼리 파라미터 추가
+    if (filter) {
+      const params = new URLSearchParams();
+      if (filter.categoryId) params.append('categoryId', filter.categoryId.toString());
+      if (filter.sort) params.append('sort', filter.sort);
+      url += `?${params.toString()}`;
+    }
+
+    const response = await axiosInstance.get<IGetProductListResponse>(url);
+    return response.data;
+  } catch (error) {
+    console.error('상품 목록 조회 에러:', error);
+    throw error;
+  }
+};
+
+// 단일 상품 조회 (수정)
+export const getProductById = async (id: number): Promise<IGetProductDetailResponse> => {
+  try {
+    const response = await axiosInstance.get<IGetProductDetailResponse>(
+      `${apiConfig.endpoints.core.getProducts}/${id}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('상품 상세 조회 에러:', error);
+    throw error;
+  }
+};
+
+
+
+

@@ -204,6 +204,7 @@ public class ProfileController {
         
         Map<String, String> responseData = new HashMap<>();
         responseData.put("imageUrl", imageUrl);
+        System.out.println("imageUrl: " + imageUrl);
         
         return ResponseEntity.ok(ApiResponse.success(responseData));
     }

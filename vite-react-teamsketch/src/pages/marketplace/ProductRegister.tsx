@@ -19,7 +19,6 @@ import {
   setError
 } from '../../store/slices/productSlice';
 import { registerProduct } from '../../services/api/productAPI';
-import { useEffect } from 'react';
 
 const ProductRegister = () => {
   const navigate = useNavigate();
@@ -111,21 +110,6 @@ const ProductRegister = () => {
       dispatch(setError(error instanceof Error ? error.message : '상품 등록에 실패했습니다.'));
     }
   };
-
-  // 위치 정보 표시 여부 확인을 위한 로깅
-  useEffect(() => {
-    console.log('상품 등록 폼의 위치 정보:', {
-      위도: registerForm.latitude,
-      경도: registerForm.longitude,
-      주소: registerForm.address,
-      장소명: registerForm.meetingPlace
-    });
-  }, [
-    registerForm.latitude,
-    registerForm.longitude,
-    registerForm.address,
-    registerForm.meetingPlace
-  ]);
 
   return (
     <PRLayout
