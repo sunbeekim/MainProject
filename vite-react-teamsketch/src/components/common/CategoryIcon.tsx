@@ -45,15 +45,15 @@ const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect, category
 
   const getCategoryEmoji = (categoryName: string): string => {
     const emojiMap: { [key: string]: string } = {
-      '운동🏃‍♂️': '🏃‍♂️',
-      '팀스포츠🏆': '🏆',
-      '예술🎨': '🎨',
-      '음악🎵': '🎵',
-      '요리🍽️': '🍽️',
-      '자기계발📚': '📚',
-      '여행🌍': '🌍',
-      '독서📖': '📖',
-      '전체🔍': '🔍'
+      운동: '🏃‍♂️',
+      팀스포츠: '🏆',
+      예술: '🎨',
+      음악: '🎵',
+      요리: '🍽️',
+      자기계발: '📚',
+      여행: '🌍',
+      독서: '📖',
+      전체: '🔍'
     };
     return emojiMap[categoryName] || '🔥';
   };
@@ -80,13 +80,14 @@ const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect, category
           >
             <span className="text-xl">{getCategoryEmoji('전체')}</span>
           </button>
-          <span className={`${getTextSize()} font-medium text-center`}>
-            전체
-          </span>
+          <span className={`${getTextSize()} font-medium text-center`}>전체</span>
         </div>
 
         {categories.map((category) => (
-          <div key={category.categoryId} className="flex-shrink-0 flex flex-col items-center gap-2 p-1">
+          <div
+            key={category.categoryId}
+            className="flex-shrink-0 flex flex-col items-center gap-2 p-1"
+          >
             <button
               onClick={() => handleCategoryClick(category.categoryId, category.categoryName)}
               className={`
