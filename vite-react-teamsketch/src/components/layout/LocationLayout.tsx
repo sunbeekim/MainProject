@@ -6,17 +6,19 @@ interface LocationLayoutProps {
   childrenCenter?: React.ReactNode;
   childrenBottom?: React.ReactNode;
   childrenButton?: React.ReactNode;
+  className?: string;
 }
 
 const TestLocationLayout: React.FC<LocationLayoutProps> = ({
   childrenTop,
   childrenCenter,
   childrenBottom,
-  childrenButton
+  childrenButton,
+  className = "grid-rows-[60px_1fr_auto]"
 }) => {
   return (
-    <div className="h-full w-full bg-white dark:bg-gray-800">
-      <Grid cols={1} className="h-full grid grid-rows-[60px_1fr_auto]">
+    <div className={`h-full w-full bg-white dark:bg-gray-800 ${className}`}>
+      <Grid cols={1} className={`h-full grid ${className}`}>
         {/* 상단 검색창 영역 */}
         <GridItem className="flex items-center justify-center">
           <div className="w-full">{childrenTop}</div>

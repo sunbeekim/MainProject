@@ -66,19 +66,27 @@ const MarketList = () => {
         productData: {
           images: 'imagePaths' in product && Array.isArray(product.imagePaths)
             ? product.imagePaths
-            : ['image' in product ? product.image : ''],
-          mainCategory: 'category' in product ? product.category : '',
-          subCategory: '',
-          dopamine: 'dopamine' in product ? product.dopamine : 0,
-          number: product.id,
+            : ['image' in product ? product.image : ''],         
+          dopamine: 'dopamine' in product ? product.dopamine : 5,
+          id: product.id,
+          email: 'email' in product ? product.email : '',
+          nickname: 'nickname' in product ? product.nickname : '',         
+          thumbnailPath: 'thumbnailPath' in product ? product.thumbnailPath : '',
+          registrationType: 'registrationType' in product ? product.registrationType : '',
+          transactionType: 'transactionType' in product ? product.transactionType : '',
+          meetingPlace: 'meetingPlace' in product ? product.meetingPlace : '',
           description: product.description,
           maxParticipants: 'maxParticipants' in product ? product.maxParticipants : 0,
           currentParticipants: 'currentParticipants' in product ? product.currentParticipants : 0,
-          location: 'location' in product ? product.location : ('meetingPlace' in product ? product.meetingPlace || '' : ''),
-          startDate: 'createdAt' in product ? product.createdAt : '',
+          address: 'address' in product ? product.address : '',
+          startDate: 'startDate' in product ? product.startDate : '',
           endDate: 'endDate' in product ? product.endDate : '',
           title: product.title,
-          price: product.price
+          price: product.price,
+          categoryId: 'categoryId' in product ? product.categoryId : 0,
+          hobbyId: 'hobbyId' in product ? product.hobbyId : 0,
+          latitude: 'latitude' in product ? product.latitude : 0,
+          longitude: 'longitude' in product ? product.longitude : 0
         }
       }
     });
@@ -106,11 +114,11 @@ const MarketList = () => {
                   description={product.description}
                   image={
                     'thumbnailPath' in product && product.thumbnailPath
-                      ? `http://localhost:8081/api/core/market/images/${product.thumbnailPath}`
+                      ? `${product.thumbnailPath}`
                       : ('image' in product ? product.image : '')
                   }
                   price={product.price}
-                  dopamine={'dopamine' in product ? product.dopamine : 0}
+                  dopamine={'dopamine' in product ? product.dopamine : 5}
                   currentParticipants={
                     'currentParticipants' in product ? product.currentParticipants : 0
                   }

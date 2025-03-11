@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import CardFrame from './CardFrame';
 
 interface CameraModalProps {
@@ -21,9 +22,9 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose 
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 bg-black"
+      className="fixed inset-0 z-[9999] bg-black"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -32,7 +33,7 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose 
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 text-white bg-secondary-light rounded-full p-2"
+          className="absolute top-4 right-4 z-[10000] text-white bg-secondary-light rounded-full p-2"
           aria-label="닫기"
         >
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +73,8 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose 
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
