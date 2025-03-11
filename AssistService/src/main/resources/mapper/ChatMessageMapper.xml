@@ -3,15 +3,11 @@
 <mapper namespace="com.example.demo.mapper.ChatMessageMapper">
     <insert id="saveMessage" parameterType="com.example.demo.model.ChatMessage" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO chat_messages (
-            username,
-            role_id,
             message_type,
             content,
             session_id,
             created_at
         ) VALUES (
-            #{username},
-            #{roleId},
             #{messageType},
             #{content},
             #{sessionId},
