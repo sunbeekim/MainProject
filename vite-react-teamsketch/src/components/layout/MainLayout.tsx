@@ -22,6 +22,8 @@ import NotificationList from '../../pages/notification/NotificationList';
 import RegisteredCard from '../../pages/payment/RegisteredCard';
 import CardDetails from '../../pages/payment/CardDetails';
 import TransactionList from '../../pages/Transaction history/TrasactionList';
+import SellList from '../../pages/Transaction history/SellList';
+import BuyList from '../../pages/Transaction history/BuyList';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
@@ -87,6 +89,8 @@ const MainLayout = () => {
           <Route path="/registered-card" element={<RegisteredCard />} />
           <Route path="/card-details/:cardId" element={<CardDetails />} />
           <Route path="/transaction-list" element={<TransactionList />} />
+          <Route path="/sell-list" element={<SellList />} />
+          <Route path="/buy-list" element={<BuyList />} />
          
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />

@@ -81,10 +81,10 @@ const MarketList = () => {
         <h2 className="text-xl font-bold mb-4">
           {selectedCategory ? '카테고리별 상품' : '최신 상품'}
         </h2>
-        <div className="overflow-x-auto no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
-          <div className="flex gap-4 pb-4 min-w-max">
+        <div className="no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10">
             {latestProducts.map((product: ProductType) => (
-              <div key={product.id} className="w-[280px] flex-shrink-0">
+              <div key={product.id} className="w-[280px] flex-shrink-0 ">
                 <Card
                   title={product.title}
                   description={product.description}

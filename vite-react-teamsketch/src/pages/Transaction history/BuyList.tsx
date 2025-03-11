@@ -1,8 +1,25 @@
+import { useNavigate } from "react-router-dom";
+import IList from "../../components/features/list/IList";
 
 const BuyList = () => { 
+    const navigate = useNavigate();
+
+    const handleBackClick =()=> {
+        navigate(-1); 
+    }
+
     return (
-        <div>
-            <h1>구매내역 -상세내역볼수있는 리스트+ 삭제기능추가?</h1>
+        <div className="flex flex-col">
+        {/* 상단 헤더 (고정) */}
+            <div className="bg-[#ECCEF5] p-1 flex items-center justify-between sticky top-0 z-10 w-full">
+            <button onClick={handleBackClick} className="text-white text-xl font-semibold">
+            &#8592;</button>
+          <h1 className="absolute left-1/2 transform -translate-x-1/2 text-[#330019] text-lg font-semibold">
+            구매 내역
+          </h1>
+        </div>
+  
+       <IList/>     
       </div>  
     );
 }
