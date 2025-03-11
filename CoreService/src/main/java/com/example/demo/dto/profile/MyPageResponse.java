@@ -22,4 +22,6 @@ public class MyPageResponse {
     private LocalDateTime lastLoginTime;
     private String profileImageUrl;  // 프로필 이미지 URL
     private String accountStatus;    // 계정 상태
+    private Integer dopamine;        // 도파민 수치 필드 추가
+    private Integer points;          // 활동 포인트 추가
 }
