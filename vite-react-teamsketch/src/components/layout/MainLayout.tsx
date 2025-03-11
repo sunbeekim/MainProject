@@ -21,6 +21,7 @@ import ProfileManage from '../../pages/mypage/ProfileManage';
 import NotificationList from '../../pages/notification/NotificationList';
 import RegisteredCard from '../../pages/payment/RegisteredCard';
 import CardDetails from '../../pages/payment/CardDetails';
+import TransactionList from '../../pages/Transaction history/TrasactionList';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
@@ -85,6 +86,7 @@ const MainLayout = () => {
           <Route path="/product-details" element={<ProductDetails />} />
           <Route path="/registered-card" element={<RegisteredCard />} />
           <Route path="/card-details/:cardId" element={<CardDetails />} />
+          <Route path="/transaction-list" element={<TransactionList />} />
          
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />

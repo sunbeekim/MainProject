@@ -35,23 +35,7 @@ const MarketList = () => {
     staleTime: 300000
   });
 
-  // 추천 상품 Query (동일한 API 사용)
-  const { data: recommendedProducts = [], isLoading: isRecommendedLoading } = useQuery<ProductType[]>({
-    queryKey: ['recommendedProducts'],
-    queryFn: async () => {
-      try {
-        const response = await getProducts();
-        return response || [];
-      } catch (error) {
-        console.error('추천 상품 API 요청 실패:', error);
-        const mockResponse = await mockAPI.market.getRecommendedProducts();
-        return mockResponse.data.products;
-      }
-    },
-    gcTime: 600000,
-    staleTime: 300000
-  });
-
+ 
   const handleNavigateToProductRegister = () => {
     navigate('/product/register');
   };
@@ -84,7 +68,7 @@ const MarketList = () => {
     });
   };
 
-  if (isLatestLoading || isRecommendedLoading) {
+  if (isLatestLoading ) {
     return <div className="container mx-auto px-4 py-6">로딩 중...</div>;
   }
 
@@ -124,37 +108,6 @@ const MarketList = () => {
         </div>
       </div>
 
-      {/* 추천 상품 - 카테고리가 선택되지 않았을 때만 표시 */}
-      {!selectedCategory && (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">추천 상품</h2>
-          <div className="overflow-x-auto no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
-            <div className="flex gap-4 pb-4 min-w-max">
-              {recommendedProducts.map((product: ProductType) => (
-                <div key={product.id} className="w-[280px] flex-shrink-0">
-                  <Card
-                    title={product.title}
-                    description={product.description}
-                    image={
-                      'thumbnailPath' in product && product.thumbnailPath
-                        ? `http://localhost:8080/api/core/market/images${product.thumbnailPath}`
-                        : ('image' in product ? product.image : '')
-                    }
-                    price={product.price}
-                    dopamine={'dopamine' in product ? product.dopamine : 0}
-                    currentParticipants={
-                      'currentParticipants' in product ? product.currentParticipants : 0
-                    }
-                    maxParticipants={'maxParticipants' in product ? product.maxParticipants : 0}
-                    location={'location' in product ? product.location : ('meetingPlace' in product ? product.meetingPlace || '' : '')}
-                    onClick={() => handleProductClick(product)}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       <FloatingButton
         onClick={handleNavigateToProductRegister}

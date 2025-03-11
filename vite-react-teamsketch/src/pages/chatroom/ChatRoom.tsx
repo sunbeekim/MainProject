@@ -19,8 +19,18 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname,imageUrl }) => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [show, setShow] = useState(true);
+  
 
 
+  const handleJoinClick = () => {
+    if (show) {
+    console.log("함께하기 버튼 클릭됨");
+    setShow(false); // show 값 false로 변경 (신청 불가 상태)
+      setIsDisabled(true); // 버튼 비활성화
+    }
+  };
 
    const handleBackClick = () => {
     navigate(-1); // 뒤로가기 버튼 클릭 시 이전 페이지로 이동
@@ -44,12 +54,13 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname,imageUrl }) => {
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;//최신 메시지로
+      console.log("isDisabled updated: ", isDisabled);
     }
-  }, [messages]); //메시지가 변경될 때마다 실행
-  
+  }, [messages,isDisabled]); 
 
+  
   return (
-    <div className="flex flex-col h-screen ">
+    <div className="flex flex-col h-screen relative">
     {/* 상단 헤더 (고정) */}
       <div className="bg-[#ECCEF5] p-1 text-white flex items-center justify-between shadow-md sticky top-0 z-10 w-full">
          {/* 뒤로가기 버튼 */}
@@ -66,7 +77,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname,imageUrl }) => {
       </div>
 
        {/* 채팅 메시지 목록 */}
-       <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto bg-gray-100 h-full">
+       <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto bg-gray-100 h-[calc(100vh-150px)] ">
         {messages.map((msg, index) => (
           <div key={index} className="mb-5">
             {/* 파일이 있을 경우, 파일을 렌더링 */}
@@ -98,12 +109,25 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname,imageUrl }) => {
               </button>
             </div>
         ))}
+       
       </div>
-      <div className="sticky bottom-0 bg-white shadow-md p-2">
-       {/* 메시지 입력창 */}
-        <MessageInput onSendMessage={handleSendMessage} />
-        </div>
-    </div>
+    
+    <div className="flex items-center fixed bottom-0 left-0 right-0 bg-white shadow-md p-4">
+  {/* 함께하기 버튼*/}
+  <button 
+    onClick={handleJoinClick} 
+   className="absolute left-1/2 transform -translate-x-1/2 -top-14 text-primary-dark border border-primary-dark px-4 py-2 rounded-md w-32 h-10 bg-transparent hover:bg-secondary z-10 disabled:hover:bg-transparent"
+   disabled={isDisabled}
+  >
+    함께하기
+  </button>
+
+  {/* 메시지 입력창 */}
+  <MessageInput onSendMessage={handleSendMessage} />
+      </div>
+    
+  </div>
+      
   );
 };
 
