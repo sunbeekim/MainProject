@@ -44,8 +44,9 @@ public class ProfileService {
                     .build();
         }
         
-        // 도파민 수치 조회
+        // 도파민 수치와 활동 포인트 조회
         Integer dopamine = userMapper.getUserDopamine(email);
+        Integer points = userMapper.getUserPoints(email);
         
         // 사용자 취미 정보 조회
         List<UserHobby> userHobbies = hobbyService.getUserHobbies(email);
@@ -70,7 +71,8 @@ public class ProfileService {
                 .accountStatus(user.getAccountStatus())
                 .signupDate(user.getSignupDate())
                 .lastLoginTime(user.getLastLoginTime())
-                .dopamine(dopamine) // 도파민 수치 포함
+                .dopamine(dopamine) // 도파민 수치
+                .points(points)     // 활동 포인트 추가
                 .hobbies(hobbyInfoList)
                 .build();
     }
@@ -114,8 +116,9 @@ public class ProfileService {
                     .build();
         }
         
-        // 도파민 수치 조회
+        // 도파민 수치와 활동 포인트 조회
         Integer dopamine = userMapper.getUserDopamine(user.getEmail());
+        Integer points = userMapper.getUserPoints(user.getEmail());
         
         // 취미 정보 조회
         List<UserHobby> userHobbies = hobbyService.getUserHobbies(user.getEmail());
@@ -133,7 +136,8 @@ public class ProfileService {
                 .nickname(user.getNickname())
                 .profileImageUrl(profileImageUrl)
                 .bio(user.getBio())
-                .dopamine(dopamine) // 도파민 수치 포함
+                .dopamine(dopamine) // 도파민 수치
+                .points(points)     // 활동 포인트 추가
                 .hobbies(hobbyInfoList)
                 .build();
     }
@@ -329,8 +333,9 @@ public class ProfileService {
                     .build();
         }
         
-        // 도파민 수치 조회
+        // 도파민 수치와 활동 포인트 조회
         Integer dopamine = userMapper.getUserDopamine(email);
+        Integer points = userMapper.getUserPoints(email);
         
         // 프로필 이미지 URL 생성
         String profileImageUrl = profileImageService.getProfileImageUrl(email);
@@ -345,7 +350,8 @@ public class ProfileService {
                 .lastLoginTime(user.getLastLoginTime())
                 .profileImageUrl(profileImageUrl)
                 .accountStatus(user.getAccountStatus())
-                .dopamine(dopamine) // 도파민 수치 포함
+                .dopamine(dopamine) // 도파민 수치
+                .points(points)     // 활동 포인트 추가
                 .build();
     }
     

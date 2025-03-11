@@ -70,8 +70,15 @@ public interface UserMapper {
     Integer getUserDopamine(@Param("email") String email);
 
     /**
-     * 사용자의 초기 도파민 수치 설정
+     * 사용자의 활동 포인트 조회
      */
-    int initializeUserDopamine(@Param("email") String email, @Param("dopamineValue") int dopamineValue);
+    Integer getUserPoints(@Param("email") String email);
+
+    /**
+     * 사용자의 초기 도파민 수치와 활동 포인트 설정
+     */
+    int initializeUserActivity(@Param("email") String email, 
+                              @Param("dopamineValue") int dopamineValue, 
+                              @Param("pointsValue") int pointsValue);
 }
 
