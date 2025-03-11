@@ -146,35 +146,55 @@ public class AuthService {
                 .build();
 
         // 사용자 등록
-        userMapper.insertUser(user);
+        int result = userMapper.insertUser(user);
 
-        // 계정 정보 추가
-        UserAccountInfo accountInfo = UserAccountInfo.builder()
-                .email(user.getEmail())
-                .accountStatus("Active")
-                .authority("1")  // 일반 사용자
-                .authorityName("Regular User")
-                .build();
+        if (result > 0) {
+            log.info("유저 등록 성공: {}", request.getEmail());
 
-        userMapper.insertUserAccountInfo(accountInfo);
+            // 초기 도파민 수치 설정 (50)
+            int initialDopamine = 50;
+            userMapper.initializeUserDopamine(request.getEmail(), initialDopamine);
 
-        // 취미 및 카테고리 등록
-        try {
+            // 취미 정보가 있다면 등록
             if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
-                hobbyService.registerUserHobbies(user.getEmail(), request.getHobbies());
-                log.info("사용자 취미 등록 완료 - 이메일: {}, 취미 개수: {}", 
-                         user.getEmail(), request.getHobbies().size());
+                hobbyService.registerUserHobbies(request.getEmail(), request.getHobbies());
             }
-        } catch (Exception e) {
-            log.error("취미 등록 중 오류 발생 - 이메일: {}, 오류: {}", user.getEmail(), e.getMessage());
-            // 취미 등록 실패해도 회원가입은 성공으로 처리
-        }
 
-        return SignupResponse.builder()
-                .success(true)
-                .email(user.getEmail())
-                .message("회원가입이 완료되었습니다.")
-                .build();
+            return SignupResponse.builder()
+                    .success(true)
+                    .email(request.getEmail())
+                    .message("회원가입에 성공하였습니다.")
+                    .initialDopamine(initialDopamine) // 초기 도파민 수치 포함
+                    .build();
+        } else {
+            // 계정 정보 추가
+            UserAccountInfo accountInfo = UserAccountInfo.builder()
+                    .email(user.getEmail())
+                    .accountStatus("Active")
+                    .authority("1")  // 일반 사용자
+                    .authorityName("Regular User")
+                    .build();
+
+            userMapper.insertUserAccountInfo(accountInfo);
+
+            // 취미 및 카테고리 등록
+            try {
+                if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+                    hobbyService.registerUserHobbies(user.getEmail(), request.getHobbies());
+                    log.info("사용자 취미 등록 완료 - 이메일: {}, 취미 개수: {}", 
+                             user.getEmail(), request.getHobbies().size());
+                }
+            } catch (Exception e) {
+                log.error("취미 등록 중 오류 발생 - 이메일: {}, 오류: {}", user.getEmail(), e.getMessage());
+                // 취미 등록 실패해도 회원가입은 성공으로 처리
+            }
+
+            return SignupResponse.builder()
+                    .success(true)
+                    .email(user.getEmail())
+                    .message("회원가입이 완료되었습니다.")
+                    .build();
+        }
     }
 
     /**

@@ -13,4 +13,5 @@ public class SignupResponse {
     private boolean success;
     private String email;
     private String message;
+    private Integer initialDopamine; // 초기 도파민 수치 필드 추가
 }

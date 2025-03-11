@@ -37,6 +37,15 @@ public class HobbyController {
     }
     
     /**
+     * 모든 취미 목록 조회 (카테고리 정보 미포함)
+     */
+    @GetMapping("/simple")
+    public ResponseEntity<ApiResponse<List<Hobby>>> getAllHobbiesSimple() {
+        List<Hobby> hobbies = hobbyService.getAllHobbies();
+        return ResponseEntity.ok(ApiResponse.success(hobbies));
+    }
+    
+    /**
      * 모든 카테고리 목록 조회
      */
     @GetMapping("/categories")

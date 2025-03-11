@@ -28,6 +28,7 @@ public class ProfileResponse {
     private String accountStatus;
     private LocalDateTime signupDate;
     private LocalDateTime lastLoginTime;
+    private Integer dopamine; // 도파민 수치 필드 추가
     
     // 사용자 취미 정보
     private List<HobbyInfo> hobbies;

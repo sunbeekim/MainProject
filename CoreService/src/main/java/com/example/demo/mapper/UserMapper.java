@@ -4,8 +4,10 @@ import com.example.demo.model.User;
 import com.example.demo.model.UserAccountInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 @Mapper
+@Repository
 public interface UserMapper {
 
     // 사용자 등록
@@ -61,5 +63,15 @@ public interface UserMapper {
     
     // 프로필 이미지 경로 업데이트
     int updateProfileImagePath(@Param("email") String email, @Param("profileImagePath") String profileImagePath);
+    
+    /**
+     * 사용자의 도파민 수치 조회
+     */
+    Integer getUserDopamine(@Param("email") String email);
+
+    /**
+     * 사용자의 초기 도파민 수치 설정
+     */
+    int initializeUserDopamine(@Param("email") String email, @Param("dopamineValue") int dopamineValue);
 }
 

@@ -35,6 +35,7 @@ public class SecurityConfig {
                             "/api/core/auth/signup", 
                             "/api/core/auth/login",
                             "/api/core/hobbies",
+                            "/api/core/hobbies/simple",  // 추가된 API 경로
                             "/api/core/hobbies/categories",
                             "/api/core/hobbies/*/categories",
                             "/api/core/hobbies/categories/*",  // 카테고리별 취미 목록 조회 접근 허용
