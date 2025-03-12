@@ -58,7 +58,7 @@ const MyPage = () => {
     {
       icon: <FaBoxOpen size={20} />,
       label: '상품 관리',
-      color: 'hover:bg-purple-50 dark:hover:bg-purple-900/30'
+      color: 'hover:bg-purple-50 dark:hover:bg-purple-900/30'      
     },
     {
       icon: <FaCreditCard size={20} />,
