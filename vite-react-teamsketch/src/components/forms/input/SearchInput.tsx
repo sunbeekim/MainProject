@@ -22,7 +22,7 @@ const SearchInput = ({ onSearch, ...props }: SearchInputProps) => {
       type="search"
       variant={props.variant || 'default'}
       placeholder={props.placeholder || '검색어를 입력하세요...'}
-      className={`pl-10 ${props.className || ''}`}
+      className={`pl-10 ${props.className || 'boder-primary-500 '}`}
       onChange={(e) => {
         props.onChange?.(e);
         onSearch?.(e.target.value);

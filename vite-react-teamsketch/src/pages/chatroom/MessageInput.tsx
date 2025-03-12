@@ -74,7 +74,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
           </button>
         </div>
       )}
-      <div className="sticky bottom-0 left-0 right-0 p-2 w-full min-h-[50px]"></div>
+      <div className="sticky bottom-0 left-0 right-0 w-full"></div>
       <div className="flex items-center fixed bottom-0 left-0 right-0 bg-white shadow-md p-7">
         {/* 파일 선택 버튼 */}
         <label htmlFor="file-upload" className="p-2 rounded-full hover:bg-primary-light w-7 h-7 flex items-center justify-center cursor-pointer">
@@ -101,7 +101,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
         {/* 전송 버튼 */}
         <button 
           onClick={handleSend}
-          className="bg-[#FBCCC5] hover:bg-[#F9B0BA] text-white px-4 py-2 rounded-lg"
+          className="bg-primary-light hover:bg-primary-dark text-white px-4 py-2 rounded-lg"
         >
           전송
         </button>

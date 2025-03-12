@@ -17,7 +17,7 @@ const ListItem: React.FC<ListItemProps> = ({nickname, title, description, points
   };
 
     return (
-        <div className="w-[600px] h-[150px] bg-white rounded-2xl shadow-lg flex items-center  p-4 gap-4">
+        <div className="w-full h-[150px] bg-white rounded-2xl shadow-lg flex items-center  p-4 gap-4">
        
         <div className="w-[100px] h-[100px] bg-gray-200 rounded-lg">
           <img src="https://picsum.photos/600/400" alt="이미지" className="item-image" />

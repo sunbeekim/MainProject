@@ -65,7 +65,7 @@ const Footer = () => {
     return null; // 채팅방 페이지에서는 Footer를 렌더링하지 않음
   }
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-[#E6CCFF] dark:bg-[#2D2D2D] shadow-lg backdrop-blur-md bg-opacity-95 dark:bg-opacity-90">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-primary-500 dark:bg-background-dark dark:bg-opacity-90">
       <nav
         className="container mx-auto flex justify-around items-center px-3 py-2"
         id="main-footer"
@@ -79,8 +79,8 @@ const Footer = () => {
             <div
               className={`text-3xl ${
                 location.pathname === getPathForLabel(item.label)
-                  ? 'text-[#660033]'
-                  : 'text-[#ffffff]/70'
+                  ? 'text-primary-dark'
+                  : 'text-light'
               } group-hover:scale-110 transition-transform duration-300`}
             >
               {item.icon}

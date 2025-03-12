@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
   setCategories,
-  setHobbies,
   setLoading,
   setError,
   setConstantCategories,
@@ -15,7 +14,6 @@ export const useCategories = () => {
   const dispatch = useAppDispatch();
   const {
     categories,
-    hobbies,
     selectedCategoryId,
     loading,
     error,
@@ -40,23 +38,12 @@ export const useCategories = () => {
     }
   };
 
-  const fetchHobbiesByCategory = async (categoryId: number) => {
-    try {
-      dispatch(setLoading(true));
-      const response = await axiosInstance.get(
-        apiConfig.endpoints.core.getHobbiesByCategory(categoryId)
-      );
-      if (response.data.status === 'success') {
-        dispatch(setHobbies(response.data.data));
-      }
-    } catch (error) {
-      dispatch(
-        setError(error instanceof Error ? error.message : '취미 로딩 중 오류가 발생했습니다.')
-      );
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
+  // const fetchHobbiesByCategory = async (categoryId: number) => {   
+  //   const response = await axiosInstance.get(
+  //     apiConfig.endpoints.core.getHobbiesByCategory(categoryId)
+  //   );
+  //   return response.data.data;
+  // };
 
   const fetchAllHobbies = async () => {
     try {
@@ -85,13 +72,10 @@ export const useCategories = () => {
 
   return {
     categories,
-    hobbies,
     selectedCategoryId,
     loading,
     error,
     constantCategories,
-    constantHobbies,
-    fetchHobbiesByCategory,
-    fetchAllHobbies
+    constantHobbies
   };
 };

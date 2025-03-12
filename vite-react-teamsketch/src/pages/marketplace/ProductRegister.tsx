@@ -25,6 +25,7 @@ const ProductRegister = () => {
   const dispatch = useAppDispatch();
   const { registerForm, isLoading } = useAppSelector((state) => state.product);
   const { user } = useAppSelector((state) => state.user);
+  console.log(registerForm);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,8 +39,7 @@ const ProductRegister = () => {
   const handleInterestSelect = (categoryId: number) => {
     dispatch(
       updateProductForm({
-        categoryId,
-        hobbyId: undefined
+        categoryId,        
       })
     );
   };
@@ -321,7 +321,7 @@ const ProductRegister = () => {
       submitButton={
         <BaseButton
           variant="primary"
-          className="w-full"
+          className="w-full "
           onClick={handleSubmit}
           disabled={isLoading}
         >

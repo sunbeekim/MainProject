@@ -152,9 +152,8 @@ const Login = () => {
           }
           loginButton={
             <Button
-              type="submit"
-              variant="primary"
-              className="w-full"
+              type="submit"             
+              className="w-full bg-primary-500 text-white"
               data-testid="login-button"
               disabled={isLoading}
             >
@@ -164,7 +163,7 @@ const Login = () => {
           divider={
             <div className="relative my-6 h-px bg-gray-300 dark:bg-gray-700">
               <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 px-4 text-sm text-gray-500">
-                or
+                OR
               </span>
             </div>
           }
@@ -187,7 +186,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate('/signup')}
-                className="text-primary-light hover:text-primary-dark"
+                className="text-primary-500 shadow-none hover:text-primary-dark"
               >
                 회원가입
               </button>
