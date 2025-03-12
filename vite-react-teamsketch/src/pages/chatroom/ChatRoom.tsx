@@ -72,8 +72,16 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname,imageUrl }) => {
           <span className="text-lg font-semibold">닉네임{nickname}</span>
         </div>
 
-        <div><img src={imageUrl || "https://picsum.photos/600/400"}  alt="프로필 사진" 
-  className="w-8 h-8 rounded-full object-cover"></img></div> {/* 뒤로가기 버튼과 상대 정보 외의 공간 */}
+        <div className="flex items-center gap-2">
+           {/* 함께하기 버튼*/}
+        <button 
+          onClick={handleJoinClick} 
+        className="text-white px-4 py-2 rounded-md bg-transparent hover:bg-secondary z-10 disabled:hover:bg-transparent "
+        disabled={isDisabled}
+        > 함께하기 </button>
+              <div><img src={imageUrl || "https://picsum.photos/600/400"}  alt="프로필 사진" 
+        className="w-8 h-8 rounded-full object-cover mr-4"></img></div> {/* 뒤로가기 버튼과 상대 정보 외의 공간 */}
+        </div>
       </div>
 
        {/* 채팅 메시지 목록 */}
@@ -97,6 +105,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname,imageUrl }) => {
             ) : (
               <div className="bg-white p-3 rounded-lg shadow-md w-max">{msg.text}</div>//텍스트 메시지
             )}
+
             {/* 메시지 전송 시간 표시 */}
             <div className="text-xs text-gray-500 mt-2">{msg.timestamp}</div>
           
@@ -113,19 +122,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname,imageUrl }) => {
       </div>
     
     <div className="flex items-center fixed bottom-0 left-0 right-0 bg-white shadow-md p-4">
-  {/* 함께하기 버튼*/}
-  <button 
-    onClick={handleJoinClick} 
-   className="absolute left-1/2 transform -translate-x-1/2 -top-14 text-primary-dark border border-primary-dark px-4 py-2 rounded-md w-32 h-10 bg-transparent hover:bg-secondary z-10 disabled:hover:bg-transparent"
-   disabled={isDisabled}
-  >
-    함께하기
-  </button>
-
   {/* 메시지 입력창 */}
   <MessageInput onSendMessage={handleSendMessage} />
-      </div>
-    
+    </div>    
   </div>
       
   );

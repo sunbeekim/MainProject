@@ -101,7 +101,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
         {/* 전송 버튼 */}
         <button 
           onClick={handleSend}
-          className="bg-[#FBCCC5] hover:bg-[#F9B0BA] text-white px-4 py-2 rounded-lg"
+          className="bg-[#FBCCC5] hover:bg-[#F9B0BA] text-white px-4 py-2 rounded-full"
         >
           전송
         </button>
