@@ -211,12 +211,12 @@ const Login = () => {
             disabled={isLoading}
             error={validationErrors.password}
           />
-        </LoginLayout>
-        {error && (
+          {error && (
           <div className="text-red-500 text-sm text-center mt-2" role="alert">
             {error}
           </div>
         )}
+        </LoginLayout>        
       </form>
     </>
   );
