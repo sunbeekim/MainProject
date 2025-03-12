@@ -22,41 +22,49 @@ const LoginLayout = ({
   signupLink
 }: LoginLayoutProps) => {
   return (
-    <div className="h-full w-full bg-white dark:bg-gray-800">
-      <Grid
-        cols={1}
-        gap="sm"
-        className="h-full p-3 sm:p-4 lg:p-8 grid grid-rows-[1fr_2fr_1fr_1fr_1fr_1fr_1fr] items-center"
-      >
+    <div className="h-screen w-full bg-white dark:bg-gray-800">
+      <Grid cols={1} gap="sm" className="h-full grid-rows-[1fr_2fr_1fr] items-center">
         {/* 로고 및 타이틀 */}
         <GridItem className="flex items-center justify-center">
-          <div className="text-sm sm:text-base lg:text-lg">{title}</div>
+          <div className="text-2xl font-bold text-primary-500 dark:text-primary-400">
+            {title}
+          </div>
         </GridItem>
 
         {/* 메인 폼 */}
         <GridItem className="flex items-center justify-center">
-          <div className="w-[70%] flex flex-col gap-2">{children}</div>
+          <div className="w-[70%] sm:w-[60%] md:w-[50%] lg:w-[40%] space-y-6">
+            <div className="space-y-4">
+              {children}
+            </div>
+
+            {/* 비밀번호 찾기 */}
+            <div className="flex justify-end text-sm text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+              {forgotPassword}
+            </div>
+
+            {/* 로그인 버튼 */}
+            <div className="pt-2">
+              {loginButton}
+            </div>
+
+            {/* 구분선 */}
+            <div className="relative">
+              {divider}
+            </div>
+
+            {/* 소셜 로그인 버튼들 */}
+            <div className="space-y-3">
+              {socialLogins}
+            </div>
+          </div>
         </GridItem>
-
-        {/* 비밀번호 찾기 */}
-        <GridItem className="flex items-center justify-end w-[70%] mx-auto">
-          <div className="text-xs sm:text-sm">{forgotPassword}</div>
-        </GridItem>
-
-        {/* 로그인 버튼 */}
-        <GridItem className="flex items-center justify-center">
-          <div className="w-[70%] text-sm sm:text-base">{loginButton}</div>
-        </GridItem>
-
-        {/* 구분선 */}
-        <GridItem className="flex items-center justify-center">{divider}</GridItem>
-
-        {/* 소셜 로그인 버튼들 */}
-        <GridItem className="flex items-center justify-center">{socialLogins}</GridItem>
 
         {/* 회원가입 링크 */}
         <GridItem className="flex items-center justify-center">
-          <div className="text-xs sm:text-sm">{signupLink}</div>
+          <div className="text-center text-sm text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+            {signupLink}
+          </div>
         </GridItem>
       </Grid>
     </div>

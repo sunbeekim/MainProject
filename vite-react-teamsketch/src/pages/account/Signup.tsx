@@ -130,7 +130,7 @@ const Signup = () => {
   return (
     <form className="h-full w-full bg-white dark:bg-gray-800 flex flex-col" onSubmit={handleSubmit}>
       <SignupLayout
-        title={<h1 className="text-xl font-bold">어서오세요. 환영합니다!</h1>}
+        title={<h1 className="text-xl font-bold">Haru에 오신것을 환영합니다!</h1>}
         signupButton={
           <Button type="submit" className="w-full py-2.5 bg-primary-500 text-sm sm:text-base">
             회원가입
@@ -150,11 +150,7 @@ const Signup = () => {
           </div>
         }
       >
-        {error && (
-          <div className="text-red-500 text-sm text-center mb-2" role="alert">
-            {error}
-          </div>
-        )}
+        
 
         <div className="flex flex-col gap-2">
           <EmailInput
@@ -216,6 +212,11 @@ const Signup = () => {
             </div>
           </div>
         </div>
+        {error && (
+          <div className="text-red-500 text-sm text-center mb-2" role="alert">
+            {error}
+          </div>
+        )}
       </SignupLayout>
     </form>
   );
