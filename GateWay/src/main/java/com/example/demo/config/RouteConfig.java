@@ -13,7 +13,7 @@ public class RouteConfig {
     private JwtAuthenticationFilter jwtFilter;
 
     
-    private String activeProfile = "local";
+    private String activeProfile = "prod";
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
