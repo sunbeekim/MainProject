@@ -10,7 +10,8 @@ import signupReducer from './slices/signupSlice';
 import loadingReducer from './slices/loadingSlice';
 import mapReducer from './slices/mapSlice';
 import userReducer from './slices/userSlice';
-
+import categoryReducer from './slices/categorySlice';
+import productReducer from './slices/productSlice';
 // `combineReducers`를 사용하여 Redux Reducer 결합
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -19,7 +20,9 @@ const rootReducer = combineReducers({
   signup: signupReducer,
   loading: loadingReducer,
   map: mapReducer,
-  user: userReducer // user 상태를 persist에 저장
+  user: userReducer, // user 상태를 persist에 저장
+  category: categoryReducer, // category 상태를 persist에 저장
+  product: productReducer // product 상태를 persist에 저장
 });
 
 // Redux Persist 설정

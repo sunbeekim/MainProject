@@ -169,4 +169,34 @@
         WHERE email = #{email}
     </update>
 
+    <!-- 사용자의 초기 도파민 수치 설정 -->
+    <insert id="initializeUserDopamine">
+        INSERT INTO PointsDopamineActivity (email, points, dopamine, point_dopamine_activity_time)
+        VALUES (#{email}, 0, #{dopamineValue}, NOW())
+    </insert>
+
+    <!-- 사용자의 도파민 수치 조회 -->
+    <select id="getUserDopamine" parameterType="string" resultType="int">
+        SELECT dopamine
+        FROM PointsDopamineActivity
+        WHERE email = #{email}
+        ORDER BY point_dopamine_activity_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 사용자의 활동 포인트 조회 -->
+    <select id="getUserPoints" parameterType="string" resultType="int">
+        SELECT points
+        FROM PointsDopamineActivity
+        WHERE email = #{email}
+        ORDER BY point_dopamine_activity_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 사용자의 초기 도파민 수치와 활동 포인트 설정 -->
+    <insert id="initializeUserActivity">
+        INSERT INTO PointsDopamineActivity (email, points, dopamine, point_dopamine_activity_time)
+        VALUES (#{email}, #{pointsValue}, #{dopamineValue}, NOW())
+    </insert>
+
 </mapper>

@@ -4,9 +4,8 @@ import MarketList from '../../pages/marketplace/MarketList';
 import Login from '../../pages/account/Login';
 import Signup from '../../pages/account/Signup';
 import ServiceChat from '../../pages/mypage/AIChatBot';
-import Location from '../../pages/map/Location';
+import ShareLocationMap from '../../pages/map/ShareLocationMap';
 import MyPage from '../../pages/mypage/MyPage';
-import Requests from '../../pages/trading/Requests';
 import Setting from '../../pages/mypage/Setting';
 import ForgotPassword from '../../pages/account/ForgotPassword';
 import ProductRegister from '../../pages/marketplace/ProductRegister';
@@ -15,20 +14,22 @@ import VerficationCode from '../../pages/account/VerificationCode';
 import ResetPassword from '../../pages/account/ResetPassword';
 import ChatList from '../../pages/chatroom/ChatList';
 import ChatRoom from '../../pages/chatroom/ChatRoom';
+import ProdLocationMap from '../../pages/marketplace/ProdLocationMap';
+import ChangePassword from '../../pages/account/ChangePassword';
+import ProductDetails from '../../pages/marketplace/ProductDetails';
+import ProfileManage from '../../pages/mypage/ProfileManage';
+import NotificationList from '../../pages/notification/NotificationList';
+import RegisteredCard from '../../pages/payment/RegisteredCard';
+import CardDetails from '../../pages/payment/CardDetails';
+import TransactionList from '../../pages/Transaction history/TrasactionList';
+import SellList from '../../pages/Transaction history/SellList';
+import BuyList from '../../pages/Transaction history/BuyList';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
-import TestMarketplace from '../../testpages/TestMarketplace';
 import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
-import TestProductDetails from '../../testpages/TestProductDetails';
 import TestAPI from '../../testpages/TestAPI';
-import TestLocation from '../../testpages/TestLocation';
-import TestLocationLayout from '../../testpages/TestLocationLayout';
-import TestSearchLocation from '../../testpages/TestSearchLocation';
-import TestOpenMap from '../../testpages/TestOpenMap';
-import TestMyPageLayout from '../../testpages/TestMyPageLayout';
-import TestMyPage from '../../testpages/TestMyPage';
-import TestProfileManage from '../../testpages/TestProfileManage';
+import TestGrid from '../../testpages/TestGrid';
 
 const MainLayout = () => {
   const [footerHeight, setFooterHeight] = useState<number>(0);
@@ -70,32 +71,33 @@ const MainLayout = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/servicechat" element={<ServiceChat />} />
-          <Route path="/location" element={<Location />} />
+          <Route path="/location" element={<ShareLocationMap />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/requests" element={<Requests />} />
+          <Route path="/notification" element={<NotificationList />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/product/register" element={<ProductRegister />} />
           <Route path="/verify-method" element={<VerifyMethod />} />
-          <Route path="/reset-password" element={<ResetPassword/>} />
-          <Route path="/verfication-code" element={<VerficationCode/>} />
-          <Route path="/chat-list" element={<ChatList/>} />
-          <Route path="/chat/:nickname" element={<ChatRoom nickname=""/>} />
-
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verfication-code" element={<VerficationCode />} />
+          <Route path="/chat-list" element={<ChatList />} />
+          <Route path="/product/location" element={<ProdLocationMap />} />
+          <Route path="/chat/:email" element={<ChatRoom />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/profile-manage" element={<ProfileManage />} />
+          <Route path="/product-details" element={<ProductDetails />} />
+          <Route path="/registered-card" element={<RegisteredCard />} />
+          <Route path="/card-details/:cardId" element={<CardDetails />} />
+          <Route path="/transaction-list" element={<TransactionList />} />
+          <Route path="/sell-list" element={<SellList />} />
+          <Route path="/buy-list" element={<BuyList />} />
+         
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
-          <Route path="/test/marketplace" element={<TestMarketplace />} />
-          <Route path="/test/productdetails" element={<TestProductDetails />} />
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
           <Route path="/test/api" element={<TestAPI />} />
-          <Route path="/test/location" element={<TestLocation />} />
-          <Route path="/test/locationlayout" element={<TestLocationLayout />} />
-          <Route path="/test/searchlocation" element={<TestSearchLocation />} />
-          <Route path="/test/openmap" element={<TestOpenMap />} />
-          <Route path="/test/mypagelayout" element={<TestMyPageLayout />} />
-          <Route path="/test/mypage" element={<TestMyPage />} />
-          <Route path="/test/profilemanage" element={<TestProfileManage />} />
+          <Route path="/test/grid" element={<TestGrid />} />
         </Routes>
       </div>
     </main>

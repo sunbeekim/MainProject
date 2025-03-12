@@ -1,209 +1,334 @@
-import React, { useState } from "react";
 import TextInput from '../../components/forms/input/TextInput';
-import RadioButton from '../../components/common/RadioButton'; 
-import InterestSelect from '../../components/forms/select/InterestSelect'; 
-import Button from '../../components/common/Button'; 
-import SignupLayout from "../../components/layout/SignupLayout";
-import ImageSelector from '../../components/features/upload/ImageSelector';
+
+import RadioButton from '../../components/common/RadioButton';
+import InterestSelect from '../../components/forms/select/InterestSelect';
+import ImageUpload from '../../components/features/upload/ImageUpload';
+import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
+import PRLayout from '../../components/layout/PRLayout';
+import { useNavigate } from 'react-router-dom';
+import BaseLabelBox from '../../components/common/BaseLabelBox';
+import HobbySelect from '../../components/forms/select/HobbySelect';
+import BaseButton from '../../components/common/BaseButton';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import DaySelect from '../../components/forms/radiobutton/DaySelect';
+import {
+  updateProductForm,
+  addProductImage,
+  removeProductImage,
+  resetProductForm,
+  setError
+} from '../../store/slices/productSlice';
+import { registerProduct } from '../../services/api/productAPI';
 
 const ProductRegister = () => {
-  const [productData, setProductData] = useState({
-    title: '',
-    price: '',
-    category: '', 
-    transactionType: '', 
-    registrationType: '', 
-    description: '',
-    location: '',
-    startDate: '',
-    endDate: '',
-    images:[] as File [],
-  });
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { registerForm, isLoading } = useAppSelector((state) => state.product);
+  const { user } = useAppSelector((state) => state.user);
+  console.log(registerForm);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setProductData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    dispatch(updateProductForm({ [name]: value }));
   };
 
   const handleRadioButtonChange = (field: string, value: string) => {
-    setProductData((prevState) => ({
-      ...prevState,
-      [field]: value,
-    }));
+    dispatch(updateProductForm({ [field]: value }));
   };
 
-  const handleInterestSelect = (value: string) => {
-    setProductData((prevState) => ({
-      ...prevState,
-      category: value,
-    }));
+  const handleInterestSelect = (categoryId: number) => {
+    dispatch(
+      updateProductForm({
+        categoryId,        
+      })
+    );
   };
 
-  const handleFileSelect = (file: File) => {
-    setProductData((prevState) => ({
-      ...prevState,
-      images: [...prevState.images, file], 
-    }));
+  const handleHobbySelect = (categoryId: number, hobbyId: number) => {
+    dispatch(updateProductForm({ hobbyId: hobbyId, categoryId: categoryId }));
   };
 
-  const handleLocationClick = () => {
-    alert("장소 지정하는 기능 구현"); 
+  const handleFileUpload = async (formData: FormData): Promise<void> => {
+    const file = formData.get('file') as File;
+    if (file) {
+      dispatch(addProductImage(file));
+    }
   };
-  const handleSubmit = () => {
-    console.log("등록하기 버튼 클릭됨", productData);
-   
+
+  const handleRemoveImage = (index: number) => {
+    dispatch(removeProductImage(index));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      if (!user?.email) {
+        throw new Error('로그인이 필요합니다.');
+      }
+
+      // 필수 필드 검증
+      if (
+        !registerForm.title ||
+        !registerForm.description ||
+        !registerForm.price ||
+        !registerForm.categoryId ||
+        !registerForm.transactionType ||
+        !registerForm.registrationType
+      ) {
+        throw new Error('필수 항목을 모두 입력해주세요.');
+      }
+
+      // 대면 거래인 경우 위치 정보 검증
+      if (
+        registerForm.transactionType === '대면' &&
+        (!registerForm.meetingPlace ||
+          !registerForm.latitude ||
+          !registerForm.longitude ||
+          !registerForm.address)
+      ) {
+        throw new Error('대면 거래의 경우 위치 정보가 필요합니다.');
+      }
+
+      const productData = {
+        title: registerForm.title,
+        description: registerForm.description,
+        price: Number(registerForm.price),
+        email: user.email,
+        hobbyId: registerForm.hobbyId,
+        categoryId: registerForm.categoryId,
+        transactionType: registerForm.transactionType,
+        registrationType: registerForm.registrationType,
+        meetingPlace: registerForm.meetingPlace,
+        latitude: registerForm.latitude,
+        longitude: registerForm.longitude,
+        address: registerForm.address,
+        maxParticipants: Number(registerForm.maxParticipants) || 1,
+        selectedDays: registerForm.selectedDays || [],
+        startDate: registerForm.startDate,
+        endDate: registerForm.endDate
+      };
+
+      console.log('productData', productData);
+
+      const response = await registerProduct(productData, registerForm.images || []);
+
+      if (response.status === 'success') {
+        dispatch(resetProductForm());
+        navigate('/');
+      } else {
+        throw new Error(response.data.message || '상품 등록에 실패했습니다.');
+      }
+    } catch (error) {
+      dispatch(setError(error instanceof Error ? error.message : '상품 등록에 실패했습니다.'));
+    }
   };
 
   return (
-    <SignupLayout>
-    <div className="p-4">
-      <h1 className="text-xl font-semibold text-center ">상품 등록</h1>
-
-      <div className="flex flex-col  gap-4">
-          {/* 제목 */}
-          <div className=" font-bold mt-4 ">제목</div>
-        <TextInput          
-          name="title"
-          value={productData.title}
-          onChange={handleChange}
-            error={""}
-        />
-
-          {/* 가격 */}
-          <div className=" font-bold mt-3">가격</div>
-        <TextInput
-          name="price"
-          value={productData.price}
-          onChange={handleChange}
-          error={""}
-        />
-
-         {/* 대면/비대면 라디오 버튼 */}
-          <div className="flex gap-4 font-bold"> 거래 방식
-                      
+    <PRLayout
+      title={<h1>상품 등록</h1>}
+      productTitle={
+        <BaseLabelBox label="제목">
+          <TextInput
+            name="title"
+            value={registerForm.title}
+            onChange={handleChange}
+            placeholder="상품 제목을 입력하세요"
+            error={''}
+          />
+        </BaseLabelBox>
+      }
+      price={
+        <BaseLabelBox label="가격">
+          <TextInput
+            name="price"
+            value={registerForm.price}
+            onChange={handleChange}
+            type="number"
+            placeholder="가격을 입력하세요"
+            error={''}
+          />
+        </BaseLabelBox>
+      }
+      transactionType={
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-3">
             <RadioButton
               label="대면"
-              value="faceToFace"
-              checked={productData.transactionType === 'faceToFace'}
+              value="대면"
+              checked={registerForm.transactionType === '대면'}
               onChange={(value) => handleRadioButtonChange('transactionType', value)}
+              variant="circle"
+              size="sm"
+              className="shadow-sm"
             />
             <RadioButton
               label="비대면"
-              value="nonFaceToFace"
-              checked={productData.transactionType === 'nonFaceToFace'}
-                onChange={(value) => handleRadioButtonChange('transactionType', value)}
-              
+              value="비대면"
+              checked={registerForm.transactionType === '비대면'}
+              onChange={(value) => handleRadioButtonChange('transactionType', value)}
+              variant="circle"
+              size="sm"
+              className="shadow-sm"
             />
-  <input
-      type="radio"
-      id="faceToFace"
-      name="transactionType"
-      value="faceToFace"
-      onChange={() => handleRadioButtonChange('transactionType', 'faceToFace')}
-      checked={productData.transactionType === 'faceToFace'}
-      className="h-4 w-4"
-    />
-  <label htmlFor="faceToFace">대면</label>
-  
-  <input
-      type="radio"
-      id="nonFaceToFace"
-      name="transactionType"
-      value="nonFaceToFace"
-      onChange={() => handleRadioButtonChange('transactionType', 'nonFaceToFace')}
-      checked={productData.transactionType === 'nonFaceToFace'}
-      className="h-4 w-4"
-    />
-    
-  <label htmlFor="nonFaceToFace">비대면</label>
-
-
-
-           {/* 대면 선택 시 장소 지정하기 버튼 */}
-        {productData.transactionType === 'faceToFace' && (
-          <button onClick={handleLocationClick}              
-           className="bg-primary-light hover:bg-primary text-white font-bold" >장소 지정
-            </button>
-        )}
+            {registerForm.transactionType === '대면' && (
+              <BaseButton variant="primary" onClick={() => navigate('/product/location')}>
+                {registerForm.address ? '위치 변경' : '위치 선택'}
+              </BaseButton>
+            )}
+          </div>
         </div>
-
-       
-
-        {/* 등록 유형 (구매/판매) 라디오 버튼 */}
-          <div className="flex gap-4 font-bold">등록 유형
-            
+      }
+      registrationType={
+        <div className="flex gap-3 justify-end">
           <RadioButton
             label="판매"
-            value="sale"
-            checked={productData.registrationType === 'sale'}
+            value="판매"
+            checked={registerForm.registrationType === '판매'}
             onChange={(value) => handleRadioButtonChange('registrationType', value)}
+            variant="circle"
+            size="sm"
+            className="shadow-sm"
           />
           <RadioButton
             label="구매"
-            value="buy"
-            checked={productData.registrationType === 'buy'}
+            value="구매"
+            checked={registerForm.registrationType === '구매'}
             onChange={(value) => handleRadioButtonChange('registrationType', value)}
+            variant="circle"
+            size="sm"
+            className="shadow-sm"
           />
         </div>
-
-       
-        {/* 카테고리 */}
-        <div className=" font-bold mt-4">카테고리</div>
-          <div>
-          <InterestSelect 
-            onInterestSelect={handleInterestSelect} 
-            selectedInterest={productData.category} 
-          />
+      }
+      category={
+        <div className="flex flex-col gap-2">
+          <BaseLabelBox label="카테고리">
+            <InterestSelect
+              onInterestSelect={handleInterestSelect}
+              selectedCategory={registerForm.categoryId || undefined}
+            />
+          </BaseLabelBox>
+          <BaseLabelBox label="취미">
+            <HobbySelect
+              onHobbySelect={handleHobbySelect}
+              selectedHobbies={
+                registerForm.hobbyId
+                  ? [{ hobbyId: registerForm.hobbyId, categoryId: registerForm.categoryId || 0 }]
+                  : []
+              }
+              categoryId={registerForm.categoryId || 0}
+            />
+          </BaseLabelBox>
         </div>
-
-      {/* 기간 입력 */}
-      <div className=" font-bold mt-3">일정 기간</div>
-           <div className="flex gap-2 items-center">
-                <input
-                  type="date"
+      }
+      participants={
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() =>
+              dispatch(
+                updateProductForm({
+                  maxParticipants: registerForm.maxParticipants
+                    ? registerForm.maxParticipants - 1
+                    : 0
+                })
+              )
+            }
+            className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center "
+          >
+            -
+          </button>
+          <span>{registerForm.maxParticipants}</span>
+          <button
+            type="button"
+            onClick={() =>
+              dispatch(
+                updateProductForm({
+                  maxParticipants: registerForm.maxParticipants
+                    ? registerForm.maxParticipants + 1
+                    : 1
+                })
+              )
+            }
+            className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center"
+          >
+            +
+          </button>
+        </div>
+      }
+      schedule={
+        <BaseLabelBox label="일정">
+          <div className="flex flex-col gap-4">
+            {/* 날짜 선택 */}
+            <div className="flex flex-col gap-2">
+              <div>
+                <label className="text-sm text-gray-600">시작 일시</label>
+                <TextInput
+                  type="datetime-local"
                   name="startDate"
-                  value={productData.startDate}
+                  value={registerForm.startDate}
                   onChange={handleChange}
-                  className="border p-2 rounded-lg cursor-pointer"
-                />
-                <span>~</span>
-                <input
-                  type="date"
-                  name="endDate"
-                  value={productData.endDate}
-                  onChange={handleChange}
-                  className="border p-2 rounded-lg cursor-pointer"
                 />
               </div>
-        </div>
+              <div>
+                <label className="text-sm text-gray-600">종료 일시</label>
+                <TextInput
+                  type="datetime-local"
+                  name="endDate"
+                  value={registerForm.endDate}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
 
-        {/* 이미지 업로드 */}
-        <div className="font-bold mt-5 mb-4">이미지 업로드</div>
-        <ImageSelector onFileSelect={handleFileSelect}/>
-        
-        {/* 설명 */}
-        <div className="relative w-full h-[209px] mt-5 font-bold">설명
-          <TextInput
+            {/* 요일 선택 */}
+            <div>
+              <label className="text-sm text-gray-600 mb-2 block">진행 요일</label>
+              <DaySelect
+                onDaySelect={(days: string[]) => {
+                  dispatch(updateProductForm({ selectedDays: days }));
+                }}
+                selectedDays={registerForm.selectedDays || []}
+              />
+            </div>
+          </div>
+        </BaseLabelBox>
+      }
+      images={
+        <ImageUpload
+          type="prod"
+          multiple={true}
+          images={registerForm.images}
+          onFileSelect={(file) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            handleFileUpload(formData);
+          }}
+          onRemove={handleRemoveImage}
+          maxImages={10}
+          className="w-full"
+        />
+      }
+      description={
+        <BaseLabelBox label="상품 설명">
+          <TextAreaInput
             name="description"
-            value={productData.description}
+            value={registerForm.description}
             onChange={handleChange}
-            error={""}
-            className="mt-2 w-[331px] h-[175px]"
+            placeholder="상품에 대한 상세한 설명을 입력하세요"
           />
-        </div>
-
-            {/* 등록하기 버튼 */}
-            <div className="mt-6 mb-20">
-          <Button  variant="primary" className="w-full " onClick={handleSubmit}>
-            등록하기
-          </Button>
-        </div>
-       </div>
-
-    </SignupLayout>
+        </BaseLabelBox>
+      }
+      submitButton={
+        <BaseButton
+          variant="primary"
+          className="w-full "
+          onClick={handleSubmit}
+          disabled={isLoading}
+        >
+          {isLoading ? '등록 중...' : '상품 등록'}
+        </BaseButton>
+      }
+    />
   );
 };
 

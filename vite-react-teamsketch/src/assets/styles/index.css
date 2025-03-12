@@ -2,42 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   body {
     @apply min-h-screen min-w-[320px] m-0 overflow-hidden fixed w-full h-full;
-    @apply bg-white text-text-light transition-colors duration-300;
-    @apply dark:bg-[#2D2D2D];
+    @apply bg-background-light text-text-primary transition-all duration-300;
+    @apply dark:bg-background-dark dark:text-text-light;
+    font-feature-settings: "kern";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   a {
-    @apply font-medium text-[#ECCEF5] hover:text-[#F6CED8] no-underline transition-colors duration-300;
+    @apply font-medium text-primary-500 hover:text-primary-600;
+    @apply dark:text-primary-400 dark:hover:text-primary-300;
+    @apply transition-all duration-300 ease-in-out;
   }
 
   button {
     @apply rounded-lg px-5 py-2.5;
     @apply text-base font-medium;
-    @apply bg-[#ECCEF5] text-[#4A4A4A] hover:bg-[#F6CED8];
-    @apply dark:bg-[#F6CED8] dark:text-white dark:hover:bg-[#ECCEF5];
-    @apply transition-all duration-300;
-    @apply focus:outline-none;
+    @apply bg-primary-500 text-white;
+    @apply hover:bg-primary-600 active:bg-primary-700;
+    @apply dark:bg-primary-400 dark:hover:bg-primary-500 dark:active:bg-primary-600;
+    @apply shadow-sm hover:shadow-md;
+    @apply transition-all duration-300 ease-in-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/50;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   input {
-    @apply bg-white border-[#ECCEF5] text-[#4A4A4A];
-    @apply dark:bg-[#2D2D2D] dark:border-[#F6CED8] dark:text-white;
-    @apply focus:border-[#CEF6E3] dark:focus:border-[#CEF6E3];
-    @apply placeholder-[#ECCEF5]/70;
-    @apply transition-colors duration-300;
+    @apply bg-white border border-gray-200 rounded-lg px-4 py-2;
+    @apply text-text-primary placeholder-text-tertiary;
+    @apply dark:bg-surface-dark dark:border-gray-700 dark:text-text-light;
+    @apply focus:border-primary-500 dark:focus:border-primary-400;
+    @apply focus:ring-2 focus:ring-primary-500/20 dark:focus:ring-primary-400/20;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply transition-all duration-300 ease-in-out;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply text-[#4A4A4A] dark:text-white transition-colors duration-300;
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-text-primary font-semibold;
+    @apply dark:text-text-light;
+    @apply transition-colors duration-300;
   }
 
   #root {
@@ -45,40 +52,47 @@
   }
 }
 
-/* 추가 커스텀 스타일 */
-.card {
-  @apply bg-white dark:bg-[#2D2D2D];
-  @apply border-[#ECCEF5] dark:border-[#F6CED8];
-  @apply text-[#4A4A4A] dark:text-white;
-  @apply shadow-lg hover:shadow-xl;
-  @apply transition-all duration-300;
-}
+@layer components {
+  .card {
+    @apply bg-white dark:bg-surface-dark;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply rounded-xl p-6;
+    @apply shadow-sm hover:shadow-md;
+    @apply transition-all duration-300 ease-in-out;
+  }
 
-.nav-link {
-  @apply text-[#4A4A4A] dark:text-white opacity-80;
-  @apply hover:text-[#ECCEF5] dark:hover:text-[#F6CED8] hover:opacity-100;
-  @apply transition-colors duration-300;
-}
+  .nav-link {
+    @apply text-text-secondary dark:text-text-light/80;
+    @apply hover:text-primary-500 dark:hover:text-primary-400;
+    @apply transition-all duration-300 ease-in-out;
+    @apply relative after:absolute after:bottom-0 after:left-0;
+    @apply after:w-full after:h-0.5 after:bg-primary-500;
+    @apply after:transform after:scale-x-0 after:origin-bottom-right;
+    @apply hover:after:scale-x-100 hover:after:origin-bottom-left;
+    @apply after:transition-transform after:duration-300;
+  }
 
-/* 그라데이션 효과 */
-.gradient-bg {
-  @apply bg-gradient-to-r from-[#ECCEF5] via-[#F6CED8] to-[#CEF6E3];
-}
+  .gradient-bg {
+    @apply bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500;
+    @apply dark:from-primary-400 dark:via-secondary-400 dark:to-accent-400;
+    @apply animate-gradient;
+  }
 
-/* 버튼 특수 효과 */
-.button-glow {
-  @apply relative overflow-hidden;
-  @apply before:absolute before:inset-0;
-  @apply before:bg-[#F6E3CE]/20;
-  @apply before:transform before:scale-x-0;
-  @apply hover:before:scale-x-100;
-  @apply before:transition-transform before:duration-300;
-}
+  .button-glow {
+    @apply relative overflow-hidden;
+    @apply before:absolute before:inset-0;
+    @apply before:bg-white/20 dark:before:bg-white/10;
+    @apply before:transform before:translate-x-[-100%];
+    @apply hover:before:translate-x-[100%];
+    @apply before:transition-transform before:duration-700 before:ease-in-out;
+  }
 
-/* 입력 필드 포커스 효과 */
-.input-focus-effect {
-  @apply focus-within:ring-2 focus-within:ring-[#CEF6E3]/50;
-  @apply focus-within:border-[#CEF6E3];
+  .input-focus-effect {
+    @apply focus-within:ring-2 focus-within:ring-primary-500/50;
+    @apply focus-within:border-primary-500;
+    @apply dark:focus-within:ring-primary-400/50;
+    @apply dark:focus-within:border-primary-400;
+  }
 }
 
 @layer utilities {
@@ -86,16 +100,41 @@
     @apply overflow-y-auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.primary.500') theme('colors.gray.200');
   }
 
-  /* Chrome, Safari and Opera */
+  .content-scroll::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .content-scroll::-webkit-scrollbar-track {
+    @apply bg-gray-200 dark:bg-gray-700;
+  }
+
+  .content-scroll::-webkit-scrollbar-thumb {
+    @apply bg-primary-500 dark:bg-primary-400;
+    @apply rounded-full;
+    @apply hover:bg-primary-600 dark:hover:bg-primary-500;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
 
-  /* IE, Edge and Firefox */
   .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .animate-gradient {
+    animation: gradient 6s ease infinite;
+    background-size: 200% 200%;
   }
 }

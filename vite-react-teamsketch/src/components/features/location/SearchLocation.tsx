@@ -3,52 +3,33 @@ import { useDispatch } from 'react-redux';
 import SearchInput from '../../forms/input/SearchInput';
 import { setEndLocation } from '../../../store/slices/mapSlice';
 import BaseButton from '../../common/BaseButton';
-import { axiosInstance } from '../../../services/api/axiosInstance';
+import { searchAddress, SearchResult } from '../../../services/api/productAPI';
 
-interface SearchResult {
-  address_name: string;
-  road_address_name: string;
-  place_name: string;
-  category_name: string;
-  phone: string;
-  x: string; // 경도
-  y: string; // 위도
+interface SearchLocationProps {
+  onLocationSelect: (location: {
+    lat: number;
+    lng: number;
+    address: string;
+    meetingPlace: string;
+  }) => void;
 }
 
-interface KakaoApiResponse {
-  documents: SearchResult[];
-  meta: {
-    total_count: number;
-    pageable_count: number;
-    is_end: boolean;
-  };
-}
-
-const SearchLocation = () => {
+const SearchLocation = ({ onLocationSelect }: SearchLocationProps) => {
   const dispatch = useDispatch();
-  const [results, setResults] = useState<SearchResult[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [results, setResults] = useState<SearchResult[]>([]);
 
-  const searchAddress = async (query: string) => {
+  const addressSearch = async (query: string) => {
     if (!query.trim()) return;
-
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get<KakaoApiResponse>(
-        `assist/location/search?query=${query}`
-      );
-
-      if (response.data.documents.length === 0) {
-        alert('검색 결과가 없습니다. 다른 주소로 검색해보세요.');
-        return;
+      const response = await searchAddress(query);
+      if (response && response.documents) {
+        setResults(response.documents);
       }
-      console.log('response.data.documents', response.data.documents);
-
-      setResults(response.data.documents);
     } catch (error) {
       console.error('주소 검색 실패:', error);
-      alert('주소 검색에 실패했습니다. 잠시 후 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -66,6 +47,12 @@ const SearchLocation = () => {
     );
     setResults([]);
     setSearchQuery('');
+    onLocationSelect({
+      lat: parseFloat(result.y),
+      lng: parseFloat(result.x),
+      address: result.road_address_name + ' ' + result.place_name || result.address_name,
+      meetingPlace: result.place_name
+    });
   };
 
   return (
@@ -81,14 +68,14 @@ const SearchLocation = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                searchAddress(searchQuery);
+                addressSearch(searchQuery);
               }
             }}
           />
         </div>
         <div className="ml-3 "></div>
         <BaseButton
-          onClick={() => searchAddress(searchQuery)}
+          onClick={() => addressSearch(searchQuery)}
           variant="primary"
           className="px-4 py-2"
           disabled={isLoading}

@@ -1,6 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.response.*;
+import com.example.demo.dto.profile.*;
+import com.example.demo.dto.auth.*;
+import com.example.demo.dto.hobby.*;
 import com.example.demo.service.FileStorageService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,15 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.example.demo.dto.CommonResponseDTO;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.nio.file.Files;
-import java.util.Base64;
 
 @RestController
 @RequestMapping("/api/core/profiles")
@@ -35,28 +35,28 @@ public class ProfileController {
      * 자신의 프로필 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ProfileResponse> getMyProfile(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<ProfileResponse>> getMyProfile(@RequestHeader("Authorization") String token) {
         ProfileResponse profile = userService.getUserProfileByToken(token);
         
         if (!profile.isSuccess()) {
-            return ResponseEntity.badRequest().body(profile);
+            return ResponseEntity.badRequest().body(ApiResponse.error(profile, "400"));
         }
         
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.ok(ApiResponse.success(profile));
     }
     
     /**
      * 닉네임으로 다른 사용자의 프로필 조회 (공개 정보만)
      */
     @GetMapping("/user/{nickname}")
-    public ResponseEntity<ProfileResponse> getUserProfile(@PathVariable String nickname) {
+    public ResponseEntity<ApiResponse<ProfileResponse>> getUserProfile(@PathVariable String nickname) {
         ProfileResponse profile = userService.getPublicProfile(nickname);
         
         if (!profile.isSuccess()) {
-            return ResponseEntity.badRequest().body(profile);
+            return ResponseEntity.badRequest().body(ApiResponse.error(profile, "400"));
         }
         
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.ok(ApiResponse.success(profile));
     }
     
     /**
@@ -84,6 +84,20 @@ public class ProfileController {
     public ResponseEntity<ProfileUpdateResponse> updateMyProfile(
             @RequestHeader("Authorization") String token,
             @RequestBody ProfileUpdateRequest request) {
+        
+        // 취미 정보의 기본 유효성 검증 (선택적)
+        if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+            for (HobbyRequest hobby : request.getHobbies()) {
+                if (hobby.getCategoryId() == null || hobby.getHobbyId() == null) {
+                    return ResponseEntity.badRequest().body(
+                        ProfileUpdateResponse.builder()
+                            .success(false)
+                            .message("카테고리 또는 취미 정보가 누락되었습니다.")
+                            .build()
+                    );
+                }
+            }
+        }
         
         ProfileUpdateResponse response = userService.updateProfileByToken(token, request);
         
@@ -115,19 +129,15 @@ public class ProfileController {
      * 프로필 이미지 업로드
      */
     @PostMapping("/me/image")
-    public ResponseEntity<CommonResponseDTO<String>> uploadProfileImage(
+    public ResponseEntity<ProfileImageResponse> uploadProfileImage(
             @RequestHeader("Authorization") String token,
             @RequestParam("file") MultipartFile file) {
         
         // 파일 기본 검증
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(CommonResponseDTO.<String>builder()
-                    .status("error")
-                    .data(CommonResponseDTO.Data.<String>builder()
-                        .message("업로드할 파일이 비어있습니다.")
-                        .response("")
-                        .build())
-                    .code("400")
+            return ResponseEntity.badRequest().body(ProfileImageResponse.builder()
+                    .success(false)
+                    .message("업로드할 파일이 비어있습니다.")
                     .build());
         }
         
@@ -135,43 +145,21 @@ public class ProfileController {
             ProfileImageResponse response = userService.uploadProfileImageByToken(token, file);
             
             if (!response.isSuccess()) {
-                return ResponseEntity.badRequest().body(CommonResponseDTO.<String>builder()
-                        .status("error")
-                        .data(CommonResponseDTO.Data.<String>builder()
-                            .message(response.getMessage())
-                            .response("")
-                            .build())
-                        .code("400")
-                        .build());
+                return ResponseEntity.badRequest().body(response);
             }
             
-            return ResponseEntity.ok(CommonResponseDTO.<String>builder()
-                    .status("success")
-                    .data(CommonResponseDTO.Data.<String>builder()
-                        .message(response.getMessage())
-                        .response("")
-                        .build())
-                    .code("200")
-                    .build());
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             // 파일 형식이나 크기 검증 실패 시
-                return ResponseEntity.badRequest().body(CommonResponseDTO.<String>builder()
-                    .status("error")
-                    .data(CommonResponseDTO.Data.<String>builder()
-                        .message(e.getMessage())
-                        .response("")
-                        .build())
-                    .code("400")
+            return ResponseEntity.badRequest().body(ProfileImageResponse.builder()
+                    .success(false)
+                    .message(e.getMessage())
                     .build());
         } catch (Exception e) {
             log.error("이미지 업로드 중 예상치 못한 오류 발생: {}", e.getMessage());
-            return ResponseEntity.status(500).body(CommonResponseDTO.<String>builder()
-                    .status("error")
-                    .data(CommonResponseDTO.Data.<String>builder()
-                        .message(e.getMessage())
-                        .response("")
-                        .build())
-                    .code("500")
+            return ResponseEntity.status(500).body(ProfileImageResponse.builder()
+                    .success(false)
+                    .message("이미지 업로드 중 서버 오류가 발생했습니다.")
                     .build());
         }
     }
@@ -196,7 +184,7 @@ public class ProfileController {
      * 프로필 이미지 조회 (자신)
      */
     @GetMapping("/me/image-info")
-    public ResponseEntity<CommonResponseDTO<String>> getMyProfileImageInfo(
+    public ResponseEntity<?> getMyProfileImageInfo(
             @RequestHeader("Authorization") String token) {
         
         String tokenWithoutBearer = token;
@@ -205,41 +193,27 @@ public class ProfileController {
         }
         
         if (!userService.tokenUtils.isTokenValid(tokenWithoutBearer)) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "유효하지 않은 인증 토큰입니다.");
-            return ResponseEntity.badRequest().body(CommonResponseDTO.<String>builder()
-                    .status("error")
-                    .data(CommonResponseDTO.Data.<String>builder()
-                        .message(error.get("error"))
-                        .response("")
-                        .build())
-                    .code("400")
-                    .build());
+            Map<String, String> errorData = new HashMap<>();
+            errorData.put("message", "유효하지 않은 인증 토큰입니다.");
+            return ResponseEntity.badRequest().body(ApiResponse.error(errorData, "400"));
         }
         
         String email = userService.tokenUtils.getEmailFromToken(tokenWithoutBearer);
         String imageUrl = userService.getProfileImageUrl(email);
         
-        Map<String, String> response = new HashMap<>();
-        response.put("imageUrl", imageUrl);
+        Map<String, String> responseData = new HashMap<>();
+        responseData.put("imageUrl", imageUrl);
+        System.out.println("imageUrl: " + imageUrl);
         
-        return ResponseEntity.ok(CommonResponseDTO.<String>builder()
-                    .status("success")
-                    .data(CommonResponseDTO.Data.<String>builder()
-                        .message(response.get("imageUrl"))
-                        .response("")
-                        .build())
-                    .code("200")
-                    .build());
+        return ResponseEntity.ok(ApiResponse.success(responseData));
     }
     
     /**
      * 프로필 이미지 파일 제공 
      */
     @GetMapping("/image/{filename:.+}")
-    public ResponseEntity<CommonResponseDTO<Map<String, String>>> getProfileImage(@PathVariable String filename) {
+    public ResponseEntity<Resource> getProfileImage(@PathVariable String filename) {
         try {
-            System.out.println("getProfileImage 호출됨");
             Path filePath = fileStorageService.getProfileImagePath(filename);
             Resource resource = new UrlResource(filePath.toUri());
             
@@ -252,37 +226,17 @@ public class ProfileController {
             // 파일 타입 확인
             String contentType = Files.probeContentType(filePath);
             if (contentType == null) {
-                contentType = "image/*";
+                contentType = "application/octet-stream";
             }
             
-            // 리소스를 바이트 배열로 변환
-            byte[] imageBytes = Files.readAllBytes(filePath);
-            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-            
-            Map<String, String> responseData = new HashMap<>();
-            responseData.put("contentType", contentType);
-            responseData.put("filename", resource.getFilename());
-            responseData.put("imageData", base64Image);
-            
-            return ResponseEntity.ok(CommonResponseDTO.<Map<String, String>>builder()
-                    .status("success")
-                    .data(CommonResponseDTO.Data.<Map<String, String>>builder()
-                        .message(resource.getFilename())
-                        .response(responseData)
-                        .build())
-                    .code("200")
-                    .build());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
             
         } catch (IOException ex) {
             log.error("프로필 이미지 로딩 실패: {}", ex.getMessage());
-            return ResponseEntity.badRequest().body(CommonResponseDTO.<Map<String, String>>builder()
-                    .status("error")
-                    .data(CommonResponseDTO.Data.<Map<String, String>>builder()
-                        .message(ex.getMessage())
-                        .response(null)
-                        .build())
-                    .code("400")
-                    .build());
+            return ResponseEntity.notFound().build();
         }
     }
     
@@ -310,5 +264,115 @@ public class ProfileController {
             log.error("기본 프로필 이미지 로딩 실패: {}", ex.getMessage());
             return ResponseEntity.notFound().build();
         }
+    }
+    
+    /**
+     * 마이페이지 정보 조회
+     */
+    @GetMapping("/mypage")
+    public ResponseEntity<ApiResponse<MyPageResponse>> getMyPageInfo(@RequestHeader("Authorization") String token) {
+        MyPageResponse myPage = userService.getMyPageInfoByToken(token);
+        
+        if (!myPage.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(myPage, "400"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success(myPage));
+    }
+    
+    /**
+     * 프로필 관리 - 프로필 상세 조회
+     */
+    @GetMapping("/manage")
+    public ResponseEntity<ApiResponse<ProfileResponse>> getProfileManageInfo(@RequestHeader("Authorization") String token) {
+        // 기존의 내 프로필 조회 메서드 재사용 (완전한 프로필 정보 제공)
+        ProfileResponse profile = userService.getUserProfileByToken(token);
+        
+        if (!profile.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(profile, "400"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success(profile));
+    }
+    
+    /**
+     * 프로필 관리 - 프로필 정보 업데이트 (이름, 닉네임, 취미, 소개글만 변경 가능)
+     */
+    @PutMapping("/manage")
+    public ResponseEntity<ApiResponse<ProfileUpdateResponse>> updateProfileManage(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ProfileUpdateRequest request) {
+        
+        // 취미 정보의 기본 유효성 검증
+        if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+            for (HobbyRequest hobby : request.getHobbies()) {
+                if (hobby.getCategoryId() == null || hobby.getHobbyId() == null) {
+                    Map<String, String> errorData = new HashMap<>();
+                    errorData.put("message", "카테고리 또는 취미 정보가 누락되었습니다.");
+                    return ResponseEntity.badRequest().body(ApiResponse.error(
+                        new ProfileUpdateResponse(false, errorData.get("message"), null), "400"
+                    ));
+                }
+            }
+        }
+        
+        ProfileUpdateResponse response = userService.updateProfileByToken(token, request);
+        
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+    
+    /**
+     * 프로필 이미지 업로드 (프로필 관리에서 사용)
+     */
+    @PostMapping("/manage/image")
+    public ResponseEntity<ApiResponse<ProfileImageResponse>> uploadProfileManageImage(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("file") MultipartFile file) {
+        
+        // 파일 기본 검증
+        if (file.isEmpty()) {
+            ProfileImageResponse errorResponse = ProfileImageResponse.builder()
+                    .success(false)
+                    .message("업로드할 파일이 비어있습니다.")
+                    .build();
+            return ResponseEntity.badRequest().body(ApiResponse.error(errorResponse, "400"));
+        }
+        
+        try {
+            ProfileImageResponse response = userService.uploadProfileImageByToken(token, file);
+            
+            if (!response.isSuccess()) {
+                return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
+            }
+            
+            return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (Exception e) {
+            log.error("이미지 업로드 중 예상치 못한 오류 발생: {}", e.getMessage());
+            ProfileImageResponse errorResponse = ProfileImageResponse.builder()
+                    .success(false)
+                    .message("이미지 업로드 중 서버 오류가 발생했습니다: " + e.getMessage())
+                    .build();
+            return ResponseEntity.status(500).body(ApiResponse.error(errorResponse, "500"));
+        }
+    }
+    
+    /**
+     * 프로필 이미지 삭제 (프로필 관리에서 사용)
+     */
+    @DeleteMapping("/manage/image")
+    public ResponseEntity<ApiResponse<ProfileImageResponse>> deleteProfileManageImage(
+            @RequestHeader("Authorization") String token) {
+        
+        ProfileImageResponse response = userService.deleteProfileImageByToken(token);
+        
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

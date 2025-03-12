@@ -1,9 +1,4 @@
--- 4. 테이블 생성 (사용자 취미 테이블)
-
--- 취미 테이블
-CREATE TABLE Hobbies (
-    hobbies_id INT PRIMARY KEY AUTO_INCREMENT,
-    hobby_name VARCHAR(255) NOT NULL,
-    hobby_description TEXT,
-    category VARCHAR(50)
+CREATE TABLE hobbies (
+    hobby_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    hobby_name VARCHAR(255) NOT NULL UNIQUE COMMENT '취미명'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
