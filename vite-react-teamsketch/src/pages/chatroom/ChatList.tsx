@@ -20,7 +20,7 @@ const ChatList: React.FC = () => {
 
   return (
     <div className="flex justify-center">
-        <div className="grid grid-cols-1 gap-4 ">
+        <div className="grid grid-cols-1 w-full">
       {chats.map((chat) => (
         <ChatListItem
           key={chat.id}

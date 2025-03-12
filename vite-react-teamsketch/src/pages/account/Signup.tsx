@@ -132,7 +132,7 @@ const Signup = () => {
       <SignupLayout
         title={<h1 className="text-xl font-bold">어서오세요. 환영합니다!</h1>}
         signupButton={
-          <Button type="submit" variant="primary" className="w-full py-2.5 text-sm sm:text-base">
+          <Button type="submit" className="w-full py-2.5 bg-primary-500 text-sm sm:text-base">
             회원가입
           </Button>
         }
@@ -143,7 +143,7 @@ const Signup = () => {
             <button
               type="button"
               onClick={() => navigate('/login')}
-              className="text-primary-light hover:text-primary-dark font-medium"
+              className="text-primary-500 shadow-none hover:text-primary-dark font-medium"
             >
               로그인
             </button>

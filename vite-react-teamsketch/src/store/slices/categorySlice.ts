@@ -8,7 +8,10 @@ interface Category {
 interface Hobby {
   hobbyId: number;
   hobbyName: string;
-  categories: Category[];
+  categories: Array<{
+    categoryId: number;
+    categoryName: string;
+  }>;
 }
 
 interface CategoryState {
