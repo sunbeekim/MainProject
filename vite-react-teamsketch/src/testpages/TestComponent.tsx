@@ -4,7 +4,7 @@ import Select from '../components/common/Select';
 import Grid from '../components/common/Grid';
 import GridItem from '../components/common/GridItem';
 import ImageUpload from '../components/features/upload/ImageUpload';
-import { fileUpload } from '../services/api/testAPI';
+import { fileUpload } from '../services/api/cloudAPI';
 import { increment, decrement } from '../store/slices/testSlice';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import SearchInput from '../components/forms/input/SearchInput';
@@ -13,6 +13,15 @@ import InfoBox from '../components/forms/box/InfoBox';
 import CustomInput from '../components/forms/input/CustomInput';
 import DaySection from '../components/forms/radiobutton/DaySelect';
 import ProfileSelector from '../components/features/upload/ProfileSelector';
+
+interface OCRResult {
+  status: string;
+  data: {
+    message: string;
+    response: any; // OCR 응답 데이터의 실제 타입에 맞게 수정할 수 있습니다
+  };
+  code: string;
+}
 
 const TestComponent = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +35,18 @@ const TestComponent = () => {
   ];
 
   const [search, setSearch] = useState('');
+  const [ocrResult, setOcrResult] = useState<OCRResult | null>(null);
+
+  const handleOCRUpload = async (formData: FormData) => {
+    try {
+      const result = await fileUpload.CloudOCR(formData);
+      console.log('OCR 결과:', result);
+      setOcrResult(result);
+    } catch (error) {
+      console.error('OCR 처리 중 오류:', error);
+      setOcrResult(null);
+    }
+  };
 
   return (
     <div className="p-8 space-y-8 flex flex-col items-center justify-center">
@@ -73,7 +94,22 @@ const TestComponent = () => {
         </div>
         <div>
           <h2 className="text-xl font-semibold mb-4">OCR 이미지 업로드 테스트</h2>
-          <ImageUpload onUpload={fileUpload.CloudOCR} className="max-w-md mx-auto" type="ocr" />
+          <ImageUpload onUpload={handleOCRUpload} className="max-w-md mx-auto" type="ocr" />
+          
+          {/* OCR 결과 표시 */}
+          {ocrResult && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-lg font-semibold mb-2">OCR 결과:</h3>
+              <div className="whitespace-pre-wrap break-words">
+                <p>상태: {ocrResult.status}</p>
+                <p>메시지: {ocrResult.data.message}</p>
+                <p>응답 데이터:</p>
+                <pre className="bg-white p-2 rounded mt-2 overflow-x-auto">
+                  {JSON.stringify(ocrResult.data.response, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
         </div>
         <div>
           <h2 className="text-xl font-semibold mb-4">프로필 이미지 업로드 테스트</h2>
