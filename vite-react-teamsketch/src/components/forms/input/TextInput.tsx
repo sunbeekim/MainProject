@@ -15,6 +15,7 @@ const TextInput = ({ label, type = 'input', ...props }: TextInputProps) => {
       {...props}
       type={type}
       variant={props.error ? 'error' : props.variant}
+      className={`${props.className || 'border-primary-500'}`}
       label={
         label && (
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">

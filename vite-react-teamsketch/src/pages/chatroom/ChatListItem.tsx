@@ -10,48 +10,100 @@ interface ChatListItemProps {
   email: string; 
 }
 
-const ChatListItem: React.FC<ChatListItemProps> = ({nickname, lastMessage, time, imageUrl,unreadCount,email }) => {
+const ChatListItem: React.FC<ChatListItemProps> = ({
+  nickname,
+  lastMessage,
+  time,
+  imageUrl,
+  unreadCount,
+  email
+}) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate(`/chat/${email}`); 
   };
 
-
   return (
-
-  
-    <div className="w-[500px] h-[100px] bg-white rounded-2xl shadow-lg flex items-center p-4 gap-4">
+    <div 
+      onClick={handleClick}
+      className="
+        w-full bg-white dark:bg-gray-800 
+        rounded-xl 
+        shadow-sm hover:shadow-md
+        transition-all duration-300
+        p-3 mb-2
+        flex items-center gap-3
+        cursor-pointer
+        border border-gray-100 dark:border-gray-700
+        hover:border-primary-200 dark:hover:border-primary-700
+      "
+    >
       {/* 프로필 이미지 */}
-      <div className="w-[50px] h-[50px] bg-gray-200 rounded-full overflow-hidden">
-        <img src={imageUrl || "https://picsum.photos/600/400"} alt="프로필 이미지" className="w-full h-full object-cover" />
-      </div>
-  
-      <div className="flex flex-col flex-1 w-full">
-        {/* 닉네임 */}
-        <span className="font-semibold text-lg">{nickname}</span>
-        {/* 마지막 메시지 */}
-        <h3 className="text-xm text-gray-400 ">{lastMessage}</h3>
-        {/* 시간 */}
-        <p className="text-gray-500 text-xs">{time}</p>
-      </div>
-        
-        {/* 읽지 않은 메시지 카운트 */}
-        {unreadCount > 0 && (
-        <div className="bg-primary-dark text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
-          {unreadCount}
+      <div className="relative">
+        <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary-100 dark:ring-primary-900">
+          <img 
+            src={imageUrl || "https://picsum.photos/600/400"} 
+            alt="프로필" 
+            className="w-full h-full object-cover"
+          />
         </div>
-      )}
-
-      {/* 채팅방 이동 버튼 */}
-      <button 
-        className="bg-[#FBCCC5] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#F9B0BA] transition-colors"
-        onClick={handleClick}
-      >
-        채팅방
-      </button>
+        {unreadCount > 0 && (
+          <div className="
+            absolute -top-1 -right-1
+            bg-primary-500 text-white 
+            rounded-full w-5 h-5 
+            flex items-center justify-center 
+            text-xs font-medium
+            ring-2 ring-white dark:ring-gray-800
+          ">
+            {unreadCount}
+          </div>
+        )}
       </div>
 
+      {/* 채팅 정보 */}
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between items-start mb-1">
+          <span className="font-medium text-gray-900 dark:text-white truncate">
+            {nickname}
+          </span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
+            {time}
+          </span>
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
+          {lastMessage}
+        </p>
+      </div>
+
+      {/* 채팅방 입장 버튼 */}
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          handleClick();
+        }}
+        className="
+          shrink-0
+          bg-gradient-to-r from-primary-500 to-primary-600
+          dark:from-primary-600 dark:to-primary-700
+          text-white 
+          px-4 py-2 
+          rounded-full
+          text-sm 
+          font-medium
+          hover:from-primary-600 hover:to-primary-700
+          dark:hover:from-primary-500 dark:hover:to-primary-600
+          transition-all 
+          duration-300
+          shadow-sm 
+          hover:shadow
+          flex items-center gap-1
+        "
+      >
+        <span>채팅</span>
+      </button>
+    </div>
   );
 };
 

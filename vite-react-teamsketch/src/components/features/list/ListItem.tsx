@@ -27,6 +27,7 @@ const ListItem: React.FC<ListItemProps> = ({ nickname, title, description, point
     }
   };
 
+
   return (
     <div className="w-[600px] h-[150px] bg-white rounded-2xl border-2 flex items-center p-4 gap-3">
       <div className="w-[100px] h-[100px] bg-gray-200 rounded-lg">
@@ -34,6 +35,7 @@ const ListItem: React.FC<ListItemProps> = ({ nickname, title, description, point
       </div>
 
       <div className="flex flex-col flex-1 w-full">
+
         <span className="text-gray-400 text-xs">{nickname}</span>
         <h3 className="text-lg font-semibold">{title}</h3>
         <p className="text-gray-500 text-sm">{description}</p>

@@ -29,7 +29,7 @@ const PRLayout = ({
   submitButton
 }: PRLayoutProps) => {
   return (
-    <div className="h-full w-full bg-white dark:bg-gray-800">
+    <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">
       <Grid cols={1} gap="sm" className="h-full p-4 sm:p-6">
         {/* 타이틀 */}
         <GridItem className="flex items-center justify-center mb-4">

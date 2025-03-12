@@ -1,14 +1,25 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setCategories, setHobbies, setLoading, setError } from '../store/slices/categorySlice';
+import {
+  setCategories,
+  setLoading,
+  setError,
+  setConstantCategories,
+  setConstantHobbies
+} from '../store/slices/categorySlice';
 import { axiosInstance } from '../services/api/axiosInstance';
 import { apiConfig } from '../services/api/apiConfig';
 
 export const useCategories = () => {
   const dispatch = useAppDispatch();
-  const { categories, hobbies, selectedCategoryId, loading, error } = useAppSelector(
-    (state) => state.category
-  );
+  const {
+    categories,
+    selectedCategoryId,
+    loading,
+    error,
+    constantCategories,
+    constantHobbies
+  } = useAppSelector((state) => state.category);
 
   const fetchCategories = async () => {
     try {
@@ -16,6 +27,7 @@ export const useCategories = () => {
       const response = await axiosInstance.get(apiConfig.endpoints.core.getCategory);
       if (response.data.status === 'success') {
         dispatch(setCategories(response.data.data));
+        dispatch(setConstantCategories(response.data.data));
       }
     } catch (error) {
       dispatch(
@@ -26,14 +38,19 @@ export const useCategories = () => {
     }
   };
 
-  const fetchHobbiesByCategory = async (categoryId: number) => {
+  // const fetchHobbiesByCategory = async (categoryId: number) => {   
+  //   const response = await axiosInstance.get(
+  //     apiConfig.endpoints.core.getHobbiesByCategory(categoryId)
+  //   );
+  //   return response.data.data;
+  // };
+
+  const fetchAllHobbies = async () => {
     try {
       dispatch(setLoading(true));
-      const response = await axiosInstance.get(
-        apiConfig.endpoints.core.getHobbiesByCategory(categoryId)
-      );
+      const response = await axiosInstance.get(apiConfig.endpoints.core.getHobbies);
       if (response.data.status === 'success') {
-        dispatch(setHobbies(response.data.data));
+        dispatch(setConstantHobbies(response.data.data));
       }
     } catch (error) {
       dispatch(
@@ -45,15 +62,20 @@ export const useCategories = () => {
   };
 
   useEffect(() => {
-    fetchCategories();
+    const initializeData = async () => {
+      await fetchCategories();
+      await fetchAllHobbies();
+    };
+    
+    initializeData();
   }, []);
 
   return {
     categories,
-    hobbies,
     selectedCategoryId,
     loading,
     error,
-    fetchHobbiesByCategory
+    constantCategories,
+    constantHobbies
   };
 };

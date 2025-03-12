@@ -9,9 +9,11 @@ import { getAddressFromCoord } from '../../../services/api/productAPI';
 
 interface OpenStreetMapProps {
   children?: React.ReactNode;
+  nonClickable?: boolean;
+  className?: string;
 }
 
-const OpenMap: React.FC<OpenStreetMapProps> = () => {
+const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className }) => {
   const dispatch = useDispatch();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -31,6 +33,7 @@ const OpenMap: React.FC<OpenStreetMapProps> = () => {
 
       // 지도 클릭 이벤트 처리
       newMap.on('click', async (e) => {
+        if (nonClickable) return;
         const { lat, lng } = e.latlng;
         const meetingPlace = await getAddressFromCoord(lat, lng);
         dispatch(
@@ -109,7 +112,7 @@ const OpenMap: React.FC<OpenStreetMapProps> = () => {
     setMarkers(newMarkers);
   }, [myLocation, yourLocation, endLocation]);
 
-  return <div ref={mapRef} className="w-full h-full" />;
+  return <div ref={mapRef} className={`w-full h-full ${className}`} />;
 };
 
 export default OpenMap;

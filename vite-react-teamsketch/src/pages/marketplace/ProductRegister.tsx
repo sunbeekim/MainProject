@@ -25,6 +25,7 @@ const ProductRegister = () => {
   const dispatch = useAppDispatch();
   const { registerForm, isLoading } = useAppSelector((state) => state.product);
   const { user } = useAppSelector((state) => state.user);
+  console.log(registerForm);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,8 +39,7 @@ const ProductRegister = () => {
   const handleInterestSelect = (categoryId: number) => {
     dispatch(
       updateProductForm({
-        categoryId,
-        hobbyId: undefined
+        categoryId,        
       })
     );
   };
@@ -58,7 +58,7 @@ const ProductRegister = () => {
   const handleRemoveImage = (index: number) => {
     dispatch(removeProductImage(index));
   };
-  console.log('meetingPlace', registerForm.meetingPlace);
+
   const handleSubmit = async () => {
     try {
       if (!user?.email) {
@@ -66,14 +66,25 @@ const ProductRegister = () => {
       }
 
       // 필수 필드 검증
-      if (!registerForm.title || !registerForm.description || !registerForm.price || 
-          !registerForm.categoryId || !registerForm.transactionType || !registerForm.registrationType) {
+      if (
+        !registerForm.title ||
+        !registerForm.description ||
+        !registerForm.price ||
+        !registerForm.categoryId ||
+        !registerForm.transactionType ||
+        !registerForm.registrationType
+      ) {
         throw new Error('필수 항목을 모두 입력해주세요.');
       }
 
       // 대면 거래인 경우 위치 정보 검증
-      if (registerForm.transactionType === '대면' && 
-          (!registerForm.meetingPlace || !registerForm.latitude || !registerForm.longitude || !registerForm.address)) {
+      if (
+        registerForm.transactionType === '대면' &&
+        (!registerForm.meetingPlace ||
+          !registerForm.latitude ||
+          !registerForm.longitude ||
+          !registerForm.address)
+      ) {
         throw new Error('대면 거래의 경우 위치 정보가 필요합니다.');
       }
 
@@ -216,8 +227,9 @@ const ProductRegister = () => {
             onClick={() =>
               dispatch(
                 updateProductForm({
-                  maxParticipants:
-                    registerForm.maxParticipants ? registerForm.maxParticipants - 1 : 0
+                  maxParticipants: registerForm.maxParticipants
+                    ? registerForm.maxParticipants - 1
+                    : 0
                 })
               )
             }
@@ -229,7 +241,13 @@ const ProductRegister = () => {
           <button
             type="button"
             onClick={() =>
-              dispatch(updateProductForm({ maxParticipants: registerForm.maxParticipants ? registerForm.maxParticipants + 1 : 1 }))
+              dispatch(
+                updateProductForm({
+                  maxParticipants: registerForm.maxParticipants
+                    ? registerForm.maxParticipants + 1
+                    : 1
+                })
+              )
             }
             className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center"
           >
@@ -303,7 +321,7 @@ const ProductRegister = () => {
       submitButton={
         <BaseButton
           variant="primary"
-          className="w-full"
+          className="w-full "
           onClick={handleSubmit}
           disabled={isLoading}
         >

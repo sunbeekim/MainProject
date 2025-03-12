@@ -50,33 +50,40 @@ const MyPage = () => {
 
   const menuItems = [
     {
-      icon: <FaUserCog size={20} />,
+      icon: <FaUserCog className="w-6 h-6" />,
       label: '프로필 관리',
-      color: 'hover:bg-blue-50 dark:hover:bg-blue-900/30',
+      color: 'text-primary-500',
       onClick: () => navigate('/profile-manage')
     },
     {
+
       icon: <FaBoxOpen size={20} />,
       label: '상품 관리',
       color: 'hover:bg-purple-50 dark:hover:bg-purple-900/30',
       onClick: () => navigate('/my-products')
     },
     {
-      icon: <FaCreditCard size={20} />,
-      label: '결제 수단',
-      color: 'hover:bg-green-50 dark:hover:bg-green-900/30',
+      icon: <FaBoxOpen className="w-6 h-6" />,
+      label: '거래 내역',
+      color: 'text-blue-500',
+    },
+    {
+      icon: <FaCreditCard className="w-6 h-6" />,
+      label: '결제 관리',
+      color: 'text-green-500',
       onClick: () => navigate('/registered-card')
     },
     {
-      icon: <FaHistory size={20} />,
-      label: '거래 내역',
-      color: 'hover:bg-yellow-50 dark:hover:bg-yellow-900/30',
-      onClick: () => navigate('/transaction-list')
+      icon: <FaHistory className="w-6 h-6" />,
+      label: '활동 내역',
+      color: 'text-purple-500',
+      onClick: () => navigate('/activity-list')
     },
     {
-      icon: <FaHeadset size={20} />,
-      label: '고객 센터',
-      color: 'hover:bg-pink-50 dark:hover:bg-pink-900/30'
+      icon: <FaHeadset className="w-6 h-6" />,
+      label: 'AI 고객센터',
+      color: 'text-indigo-500',
+      onClick: () => navigate('/servicechat')
     }
   ];
 
