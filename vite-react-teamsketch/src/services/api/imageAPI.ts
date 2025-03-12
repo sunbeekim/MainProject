@@ -2,46 +2,48 @@ import { axiosInstance, uploadInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { FileResponse } from '../../types/fileResponse';
 
+
 export const getProfileImage = async (): Promise<FileResponse | null> => {
-  console.log('getProfileImage 함수 호출됨');
+  console.log('getProfileImage 함수 호출됨'); 
+
   try {
     console.log('이미지 정보 요청 URL:', apiConfig.endpoints.core.getProfileImageInfo);
     const infoResponse = await axiosInstance.get(apiConfig.endpoints.core.getProfileImageInfo);
 
     console.log('이미지 정보 응답:', infoResponse);
 
-    if (infoResponse.data?.data?.message) {
-      const imageUrl = infoResponse.data.data.message;
-      const filename = imageUrl.split('/').pop();
-
+    if (infoResponse.data?.data?.imageUrl) {
+      const imageUrl = infoResponse.data.data.imageUrl;
+      const filename = imageUrl.split('/image/')[1];
+      console.log("imageUrl", imageUrl);
       console.log('이미지 파일명:', filename);
 
-      const imageResponse = await axiosInstance.get(
-        `${apiConfig.endpoints.core.getProfileImage}/${filename}`
-      );
+      try {
+        const imageResponse = await axiosInstance.get(
+          `${apiConfig.endpoints.core.getProfileImage}/${filename}`,
+          {
+            responseType: 'arraybuffer'
+          }
+        );
 
-      const { contentType, imageData } = imageResponse.data.data.response;
+        const contentType = imageResponse.headers['content-type'] || 'image/jpeg';
+        
+        const blob = new Blob([imageResponse.data], { type: contentType });
 
-      // Base64 문자열을 Blob으로 변환
-      const byteCharacters = atob(imageData);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
+        const imageFile = new File([blob], filename, { type: contentType });
+
+        return {
+          status: 'success',
+          data: {
+            message: filename,
+            response: imageFile
+          },
+          code: '200'
+        };
+      } catch (error) {
+        console.error('이미지 파일 조회 실패:', error);
+        return null;
       }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: contentType });
-
-      // Blob을 File 객체로 변환
-      const imageFile = new File([blob], filename, { type: contentType });
-
-      return {
-        status: 'success',
-        data: {
-          message: filename,
-          response: imageFile
-        },
-        code: '200'
-      };
     }
 
     return null;

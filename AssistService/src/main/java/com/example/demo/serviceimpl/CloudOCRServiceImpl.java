@@ -51,9 +51,9 @@ public class CloudOCRServiceImpl {
 
             Map<String, Object> imageInfo = new HashMap<>();
             imageInfo.put("format", fileFormat);
-            imageInfo.put("name", "test 1");
+            imageInfo.put("name", "카드");
             imageInfo.put("data", imageBase64);
-            imageInfo.put("templateIds", Collections.singletonList(36064));
+            imageInfo.put("templateIds", Collections.singletonList(36479));
             
 
             requestBody.put("images", Collections.singletonList(imageInfo));

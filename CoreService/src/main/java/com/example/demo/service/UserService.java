@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.auth.*;
+import com.example.demo.dto.profile.*;
+import com.example.demo.dto.hobby.HobbyRequest;
 import com.example.demo.model.UserHobby;
 import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +55,7 @@ public class UserService {
     }
     
     /**
-     * 사용자 취미 정보 업데이트
+     * 사용자 취미 정보 업데이트 
      */
     public void updateUserHobbies(String email, List<HobbyRequest> hobbies) {
         hobbyService.registerUserHobbies(email, hobbies);
@@ -155,5 +157,19 @@ public class UserService {
      */
     public ProfileImageResponse deleteProfileImageByToken(String token) {
         return profileImageService.deleteProfileImageByToken(token);
+    }
+    
+    /**
+     * 마이페이지 정보 조회
+     */
+    public MyPageResponse getMyPageInfo(String email) {
+        return profileService.getMyPageInfo(email);
+    }
+    
+    /**
+     * 토큰으로 마이페이지 정보 조회
+     */
+    public MyPageResponse getMyPageInfoByToken(String token) {
+        return profileService.getMyPageInfoByToken(token);
     }
 }

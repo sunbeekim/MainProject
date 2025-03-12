@@ -30,7 +30,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onFileSelect, className =
         htmlFor="image-upload"
         className="cursor-pointer flex items-center justify-center px-4 py-2 border-2 border-dashed border-primary rounded-lg hover:bg-primary-lightest transition-colors"
       >
-        <div className="text-center">
+        <div className="text-center ">
           <svg
             className="w-8 h-8 mx-auto text-primary"
             fill="none"

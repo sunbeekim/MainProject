@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.profile.*;
+import com.example.demo.dto.hobby.*;
+import com.example.demo.dto.auth.*;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.model.UserHobby;
@@ -42,6 +44,10 @@ public class ProfileService {
                     .build();
         }
         
+        // 도파민 수치와 활동 포인트 조회
+        Integer dopamine = userMapper.getUserDopamine(email);
+        Integer points = userMapper.getUserPoints(email);
+        
         // 사용자 취미 정보 조회
         List<UserHobby> userHobbies = hobbyService.getUserHobbies(email);
         List<ProfileResponse.HobbyInfo> hobbyInfoList = userHobbies.stream()
@@ -65,6 +71,8 @@ public class ProfileService {
                 .accountStatus(user.getAccountStatus())
                 .signupDate(user.getSignupDate())
                 .lastLoginTime(user.getLastLoginTime())
+                .dopamine(dopamine) // 도파민 수치
+                .points(points)     // 활동 포인트 추가
                 .hobbies(hobbyInfoList)
                 .build();
     }
@@ -108,6 +116,10 @@ public class ProfileService {
                     .build();
         }
         
+        // 도파민 수치와 활동 포인트 조회
+        Integer dopamine = userMapper.getUserDopamine(user.getEmail());
+        Integer points = userMapper.getUserPoints(user.getEmail());
+        
         // 취미 정보 조회
         List<UserHobby> userHobbies = hobbyService.getUserHobbies(user.getEmail());
         List<ProfileResponse.HobbyInfo> hobbyInfoList = userHobbies.stream()
@@ -124,6 +136,8 @@ public class ProfileService {
                 .nickname(user.getNickname())
                 .profileImageUrl(profileImageUrl)
                 .bio(user.getBio())
+                .dopamine(dopamine) // 도파민 수치
+                .points(points)     // 활동 포인트 추가
                 .hobbies(hobbyInfoList)
                 .build();
     }
@@ -152,6 +166,44 @@ public class ProfileService {
                         .build();
             }
         }
+        
+        // 취미 데이터의 유효성 검증 (카테고리->취미 선택 방식)
+        if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
+            for (HobbyRequest hobby : request.getHobbies()) {
+                // 카테고리 ID가 누락된 경우
+                if (hobby.getCategoryId() == null) {
+                    return ProfileUpdateResponse.builder()
+                            .success(false)
+                            .message("카테고리 정보가 누락되었습니다.")
+                            .build();
+                }
+                
+                // 취미 ID가 누락된 경우
+                if (hobby.getHobbyId() == null) {
+                    return ProfileUpdateResponse.builder()
+                            .success(false)
+                            .message("취미 정보가 누락되었습니다.")
+                            .build();
+                }
+                
+                // 취미가 해당 카테고리에 속하는지 검증
+                try {
+                    boolean isValid = hobbyService.getHobbyMapper().isHobbyInCategory(hobby.getHobbyId(), hobby.getCategoryId());
+                    if (!isValid) {
+                        return ProfileUpdateResponse.builder()
+                                .success(false)
+                                .message("선택한 취미가 해당 카테고리에 속하지 않습니다. 취미ID: " + hobby.getHobbyId() + ", 카테고리ID: " + hobby.getCategoryId())
+                                .build();
+                    }
+                } catch (Exception e) {
+                    log.error("취미-카테고리 관계 검증 중 오류 발생: {}", e.getMessage());
+                    return ProfileUpdateResponse.builder()
+                            .success(false)
+                            .message("취미 정보 검증 중 오류가 발생했습니다.")
+                            .build();
+                }
+            }
+        }
                 
         // 프로필 정보 업데이트
         User updatedUser = User.builder()
@@ -167,7 +219,14 @@ public class ProfileService {
         
         // 취미 정보 업데이트 (요청에 포함된 경우)
         if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
-            hobbyService.registerUserHobbies(email, request.getHobbies());
+            try {
+                hobbyService.registerUserHobbies(email, request.getHobbies());
+                log.info("프로필 업데이트 - 사용자 취미 등록 완료 - 이메일: {}, 취미 개수: {}", 
+                         email, request.getHobbies().size());
+            } catch (Exception e) {
+                log.error("프로필 업데이트 - 취미 등록 중 오류 발생 - 이메일: {}, 오류: {}", email, e.getMessage());
+                // 취미 등록 실패해도 프로필 업데이트는 성공으로 처리
+            }
         }
         
         // 업데이트된 프로필 정보 조회
@@ -258,5 +317,58 @@ public class ProfileService {
         
         String email = tokenUtils.getEmailFromToken(tokenWithoutBearer);
         return changePassword(email, request);
+    }
+    
+    /**
+     * 마이페이지 정보 조회
+     */
+    public MyPageResponse getMyPageInfo(String email) {
+        // 사용자 기본 정보 조회
+        User user = userMapper.findByEmail(email);
+        
+        if (user == null) {
+            return MyPageResponse.builder()
+                    .success(false)
+                    .message("존재하지 않는 사용자입니다.")
+                    .build();
+        }
+        
+        // 도파민 수치와 활동 포인트 조회
+        Integer dopamine = userMapper.getUserDopamine(email);
+        Integer points = userMapper.getUserPoints(email);
+        
+        // 프로필 이미지 URL 생성
+        String profileImageUrl = profileImageService.getProfileImageUrl(email);
+        
+        // 마이페이지 응답 구성 (제한된 정보만 포함)
+        return MyPageResponse.builder()
+                .success(true)
+                .message("마이페이지 정보 조회 성공")
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .signupDate(user.getSignupDate())
+                .lastLoginTime(user.getLastLoginTime())
+                .profileImageUrl(profileImageUrl)
+                .accountStatus(user.getAccountStatus())
+                .dopamine(dopamine) // 도파민 수치
+                .points(points)     // 활동 포인트 추가
+                .build();
+    }
+    
+    /**
+     * 토큰으로 마이페이지 정보 조회
+     */
+    public MyPageResponse getMyPageInfoByToken(String token) {
+        String tokenWithoutBearer = tokenUtils.extractTokenWithoutBearer(token);
+        
+        if (!tokenUtils.isTokenValid(tokenWithoutBearer)) {
+            return MyPageResponse.builder()
+                    .success(false)
+                    .message("유효하지 않은 인증 토큰입니다.")
+                    .build();
+        }
+        
+        String email = tokenUtils.getEmailFromToken(tokenWithoutBearer);
+        return getMyPageInfo(email);
     }
 }

@@ -9,17 +9,17 @@ import lombok.AllArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommonResponseDTO {
+public class CommonResponseDTO<T> {
     private String status;
-    private Data data;
+    private Data<T> data;
     private String code;
 
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Data {
+    public static class Data<T> {
         private String message;
-        private String response;
+        private T response;
     }
 }

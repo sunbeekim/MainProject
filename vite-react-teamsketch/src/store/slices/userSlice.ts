@@ -18,6 +18,13 @@ export interface IUser {
   loginFailedAttempts: number;
   loginIsLocked: boolean;
   profileImagePath: File | null;
+  interest: string[];
+  hobby: Array<{
+    hobbyId: number;
+    hobbyName: string;
+    categoryId: number;
+    categoryName: string;
+  }>;
 }
 
 interface UserState {
@@ -41,7 +48,9 @@ const initialState: UserState = {
     lastLoginTime: null,
     loginFailedAttempts: 0,
     loginIsLocked: false,
-    profileImagePath: null
+    profileImagePath: null,
+    interest: [],
+    hobby: []
   }
 };
 
