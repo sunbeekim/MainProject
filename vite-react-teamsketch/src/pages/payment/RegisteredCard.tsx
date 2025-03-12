@@ -44,8 +44,28 @@ const RegisteredCard = () => {
       <h2 className="text-xl font-semibold mb-2">결제 카드 추가</h2>
       
       <div>
-        <h2 className="text-xl font-semibold mb-4">OCR 이미지 업로드 테스트</h2>
-        <ImageUpload onUpload={handleOCRUpload} className="max-w-md mx-auto" type="image" />
+        <h2 className="text-xl font-semibold mb-4">OCR 모바일 촬영 이미지 업로드 테스트</h2>
+        <ImageUpload onUpload={handleOCRUpload} className="max-w-md mx-auto" type="ocr" borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500" />
+        
+        {/* OCR 결과 표시 */}
+        {ocrResult && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">OCR 결과:</h3>
+            <div className="whitespace-pre-wrap break-words">
+              <p>상태: {ocrResult.status}</p>
+              <p>메시지: {ocrResult.data.message}</p>
+              <p>응답 데이터:</p>
+              <pre className="bg-white p-2 rounded mt-2 overflow-x-auto">
+                {JSON.stringify(ocrResult.data.response, null, 2)}
+              </pre>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <h2 className="text-xl font-semibold mb-4">OCR 선택 이미지 업로드 테스트</h2>
+        <ImageUpload onUpload={handleOCRUpload} className="max-w-md mx-auto" type="image" borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500" />
         
         {/* OCR 결과 표시 */}
         {ocrResult && (
