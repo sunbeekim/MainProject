@@ -1,13 +1,22 @@
 import { useNavigate } from "react-router-dom"; // React Router v6에서 useNavigate 사용
 import ImageUpload from "../../components/features/upload/ImageUpload";
-import { fileUpload } from "../../services/api/testAPI";
-
+import { fileUpload } from "../../services/api/cloudAPI";
+import { useState } from "react";
 
 
 interface Card {
   id: number;
   name: string;
   number: string;
+}
+
+interface OCRResult {
+  status: string;
+  data: {
+    message: string;
+    response: any; // OCR 응답 데이터의 실제 타입에 맞게 수정할 수 있습니다
+  };
+  code: string;
 }
 
 const RegisteredCard = () => {
@@ -17,13 +26,41 @@ const RegisteredCard = () => {
     navigate(`/card-details/${cardInfo.id}`); // 상세 페이지로 이동
   };
 
+  const [ocrResult, setOcrResult] = useState<OCRResult | null>(null);
+
+  const handleOCRUpload = async (formData: FormData) => {
+    try {
+      const result = await fileUpload.CloudOCR(formData);
+      console.log('OCR 결과:', result);
+      setOcrResult(result);
+    } catch (error) {
+      console.error('OCR 처리 중 오류:', error);
+      setOcrResult(null);
+    }
+  };
+  
   return (
     <div className="p-4 m-4">
       <h2 className="text-xl font-semibold mb-2">결제 카드 추가</h2>
       
-      {/* 결제 카드 추가 */}
-      <div className="border-2 border-dashed border-primary-light p-5 rounded-lg">
-        <ImageUpload onUpload={fileUpload.CloudOCR} className="max-w-md mx-auto" type="ocr" />
+      <div>
+        <h2 className="text-xl font-semibold mb-4">OCR 이미지 업로드 테스트</h2>
+        <ImageUpload onUpload={handleOCRUpload} className="max-w-md mx-auto" type="image" />
+        
+        {/* OCR 결과 표시 */}
+        {ocrResult && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">OCR 결과:</h3>
+            <div className="whitespace-pre-wrap break-words">
+              <p>상태: {ocrResult.status}</p>
+              <p>메시지: {ocrResult.data.message}</p>
+              <p>응답 데이터:</p>
+              <pre className="bg-white p-2 rounded mt-2 overflow-x-auto">
+                {JSON.stringify(ocrResult.data.response, null, 2)}
+              </pre>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 상단 헤더 */}

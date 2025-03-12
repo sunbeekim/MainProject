@@ -37,8 +37,8 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
       const constraints = {
         video: {
           facingMode: isMobile ? { ideal: 'environment' } : 'user',
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          width: { ideal: 1080 },
+          height: { ideal: 1920 }
         }
       };
 
@@ -54,8 +54,8 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
           stream = await navigator.mediaDevices.getUserMedia({
             video: {
               facingMode: 'user',
-              width: { ideal: 1920 },
-              height: { ideal: 1080 }
+              width: { ideal: 1080 },
+              height: { ideal: 1920 }
             }
           });
           console.log('전면 카메라 스트림 획득 성공:', stream.getVideoTracks()[0].label);
