@@ -130,8 +130,8 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
   };
 
   return (
-    <div className={className}>
-      <Button variant="outline" onClick={startCamera} className="flex items-center gap-2">
+    <div>
+      <Button variant="outline" onClick={startCamera} className={`flex items-center gap-2 ${className}`}>
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"

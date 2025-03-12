@@ -63,7 +63,7 @@ const Header = () => {
             <div className="flex gap-2">
               <IconSetting
                 onClick={() => navigate('/setting')}
-                className="w-8 h-8 text-primary-500 hover:text-primary-dark cursor-pointer"
+                className="w-8 h-8 text-primary-50 hover:text-primary-dark cursor-pointer dark:text-primary-500 dark:hover:text-primary-dark"
               />
             </div>
           )
