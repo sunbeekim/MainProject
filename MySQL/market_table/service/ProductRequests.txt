@@ -1,0 +1,11 @@
+CREATE TABLE ProductRequests (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    product_id BIGINT NOT NULL,  -- Products 테이블 참조 (FK)
+    requester_email VARCHAR(255) NOT NULL,  -- 요청한 사용자의 이메일 (JWT에서 추출)
+    status ENUM('대기', '완료') DEFAULT '대기',  -- 진행 상황 (대기 / 완료)
+    approval_status ENUM('승인', '미승인') DEFAULT '미승인', -- 승인 여부 (승인 / 미승인)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE RESTRICT,
+    FOREIGN KEY (requester_email) REFERENCES Users(email) ON DELETE CASCADE  -- 요청자 이메일 FK
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -13,10 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ProductRequest {
+    // private Long productId; // 상품 요청에만 필요
+
     @NotBlank private String title;
     @NotBlank private String description;
     @NotNull private Integer price;
-    @NotBlank private String email;
     @NotNull private Long categoryId;
     private Long hobbyId;  // 취미 ID 추가
     @NotBlank private String transactionType;
@@ -29,6 +30,9 @@ public class ProductRequest {
     private LocalDateTime endDate;  // 일정 종료일 추가
     private String days; // days 필드 추가
     private String meetingPlace;
+
+    private List<String> days;
+
     private Double latitude;
     private Double longitude;
     private String address;

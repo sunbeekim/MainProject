@@ -142,7 +142,7 @@ export const searchAddress = async (query: string) => {
 export const getProducts = async (filter?: IProductFilter): Promise<IGetProductListResponse> => {
   try {
     let url = apiConfig.endpoints.core.getProducts;
-    
+
     // 필터 옵션이 있는 경우 쿼리 파라미터 추가
     if (filter) {
       const params = new URLSearchParams();
@@ -171,7 +171,3 @@ export const getProductById = async (id: number): Promise<IGetProductDetailRespo
     throw error;
   }
 };
-
-
-
-

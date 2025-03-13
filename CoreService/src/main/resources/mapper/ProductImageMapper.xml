@@ -15,6 +15,9 @@
         SELECT * FROM ProductImages WHERE product_id = #{productId}
     </select>
 
+    <select id="findById" parameterType="long" resultType="com.example.demo.model.Market.ProductImage">
+        SELECT * FROM ProductImages WHERE id = #{imageId}
+    </select>
 
 </mapper>
 

@@ -20,10 +20,12 @@ public class Product {
     private Long hobbyId;  // FK (Hobbies 테이블)
     private String transactionType;
     private String registrationType;
-    private int maxParticipants;  // 모집인원 추가
-    private LocalDateTime startDate;  // 일정 시작일 추가
-    private LocalDateTime endDate;  // 일정 종료일 추가
-    private String days; // days 필드 추가
+    private int maxParticipants;  // 모집인원
+    private int currentParticipants; // 현재 모집된 인원
+    private boolean isVisible; // 모집 가능 여부
+    private String days; // 추가
+    private LocalDateTime startDate;  // 일정 시작일
+    private LocalDateTime endDate;  // 일정 종료일
     private Double latitude; // 거래 장소 위도 (대면 거래일 경우 필수)
     private Double longitude; // 거래 장소 경도 (대면 거래일 경우 필수)
     private String meetingPlace; // 거래 장소명 (대면 거래일 경우 필수)
@@ -31,9 +33,12 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // 이미지 경로 리스트 추가
-    private List<String> imagePaths;
+    // Join 한 유저 정보
+    private String nickname;
+    private String bio;
+    private int dopamine;
 
-    // 대표 이미지 추가
-    private String thumbnailPath;
+    // Join 한 이미지 정보
+    private List<String> imagePaths;  // 이미지 리스트
+    private String thumbnailPath;  // 대표 이미지
 }

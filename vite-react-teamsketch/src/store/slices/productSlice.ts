@@ -11,7 +11,7 @@ const initialState: ProductState = {
   registerForm: {
     title: '',
     description: '',
-    price: 0,
+    price: '',
     email: '',
     categoryId: 0,
     transactionType: '',
@@ -45,7 +45,9 @@ const productSlice = createSlice({
       state.registerForm.images = [...(state.registerForm.images || []), action.payload];
     },
     removeProductImage: (state, action: PayloadAction<number>) => {
-      state.registerForm.images = state.registerForm.images?.filter((_, index) => index !== action.payload);
+      state.registerForm.images = state.registerForm.images?.filter(
+        (_, index) => index !== action.payload
+      );
     },
     resetProductForm: (state) => {
       state.registerForm = initialState.registerForm;

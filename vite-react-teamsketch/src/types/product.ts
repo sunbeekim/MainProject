@@ -1,7 +1,7 @@
 export interface IProductRegister {
   title: string;
   description: string;
-  price: number;
+  price: string;
   email: string;
   categoryId?: number;
   transactionType: string;
@@ -42,7 +42,7 @@ export interface IGetProduct {
   productCode: string;
   title: string;
   description: string;
-  price: number;
+  price: string;
   email: string;
   categoryId: number;
   hobbyId: number;
@@ -69,7 +69,7 @@ export interface IGetProductDetailResponse {
   productCode: string;
   title: string;
   description: string;
-  price: number;
+  price: string;
   email: string;
   categoryId: number;
   hobbyId: number;
@@ -103,8 +103,7 @@ export interface IProductFilter {
   sort?: 'price' | 'createdAt';
 }
 
-export interface IProductFilter{
+export interface IProductFilter {
   categoryId?: number;
   sort?: 'price' | 'createdAt';
 }
-

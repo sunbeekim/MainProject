@@ -37,7 +37,7 @@ const MyPageLayout = ({
   dopamine = 85;
 
   return (
-    <div className="h-full w-full bg-white dark:bg-gray-800">
+    <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">
       <Grid cols={1} className="p-4 gap-6">
         {/* 프로필 이미지 */}
         <GridItem>
@@ -53,7 +53,7 @@ const MyPageLayout = ({
 
         {/* 사용자 기본 정보 */}
         <GridItem>
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-2 border-b border-primary-200 dark:border-gray-700 pb-4">
             <p className="text-xl font-semibold">{email ? email : '홍길동@example.com'}</p>
             <p className="text-gray-600 dark:text-gray-300">{name ? name : '홍길동'}</p>
             <p className="text-gray-500 dark:text-gray-200">{nickname ? nickname : 'OooO'}</p>
@@ -62,7 +62,7 @@ const MyPageLayout = ({
 
         {/* 통계 정보 */}
         <GridItem>
-          <div className="grid grid-cols-3 gap-4 bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+          <div className="grid grid-cols-3 gap-4 border-b border-primary-200 bg-primary-50 dark:bg-gray-700 dark:border-gray-700 rounded-xl p-4">
             <div className="text-center">
               <p className="text-sm text-gray-500 dark:text-gray-400">팔로워</p>
               <p className="text-lg font-bold text-primary">{followerCount}</p>
@@ -91,29 +91,29 @@ const MyPageLayout = ({
                   flex items-center justify-between
                   rounded-xl
                   transition-all duration-300
-                  border border-gray-100 dark:border-gray-700
-                  bg-white dark:bg-gray-800
+                  border border-primary-200 dark:border-gray-700
+                  bg-primary-50 dark:bg-gray-700
                   ${item.color}
                   group
                 `}
               >
                 <div className="flex items-center gap-4">
                   <div
-                    className="text-gray-400 dark:text-gray-500 
+                    className="text-black-400 dark:text-gray-500 
                     group-hover:text-primary dark:group-hover:text-primary-light 
                     transition-colors duration-300"
                   >
                     {item.icon}
                   </div>
                   <span
-                    className="font-medium text-gray-700 dark:text-gray-300
+                    className="font-medium text-black dark:text-gray-300
                     group-hover:text-primary dark:group-hover:text-primary-light"
                   >
                     {item.label}
                   </span>
                 </div>
                 <div
-                  className="text-gray-400 dark:text-gray-500 
+                  className="text-black-400 dark:text-gray-500 
                   group-hover:text-primary dark:group-hover:text-primary-light 
                   group-hover:transform group-hover:translate-x-1 
                   transition-all duration-300"

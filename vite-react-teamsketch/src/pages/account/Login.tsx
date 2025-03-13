@@ -84,7 +84,9 @@ const Login = () => {
       }
     } catch (err) {
       setError(
-        err instanceof Error ? (err as any).response.data.data.message : '로그인 중 오류가 발생했습니다.'
+        err instanceof Error
+          ? (err as any).response.data.data.message
+          : '로그인 중 오류가 발생했습니다.'
       );
       console.error('로그인 에러:', err);
     } finally {
@@ -153,8 +155,7 @@ const Login = () => {
           loginButton={
             <Button
               type="submit"
-              variant="primary"
-              className="w-full"
+              className="w-full bg-primary-500 text-white"
               data-testid="login-button"
               disabled={isLoading}
             >
@@ -164,7 +165,7 @@ const Login = () => {
           divider={
             <div className="relative my-6 h-px bg-gray-300 dark:bg-gray-700">
               <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 px-4 text-sm text-gray-500">
-                or
+                OR
               </span>
             </div>
           }
@@ -187,7 +188,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate('/signup')}
-                className="text-primary-light hover:text-primary-dark"
+                className="text-primary-500 shadow-none hover:text-primary-dark"
               >
                 회원가입
               </button>
@@ -212,12 +213,12 @@ const Login = () => {
             disabled={isLoading}
             error={validationErrors.password}
           />
+          {error && (
+            <div className="text-red-500 text-sm text-center mt-2" role="alert">
+              {error}
+            </div>
+          )}
         </LoginLayout>
-        {error && (
-          <div className="text-red-500 text-sm text-center mt-2" role="alert">
-            {error}
-          </div>
-        )}
       </form>
     </>
   );

@@ -1,6 +1,8 @@
 interface IconProps {
   className?: string;
   onClick?: () => void;
+  hasNotification?: boolean;
+  notificationCount?: number;
 }
 
 export const IconHome = ({ className = '' }: IconProps) => (
@@ -45,19 +47,61 @@ export const IconLogout = ({ className = '', onClick }: IconProps) => (
   </svg>
 );
 
-export const Iconalarm = ({ className = "",onClick}: IconProps) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" className={className} onClick={() => {
-    if (onClick) {onClick();} else {alert("알람이 없습니다.");}}}>
-  <path d="M4 19V17H6V10C6 8.61667 6.41667 7.39167 7.25 6.325C8.08333 5.24167 9.16667 4.53333 10.5 4.2V3.5C10.5 3.08333 10.6417 2.73333 10.925 2.45C11.225 2.15 11.5833 2 12 2C12.4167 2 12.7667 2.15 13.05 2.45C13.35 2.73333 13.5 3.08333 13.5 3.5V4.2C14.8333 4.53333 15.9167 5.24167 16.75 6.325C17.5833 7.39167 18 8.61667 18 10V17H20V19H4ZM12 22C11.45 22 10.975 21.8083 10.575 21.425C10.1917 21.025 10 20.55 10 20H14C14 20.55 13.8 21.025 13.4 21.425C13.0167 21.8083 12.55 22 12 22ZM8 17H16V10C16 8.9 15.6083 7.95833 14.825 7.175C14.0417 6.39167 13.1 6 12 6C10.9 6 9.95833 6.39167 9.175 7.175C8.39167 7.95833 8 8.9 8 10V17Z" fill="#660033"/>
-</svg>
+export const Iconalarm = ({ className = '', onClick, hasNotification = false }: IconProps) => (
+  <div className="relative">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="30"
+      height="30"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={`transition-colors duration-300 ${className}`}
+      onClick={() => {
+        if (onClick) {
+          onClick();
+        } else {
+          alert('알람이 없습니다.');
+        }
+      }}
+    >
+      <path
+        d="M4 19V17H6V10C6 8.61667 6.41667 7.39167 7.25 6.325C8.08333 5.24167 9.16667 4.53333 10.5 4.2V3.5C10.5 3.08333 10.6417 2.73333 10.925 2.45C11.225 2.15 11.5833 2 12 2C12.4167 2 12.7667 2.15 13.05 2.45C13.35 2.73333 13.5 3.08333 13.5 3.5V4.2C14.8333 4.53333 15.9167 5.24167 16.75 6.325C17.5833 7.39167 18 8.61667 18 10V17H20V19H4ZM12 22C11.45 22 10.975 21.8083 10.575 21.425C10.1917 21.025 10 20.55 10 20H14C14 20.55 13.8 21.025 13.4 21.425C13.0167 21.8083 12.55 22 12 22ZM8 17H16V10C16 8.9 15.6083 7.95833 14.825 7.175C14.0417 6.39167 13.1 6 12 6C10.9 6 9.95833 6.39167 9.175 7.175C8.39167 7.95833 8 8.9 8 10V17Z"
+        className={`${
+          hasNotification ? 'fill-primary-50' : 'fill-primary-500 hover:fill-primary-400'
+        }`}
+      />
+    </svg>
+    {hasNotification && (
+      <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
+    )}
+  </div>
 );
-export const PlusIcon = ({ className = "" }: IconProps) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" className={className}>
-    <mask id="mask0_254_5851" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
-      <path d="M9.00016 1.33333C9.00016 0.781043 8.55245 0.333328 8.00016 0.333328C7.44788 0.333328 7.00016 0.781043 7.00016 1.33333V6.99999H1.3335C0.781212 6.99999 0.333496 7.44771 0.333496 7.99999C0.333496 8.55228 0.781212 8.99999 1.3335 8.99999H7.00016V14.6667C7.00016 15.2189 7.44788 15.6667 8.00016 15.6667C8.55245 15.6667 9.00016 15.2189 9.00016 14.6667V9H14.6668C15.2191 9 15.6668 8.55228 15.6668 8C15.6668 7.44771 15.2191 7 14.6668 7H9.00016V1.33333Z" fill="#006FFD"/>
+
+export const PlusIcon = ({ className = '' }: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    className={className}
+  >
+    <mask
+      id="mask0_254_5851"
+      style={{ maskType: 'alpha' }}
+      maskUnits="userSpaceOnUse"
+      x="0"
+      y="0"
+      width="16"
+      height="16"
+    >
+      <path
+        d="M9.00016 1.33333C9.00016 0.781043 8.55245 0.333328 8.00016 0.333328C7.44788 0.333328 7.00016 0.781043 7.00016 1.33333V6.99999H1.3335C0.781212 6.99999 0.333496 7.44771 0.333496 7.99999C0.333496 8.55228 0.781212 8.99999 1.3335 8.99999H7.00016V14.6667C7.00016 15.2189 7.44788 15.6667 8.00016 15.6667C8.55245 15.6667 9.00016 15.2189 9.00016 14.6667V9H14.6668C15.2191 9 15.6668 8.55228 15.6668 8C15.6668 7.44771 15.2191 7 14.6668 7H9.00016V1.33333Z"
+        fill="#006FFD"
+      />
     </mask>
     <g mask="url(#mask0_254_5851)">
-      <rect width="16" height="16" fill="#6003FF"/>
+      <rect width="16" height="16" fill="#6003FF" />
     </g>
   </svg>
 );

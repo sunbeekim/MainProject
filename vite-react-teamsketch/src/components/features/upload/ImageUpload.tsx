@@ -20,6 +20,7 @@ interface ImageUploadProps {
   images?: File[];
   onRemove?: (index: number) => void;
   maxImages?: number;
+  borderStyle?: string;
 }
 
 type ImageUploadType = 'ocr' | 'image' | 'profile' | 'prod';
@@ -34,7 +35,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   multiple = false,
   images = [],
   onRemove,
-  maxImages = 10
+  maxImages = 10,
+  borderStyle = ''
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -81,10 +83,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex flex-col items-center gap-4">
-        <div className="flex gap-4">
-          {type === 'ocr' && <CameraCapture onCapture={handleFileSelect} />}
-          {type === 'image' && <ImageSelector onFileSelect={handleFileSelect} />}
-          {type === 'prod' && <ProdSelector onFileSelect={handleFileSelect} />}
+        <div className={`flex gap-4 ${borderStyle}`}>
+          {type === 'ocr' && (
+            <CameraCapture onCapture={handleFileSelect} className="text-primary-500" />
+          )}
+          {type === 'image' && (
+            <ImageSelector onFileSelect={handleFileSelect} className="text-primary-500" />
+          )}
+          {type === 'prod' && (
+            <ProdSelector onFileSelect={handleFileSelect} className="text-primary-500" />
+          )}
           {type === 'profile' && (
             <ProfileSelector
               onFileSelect={handleFileSelect}
@@ -175,7 +183,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
         {/* 단일 이미지 업로드 버튼 */}
         {!multiple && selectedFile && (
-          <Button variant="primary" onClick={handleUpload} disabled={isLoading}>
+          <Button className="bg-primary-400" onClick={handleUpload} disabled={isLoading}>
             {isLoading ? '업로드 중...' : '업로드'}
           </Button>
         )}

@@ -6,11 +6,13 @@ import PrivateRoute from './routes/PrivateRoute';
 import Login from './pages/account/Login';
 import Signup from './pages/account/Signup';
 import MainLayout from './components/layout/MainLayout';
+import { useCategories } from './hooks/useCategories';
 
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuthPage = ['/login', '/signup'].includes(location.pathname);
+  useCategories();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -23,8 +25,8 @@ const App = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className={`flex-1 ${isAuthPage ? 'bg-gray-50 dark:bg-gray-900' : ''}`}>
+      {!isAuthPage && <Header />}
+      <main className={`flex-1 ${!isAuthPage ? 'pt-12' : ''}`}>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
@@ -34,16 +36,14 @@ const App = () => {
           <Route
             path="/*"
             element={
-              <PrivateRoute>
-                <div className="pb-16">
-                  <MainLayout />
-                </div>
+              <PrivateRoute>                
+                <MainLayout />               
               </PrivateRoute>
             }
           />
         </Routes>
       </main>
-      <Footer />
+      {!isAuthPage && <Footer />}
     </div>
   );
 };
