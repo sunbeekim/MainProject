@@ -37,7 +37,7 @@ const MyPageLayout = ({
   dopamine = 85;
 
   return (
-    <div className="h-full w-full bg-white dark:bg-gray-800">
+    <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">
       <Grid cols={1} className="p-4 gap-6">
         {/* 프로필 이미지 */}
         <GridItem>
