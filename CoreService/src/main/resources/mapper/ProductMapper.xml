@@ -9,10 +9,12 @@
         INSERT INTO products (
         product_code, title, description, price, email, category_id, hobby_id,  <!-- hobby_id 추가 -->
         transaction_type, registration_type, max_participants, start_date, end_date,  <!-- 모집인원, 일정 기간 추가 -->
+        days, <!-- days 필드 추가 -->
         latitude, longitude, meeting_place, address, created_at, updated_at
         ) VALUES (
         #{productCode}, #{title}, #{description}, #{price}, #{email}, #{categoryId}, #{hobbyId},  <!-- hobby_id 추가 -->
         #{transactionType}, #{registrationType}, #{maxParticipants}, #{startDate}, #{endDate},  <!-- 모집인원, 일정 기간 추가 -->
+        #{days}, <!-- days 값 추가 -->
         #{latitude}, #{longitude}, #{meetingPlace}, #{address},
         NOW(), NOW()
         )

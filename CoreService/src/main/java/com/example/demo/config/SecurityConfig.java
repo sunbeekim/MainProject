@@ -3,6 +3,8 @@ package com.example.demo.config;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +42,8 @@ public class SecurityConfig {
                             "/api/core/hobbies/*/categories",
                             "/api/core/hobbies/categories/*",  // 카테고리별 취미 목록 조회 접근 허용
                             "/api/core/profiles/user/*",  // 닉네임으로 공개 프로필 조회는 인증 없이 접근 가능
-                            "/api/core/market/*"
+                            "/api/core/market/*",
+                            "/ws/**"  // WebSocket 엔드포인트 접근 허용
                         ).permitAll() 
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
 
@@ -57,5 +60,12 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12); // 보안 강도 12 권장
+    }
+    
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // LocalDateTime 등의 Java 8 시간 타입 지원
+        return objectMapper;
     }
 }

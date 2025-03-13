@@ -23,6 +23,7 @@ public class Product {
     private int maxParticipants;  // 모집인원 추가
     private LocalDateTime startDate;  // 일정 시작일 추가
     private LocalDateTime endDate;  // 일정 종료일 추가
+    private String days; // days 필드 추가
     private Double latitude; // 거래 장소 위도 (대면 거래일 경우 필수)
     private Double longitude; // 거래 장소 경도 (대면 거래일 경우 필수)
     private String meetingPlace; // 거래 장소명 (대면 거래일 경우 필수)
