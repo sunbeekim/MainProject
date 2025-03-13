@@ -49,7 +49,6 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, isDisabled]);
-
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* 헤더 */}
@@ -122,24 +121,29 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
                   )}
                 </div>
               ) : (
-                <div className="max-w-[80%] bg-primary-500 text-white px-4 py-2 rounded-2xl rounded-tr-sm shadow-md">
-                  {msg.text}
-                </div>
-              )}
-              <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                <span>{msg.timestamp}</span>
-                <button
-                  onClick={() => handleMessageDelete(index)}
-                  className="px-1.5 py-0.5 text-[10px] text-gray-400 hover:text-red-500 rounded transition-colors"
-                >
-                  삭제
-                </button>
-              </div>
+                <a href={msg.file.url} download={msg.file.name} className="block-1 p-2 border text-sm text-black rounded-lg bg-white shadow-md
+                ">
+                  📄 {msg.file.name} (다운로드)
+                </a>//파일 미리보기
+              )
+            ) : (
+              <div className="bg-white p-3 rounded-lg shadow-md w-max">{msg.text}</div>//텍스트 메시지
+            )}
+
+            {/* 메시지 전송 시간 표시 */}
+            <div className="text-xs text-gray-500 mt-2">{msg.timestamp}</div>
+          
+            {/* 메시지 삭제 버튼 */}
+            <button
+              onClick={() => handleMessageDelete(index)}
+              className=" text-gray-400 hover:text-secondary-dark hover:bg-transparent bg-transparent py-0 px-0.5 text-xs"
+            >
+              삭제
+              </button>
             </div>
           </div>
         ))}
       </div>
-
       {/* 하단 입력 영역 */}
       <div className="relative bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700">
         <MessageInput onSendMessage={handleSendMessage} />
