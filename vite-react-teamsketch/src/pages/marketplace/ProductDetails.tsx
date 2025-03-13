@@ -32,7 +32,7 @@ const ProductDetails = () => {
     meetingPlace: '',
     address: '',
     title: '상품명이 없습니다.',
-    price: 0,
+    price: '',
     categoryId: 0,
     hobbyId: 0,
     latitude: 0,
@@ -71,8 +71,8 @@ const ProductDetails = () => {
   );
 
   // 가격 포맷팅 함수
-  const formatPrice = (price: number) => {
-    return price.toLocaleString('ko-KR');
+  const formatPrice = (price: string) => {
+    return price;
   };
 
   // 거래 유형 포맷팅

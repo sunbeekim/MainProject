@@ -1,4 +1,4 @@
-import MessageInput from "./MessageInput";
+import MessageInput from "../../components/features/chat/MessageInput";
 import { useState } from "react";
 import { useRef, useEffect } from "react";
 interface ChatRoomProps {
@@ -123,7 +123,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
                 <span>{msg.timestamp}</span>
                 <button
                   onClick={() => handleMessageDelete(index)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-600"
+                  className="px-1.5 py-0.5 text-[10px] text-gray-400 hover:text-red-500 rounded transition-colors"
                 >
                   삭제
                 </button>

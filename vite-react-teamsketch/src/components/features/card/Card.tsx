@@ -4,7 +4,7 @@ interface CardProps {
   image?: string;
   onClick?: () => void;
   className?: string;
-  price?: number;
+  price?: string;
   dopamine?: number;
   currentParticipants?: number;
   maxParticipants?: number;
@@ -76,7 +76,7 @@ const Card = ({
         <div className="flex justify-between items-center mt-auto">
           {price !== undefined && (
             <span className="text-primary-600 dark:text-primary-400 font-semibold text-sm">
-              {price.toLocaleString()}원
+              {price}원
             </span>
           )}
           

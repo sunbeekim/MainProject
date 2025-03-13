@@ -2,7 +2,7 @@ interface GridProps {
   children: React.ReactNode;
   cols?: 1 | 2 | 3 | 4 | 5 | 6 | 12;
   rows?: 1 | 2 | 3 | 4 | 5 | 6;
-  gap?: 'xs' | 'sm' | 'md' | 'lg';
+  gap?: 'none' | 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
 }
 

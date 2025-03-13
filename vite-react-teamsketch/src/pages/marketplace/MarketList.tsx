@@ -103,7 +103,7 @@ const MarketList = () => {
                       ? `${product.thumbnailPath}`
                       : ('image' in product ? product.image : '')
                   }
-                  price={product.price}
+                  price={product.price.toString()}
                   dopamine={'dopamine' in product ? product.dopamine : 5}
                   currentParticipants={
                     'currentParticipants' in product ? product.currentParticipants : 0

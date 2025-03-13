@@ -13,7 +13,8 @@ import { RiUserFill } from 'react-icons/ri';
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
- const isChatRoom =location.pathname.includes('/chat/');
+  const isChatRoom =location.pathname.includes('/chat/');
+  const isServiceChat =location.pathname.includes('/servicechat');
 
   const getPathForLabel = (label: string) => {
     switch (label) {
@@ -61,7 +62,7 @@ const Footer = () => {
       onClick: () => navigate('/mypage')
     }
   ];
-  if (isChatRoom) {
+  if (isChatRoom || isServiceChat) {
     return null; // 채팅방 페이지에서는 Footer를 렌더링하지 않음
   }
   return (

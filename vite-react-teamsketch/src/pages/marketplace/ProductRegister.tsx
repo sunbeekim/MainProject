@@ -310,7 +310,7 @@ const ProductRegister = () => {
           type="prod"
           multiple={true}
           images={registerForm.images}
-          borderStyle="border-primary-300 border-2 rounded-lg"
+          borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500"
           onFileSelect={(file) => {
             const formData = new FormData();
             formData.append('file', file);
