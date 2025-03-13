@@ -13,6 +13,7 @@ interface PRLayoutProps {
   images?: React.ReactNode;
   description?: React.ReactNode;
   submitButton?: React.ReactNode;
+  meetingPlace?: React.ReactNode;
 }
 
 const PRLayout = ({
@@ -26,7 +27,8 @@ const PRLayout = ({
   schedule,
   images,
   description,
-  submitButton
+  submitButton,
+  meetingPlace
 }: PRLayoutProps) => {
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">
@@ -51,6 +53,9 @@ const PRLayout = ({
               {registrationType}
             </GridItem>
           </Grid>
+
+          {/* 대면 거래 장소 */}
+          <div className="space-y-2">{meetingPlace}</div>
 
           {/* 카테고리 */}
           <div className="space-y-2">{category}</div>

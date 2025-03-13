@@ -25,7 +25,6 @@ const ProductRegister = () => {
   const dispatch = useAppDispatch();
   const { registerForm, isLoading } = useAppSelector((state) => state.product);
   const { user } = useAppSelector((state) => state.user);
-  console.log(registerForm);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -37,11 +36,7 @@ const ProductRegister = () => {
   };
 
   const handleInterestSelect = (categoryId: number) => {
-    dispatch(
-      updateProductForm({
-        categoryId
-      })
-    );
+    dispatch(updateProductForm({ categoryId }));
   };
 
   const handleHobbySelect = (categoryId: number, hobbyId: number) => {
@@ -93,35 +88,34 @@ const ProductRegister = () => {
         description: registerForm.description,
         price: registerForm.price,
         email: user.email,
-        hobbyId: registerForm.hobbyId,
-        categoryId: registerForm.categoryId,
+        hobbyId: registerForm.hobbyId || 0,
+        categoryId: registerForm.categoryId || 0,
         transactionType: registerForm.transactionType,
         registrationType: registerForm.registrationType,
         meetingPlace: registerForm.meetingPlace,
-        latitude: registerForm.latitude,
-        longitude: registerForm.longitude,
+        latitude: registerForm.latitude || undefined,
+        longitude: registerForm.longitude || undefined,
         address: registerForm.address,
         maxParticipants: Number(registerForm.maxParticipants) || 1,
-        selectedDays: registerForm.selectedDays || [],
-        startDate: registerForm.startDate,
-        endDate: registerForm.endDate
+        days: registerForm.days || [],
+        startDate: registerForm.startDate || '',
+        endDate: registerForm.endDate || ''
       };
 
-      console.log('productData', productData);
-
       const response = await registerProduct(productData, registerForm.images || []);
+      
 
       if (response.status === 'success') {
         dispatch(resetProductForm());
         navigate('/');
       } else {
-        throw new Error(response.data.message || '상품 등록에 실패했습니다.');
+        throw new Error(response.message || '상품 등록에 실패했습니다.');
       }
     } catch (error) {
       dispatch(setError(error instanceof Error ? error.message : '상품 등록에 실패했습니다.'));
     }
   };
-
+  console.log('productData', registerForm);
   return (
     <PRLayout
       title={<h1>상품 등록</h1>}
@@ -228,8 +222,14 @@ const ProductRegister = () => {
           </BaseLabelBox>
         </div>
       }
+      meetingPlace={
+        <BaseLabelBox label="장소">
+          {registerForm.meetingPlace ? registerForm.meetingPlace : '장소를 선택해주세요'}
+        </BaseLabelBox>
+      }
       participants={
         <div className="flex items-center gap-4">
+          모집인원
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -297,9 +297,9 @@ const ProductRegister = () => {
               <label className="text-sm text-gray-600 mb-2 block">진행 요일</label>
               <DaySelect
                 onDaySelect={(days: string[]) => {
-                  dispatch(updateProductForm({ selectedDays: days }));
+                  dispatch(updateProductForm({ days: days }));
                 }}
-                selectedDays={registerForm.selectedDays || []}
+                selectedDays={registerForm.days || []}
               />
             </div>
           </div>
