@@ -22,21 +22,23 @@ public class ProfileImageService {
     private final FileStorageService fileStorageService;
     
     /**
-     * 프로필 이미지 URL 조회
+     * 프로필 이미지 URL 조회 - static 폴더의 프로필 이미지로 접근하도록 변경
      */
     public String getProfileImageUrl(String email) {
         User user = userMapper.findByEmail(email);
         
         if (user != null && user.getProfileImagePath() != null && !user.getProfileImagePath().isEmpty()) {
+            // 정적 리소스로 접근하도록 URL 구성 변경
             return ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/api/core/profiles/image/")
+                    .path("/profile-images/")
                     .path(user.getProfileImagePath())
                     .toUriString();
         }
         
-        // 기본 이미지 URL 반환
+        // 기본 이미지 URL도 정적 리소스로 접근
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/core/profiles/image/default")
+                .path("/profile-images/")
+                .path(fileStorageService.getDefaultProfileImageName())
                 .toUriString();
     }
     
