@@ -91,7 +91,7 @@ const ProductRegister = () => {
       const productData = {
         title: registerForm.title,
         description: registerForm.description,
-        price: Number(registerForm.price),
+        price: registerForm.price,
         email: user.email,
         hobbyId: registerForm.hobbyId,
         categoryId: registerForm.categoryId,
@@ -154,20 +154,24 @@ const ProductRegister = () => {
             <RadioButton
               label="대면"
               value="대면"
+              checkedTextColor='text-white'
+              checkedBackgroundColor='bg-primary-500'
               checked={registerForm.transactionType === '대면'}
               onChange={(value) => handleRadioButtonChange('transactionType', value)}
               variant="circle"
               size="sm"
-              className="shadow-sm"
+              className="shadow-sm border-primary-300 border-2 rounded-lg"
             />
             <RadioButton
               label="비대면"
               value="비대면"
+              checkedTextColor='text-white'
+              checkedBackgroundColor='bg-primary-500'
               checked={registerForm.transactionType === '비대면'}
               onChange={(value) => handleRadioButtonChange('transactionType', value)}
               variant="circle"
               size="sm"
-              className="shadow-sm"
+              className="shadow-sm border-primary-300 border-2 rounded-lg"
             />
             {registerForm.transactionType === '대면' && (
               <BaseButton variant="primary" onClick={() => navigate('/product/location')}>
@@ -182,20 +186,24 @@ const ProductRegister = () => {
           <RadioButton
             label="판매"
             value="판매"
+            checkedTextColor='text-white'
+            checkedBackgroundColor='bg-primary-500'
             checked={registerForm.registrationType === '판매'}
             onChange={(value) => handleRadioButtonChange('registrationType', value)}
             variant="circle"
             size="sm"
-            className="shadow-sm"
+            className="shadow-sm border-primary-300 border-2 rounded-lg"
           />
           <RadioButton
             label="구매"
             value="구매"
             checked={registerForm.registrationType === '구매'}
+            checkedTextColor='text-white'
+            checkedBackgroundColor='bg-primary-500'
             onChange={(value) => handleRadioButtonChange('registrationType', value)}
             variant="circle"
             size="sm"
-            className="shadow-sm"
+            className="shadow-sm border-primary-300 border-2 rounded-lg"
           />
         </div>
       }
@@ -222,37 +230,41 @@ const ProductRegister = () => {
       }
       participants={
         <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() =>
-              dispatch(
-                updateProductForm({
-                  maxParticipants: registerForm.maxParticipants
-                    ? registerForm.maxParticipants - 1
-                    : 0
-                })
-              )
-            }
-            className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center "
-          >
-            -
-          </button>
-          <span>{registerForm.maxParticipants}</span>
-          <button
-            type="button"
-            onClick={() =>
-              dispatch(
-                updateProductForm({
-                  maxParticipants: registerForm.maxParticipants
-                    ? registerForm.maxParticipants + 1
-                    : 1
-                })
-              )
-            }
-            className="border p-2 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center"
-          >
-            +
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if ((registerForm.maxParticipants ?? 1) > 1) {
+                  dispatch(
+                    updateProductForm({
+                      maxParticipants: registerForm.maxParticipants
+                        ? registerForm.maxParticipants - 1
+                        : 1
+                    })
+                  )
+                }
+              }}
+              className="border p-2 border-primary-500 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center text-black text-lg focus:text-white focus:bg-primary-500 transition-colors"
+            >
+              -
+            </button>
+            <span>{registerForm.maxParticipants}</span>
+            <button
+              type="button"
+              onClick={() =>
+                dispatch(
+                  updateProductForm({
+                    maxParticipants: registerForm.maxParticipants
+                      ? registerForm.maxParticipants + 1
+                      : 0
+                  })
+                )
+              }
+              className="border p-2 border-primary-500 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center text-black text-lg focus:text-white focus:bg-primary-500 transition-colors"
+            >
+                +
+              </button>
+          </div>
         </div>
       }
       schedule={
@@ -298,6 +310,7 @@ const ProductRegister = () => {
           type="prod"
           multiple={true}
           images={registerForm.images}
+          borderStyle="border-primary-300 border-2 rounded-lg"
           onFileSelect={(file) => {
             const formData = new FormData();
             formData.append('file', file);
@@ -312,6 +325,7 @@ const ProductRegister = () => {
         <BaseLabelBox label="상품 설명">
           <TextAreaInput
             name="description"
+            className='border-primary-300 border-2'
             value={registerForm.description}
             onChange={handleChange}
             placeholder="상품에 대한 상세한 설명을 입력하세요"
