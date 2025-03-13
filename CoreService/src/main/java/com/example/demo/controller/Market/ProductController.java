@@ -118,7 +118,7 @@ public class ProductController {
     }
 
 
-    /** ✅ 특정 사용자가 등록한 상품 목록 조회 (구매, 판매, 구매 요청, 판매 요청) **/
+    /** 특정 사용자가 등록한 상품 목록 조회 (구매, 판매, 구매 요청, 판매 요청) **/
     @PostMapping("/users")
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getProductsByUserAndType(
             @RequestHeader("Authorization") String token,

@@ -11,9 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseResponse<T> {
-    private String status;  // ✅ 상태 필드 추가
-    private String message; // ✅ 메시지 필드 추가
-    private T data;
+    private String status;  // ✅ "success" 또는 "error"
+    private String message; // ✅ 응답 메시지
+    private T data;         // ✅ 응답 데이터 (에러 시 null)
 
     // ✅ 성공 응답 생성자
     public BaseResponse(T data) {
@@ -29,10 +29,13 @@ public class BaseResponse<T> {
         this.data = data;
     }
 
-    // ✅ 에러 응답 (명확한 타입 지정)
-    public BaseResponse(String status, String message) {
-        this.status = status;
-        this.message = message;
-        this.data = null;  // ✅ 에러일 경우 data를 null로 설정
+    // ✅ 에러 응답을 제네릭 타입에 맞게 반환 (🚀 중요!)
+    public static <T> BaseResponse<T> errorResponse(String message, T data) {
+        return new BaseResponse<>("error", message, data);
+    }
+
+    // ✅ 데이터가 필요 없는 에러 응답
+    public static <T> BaseResponse<T> errorResponse(String message) {
+        return new BaseResponse<>("error", message, null);
     }
 }

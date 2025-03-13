@@ -108,7 +108,7 @@ public class ProductService {
 
         } catch (Exception ex) {
             return ResponseEntity.internalServerError()
-                    .body(new BaseResponse<>("error", "상품 등록 중 오류 발생: " + ex.getMessage()));
+                    .body(BaseResponse.<ProductResponse>errorResponse("상품 등록 중 오류 발생: " + ex.getMessage()));
         }
     }
 
@@ -155,8 +155,6 @@ public class ProductService {
 
             // 최종 응답 데이터 구성
             Map<String, Object> responseData = new HashMap<>();
-            responseData.put("status", "success");
-            responseData.put("message", "상품 요청이 등록되었습니다.");
             responseData.put("requestInfo", requestInfo);
             responseData.put("requestedProductId", product.getId()); // 요청한 상품 ID 포함
             responseData.put("productInfo", convertToProductResponse(product)); // `convertToProductResponse()`로 변환된 데이터 사용

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.Market.UserLocationMapper">
+
+    <!-- 사용자 위치 저장 또는 업데이트 -->
+    <insert id="insertOrUpdateUserLocation">
+        INSERT INTO UserLocation (email, location_name, latitude, longitude, recorded_at)
+        VALUES (#{email}, #{locationName}, #{latitude}, #{longitude}, NOW())
+        ON DUPLICATE KEY UPDATE
+                             location_name = VALUES(location_name),
+                             latitude = VALUES(latitude),
+                             longitude = VALUES(longitude),
+                             recorded_at = NOW();
+    </insert>
+
+    <!-- 사용자 위치 조회 -->
+    <select id="getUserLocation" resultType="com.example.demo.model.Market.UserLocation">
+        SELECT * FROM UserLocation WHERE email = #{email};
+    </select>
+
+</mapper>
