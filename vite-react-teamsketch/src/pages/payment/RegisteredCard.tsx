@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom"; // React Router v6에서 useNavi
 import ImageUpload from "../../components/features/upload/ImageUpload";
 import { fileUpload } from "../../services/api/cloudAPI";
 import { useState } from "react";
+import { useAppSelector,useAppDispatch } from "../../store/hooks";
+import { RootState } from "../../store/store";
+import { updateCardInfo } from "../../store/slices/cardSlice";
 
 
 interface Card {
@@ -20,13 +23,33 @@ interface OCRResult {
 }
 
 const RegisteredCard = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate(); 
+  const cardInfo = useAppSelector((state: RootState) => state.cardInfo);
 
   const handleCardClick = (cardInfo: Card) => {
     navigate(`/card-details/${cardInfo.id}`); // 상세 페이지로 이동
   };
 
   const [ocrResult, setOcrResult] = useState<OCRResult | null>(null);
+  const cardData = ocrResult?.data.response.split(' ');
+
+  if (cardData) {
+    dispatch(
+      updateCardInfo({
+        cardNum_1: parseInt(cardData[0]) || cardInfo.cardNum_1,
+        cardNum_2: parseInt(cardData[1]) || cardInfo.cardNum_2,
+        cardNum_3: parseInt(cardData[2]) || cardInfo.cardNum_3,
+        cardNum_4: parseInt(cardData[3]) || cardInfo.cardNum_4,
+        cardName: cardData[4] || cardInfo.cardName,
+        cardExpiry: cardData[5] || cardInfo.cardExpiry,
+        lastName: cardData[6] || cardInfo.lastName,
+        firstName:cardData[7] || cardInfo.firstName
+      })    
+    );
+}
+console.log('업데이트된 카드 정보:', cardInfo);
+console.log('OCR 결과:', ocrResult);
 
   const handleOCRUpload = async (formData: FormData) => {
     try {
@@ -62,7 +85,7 @@ const RegisteredCard = () => {
           </div>
         )}
       </div>
-
+     
       <div>
         <h2 className="text-xl font-semibold mb-4">OCR 선택 이미지 업로드 테스트</h2>
         <ImageUpload onUpload={handleOCRUpload} className="max-w-md mx-auto" type="image" borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500" />
@@ -83,6 +106,7 @@ const RegisteredCard = () => {
         )}
       </div>
 
+    
       {/* 상단 헤더 */}
       <div className="flex justify-between items-center mt-5 mb-2">
         <h2 className="text-xl font-bold">등록된 카드</h2>

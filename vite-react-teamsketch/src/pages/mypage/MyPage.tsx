@@ -57,15 +57,16 @@ const MyPage = () => {
     },
     {
 
-      icon: <FaBoxOpen size={20} />,
+      icon: <FaBoxOpen className="w-6 h-6" />,
       label: '상품 관리',
-      color: 'hover:bg-purple-50 dark:hover:bg-purple-900/30',
+      color: 'text-blue-500',
       onClick: () => navigate('/my-products')
     },
     {
       icon: <FaBoxOpen className="w-6 h-6" />,
       label: '거래 내역',
       color: 'text-blue-500',
+      onClick: () => navigate('/transaction-list')
     },
     {
       icon: <FaCreditCard className="w-6 h-6" />,
