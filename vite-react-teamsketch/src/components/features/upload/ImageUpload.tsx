@@ -183,7 +183,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
         {/* 단일 이미지 업로드 버튼 */}
         {!multiple && selectedFile && (
-          <Button variant="primary" onClick={handleUpload} disabled={isLoading}>
+          <Button className="bg-primary-400" onClick={handleUpload} disabled={isLoading}>
             {isLoading ? '업로드 중...' : '업로드'}
           </Button>
         )}
