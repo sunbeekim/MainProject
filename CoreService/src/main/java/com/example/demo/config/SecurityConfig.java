@@ -27,24 +27,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 안함
                 .authorizeHttpRequests(auth -> auth
-
+                        // 인증이 필요 없는 API (모든 사용자 접근 가능)
                         .requestMatchers(
-                            "/api/core/auth/signup", 
-                            "/api/core/auth/login",
-                            "/api/core/hobbies",
-                            "/api/core/hobbies/simple",  // 추가된 API 경로
-                            "/api/core/hobbies/categories",
-                            "/api/core/hobbies/*/categories",
-                            "/api/core/hobbies/categories/*",  // 카테고리별 취미 목록 조회 접근 허용
-                            "/api/core/profiles/user/*",  // 닉네임으로 공개 프로필 조회는 인증 없이 접근 가능
-                            "/api/core/market/*"
-                        ).permitAll() 
-                        .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
+                                "/api/core/auth/signup",
+                                "/api/core/auth/login",
+                                "/api/core/hobbies",
+                                "/api/core/hobbies/simple",  // 추가된 API 경로
+                                "/api/core/hobbies/categories",
+                                "/api/core/hobbies/*/categories",
+                                "/api/core/hobbies/categories/*",  // 카테고리별 취미 목록 조회 접근 허용
+                                "/api/core/profiles/user/*",  // 닉네임으로 공개 프로필 조회는 인증 없이 접근 가능
+                                "/api/core/market/products/requests/approved",
+                                "/api/core/market/products/requests/complete",
+                                "/api/core/market/products/all",
+                                "/api/core/market/products/all/filter",
+                                "/api/core/market/products/images/**",
+                                "/api/core/market/products/{id}"
+                        ).permitAll()
 
-                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                        // 관리자 전용 API
+                        .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN")
+
+                        // 인증이 필요한 API
+                        .requestMatchers(
+                                "/api/core/market/products/registers",
+                                "/api/core/market/products/requests",
+                                "/api/core/market/products/requests/approve",
+                                "/api/core/market/products/users",
+                                "/api/core/market/products/users/registers/buy",
+                                "/api/core/market/products/users/registers/sell",
+                                "/api/core/market/products/users/requests/buy",
+                                "/api/core/market/products/users/requests/sell"
+                        ).authenticated()
+
+                        .anyRequest().authenticated() // 그 외 요청은 모두 인증 필요
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
