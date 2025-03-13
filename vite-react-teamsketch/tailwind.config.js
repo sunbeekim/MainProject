@@ -33,34 +33,69 @@ export default {
       // 색상 시스템
       colors: {
         primary: {
-          light: '#F6CED8', // 연한 핑크
-          DEFAULT: '#CADABE', // 연한 보라
-          dark: '#9FB29E ' // 연한 민트
-          // #F6CED8 (아주 연한 핑크 - 연핑크 느낌)
-          // #ECCEF5 (연한 보라 - 연한 보라)
-          // #CEF6E3 (연한 민트 - 연한 민트
+          50: '#F8F5FF',
+          100: '#E6CCFF',
+          200: '#D1A3FF',
+          300: '#B980FF',
+          400: '#A14EFF',
+          500: '#8A2BE2',
+          600: '#7A00CC',
+          700: '#5700AA',
+          800: '#430086',
+          900: '#2E0066',
+          950: '#190043'
+          // #F8F5FF',
+          // #E6CCFF',
+          // #D1A3FF',
+          // #B980FF',
+          // #A14EFF',
+          // #8A2BE2',
+          // #7A00CC',
+          // #5700AA',
+          // #430086',
+          // #2E0066',
+          // #190043'
         },
         secondary: {
-          light: '#F4F2C0', // 연한 오렌지
-          DEFAULT: '#FBCCC5', // 연한 핑크
-          dark: '#F9B0BA' // 연한 보라
-          // #F6E3CE (연한 오렌지 - 연한 오렌지)
-          // #F6CED8 (연한 핑크 - 연핑크 느낌)
-          // #ECCEF5 (연한 보라 - 연한 보라)
+          50: '#FFF5F8',
+          100: '#FFD6E6',
+          200: '#FFB3D1',
+          300: '#FF8ACF',
+          400: '#FF66B2',
+          500: '#FF3399',
+          600: '#FF007F',
+          700: '#CC0066',
+          800: '#99004D',
+          900: '#660033',
+          950: '#330019'
+        },
+        accent: {
+          50: '#F5FFF8',
+          100: '#D6F5E6',
+          200: '#A3EBCC',
+          300: '#75E1B2',
+          400: '#4AD799',
+          500: '#00CC66',
+          600: '#00A653',
+          700: '#008040',
+          800: '#006633',
+          900: '#00331A',
+          950: '#001A0D'
         },
         background: {
-          light: '#FFFFFF', // 흰색
-          dark: '#2D2D2D' // 어두운 회색
-          // #FFFFFF (흰색 - 흰색)
-          // #2D2D2D (어두운 회색 - 어두운 회색)
+          light: '#FFFFFF',
+          dark: '#1A1A1A'
+        },
+        surface: {
+          light: '#F8F9FA',
+          dark: '#2D2D2D'
         },
         text: {
-          light: '#4A4A4A', // 진한 회색
-          dark: '#F6CED8', // 연한 핑크
-          deeppink: '#FA58F4' // 진한 핑크
-          // #4A4A4A (진한 회색 - 진한 회색)
-          // #F6CED8 (연한 핑크 - 연핑크 느낌)
-          // #FA58F4 (진한 핑크 - 진한 핑크)
+          primary: '#1A1A1A',
+          secondary: '#4A4A4A',
+          tertiary: '#717171',
+          light: '#FFFFFF',
+          dark: '#1A1A1A'
         },
         border: {
           light: '#F9B0BA', // 연한 보라
@@ -163,13 +198,56 @@ export default {
       },
       // 간격 시스템
       spacing: {
-        xs: '0.25rem', // 4px
-        sm: '0.5rem', // 8px
-        md: '1rem', // 16px
-        lg: '1.5rem', // 24px
-        xl: '2rem', // 32px
-        '2xl': '2.5rem', // 40px
-        '3xl': '3rem' // 48px
+        xs: '0.25rem',
+        sm: '0.5rem',
+        md: '1rem',
+        lg: '1.5rem',
+        xl: '2rem',
+        '2xl': '2.5rem',
+        '3xl': '3rem'
+      },
+      borderRadius: {
+        none: '0',
+        sm: '0.25rem',
+        DEFAULT: '0.375rem',
+        md: '0.5rem',
+        lg: '0.75rem',
+        xl: '1rem',
+        '2xl': '1.5rem',
+        full: '9999px'
+      },
+      boxShadow: {
+        sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+        md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+        lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+        xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+        inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)',
+        colored: '0 4px 14px 0 rgba(138, 43, 226, 0.2)'
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.3s ease-in-out',
+        'slide-up': 'slideUp 0.3s ease-out',
+        'slide-down': 'slideDown 0.3s ease-out',
+        'scale-in': 'scaleIn 0.2s ease-out'
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' }
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' }
+        },
+        scaleIn: {
+          '0%': { transform: 'scale(0.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' }
+        }
       },
       // 레이아웃 시스템
       layout: {
@@ -217,23 +295,7 @@ export default {
   plugins: [],
   safelist: [
     {
-      pattern: /^grid-cols-/,
-      variants: ['responsive', 'hover', 'focus', 'active']
-    },
-    {
-      pattern: /^grid-rows-/,
-      variants: ['responsive', 'hover', 'focus', 'active']
-    },
-    {
-      pattern: /^col-span-/,
-      variants: ['responsive', 'hover', 'focus', 'active']
-    },
-    {
-      pattern: /^row-span-/,
-      variants: ['responsive', 'hover', 'focus', 'active']
-    },
-    {
-      pattern: /^gap-/,
+      pattern: /^(grid-cols|grid-rows|col-span|row-span|gap)-/,
       variants: ['responsive', 'hover', 'focus', 'active']
     }
   ]

@@ -4,26 +4,49 @@ import Select from '../components/common/Select';
 import Grid from '../components/common/Grid';
 import GridItem from '../components/common/GridItem';
 import ImageUpload from '../components/features/upload/ImageUpload';
-import { fileUpload } from '../services/api/testAPI';
+import { fileUpload } from '../services/api/cloudAPI';
 import { increment, decrement } from '../store/slices/testSlice';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import SearchInput from '../components/forms/input/SearchInput';
 import { useState } from 'react';
 import InfoBox from '../components/forms/box/InfoBox';
 import CustomInput from '../components/forms/input/CustomInput';
-import DaySection from '../components/layout/DaySelect';
+import DaySection from '../components/forms/radiobutton/DaySelect';
+import ProfileSelector from '../components/features/upload/ProfileSelector';
+
+interface OCRResult {
+  status: string;
+  data: {
+    message: string;
+    response: any; // OCR 응답 데이터의 실제 타입에 맞게 수정할 수 있습니다
+  };
+  code: string;
+}
+
 const TestComponent = () => {
   const dispatch = useAppDispatch();
   const value = useAppSelector((state) => state.test.value);
   const count = useAppSelector((state) => state.test.count);
 
-  const [selectedDay, setSelectedDay] = useState('');
+  const [selectedDay, setSelectedDay] = useState<string[]>([]);
   const options = [
     { value: '1', label: '오름차순' },
     { value: '2', label: '내림차순' }
   ];
 
   const [search, setSearch] = useState('');
+  const [ocrResult, setOcrResult] = useState<OCRResult | null>(null);
+
+  const handleOCRUpload = async (formData: FormData) => {
+    try {
+      const result = await fileUpload.CloudOCR(formData);
+      console.log('OCR 결과:', result);
+      setOcrResult(result);
+    } catch (error) {
+      console.error('OCR 처리 중 오류:', error);
+      setOcrResult(null);
+    }
+  };
 
   return (
     <div className="p-8 space-y-8 flex flex-col items-center justify-center">
@@ -71,56 +94,108 @@ const TestComponent = () => {
         </div>
         <div>
           <h2 className="text-xl font-semibold mb-4">OCR 이미지 업로드 테스트</h2>
-          <ImageUpload onUpload={fileUpload.CloudOCR} className="max-w-md mx-auto" type="ocr" />
+          <ImageUpload onUpload={handleOCRUpload} className="max-w-md mx-auto" type="ocr" />
+          
+          {/* OCR 결과 표시 */}
+          {ocrResult && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-lg font-semibold mb-2">OCR 결과:</h3>
+              <div className="whitespace-pre-wrap break-words">
+                <p>상태: {ocrResult.status}</p>
+                <p>메시지: {ocrResult.data.message}</p>
+                <p>응답 데이터:</p>
+                <pre className="bg-white p-2 rounded mt-2 overflow-x-auto">
+                  {JSON.stringify(ocrResult.data.response, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
         </div>
         <div>
           <h2 className="text-xl font-semibold mb-4">프로필 이미지 업로드 테스트</h2>
-          <ImageUpload onUpload={fileUpload.Profile} className="max-w-md mx-auto" type="profile" />
+          <ImageUpload
+            onUpload={fileUpload.assistProfile}
+            className="max-w-md mx-auto"
+            type="image"
+          />
         </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-4">카운터 테스트</h2>
+          <p>현재 Value 값: {value}</p>
+          <p>현재 Count 값: {count}</p>
+          <Button onClick={() => dispatch(increment(2))}>증가</Button>
+          <Button onClick={() => dispatch(decrement(2))}>감소</Button>
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold mb-4"></h2>
+          <SearchInput value={search} onChange={(e) => setSearch(e.target.value)} name="search" />
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold mb-4">InfoBox 테스트</h2>
+          <InfoBox label="테스트 라벨" content="테스트 컨텐츠" description="테스트 설명" />
+        </div>
+        <div>
+          <CustomInput
+            label="금액"
+            prefix="₩"
+            suffix="원"
+            helperText="1,000원 단위로 입력해주세요"
+          />
+        </div>
+        <div>
+          <CustomInput
+            label="웹사이트"
+            prefix="https://"
+            suffix=".com"
+            helperText="도메인 이름만 입력해주세요"
+          />
+        </div>
+        <div>
+          <CustomInput
+            label="사용자 이름"
+            prefix="이름->"
+            suffix="입니다."
+            helperText="영문, 숫자, 밑줄(_)만 사용 가능합니다"
+          />
+        </div>
+        <div>
+          <button className="bg-border-light">스타일 테스트</button>
+        </div>
+        <div className="bg-purple-level_1">
+          <label className="text-purple_color-level_10">ddddd</label>
+        </div>
+        <div>
+          <DaySection onDaySelect={setSelectedDay} selectedDays={selectedDay} />
+          <br />
+          {selectedDay.join(', ')}
+        </div>
+        <div>
+          <ProfileSelector isEditable={false} size="lg" />
+        </div>
+        <div>
+          <ProfileSelector
+            imageUrl="https://picsum.photos/600/400?random=37"
+            isEditable={true}
+            size="md"
+          />
+        </div>
+        <div>
+          <ImageUpload
+            type="profile"
+            imageUrl="https://picsum.photos/600/400?random=35"
+            className="max-w-md mx-auto"
+            isEdit={false}
+          />
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-4">상품 이미지 업로드</h2>
+          <ImageUpload onUpload={fileUpload.CloudOCR} type="prod" />
+        </div>
+        <br />
+        <br />
       </section>
-      <div>
-        <h2 className="text-xl font-semibold mb-4">카운터 테스트</h2>
-        <p>현재 Value 값: {value}</p>
-        <p>현재 Count 값: {count}</p>
-        <Button onClick={() => dispatch(increment(2))}>증가</Button>
-        <Button onClick={() => dispatch(decrement(2))}>감소</Button>
-      </div>
-      <div>
-        <h2 className="text-xl font-semibold mb-4"></h2>
-        <SearchInput value={search} onChange={(e) => setSearch(e.target.value)} name="search" />
-      </div>
-      <div>
-        <h2 className="text-xl font-semibold mb-4">InfoBox 테스트</h2>
-        <InfoBox label="테스트 라벨" content="테스트 컨텐츠" description="테스트 설명" />
-      </div>
-      <div>
-        <CustomInput label="금액" prefix="₩" suffix="원" helperText="1,000원 단위로 입력해주세요" />
-      </div>
-      <div>
-        <CustomInput
-          label="웹사이트"
-          prefix="https://"
-          suffix=".com"
-          helperText="도메인 이름만 입력해주세요"
-        />
-      </div>
-      <div>
-        <CustomInput
-          label="사용자 이름"
-          prefix="이름->"
-          suffix="입니다."
-          helperText="영문, 숫자, 밑줄(_)만 사용 가능합니다"
-        />
-      </div>
-      <div>
-        <button className="bg-border-light">스타일 테스트</button>
-      </div>
-      <div className="bg-purple-level_1">
-        <label className="text-purple_color-level_10">ddddd</label>
-      </div>
-      <div className="w-full max-w-3xl p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-        <DaySection onDaySelect={setSelectedDay} selectedDay={selectedDay} />
-      </div>
     </div>
   );
 };

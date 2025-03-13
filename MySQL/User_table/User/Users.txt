@@ -1,5 +1,3 @@
--- 1. 테이블 생성 (사용자 테이블)
-
 CREATE TABLE Users (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, -- 내부적으로 사용할 PK
     email VARCHAR(255) NOT NULL UNIQUE,  -- 사용자 ID (이메일)
@@ -9,6 +7,7 @@ CREATE TABLE Users (
     nickname VARCHAR(50) UNIQUE NOT NULL,  -- 닉네임 (중복 방지)
     hobby TEXT,
     bio TEXT,
+    profile_image_path VARCHAR(255) NULL COMMENT '프로필 이미지 경로',  -- 프로필 이미지 경로 컬럼 추가
     login_method ENUM('EMAIL', 'SOCIAL') NOT NULL,  -- 로그인 방식
     social_provider ENUM('GOOGLE', 'KAKAO', 'NAVER', 'NONE') DEFAULT 'NONE', -- 소셜 로그인 제공자
     account_status ENUM('Active', 'Deactivated', 'Dormant', 'Withdrawal') NOT NULL DEFAULT 'Active', -- 계정 상태

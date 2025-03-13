@@ -5,9 +5,6 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
 
-
-
-
 const Setting = () => {
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
   const dispatch = useDispatch();
@@ -21,9 +18,12 @@ const Setting = () => {
     navigate('/login');
   };
 
-  return (
+  const handleChangePassword = () => {
+    navigate('/change-password');
+  };
 
-    <div className="p-4 space-y-4">      
+  return (
+    <div className="p-4 space-y-4">
       <div className="flex items-center justify-between p-2 bg-[#F3F2FF] dark:bg-[#1C1C1C] rounded-lg">
         <span className="text-[#4A4A4A] dark:text-white">모드변경</span>
         <ThemeToggle />
@@ -36,9 +36,9 @@ const Setting = () => {
           </Link>
         </button>
       </div>
-
+      {/* 로그아웃 */}
       <div className="p-2">
-        <button 
+        <button
           onClick={() => setLogoutModalOpen(true)}
           className="w-full px-4 py-2 text-[#4A4A4A] bg-[#F6CED8] hover:bg-[#F9B0BA] rounded-lg transition-colors"
         >
@@ -46,6 +46,17 @@ const Setting = () => {
         </button>
       </div>
 
+      {/* 비밀번호 변경 */}
+      <div className="p-2">
+        <button
+          onClick={handleChangePassword}
+          className="w-full px-4 py-2 text-[#4A4A4A] bg-[#F6CED8] hover:bg-[#F9B0BA] rounded-lg transition-colors"
+        >
+          비밀번호 변경
+        </button>
+      </div>
+
+      {/* 로그아웃모달 */}
       <LogoutModal
         isOpen={isLogoutModalOpen}
         onClose={() => setLogoutModalOpen(false)}

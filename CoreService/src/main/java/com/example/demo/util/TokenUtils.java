@@ -44,4 +44,15 @@ public class TokenUtils {
 
         return jwtTokenProvider.getUserId(token);
     }
+    
+    /**
+     * 토큰에서 사용자 이메일을 추출합니다
+     */
+    public String getEmailFromToken(String token) {
+        if (!isTokenValid(token)) {
+            return null;
+        }
+        
+        return jwtTokenProvider.getUsername(token);
+    }
 }

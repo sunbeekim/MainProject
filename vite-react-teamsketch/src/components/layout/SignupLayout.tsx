@@ -18,20 +18,42 @@ const SignupLayout = ({
   loginSection
 }: SignupLayoutProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <div className="w-full max-w-lg">
-        <Grid cols={1} gap="md" className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
-          <GridItem className="text-center mb-8">{title}</GridItem>
+    <div className="h-screen w-full bg-white dark:bg-gray-800">
+      <Grid cols={1} gap="sm" className="h-full grid-rows-[1fr_3fr_1fr] items-center">
+        {/* 로고 및 타이틀 */}
+        <GridItem className="flex items-center justify-center">
+          <div className="text-2xl font-bold text-primary-500 dark:text-primary-400">
+            {title}
+          </div>
+        </GridItem>
 
-          {children}
+        {/* 메인 폼 */}
+        <GridItem className="flex items-center justify-center">
+          <div className="w-[70%] sm:w-[60%] md:w-[50%] lg:w-[40%] space-y-6">
+            {/* 회원가입 폼 */}
+            <div className="space-y-4">
+              {children}
+            </div>
 
-          <GridItem className="mt-6">{signupButton}</GridItem>
+            {/* 회원가입 버튼 */}
+            <div className="pt-4">
+              {signupButton}
+            </div>
 
-          <GridItem>{divider}</GridItem>
+            {/* 구분선 */}
+            <div className="relative">
+              {divider}
+            </div>
+          </div>
+        </GridItem>
 
-          <GridItem className="text-center">{loginSection}</GridItem>
-        </Grid>
-      </div>
+        {/* 로그인 섹션 */}
+        <GridItem className="flex items-center justify-center">
+          <div className="text-center text-sm text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+            {loginSection}
+          </div>
+        </GridItem>
+      </Grid>
     </div>
   );
 };

@@ -5,8 +5,9 @@ import './assets/styles/index.css';
 import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
-import { store } from './store/store';
+import { store, persistor } from './store/store';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { PersistGate } from 'redux-persist/integration/react';
 
 // PWA 서비스 워커 등록
 if ('serviceWorker' in navigator) {
@@ -34,11 +35,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
       <Provider store={store}>
-        <QueryClientProvider client={queryClient}>
-          <Router>
-            <App />
-          </Router>
-        </QueryClientProvider>
+        <PersistGate loading={null} persistor={persistor}>
+          <QueryClientProvider client={queryClient}>
+            <Router>
+              <App />
+            </Router>
+          </QueryClientProvider>
+        </PersistGate>
       </Provider>
     </ThemeProvider>
   </StrictMode>
