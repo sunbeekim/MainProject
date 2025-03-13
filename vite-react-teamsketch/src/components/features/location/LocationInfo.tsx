@@ -103,12 +103,12 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
         <GridItem className="bg-gradient-to-r from-primary-500 to-primary-600 p-3 rounded-t-3xl -mt-8 relative z-10">
           <div className="flex items-center justify-center">
             {isExpanded ? (
-              <LuArrowUpToLine
+              <LuArrowDownToLine
                 className="w-5 h-5 text-white/90 hover:text-white cursor-pointer transform hover:scale-110 transition-all duration-300"
                 onClick={() => setIsExpanded(!isExpanded)}
               />
             ) : (
-              <LuArrowDownToLine
+              <LuArrowUpToLine
                 className="w-5 h-5 text-white/90 hover:text-white cursor-pointer transform hover:scale-110 transition-all duration-300"
                 onClick={() => setIsExpanded(!isExpanded)}
               />
