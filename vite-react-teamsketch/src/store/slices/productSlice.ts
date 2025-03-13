@@ -11,7 +11,7 @@ const initialState: ProductState = {
   registerForm: {
     title: '',
     description: '',
-    price: 0,
+    price: '',
     email: '',
     categoryId: 0,
     transactionType: '',
