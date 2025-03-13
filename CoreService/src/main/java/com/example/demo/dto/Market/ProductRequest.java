@@ -28,7 +28,6 @@ public class ProductRequest {
 
     private LocalDateTime startDate;  // 일정 시작일 추가
     private LocalDateTime endDate;  // 일정 종료일 추가
-    private String days; // days 필드 추가
     private String meetingPlace;
 
     private List<String> days;

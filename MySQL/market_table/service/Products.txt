@@ -24,4 +24,4 @@ CREATE TABLE Products (
     FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE RESTRICT,
     FOREIGN KEY (hobby_id) REFERENCES hobbies(hobby_id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;ARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

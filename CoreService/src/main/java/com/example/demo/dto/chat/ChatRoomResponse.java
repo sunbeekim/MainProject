@@ -17,7 +17,7 @@ public class ChatRoomResponse {
     private boolean success;
     private String message;
     
-    // 채팅방 기본 정보
+    // 단일 채팅방 정보
     private Integer chatroomId;
     private String chatname;
     private Long productId;
@@ -25,13 +25,12 @@ public class ChatRoomResponse {
     private String productImageUrl;
     private String sellerEmail;
     private String buyerEmail;
-    private String otherUserEmail;
-    private String otherUserName;
+    private String otherUserEmail; // 상대방 이메일
+    private String otherUserName;  // 상대방 닉네임
     private String lastMessage;
     private LocalDateTime lastMessageTime;
-    private Integer unreadCount;
     private LocalDateTime createdAt;
     
-    // 채팅방 목록 조회 시 사용
+    // 채팅방 목록
     private List<ChatRoom> chatRooms;
 }

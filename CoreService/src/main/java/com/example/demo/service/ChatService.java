@@ -6,7 +6,9 @@ import com.example.demo.mapper.ChatRoomMapper;
 import com.example.demo.mapper.ChatMessageMapper;
 import com.example.demo.mapper.Market.ProductMapper;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.mapper.Market.ProductImageMapper;
 import com.example.demo.model.Market.Product;
+import com.example.demo.model.Market.ProductImage;
 import com.example.demo.model.User;
 import com.example.demo.model.chat.ChatMessage;
 import com.example.demo.model.chat.ChatRoom;
@@ -34,14 +36,15 @@ public class ChatService {
     private final TokenUtils tokenUtils;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic channelTopic;
+    private final ProductImageMapper productImageMapper;  // 추가된 의존성
 
     /**
      * 채팅방 생성 또는 조회
      */
     @Transactional
     public ChatRoomResponse createOrGetChatRoom(String userEmail, ChatRoomRequest request) {
-        // 상품 존재 여부 검증
-        Product product = productMapper.findById(request.getProductId());
+        // 상품 존재 여부 검증 (email 매개변수 추가)
+        Product product = productMapper.findById(request.getProductId(), userEmail);
         if (product == null) {
             return ChatRoomResponse.builder()
                     .success(false)
@@ -84,11 +87,13 @@ public class ChatService {
             chatRoomMapper.createChatRoom(chatRoom);
             
             // 시스템 메시지 저장 (채팅방 생성 메시지)
+            // 시스템 메시지를 실제 사용자 이메일로 변경 (구매자로 설정)
             ChatMessage systemMessage = ChatMessage.builder()
                     .chatroomId(chatRoom.getChatroomId())
-                    .senderEmail("system")
+                    .senderEmail(buyerEmail) // "system" 대신 구매자 이메일 사용
                     .content("채팅이 시작되었습니다.")
-                    .messageType("TEXT")
+                    .messageType("SYSTEM") // 메시지 타입은 SYSTEM으로 유지
+                    .sentAt(LocalDateTime.now())
                     .isRead(false)
                     .build();
             
@@ -97,13 +102,25 @@ public class ChatService {
         } else {
             // 기존 채팅방 사용
             chatRoom = existingChatRoom;
-            // 판매자 정보는 JOIN으로 이미 조회됨
-            sellerEmail = existingChatRoom.getSellerEmail();
         }
         
         // 사용자 정보 조회
         User seller = userMapper.findByEmail(sellerEmail);
         User buyer = userMapper.findByEmail(buyerEmail);
+        
+        // 썸네일 이미지 경로 가져오기
+        String thumbnailPath = null;
+        List<ProductImage> images = productImageMapper.findByProductId(product.getId());
+        for (ProductImage image : images) {
+            if (image.getIsThumbnail()) {
+                thumbnailPath = image.getImagePath();
+                break;
+            }
+        }
+        // 썸네일 없으면 첫 번째 이미지 사용
+        if (thumbnailPath == null && !images.isEmpty()) {
+            thumbnailPath = images.get(0).getImagePath();
+        }
         
         // 상대방 정보 설정
         String otherUserEmail = sellerEmail.equals(userEmail) ? buyerEmail : sellerEmail;
@@ -116,7 +133,7 @@ public class ChatService {
                 .chatname(chatRoom.getChatname())
                 .productId(chatRoom.getProductId())
                 .productName(product.getTitle())
-                .productImageUrl(product.getThumbnailPath())
+                .productImageUrl(thumbnailPath)
                 .sellerEmail(sellerEmail)
                 .buyerEmail(chatRoom.getBuyerEmail())
                 .otherUserEmail(otherUserEmail)
@@ -131,31 +148,46 @@ public class ChatService {
      * 사용자의 채팅방 목록 조회
      */
     public ChatRoomResponse getChatRoomsByUser(String userEmail) {
+        // userEmail 매개변수 추가
         List<ChatRoom> chatRooms = chatRoomMapper.findChatRoomsByUser(userEmail);
-        
         List<ChatRoom> enhancedChatRooms = new ArrayList<>();
         
         for (ChatRoom room : chatRooms) {
-            // 상품 정보 조회
-            Product product = productMapper.findById(room.getProductId());
+            // 상품 정보 조회 (email 매개변수 추가)
+            Product product = productMapper.findById(room.getProductId(), userEmail);
             if (product == null) {
                 continue; // 상품이 삭제된 경우 건너뜀
             }
             
             // 상대방 정보 설정
-            String otherUserEmail = room.getSellerEmail().equals(userEmail) ? 
-                    room.getBuyerEmail() : room.getSellerEmail();
+            String sellerEmail = product.getEmail(); // 상품 판매자 이메일
+            String otherUserEmail = sellerEmail.equals(userEmail) ? 
+                    room.getBuyerEmail() : sellerEmail;
             
             User otherUser = userMapper.findByEmail(otherUserEmail);
             if (otherUser == null) {
                 continue; // 상대방 사용자 정보가 없는 경우 건너뜀
             }
             
+            // 이미지 정보 조회 (ProductImages 테이블에서)
+            String thumbnailPath = null;
+            List<ProductImage> images = productImageMapper.findByProductId(room.getProductId());
+            for (ProductImage image : images) {
+                if (image.getIsThumbnail()) {
+                    thumbnailPath = image.getImagePath();
+                    break;
+                }
+            }
+            // 썸네일 없으면 첫 번째 이미지 사용
+            if (thumbnailPath == null && !images.isEmpty()) {
+                thumbnailPath = images.get(0).getImagePath();
+            }
+            
             // 추가 정보 설정
             room.setProductName(product.getTitle());
-            room.setProductImageUrl(product.getThumbnailPath());
+            room.setProductImageUrl(thumbnailPath);
             room.setOtherUserName(otherUser.getNickname());
-            // 프로필 이미지 URL 설정 로직 추가 필요 (프로필 서비스 사용)
+            room.setSellerEmail(sellerEmail); // 판매자 이메일 설정
             
             enhancedChatRooms.add(room);
         }
@@ -171,8 +203,8 @@ public class ChatService {
      * 채팅방 상세 정보 조회
      */
     public ChatRoomResponse getChatRoomDetail(String userEmail, Integer chatroomId) {
-        ChatRoom chatRoom = chatRoomMapper.findChatRoomById(chatroomId);
-        
+        // 채팅방 존재 여부 확인 - email 매개변수 추가
+        ChatRoom chatRoom = chatRoomMapper.findChatRoomById(chatroomId, userEmail);
         if (chatRoom == null) {
             return ChatRoomResponse.builder()
                     .success(false)
@@ -180,7 +212,16 @@ public class ChatService {
                     .build();
         }
         
-        String sellerEmail = chatRoom.getSellerEmail(); // JOIN으로 가져온 판매자 이메일
+        // 상품 정보 조회 (email 매개변수 추가)
+        Product product = productMapper.findById(chatRoom.getProductId(), userEmail);
+        if (product == null) {
+            return ChatRoomResponse.builder()
+                    .success(false)
+                    .message("상품 정보를 찾을 수 없습니다.")
+                    .build();
+        }
+        
+        String sellerEmail = product.getEmail(); // 상품 판매자 이메일
         String buyerEmail = chatRoom.getBuyerEmail();
         
         // 채팅방 참여자 검증
@@ -191,13 +232,18 @@ public class ChatService {
                     .build();
         }
         
-        // 상품 정보 조회
-        Product product = productMapper.findById(chatRoom.getProductId());
-        if (product == null) {
-            return ChatRoomResponse.builder()
-                    .success(false)
-                    .message("상품 정보를 찾을 수 없습니다.")
-                    .build();
+        // 썸네일 이미지 경로 가져오기
+        String thumbnailPath = null;
+        List<ProductImage> images = productImageMapper.findByProductId(product.getId());
+        for (ProductImage image : images) {
+            if (image.getIsThumbnail()) {
+                thumbnailPath = image.getImagePath();
+                break;
+            }
+        }
+        // 썸네일 없으면 첫 번째 이미지 사용
+        if (thumbnailPath == null && !images.isEmpty()) {
+            thumbnailPath = images.get(0).getImagePath();
         }
         
         // 상대방 정보 설정
@@ -222,8 +268,8 @@ public class ChatService {
                 .chatname(chatRoom.getChatname())
                 .productId(chatRoom.getProductId())
                 .productName(product.getTitle())
-                .productImageUrl(product.getThumbnailPath())
-                .sellerEmail(sellerEmail) // JOIN으로 가져온 판매자 이메일
+                .productImageUrl(thumbnailPath)
+                .sellerEmail(sellerEmail)
                 .buyerEmail(buyerEmail)
                 .otherUserEmail(otherUserEmail)
                 .otherUserName(otherUser.getNickname())

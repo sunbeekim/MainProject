@@ -49,7 +49,9 @@ public class SecurityConfig {
                             "/api/core/market/products/all",
                             "/api/core/market/products/all/filter",
                             "/api/core/market/products/images/**",
-                            "/api/core/market/products/{id}" 
+                            "/api/core/market/products/{id}",
+                            "/topic/**",
+                            "/app/**"
                         ).permitAll() 
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
 

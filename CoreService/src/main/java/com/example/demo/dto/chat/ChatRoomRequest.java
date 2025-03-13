@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChatRoomRequest {
     private Long productId;
-    private String chatname; // 선택적
+    private String chatname;
 }
