@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 안함
                 .authorizeHttpRequests(auth -> auth
+
                         // 인증이 필요 없는 API (모든 사용자 접근 가능)
                         .requestMatchers(
                                 "/api/core/auth/signup",
