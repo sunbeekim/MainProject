@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FloatingButton from '../../components/common/FloatingButton';
@@ -39,13 +39,23 @@ const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
   visible: true
 });
 
-const ProductImage = ({ thumbnailPath }: { thumbnailPath: string | null }) => {
+const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) => {
   const imageId = thumbnailPath ? extractImageIdFromPath(thumbnailPath) : null;
-  const { data: imageBlob, isLoading } = useProductImage(imageId || 0);
-
+  const { data: imageBlob, isLoading, error } = useProductImage(imageId || 0);
+  
   if (!thumbnailPath) return <div>이미지 없음</div>;
   if (isLoading) return <div>로딩중...</div>;
-  if (!imageBlob) return <div>이미지 없음</div>;
+  if (error || !imageBlob) {
+    // mock 이미지 URL 생성
+    const mockImageUrl = `https://picsum.photos/600/400?random=${imageId || Math.floor(Math.random() * 1000)}`;
+    return (
+      <img 
+        src={mockImageUrl} 
+        alt="상품 이미지"
+        className="w-full h-full object-cover"
+      />
+    );
+  }
 
   return (
     <img 
@@ -54,7 +64,7 @@ const ProductImage = ({ thumbnailPath }: { thumbnailPath: string | null }) => {
       className="w-full h-full object-cover"
     />
   );
-};
+});
 
 const MarketList = () => {
   const navigate = useNavigate();
@@ -66,13 +76,10 @@ const MarketList = () => {
     queryFn: async () => {
       try {
         const response = await getProducts();
-        console.log(response);
         if (!response.data || response.data.length === 0) {
-          console.log('상품이 없습니다.');
           const mockResponse = await mockAPI.market.getLatestProducts();
           return mockResponse.data.products.map(convertMockToProduct);
-        }
-        console.log('response.data', response.data);
+        }     
         return response.data || [];
       } catch (error) {
         console.error('API 요청 실패:', error);
@@ -116,7 +123,8 @@ const MarketList = () => {
           categoryId: product.categoryId,
           hobbyId: product.hobbyId,
           latitude: product.latitude || 0,
-          longitude: product.longitude || 0
+          longitude: product.longitude || 0,
+          days: product.days || []
         }
       }
     });
@@ -140,7 +148,7 @@ const MarketList = () => {
                 <Card
                   title={product.title}
                   description={product.description}
-                  image={<ProductImage thumbnailPath={product.thumbnailPath} />}
+                  image={<ProductImage thumbnailPath={product.thumbnailPath}  />}
                   price={product.price.toString()}
                   dopamine={product.dopamine}
                   currentParticipants={product.currentParticipants}

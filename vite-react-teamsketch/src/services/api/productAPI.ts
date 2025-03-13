@@ -6,7 +6,7 @@ import {
   IProductRegisterResponse, 
   IProductListResponse 
 } from '../../types/product';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // 상품 등록
 export const registerProduct = async (
@@ -15,7 +15,8 @@ export const registerProduct = async (
 ): Promise<IProductRegisterResponse> => {
   try {
     const formData = new FormData();
-
+    
+    // 상품 데이터를 JSON 문자열로 변환하여 추가
     formData.append(
       'request',
       new Blob([JSON.stringify(productData)], {
@@ -23,11 +24,20 @@ export const registerProduct = async (
       })
     );
 
-    images.forEach((image, index) => {
-      formData.append(`image${index}`, image);
+    // 이미지 파일들 추가 (중복 제거)
+    const uniqueImages = images.filter((image, index, self) =>
+      index === self.findIndex((img) => img.name === image.name && img.size === image.size)
+    );
+
+    uniqueImages.forEach((image) => {
+      formData.append('images', image);
     });
 
-    const response = await uploadInstance.post(apiConfig.endpoints.core.registerProduct, formData);
+    const response = await uploadInstance.post(apiConfig.endpoints.core.registerProduct, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('상품 등록 에러:', error);
@@ -117,10 +127,14 @@ interface RegisterProductParams {
 }
 
 export const useRegisterProduct = () => {
+  const queryClient = useQueryClient();
+  
   return useMutation<IProductRegisterResponse, Error, RegisterProductParams>({
     mutationFn: ({ productData, images }) => registerProduct(productData, images),
     onSuccess: (data) => {
       console.log('상품 등록 성공:', data);
+      // 상품 목록 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: (error) => {
       console.error('상품 등록 실패:', error);

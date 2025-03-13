@@ -46,7 +46,17 @@ const ProductRegister = () => {
   const handleFileUpload = async (formData: FormData): Promise<void> => {
     const file = formData.get('file') as File;
     if (file) {
-      dispatch(addProductImage(file));
+      // 이미지 중복 체크 강화
+      const isDuplicate = registerForm.images.some(img => 
+        img.name === file.name && img.size === file.size
+      );
+
+      if (!isDuplicate) {
+        console.log('이미지 추가:', file.name);
+        dispatch(addProductImage(file));
+      } else {
+        console.log('중복 이미지 감지됨:', file.name);
+      }
     }
   };
 
@@ -83,6 +93,11 @@ const ProductRegister = () => {
         throw new Error('대면 거래의 경우 위치 정보가 필요합니다.');
       }
 
+      // 이미지 중복 제거
+      const uniqueImages = registerForm.images.filter((image, index, self) =>
+        index === self.findIndex((img) => img.name === image.name && img.size === image.size)
+      );
+
       const productData = {
         title: registerForm.title,
         description: registerForm.description,
@@ -102,9 +117,8 @@ const ProductRegister = () => {
         endDate: registerForm.endDate || ''
       };
 
-      const response = await registerProduct(productData, registerForm.images || []);
+      const response = await registerProduct(productData, uniqueImages);
       
-
       if (response.status === 'success') {
         dispatch(resetProductForm());
         navigate('/');
@@ -223,9 +237,11 @@ const ProductRegister = () => {
         </div>
       }
       meetingPlace={
-        <BaseLabelBox label="장소">
-          {registerForm.meetingPlace ? registerForm.meetingPlace : '장소를 선택해주세요'}
-        </BaseLabelBox>
+        registerForm.transactionType === '대면' && (
+          <BaseLabelBox label="장소">
+            {registerForm.meetingPlace ? registerForm.meetingPlace : '장소를 선택해주세요'}
+          </BaseLabelBox>
+        )
       }
       participants={
         <div className="flex items-center gap-4">
