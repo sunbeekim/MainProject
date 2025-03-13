@@ -91,7 +91,7 @@ const MainLayout = () => {
           <Route path="/transaction-list" element={<TransactionList />} />
           <Route path="/sell-list" element={<SellList />} />
           <Route path="/buy-list" element={<BuyList />} />
-         
+
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
           <Route path="/test/component" element={<TestComponent />} />

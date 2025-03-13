@@ -83,7 +83,7 @@ const MyPage = () => {
 
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800 flex flex-col">
-      <MyPageLayout        
+      <MyPageLayout
         email={user.email || ''}
         name={user.name || ''}
         nickname={user.nickname || ''}

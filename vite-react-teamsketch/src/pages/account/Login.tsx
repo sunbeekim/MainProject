@@ -84,7 +84,9 @@ const Login = () => {
       }
     } catch (err) {
       setError(
-        err instanceof Error ? (err as any).response.data.data.message : '로그인 중 오류가 발생했습니다.'
+        err instanceof Error
+          ? (err as any).response.data.data.message
+          : '로그인 중 오류가 발생했습니다.'
       );
       console.error('로그인 에러:', err);
     } finally {
@@ -152,7 +154,7 @@ const Login = () => {
           }
           loginButton={
             <Button
-              type="submit"             
+              type="submit"
               className="w-full bg-primary-500 text-white"
               data-testid="login-button"
               disabled={isLoading}
@@ -212,11 +214,11 @@ const Login = () => {
             error={validationErrors.password}
           />
           {error && (
-          <div className="text-red-500 text-sm text-center mt-2" role="alert">
-            {error}
-          </div>
-        )}
-        </LoginLayout>        
+            <div className="text-red-500 text-sm text-center mt-2" role="alert">
+              {error}
+            </div>
+          )}
+        </LoginLayout>
       </form>
     </>
   );

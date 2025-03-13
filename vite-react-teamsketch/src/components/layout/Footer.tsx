@@ -13,8 +13,8 @@ import { RiUserFill } from 'react-icons/ri';
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isChatRoom =location.pathname.includes('/chat/');
-  const isServiceChat =location.pathname.includes('/servicechat');
+  const isChatRoom = location.pathname.includes('/chat/');
+  const isServiceChat = location.pathname.includes('/servicechat');
 
   const getPathForLabel = (label: string) => {
     switch (label) {

@@ -7,4 +7,4 @@ export interface IChatState {
   messages: IMessage[];
   isLoading: boolean;
   error: string | null;
-} 
+}

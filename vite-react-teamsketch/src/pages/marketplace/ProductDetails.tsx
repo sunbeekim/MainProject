@@ -11,12 +11,14 @@ const ProductDetails = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { constantCategories, constantHobbies } = useAppSelector((state) => state.category);
-  dispatch(setEndLocation({
-    lat: location.state.productData.latitude,
-    lng: location.state.productData.longitude,
-    address: location.state.productData.address,
-    meetingPlace: location.state.productData.meetingPlace
-  }));
+  dispatch(
+    setEndLocation({
+      lat: location.state.productData.latitude,
+      lng: location.state.productData.longitude,
+      address: location.state.productData.address,
+      meetingPlace: location.state.productData.meetingPlace
+    })
+  );
 
   const productData = location.state?.productData || {
     images: ['https://via.placeholder.com/800x600/3498db/ffffff?text=기본+이미지'],
@@ -43,14 +45,14 @@ const ProductDetails = () => {
   };
 
   // categoryId를 사용하여 카테고리 이름 찾기
-  const mainCategory = constantCategories.find(
-    (category) => category.categoryId === productData.categoryId
-  )?.categoryName || '카테고리 없음';
+  const mainCategory =
+    constantCategories.find((category) => category.categoryId === productData.categoryId)
+      ?.categoryName || '카테고리 없음';
 
   // hobbyId를 사용하여 취미 이름 찾기
-  const subCategory = constantHobbies.find(
-    (hobby) => hobby.hobbyId === productData.hobbyId
-  )?.hobbyName || '취미 없음';
+  const subCategory =
+    constantHobbies.find((hobby) => hobby.hobbyId === productData.hobbyId)?.hobbyName ||
+    '취미 없음';
 
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
@@ -65,8 +67,8 @@ const ProductDetails = () => {
 
   // 이미지 URL 처리
   const processedImages = productData.images.map((imagePath: string) =>
-    imagePath.startsWith('http') 
-      ? imagePath 
+    imagePath.startsWith('http')
+      ? imagePath
       : `${import.meta.env.VITE_API_URL}/api/core/market/images${imagePath}`
   );
 
@@ -99,18 +101,17 @@ const ProductDetails = () => {
       startDate={formatDate(productData.startDate)}
       endDate={formatDate(productData.endDate)}
       meetingPlace={`${productData.meetingPlace} (${productData.address})`}
-      btName={"신청"}
+      btName={'신청'}
       price={formatPrice(productData.price)}
       transactionType={formatTransactionType(productData.transactionType)}
       email={productData.email}
       nickname={productData.nickname || '닉x'}
-      map={<LocationLayout           
-        childrenCenter={<OpenMap nonClickable={true}/>}
-        childrenBottom={
-            <LocationInfo             
-                showEndLocation={true}                                   
-            />}                
-    ></LocationLayout> }
+      map={
+        <LocationLayout
+          childrenCenter={<OpenMap nonClickable={true} />}
+          childrenBottom={<LocationInfo showEndLocation={true} />}
+        ></LocationLayout>
+      }
     />
   );
 };

@@ -14,11 +14,11 @@ const TestLocationLayout: React.FC<LocationLayoutProps> = ({
   childrenCenter,
   childrenBottom,
   childrenButton,
-  className = "grid-rows-[60px_1fr_auto]"
+  className = 'grid-rows-[60px_1fr_auto]'
 }) => {
   return (
     <div className={`h-full w-full bg-white dark:bg-gray-800 ${className}`}>
-      <Grid cols={1} gap='none' className={`h-full grid ${className}`}>
+      <Grid cols={1} gap="none" className={`h-full grid ${className}`}>
         {/* 상단 검색창 영역 */}
         <GridItem className="flex items-center justify-center">
           <div className="w-full">{childrenTop}</div>

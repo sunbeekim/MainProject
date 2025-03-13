@@ -103,8 +103,7 @@ export interface IProductFilter {
   sort?: 'price' | 'createdAt';
 }
 
-export interface IProductFilter{
+export interface IProductFilter {
   categoryId?: number;
   sort?: 'price' | 'createdAt';
 }
-

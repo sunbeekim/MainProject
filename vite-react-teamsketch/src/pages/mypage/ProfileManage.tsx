@@ -125,7 +125,6 @@ const ProfileManage = () => {
           isEdit={true}
           currentImage={user.profileImagePath instanceof File ? user.profileImagePath : null}
         />
-        
       }
       email={user.email || 'test@test.com'}
       userInfoName={

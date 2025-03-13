@@ -84,9 +84,15 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     <div className={`space-y-4 ${className}`}>
       <div className="flex flex-col items-center gap-4">
         <div className={`flex gap-4 ${borderStyle}`}>
-          {type === 'ocr' && <CameraCapture onCapture={handleFileSelect} className='text-primary-500'/>}
-          {type === 'image' && <ImageSelector onFileSelect={handleFileSelect} className='text-primary-500'/>}
-          {type === 'prod' && <ProdSelector onFileSelect={handleFileSelect} className='text-primary-500'/>}
+          {type === 'ocr' && (
+            <CameraCapture onCapture={handleFileSelect} className="text-primary-500" />
+          )}
+          {type === 'image' && (
+            <ImageSelector onFileSelect={handleFileSelect} className="text-primary-500" />
+          )}
+          {type === 'prod' && (
+            <ProdSelector onFileSelect={handleFileSelect} className="text-primary-500" />
+          )}
           {type === 'profile' && (
             <ProfileSelector
               onFileSelect={handleFileSelect}

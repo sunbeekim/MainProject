@@ -4,7 +4,7 @@ import GridItem from '../common/GridItem';
 import DaySelect from '../forms/radiobutton/DaySelect';
 import BaseButton from '../common/BaseButton';
 import BaseLabelBox from '../common/BaseLabelBox';
-import { CgArrowLongRightC } from "react-icons/cg";
+import { CgArrowLongRightC } from 'react-icons/cg';
 
 interface PDLayoutProps {
   images?: string[];
@@ -41,8 +41,7 @@ const PDLayout: React.FC<PDLayoutProps> = ({
   meetingPlace,
   btName,
   nickname,
-  map,
-
+  map
 }) => {
   const [selectedDay, setSelectedDay] = useState<string[]>([]);
 
@@ -62,13 +61,12 @@ const PDLayout: React.FC<PDLayoutProps> = ({
           <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
             <div className="flex gap-4">
               <span className="text-primary-light">{category}</span>
-              <span className="text-gray-400">{<CgArrowLongRightC/>}</span>
+              <span className="text-gray-400">{<CgArrowLongRightC />}</span>
               <span className="text-primary-light">{hobby}</span>
             </div>
             <div className="flex gap-4">
               <span className="text-yellow-500">도파민 {dopamine}</span>
               <span className="text-gray-400">{nickname}</span>
-              
             </div>
           </div>
         </GridItem>
@@ -132,7 +130,7 @@ const PDLayout: React.FC<PDLayoutProps> = ({
 
         {/* 지도 */}
         <GridItem>
-          <div className="h-[400px] lg:h-[800px] bg-gray-100 rounded-lg">            
+          <div className="h-[400px] lg:h-[800px] bg-gray-100 rounded-lg">
             <div className="w-full h-full flex items-center justify-center text-gray-400">
               {map}
             </div>

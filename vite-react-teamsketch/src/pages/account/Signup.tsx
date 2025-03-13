@@ -150,8 +150,6 @@ const Signup = () => {
           </div>
         }
       >
-        
-
         <div className="flex flex-col gap-2">
           <EmailInput
             label="이메일"

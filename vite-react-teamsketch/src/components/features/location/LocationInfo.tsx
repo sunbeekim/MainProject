@@ -6,7 +6,7 @@ import { setMyLocation, setEndLocation } from '../../../store/slices/mapSlice';
 import { useEffect, useState } from 'react';
 import { RootState } from '../../../store/store';
 import { getAddressFromCoords } from '../../../services/third-party/myLocation';
-import { LuArrowDownToLine, LuArrowUpToLine } from "react-icons/lu";
+import { LuArrowDownToLine, LuArrowUpToLine } from 'react-icons/lu';
 
 interface LocationInfoProps {
   myLocation?: ILocation;
@@ -97,26 +97,30 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
     updateEndLocationAddress();
   }, [endLocation.lat, endLocation.lng]); // endLocation의 위도나 경도가 변경될 때마다 실행
 
-  return (       
+  return (
     <div className="bg-white dark:bg-gray-800 rounded-t-3xl shadow-lg max-h-[18rem]">
-      <Grid cols={1} gap='none'>
+      <Grid cols={1} gap="none">
         <GridItem className="bg-gradient-to-r from-primary-500 to-primary-600 p-3 rounded-t-3xl -mt-8 relative z-10">
-          <div className="flex items-center justify-center">            
-              {isExpanded ? (
-                <LuArrowUpToLine 
-                  className="w-5 h-5 text-white/90 hover:text-white cursor-pointer transform hover:scale-110 transition-all duration-300" 
-                  onClick={() => setIsExpanded(!isExpanded)}
-                />
-              ) : (
-                <LuArrowDownToLine 
-                  className="w-5 h-5 text-white/90 hover:text-white cursor-pointer transform hover:scale-110 transition-all duration-300" 
-                  onClick={() => setIsExpanded(!isExpanded)}
-                />
-              )}           
+          <div className="flex items-center justify-center">
+            {isExpanded ? (
+              <LuArrowUpToLine
+                className="w-5 h-5 text-white/90 hover:text-white cursor-pointer transform hover:scale-110 transition-all duration-300"
+                onClick={() => setIsExpanded(!isExpanded)}
+              />
+            ) : (
+              <LuArrowDownToLine
+                className="w-5 h-5 text-white/90 hover:text-white cursor-pointer transform hover:scale-110 transition-all duration-300"
+                onClick={() => setIsExpanded(!isExpanded)}
+              />
+            )}
           </div>
         </GridItem>
 
-        <div className={`transition-all duration-300 overflow-hidden ${isExpanded ? 'max-h-[500px]' : 'max-h-0'}`}>
+        <div
+          className={`transition-all duration-300 overflow-hidden ${
+            isExpanded ? 'max-h-[500px]' : 'max-h-0'
+          }`}
+        >
           {/* 목적지 위치 */}
           {showEndLocation && (
             <GridItem className="bg-primary-500 p-2 border-b border-white dark:border-primary-500">
@@ -133,7 +137,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
               </div>
             </GridItem>
           )}
-          
+
           {/* 내 위치 */}
           {showMyLocation && (
             <GridItem className="bg-primary-500 p-2 border-b border-white dark:border-primary-500">
