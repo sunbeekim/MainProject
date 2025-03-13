@@ -49,12 +49,13 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, isDisabled]);
+
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* 헤더 */}
       <div
         className="bg-gradient-to-r from-primary-500 to-primary-600 dark:from-gray-800 dark:to-gray-700 
-  p-3 flex items-center justify-between shadow-md sticky top-0 z-10"
+        p-3 flex items-center justify-between shadow-md sticky top-0 z-10"
       >
         {/* 왼쪽 - 프로필 및 닉네임 */}
         <div className="flex items-center space-x-4">
@@ -79,11 +80,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
             onClick={handleJoinClick}
             disabled={isDisabled}
             className="
-          bg-white text-primary-600 dark:bg-gray-700 dark:text-white
-          px-4 py-2 rounded-full shadow-md hover:shadow-lg
-          transition-all duration-300 hover:bg-primary-100 dark:hover:bg-gray-600
-          disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium
-        "
+              bg-white text-primary-600 dark:bg-gray-700 dark:text-white
+              px-4 py-2 rounded-full shadow-md hover:shadow-lg
+              transition-all duration-300 hover:bg-primary-100 dark:hover:bg-gray-600
+              disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium
+            "
           >
             함께하기
           </button>
@@ -121,29 +122,24 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
                   )}
                 </div>
               ) : (
-                <a href={msg.file.url} download={msg.file.name} className="block-1 p-2 border text-sm text-black rounded-lg bg-white shadow-md
-                ">
-                  📄 {msg.file.name} (다운로드)
-                </a>//파일 미리보기
-              )
-            ) : (
-              <div className="bg-white p-3 rounded-lg shadow-md w-max">{msg.text}</div>//텍스트 메시지
-            )}
+                <div className="bg-white p-3 rounded-lg shadow-md w-max">{msg.text}</div>
+              )}
 
-            {/* 메시지 전송 시간 표시 */}
-            <div className="text-xs text-gray-500 mt-2">{msg.timestamp}</div>
-          
-            {/* 메시지 삭제 버튼 */}
-            <button
-              onClick={() => handleMessageDelete(index)}
-              className=" text-gray-400 hover:text-secondary-dark hover:bg-transparent bg-transparent py-0 px-0.5 text-xs"
-            >
-              삭제
+              {/* 메시지 전송 시간 표시 */}
+              <div className="text-xs text-gray-500 mt-2">{msg.timestamp}</div>
+
+              {/* 메시지 삭제 버튼 */}
+              <button
+                onClick={() => handleMessageDelete(index)}
+                className="text-gray-400 hover:text-secondary-dark hover:bg-transparent bg-transparent py-0 px-0.5 text-xs"
+              >
+                삭제
               </button>
             </div>
           </div>
         ))}
       </div>
+
       {/* 하단 입력 영역 */}
       <div className="relative bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700">
         <MessageInput onSendMessage={handleSendMessage} />

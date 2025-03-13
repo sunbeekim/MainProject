@@ -92,7 +92,7 @@ const MainLayout = () => {
           <Route path="/card-details/:cardId" element={<CardDetails />} />
           <Route path="/transaction-list" element={<TransactionList />} />
           <Route path="/sales-list" element={<SalesList />} />
-          <Route path="/buy-list" element={<BuyList />} />
+
           <Route path="/purchase-list" element={<PurchaseList />} />
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/transaction-detail/:transactionId" element={<TransactionDetail />} />
