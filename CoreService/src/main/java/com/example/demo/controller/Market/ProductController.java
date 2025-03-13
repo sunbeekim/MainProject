@@ -39,7 +39,7 @@ public class ProductController {
     public ResponseEntity<BaseResponse<ProductResponse>> createProduct(
             @RequestHeader("Authorization") String token,
             @RequestPart("request") ProductRequest request,  // 상품 정보 JSON
-            @RequestPart(value = "images", required = false) List<MultipartFile> images) {  // ✅ 이미지 파일
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {  // 이미지 파일
 
         String email = jwtTokenProvider.getUsername(token);
         return productService.createProduct(email, request, images);
@@ -58,7 +58,7 @@ public class ProductController {
     @PostMapping("/requests/approve")
     public ResponseEntity<BaseResponse<String>> approveProductRequest(
             @RequestHeader("Authorization") String token,
-            @RequestBody Map<String, Long> requestData) { // ✅ JSON 데이터를 받음
+            @RequestBody Map<String, Long> requestData) { // JSON 데이터를 받음
 
         Long productId = requestData.get("productId");
         Long requestId = requestData.get("requestId");
@@ -71,7 +71,7 @@ public class ProductController {
         return productService.approveProductRequest(email, productId, requestId);
     }
 
-    /** ✅ 승인된 요청 목록 조회  **/
+    /** 승인된 요청 목록 조회  **/
     @PostMapping("/requests/approved")
     public ResponseEntity<BaseResponse<Map<String, Object>>> getApprovedRequests(
             @RequestBody Map<String, Long> request) {
@@ -89,16 +89,16 @@ public class ProductController {
     /** 정렬이 안된 모든 상품 조회 - 모집 중인 상품만 조회 **/
     @GetMapping("/all")
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getAllProducts(
-            @RequestHeader(value = "Authorization", required = false) String token) {  // ✅ 토큰 선택적 처리
+            @RequestHeader(value = "Authorization", required = false) String token) {  // 토큰 선택적 처리
 
-        String email = (token != null) ? jwtTokenProvider.getUsername(token) : null;  // ✅ 토큰이 있으면 이메일 추출, 없으면 null
+        String email = (token != null) ? jwtTokenProvider.getUsername(token) : null;  // 토큰이 있으면 이메일 추출, 없으면 null
         return productService.getAllProducts(email);
     }
 
     /** 카테고리별 필터 + 가격순/최신순 정렬 - 모집 중인 상품만 조회 **/
-    @PostMapping("/all/filter") // ✅ GET -> POST 변경 (JSON 데이터를 받기 위함)
+    @PostMapping("/all/filter") // GET -> POST 변경 (JSON 데이터를 받기 위함)
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getProducts(
-            @RequestBody Map<String, Object> requestData) { // ✅ JSON 요청을 받음
+            @RequestBody Map<String, Object> requestData) { // JSON 요청을 받음
 
         Long categoryId = requestData.containsKey("categoryId") ? ((Number) requestData.get("categoryId")).longValue() : null;
         String sort = (String) requestData.get("sort");
@@ -109,11 +109,11 @@ public class ProductController {
     /** 개별 상품 조회 (이미지 포함) - 모집이 끝난 상품은 조회되지 않음 **/
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<ProductResponse>> getProductById(
-            @RequestHeader(value = "Authorization", required = false) String token,  // ✅ 토큰 선택적 처리
+            @RequestHeader(value = "Authorization", required = false) String token,  // 토큰 선택적 처리
             @PathVariable Long id) {
 
-        String email = (token != null) ? jwtTokenProvider.getUsername(token) : null;  // ✅ 토큰이 있으면 이메일 추출, 없으면 null
-        ProductResponse product = productService.getProductById(id, email);  // ✅ email 추가
+        String email = (token != null) ? jwtTokenProvider.getUsername(token) : null;  // 토큰이 있으면 이메일 추출, 없으면 null
+        ProductResponse product = productService.getProductById(id, email);  // email 추가
         return ResponseEntity.ok(new BaseResponse<>(product));
     }
 
@@ -136,7 +136,7 @@ public class ProductController {
             @RequestHeader("Authorization") String token) {
 
         String email = jwtTokenProvider.getUsername(token);
-        return productService.getMyRegisteredBuyProducts(email);  // ✅ 추가적인 감싸기 제거
+        return productService.getMyRegisteredBuyProducts(email);  // 추가적인 감싸기 제거
     }
 
     /** 내가 등록한 상품 목록 조회 (판매만) **/
@@ -145,7 +145,7 @@ public class ProductController {
             @RequestHeader("Authorization") String token) {
 
         String email = jwtTokenProvider.getUsername(token);
-        return productService.getMyRegisteredSellProducts(email);  // ✅ 추가적인 감싸기 제거
+        return productService.getMyRegisteredSellProducts(email);  // 추가적인 감싸기 제거
     }
 
     /** 내가 요청한 상품 목록 조회 (구매 요청만) **/
@@ -154,7 +154,7 @@ public class ProductController {
             @RequestHeader("Authorization") String token) {
 
         String email = jwtTokenProvider.getUsername(token);
-        return productService.getMyRequestedBuyProducts(email);  // ✅ 추가적인 감싸기 제거
+        return productService.getMyRequestedBuyProducts(email);  // 추가적인 감싸기 제거
     }
 
     /** 내가 요청한 상품 목록 조회 (판매 요청만) **/
@@ -163,7 +163,7 @@ public class ProductController {
             @RequestHeader("Authorization") String token) {
 
         String email = jwtTokenProvider.getUsername(token);
-        return productService.getMyRequestedSellProducts(email);  // ✅ 추가적인 감싸기 제거
+        return productService.getMyRequestedSellProducts(email);  // 추가적인 감싸기 제거
     }
 
     /** 상품 이미지 직접 반환 (엔드포인트 제공) **/

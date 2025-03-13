@@ -25,7 +25,7 @@ public class ProductResponse {
     private int currentParticipants; // 추가
     private boolean isVisible;
 
-    private List<String> days; // ✅ 🔥 요일 정보 (월,화,수,목,금,토,일)
+    private List<String> days;  // 요일 정보 (월,화,수,목,금,토,일)
 
     private LocalDateTime startDate;  // 일정 시작일 추가
     private LocalDateTime endDate;  // 일정 종료일 추가
