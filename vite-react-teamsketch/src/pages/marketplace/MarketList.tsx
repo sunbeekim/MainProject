@@ -40,7 +40,6 @@ const MarketList = () => {
     staleTime: 300000
   });
 
- 
   const handleNavigateToProductRegister = () => {
     navigate('/product/register');
   };
@@ -53,13 +52,14 @@ const MarketList = () => {
     navigate('/product-details', {
       state: {
         productData: {
-          images: 'imagePaths' in product && Array.isArray(product.imagePaths)
-            ? product.imagePaths
-            : ['image' in product ? product.image : ''],         
+          images:
+            'imagePaths' in product && Array.isArray(product.imagePaths)
+              ? product.imagePaths
+              : ['image' in product ? product.image : ''],
           dopamine: 'dopamine' in product ? product.dopamine : 5,
           id: product.id,
           email: 'email' in product ? product.email : '',
-          nickname: 'nickname' in product ? product.nickname : '',         
+          nickname: 'nickname' in product ? product.nickname : '',
           thumbnailPath: 'thumbnailPath' in product ? product.thumbnailPath : '',
           registrationType: 'registrationType' in product ? product.registrationType : '',
           transactionType: 'transactionType' in product ? product.transactionType : '',
@@ -81,7 +81,7 @@ const MarketList = () => {
     });
   };
 
-  if (isLatestLoading ) {
+  if (isLatestLoading) {
     return <div className="container mx-auto px-4 py-6">로딩 중...</div>;
   }
 
@@ -90,7 +90,7 @@ const MarketList = () => {
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
 
       {/* 최신 상품 */}
-      <div className="mt-4">        
+      <div className="mt-4">
         <div className="no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10">
             {latestProducts.map((product: ProductType) => (
@@ -101,15 +101,23 @@ const MarketList = () => {
                   image={
                     'thumbnailPath' in product && product.thumbnailPath
                       ? `${product.thumbnailPath}`
-                      : ('image' in product ? product.image : '')
+                      : 'image' in product
+                      ? product.image
+                      : ''
                   }
-                  price={product.price}
+                  price={product.price.toString()}
                   dopamine={'dopamine' in product ? product.dopamine : 5}
                   currentParticipants={
                     'currentParticipants' in product ? product.currentParticipants : 0
                   }
                   maxParticipants={'maxParticipants' in product ? product.maxParticipants : 0}
-                  location={'location' in product ? product.location : ('meetingPlace' in product ? product.meetingPlace || '' : '')}
+                  location={
+                    'location' in product
+                      ? product.location
+                      : 'meetingPlace' in product
+                      ? product.meetingPlace || ''
+                      : ''
+                  }
                   onClick={() => handleProductClick(product)}
                 />
               </div>
@@ -117,7 +125,6 @@ const MarketList = () => {
           </div>
         </div>
       </div>
-
 
       <FloatingButton
         onClick={handleNavigateToProductRegister}

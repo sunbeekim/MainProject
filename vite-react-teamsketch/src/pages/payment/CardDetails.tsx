@@ -1,15 +1,15 @@
-import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 
 const CardDetails = () => {
-  const { cardId } = useParams(); 
+  const { cardId } = useParams();
 
   // 카드 정보 상태 관리
   const [cardInfo, setCardInfo] = useState({
-    name: "",
-    number: "",
-    expiryDate: "",
-    owner: "",
+    name: '',
+    number: '',
+    expiryDate: '',
+    owner: ''
   });
 
   // 입력값 변경 핸들러
@@ -20,8 +20,8 @@ const CardDetails = () => {
 
   // 저장 버튼 클릭 시 (API 연결 없이 콘솔 확인)
   const handleSave = () => {
-    console.log("저장된 카드 정보:", cardInfo);
-    alert("카드 정보가 저장되었습니다! (실제 저장은 API 연동 후 가능)");
+    console.log('저장된 카드 정보:', cardInfo);
+    alert('카드 정보가 저장되었습니다! (실제 저장은 API 연동 후 가능)');
   };
 
   return (
@@ -31,13 +31,13 @@ const CardDetails = () => {
 
       {/* 카드 모양 UI */}
       <div className="relative bg-gradient-to-r from-purple-400 to-violet-500 text-white p-6 rounded-xl shadow-md mb-4">
-        <div className="text-lg font-semibold">{cardInfo.name || "카드 이름"}</div>
+        <div className="text-lg font-semibold">{cardInfo.name || '카드 이름'}</div>
         <div className="text-xl font-bold tracking-widest mt-3">
-          {cardInfo.number ? cardInfo.number.replace(/(\d{4})/g, "$1 ") : "**** **** **** ****"}
+          {cardInfo.number ? cardInfo.number.replace(/(\d{4})/g, '$1 ') : '**** **** **** ****'}
         </div>
         <div className="flex justify-between mt-3 text-sm">
-          <span>{cardInfo.owner || "소유자 이름"}</span>
-          <span>{cardInfo.expiryDate || "MM/YY"}</span>
+          <span>{cardInfo.owner || '소유자 이름'}</span>
+          <span>{cardInfo.expiryDate || 'MM/YY'}</span>
         </div>
       </div>
 
@@ -58,8 +58,8 @@ const CardDetails = () => {
           value={cardInfo.number}
           maxLength={19} // 카드 번호 16자리 + 공백
           onChange={(e) => {
-            const value = e.target.value.replace(/\D/g, "").slice(0, 16);
-            setCardInfo((prev) => ({ ...prev, number: value.replace(/(\d{4})/g, "$1 ").trim() }));
+            const value = e.target.value.replace(/\D/g, '').slice(0, 16);
+            setCardInfo((prev) => ({ ...prev, number: value.replace(/(\d{4})/g, '$1 ').trim() }));
           }}
           className="w-full p-2 border rounded"
         />

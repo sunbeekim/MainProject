@@ -126,6 +126,7 @@ const ProfileManage = () => {
           currentImage={user.profileImagePath instanceof File ? user.profileImagePath : null}
         />
       }
+      email={user.email || 'test@test.com'}
       userInfoName={
         <BaseLabelBox label="이름">
           <BaseInput
@@ -133,6 +134,7 @@ const ProfileManage = () => {
             value={user.name}
             onChange={handleChange}
             placeholder="이름을 입력하세요"
+            className="border-primary-500"
           />
         </BaseLabelBox>
       }
@@ -143,6 +145,7 @@ const ProfileManage = () => {
             value={user.nickname}
             onChange={handleChange}
             placeholder="닉네임을 입력하세요"
+            className="border-primary-500"
           />
         </BaseLabelBox>
       }
@@ -154,6 +157,7 @@ const ProfileManage = () => {
             value={user.bio || ''}
             onChange={handleChange}
             placeholder="소개글을 입력하세요"
+            className="border-primary-500"
           />
         </BaseLabelBox>
       }
