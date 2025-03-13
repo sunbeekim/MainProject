@@ -1,93 +1,201 @@
 package com.example.demo.controller.Market;
 
 import com.example.demo.dto.Market.ProductRequest;
+import com.example.demo.dto.Market.ProductRequestDto;
 import com.example.demo.dto.Market.ProductResponse;
+import com.example.demo.model.Market.ProductImage;
+import com.example.demo.service.Market.ImageUploadService;
 import com.example.demo.service.Market.ProductService;
+import com.example.demo.mapper.Market.ProductImageMapper;
+import com.example.demo.util.BaseResponse;
+import com.example.demo.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/core/market/products")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ProductImageMapper productImageMapper;
+    private final ImageUploadService imageUploadService;
 
-    /**
-     * 상품 등록 (구매/판매)
-     */
-    @PostMapping("/registers")
-    public ResponseEntity<Object> createProduct(@RequestBody ProductRequest request) {
-        if (!request.getRegistrationType().equals("구매") && !request.getRegistrationType().equals("판매")) {
-            return ResponseEntity.badRequest().body("잘못된 상품 등록 요청입니다.");
-        }
-        return productService.createProduct(request);
+    /** 상품 등록 (구매/판매) - 이미지 업로드 포함 **/
+    @PostMapping(value = "/registers", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<BaseResponse<ProductResponse>> createProduct(
+            @RequestHeader("Authorization") String token,
+            @RequestPart("request") ProductRequest request,  // 상품 정보 JSON
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {  // ✅ 이미지 파일
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.createProduct(email, request, images);
     }
 
-    /**
-     * 상품 요청 등록 (구매 요청/판매 요청)
-     */
+    /** 상품 요청 등록 (구매 요청/판매 요청) + 알림 전송  **/
     @PostMapping("/requests")
-    public ResponseEntity<Object> createRequest(@RequestBody ProductRequest request) {
-        if (!request.getRegistrationType().equals("구매 요청") && !request.getRegistrationType().equals("판매 요청")) {
-            return ResponseEntity.badRequest().body("잘못된 요청 등록입니다.(구매 요청, 판매 요청은 필수 입력 값입니다.)");
+    public ResponseEntity<BaseResponse<Map<String, Object>>> createRequest(
+            @RequestHeader("Authorization") String token, @RequestBody ProductRequestDto request) {
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.createProductRequest(email, request.getProductId());
+    }
+
+    /** 상품 요청 승인 (등록자만 승인 가능) **/
+    @PostMapping("/requests/approve")
+    public ResponseEntity<BaseResponse<String>> approveProductRequest(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, Long> requestData) { // ✅ JSON 데이터를 받음
+
+        Long productId = requestData.get("productId");
+        Long requestId = requestData.get("requestId");
+
+        if (productId == null || requestId == null) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>("productId와 requestId는 필수입니다."));
         }
-        return productService.createProduct(request);  // 동일한 서비스 로직 재사용 가능
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.approveProductRequest(email, productId, requestId);
     }
 
-    /**
-     * 개별 상품 조회
-     */
+    /** ✅ 승인된 요청 목록 조회  **/
+    @PostMapping("/requests/approved")
+    public ResponseEntity<BaseResponse<Map<String, Object>>> getApprovedRequests(
+            @RequestBody Map<String, Long> request) {
+
+        Long productId = request.get("productId"); // JSON에서 productId 추출
+
+        if (productId == null) {
+            return ResponseEntity.badRequest()
+                    .body(new BaseResponse<>(null, "요청 본문에 productId가 필요합니다."));
+        }
+
+        return productService.getApprovedRequests(productId);
+    }
+
+    /** 정렬이 안된 모든 상품 조회 - 모집 중인 상품만 조회 **/
+    @GetMapping("/all")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getAllProducts(
+            @RequestHeader(value = "Authorization", required = false) String token) {  // ✅ 토큰 선택적 처리
+
+        String email = (token != null) ? jwtTokenProvider.getUsername(token) : null;  // ✅ 토큰이 있으면 이메일 추출, 없으면 null
+        return productService.getAllProducts(email);
+    }
+
+    /** 카테고리별 필터 + 가격순/최신순 정렬 - 모집 중인 상품만 조회 **/
+    @PostMapping("/all/filter") // ✅ GET -> POST 변경 (JSON 데이터를 받기 위함)
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getProducts(
+            @RequestBody Map<String, Object> requestData) { // ✅ JSON 요청을 받음
+
+        Long categoryId = requestData.containsKey("categoryId") ? ((Number) requestData.get("categoryId")).longValue() : null;
+        String sort = (String) requestData.get("sort");
+
+        return ResponseEntity.ok(new BaseResponse<>(productService.getProducts(categoryId, sort)));
+    }
+
+    /** 개별 상품 조회 (이미지 포함) - 모집이 끝난 상품은 조회되지 않음 **/
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getProduct(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+    public ResponseEntity<BaseResponse<ProductResponse>> getProductById(
+            @RequestHeader(value = "Authorization", required = false) String token,  // ✅ 토큰 선택적 처리
+            @PathVariable Long id) {
+
+        String email = (token != null) ? jwtTokenProvider.getUsername(token) : null;  // ✅ 토큰이 있으면 이메일 추출, 없으면 null
+        ProductResponse product = productService.getProductById(id, email);  // ✅ email 추가
+        return ResponseEntity.ok(new BaseResponse<>(product));
     }
 
-    /**
-     * 카테고리별 필터 + 가격순/최신순 정렬
-     */
-    @GetMapping
-    public ResponseEntity<List<ProductResponse>> getProducts(
-            @RequestParam(required = false) Long categoryId, // 카테고리 필터
-            @RequestParam(required = false) String sort) { // 정렬 옵션 (price, createdAt))
-        return ResponseEntity.ok(productService.getProducts(categoryId, sort));
+
+    /** ✅ 특정 사용자가 등록한 상품 목록 조회 (구매, 판매, 구매 요청, 판매 요청) **/
+    @PostMapping("/users")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getProductsByUserAndType(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, List<String>> requestBody) {
+
+        String email = jwtTokenProvider.getUsername(token);
+        List<String> types = requestBody.get("types");
+
+        return productService.getProductsByUserAndType(email, types);
     }
 
-    /**
-     * 내가 등록한 상품 목록 조회 (구매만)
-     */
-    @GetMapping("/registers/my/buy")
-    public ResponseEntity<List<ProductResponse>> getMyRegisteredBuyProducts(@RequestParam String email) {
-        return ResponseEntity.ok(productService.getMyRegisteredBuyProducts(email));
+    /** 내가 등록한 상품 목록 조회 (구매만) **/
+    @GetMapping("/users/registers/buy")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRegisteredBuyProducts(
+            @RequestHeader("Authorization") String token) {
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.getMyRegisteredBuyProducts(email);  // ✅ 추가적인 감싸기 제거
     }
 
-    /**
-     * 내가 등록한 상품 목록 조회 (판매만)
-     */
-    @GetMapping("/registers/my/sell")
-    public ResponseEntity<List<ProductResponse>> getMyRegisteredSellProducts(@RequestParam String email) {
-        return ResponseEntity.ok(productService.getMyRegisteredSellProducts(email));
+    /** 내가 등록한 상품 목록 조회 (판매만) **/
+    @GetMapping("/users/registers/sell")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRegisteredSellProducts(
+            @RequestHeader("Authorization") String token) {
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.getMyRegisteredSellProducts(email);  // ✅ 추가적인 감싸기 제거
     }
 
-    /**
-     * 내가 요청한 상품 목록 조회 (구매 요청만)
-     */
-    @GetMapping("/requests/my/buy")
-    public ResponseEntity<List<ProductResponse>> getMyRequestedBuyProducts(@RequestParam String email) {
-        return ResponseEntity.ok(productService.getMyRequestedBuyProducts(email));
+    /** 내가 요청한 상품 목록 조회 (구매 요청만) **/
+    @GetMapping("/users/requests/buy")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRequestedBuyProducts(
+            @RequestHeader("Authorization") String token) {
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.getMyRequestedBuyProducts(email);  // ✅ 추가적인 감싸기 제거
     }
 
-    /**
-     * 내가 요청한 상품 목록 조회 (판매 요청만)
-     */
-    @GetMapping("/requests/my/sell")
-    public ResponseEntity<List<ProductResponse>> getMyRequestedSellProducts(@RequestParam String email) {
-        return ResponseEntity.ok(productService.getMyRequestedSellProducts(email));
+    /** 내가 요청한 상품 목록 조회 (판매 요청만) **/
+    @GetMapping("/users/requests/sell")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRequestedSellProducts(
+            @RequestHeader("Authorization") String token) {
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.getMyRequestedSellProducts(email);  // ✅ 추가적인 감싸기 제거
+    }
+
+    /** 상품 이미지 직접 반환 (엔드포인트 제공) **/
+    @GetMapping("/images/{imageId}")
+    public ResponseEntity<Resource> getProductImage(@PathVariable Long imageId) throws IOException {
+        ProductImage productImage = productImageMapper.findById(imageId);
+        if (productImage == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 이미지 파일 경로 가져오기
+        File file = new File(System.getProperty("user.dir") + "/src/main/resources/static" + productImage.getImagePath());
+        if (!file.exists()) {  // 파일 존재 여부 확인
+            return ResponseEntity.notFound().build();
+        }
+
+        Path path = file.toPath();
+        Resource resource = new UrlResource(path.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // **MIME 타입 자동 감지**
+        String contentType = Files.probeContentType(path);
+        if (contentType == null) {
+            contentType = "application/octet-stream"; // 기본 값 설정
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }
-
-
-
-

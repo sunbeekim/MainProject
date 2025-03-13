@@ -106,4 +106,9 @@
         WHERE email = #{email}
     </update>
 
+    <!-- Users 테이블에서 이메일로 dopamine 값 조회 -->
+    <!--   <select id="getDopamineByEmail" parameterType="string" resultType="int">
+           SELECT dopamine FROM Users WHERE email = #{email}
+       </select> -->
+
 </mapper>

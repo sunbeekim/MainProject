@@ -37,5 +37,8 @@ public interface UserMapper {
 
     // 계정 상태 업데이트
     int updateAccountStatus(@Param("email") String email, @Param("accountStatus") String accountStatus);
+
+    // 도파민 조회 업데이트 (예정)
+  //  int getDopamineByEmail(@Param("email") String email);
 }
 

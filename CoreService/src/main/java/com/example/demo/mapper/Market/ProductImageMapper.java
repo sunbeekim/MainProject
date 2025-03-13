@@ -11,4 +11,7 @@ import java.util.List;
 public interface ProductImageMapper {
     void insertProductImage(ProductImage productImage);
     List<ProductImage> findByProductId(Long productId);
+
+    // 🔥 이미지 ID로 특정 이미지 조회하는 메서드 추가!
+    ProductImage findById(Long imageId);
 }
