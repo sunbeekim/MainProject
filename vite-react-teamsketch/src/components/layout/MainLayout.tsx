@@ -28,6 +28,7 @@ import MyProducts from '../../pages/mypage/MyProducts';
 import TransactionDetail from '../../pages/Transaction history/TransactionDetail';
 import CSList from '../../pages/CScenter/CSList';
 import InquiryHistory from '../../pages/CScenter/InquiryHistory';
+import DeleteAccount from '../../pages/account/DeleteAccount';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
@@ -98,6 +99,7 @@ const MainLayout = () => {
           <Route path="/transaction-detail/:transactionId" element={<TransactionDetail />} />
           <Route path="/cs-list" element={<CSList />} />
           <Route path="/inquiry-history" element={<InquiryHistory />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />

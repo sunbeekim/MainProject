@@ -22,6 +22,10 @@ const Setting = () => {
     navigate('/change-password');
   };
 
+  const handleDeleteAccount = () => {
+    navigate('/delete-account');
+  }
+
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between p-2 bg-[#F3F2FF] dark:bg-[#1C1C1C] rounded-lg">
@@ -53,6 +57,15 @@ const Setting = () => {
           className="w-full px-4 py-2 text-[#4A4A4A] bg-[#F6CED8] hover:bg-[#F9B0BA] rounded-lg transition-colors"
         >
           비밀번호 변경
+        </button>
+      </div>
+
+      <div className="p-2">
+        <button
+          onClick={handleDeleteAccount}
+          className="w-full px-4 py-2 text-[#4A4A4A] bg-[#F6CED8] hover:bg-[#F9B0BA] rounded-lg transition-colors"
+        >
+          회원탈퇴
         </button>
       </div>
 
