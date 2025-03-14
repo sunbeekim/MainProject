@@ -19,7 +19,7 @@ const ProdSelector: React.FC<ImageSelectorProps> = ({
 
     // 여러 파일 처리
     if (multiple && files.length > 1) {
-      Array.from(files).forEach(file => {
+      Array.from(files).forEach((file) => {
         if (file.size > 5 * 1024 * 1024) {
           alert(`파일 ${file.name}의 크기는 5MB 이하여야 합니다.`);
           return;

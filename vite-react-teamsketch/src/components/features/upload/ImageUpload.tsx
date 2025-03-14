@@ -57,9 +57,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
 
     // 이미지가 이미 존재하는지 확인 (중복 체크 강화)
-    const isDuplicate = images.some(img => 
-      img.name === file.name && img.size === file.size
-    );
+    const isDuplicate = images.some((img) => img.name === file.name && img.size === file.size);
 
     if (isDuplicate) {
       console.log('중복 이미지 감지됨 (ImageUpload):', file.name);
@@ -103,9 +101,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <ImageSelector onFileSelect={handleFileSelect} className="text-primary-500" />
           )}
           {type === 'prod' && (
-            <ProdSelector 
-              onFileSelect={handleFileSelect} 
-              className="text-primary-500" 
+            <ProdSelector
+              onFileSelect={handleFileSelect}
+              className="text-primary-500"
               multiple={multiple}
             />
           )}

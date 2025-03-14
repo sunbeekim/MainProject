@@ -15,22 +15,21 @@ const App = () => {
       </main>
       <Footer />
       <ToastContainer
-  position="top-center"
-  autoClose={2000}
-  hideProgressBar={false} // 진행 바 숨김 (깔끔한 디자인)
-  newestOnTop={true}
-  closeOnClick
-  rtl={false}
-  pauseOnFocusLoss
-  draggable
-  pauseOnHover
-  theme="dark"
-  toastClassName={() =>
-    "relative flex items-center rounded-lg shadow-lg bg-primary-500 text-white text-sm p-4 mb-4 mt-12"
-  }
-  progressClassName="bg-primary-500"
-/>
-
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false} // 진행 바 숨김 (깔끔한 디자인)
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        toastClassName={() =>
+          'relative flex items-center rounded-lg shadow-lg bg-primary-500 text-white text-sm p-4 mb-4 mt-12'
+        }
+        progressClassName="bg-primary-500"
+      />
     </div>
   );
 };

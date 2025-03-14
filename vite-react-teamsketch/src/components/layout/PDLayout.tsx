@@ -78,8 +78,19 @@ const PDLayout: React.FC<PDLayoutProps> = ({
                       onClick={handlePrevImage}
                       className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 text-white p-3 rounded-full hover:bg-black/50 transition-all duration-300 backdrop-blur-sm"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
                       </svg>
                     </button>
                     {/* 다음 버튼 */}
@@ -87,8 +98,19 @@ const PDLayout: React.FC<PDLayoutProps> = ({
                       onClick={handleNextImage}
                       className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 text-white p-3 rounded-full hover:bg-black/50 transition-all duration-300 backdrop-blur-sm"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </button>
                     {/* 이미지 인디케이터 */}
@@ -98,7 +120,9 @@ const PDLayout: React.FC<PDLayoutProps> = ({
                           key={index}
                           onClick={() => setCurrentImageIndex(index)}
                           className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                            index === currentImageIndex ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'
+                            index === currentImageIndex
+                              ? 'bg-white scale-125'
+                              : 'bg-white/50 hover:bg-white/70'
                           }`}
                         />
                       ))}
@@ -117,12 +141,17 @@ const PDLayout: React.FC<PDLayoutProps> = ({
         {/* 카테고리 및 정보 */}
         <GridItem>
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-            <div className="mb-4 md:mb-0"><h1 className="text-2xl font-bold">{title}</h1></div>
+            <div className="mb-4 md:mb-0">
+              <h1 className="text-2xl font-bold">{title}</h1>
+            </div>
             <div className="flex items-center gap-4 mb-4 md:mb-0">
-              
-              <span className="px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium">{category}</span>
+              <span className="px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium">
+                {category}
+              </span>
               <span className="text-gray-300">{<CgArrowLongRightC />}</span>
-              <span className="px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium">{hobby}</span>
+              <span className="px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium">
+                {hobby}
+              </span>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
@@ -135,7 +164,7 @@ const PDLayout: React.FC<PDLayoutProps> = ({
               </div>
             </div>
           </div>
-        </GridItem>       
+        </GridItem>
 
         {/* 소개글 */}
         <GridItem>
@@ -187,10 +216,10 @@ const PDLayout: React.FC<PDLayoutProps> = ({
         <GridItem>
           <BaseLabelBox label="요일">
             <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-              <DaySelect onDaySelect={() => {}} selectedDays={day || []} disabled={true}/>
+              <DaySelect onDaySelect={() => {}} selectedDays={day || []} disabled={true} />
             </div>
           </BaseLabelBox>
-        </GridItem>        
+        </GridItem>
 
         {/* 위치 정보 - 대면 거래일 때만 표시 */}
         {isOffline && (
@@ -217,8 +246,8 @@ const PDLayout: React.FC<PDLayoutProps> = ({
 
         {/* 신청 or 등록하기 버튼 */}
         <GridItem>
-          <BaseButton 
-            variant="primary" 
+          <BaseButton
+            variant="primary"
             className="w-full py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
           >
             {btName}하기

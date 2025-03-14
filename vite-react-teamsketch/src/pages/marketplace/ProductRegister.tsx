@@ -48,8 +48,8 @@ const ProductRegister = () => {
     const file = formData.get('file') as File;
     if (file) {
       // 이미지 중복 체크
-      const isDuplicate = registerForm.images?.some(img => 
-        img.name === file.name && img.size === file.size
+      const isDuplicate = registerForm.images?.some(
+        (img) => img.name === file.name && img.size === file.size
       );
 
       if (!isDuplicate) {
@@ -68,48 +68,48 @@ const ProductRegister = () => {
 
   const handleSubmit = async () => {
     try {
-      if (!user?.email) {   
+      if (!user?.email) {
         throw new Error('로그인이 필요합니다.');
       }
 
       // 필수 필드 검증
-      if(!registerForm.title){
+      if (!registerForm.title) {
         throw new Error('제목을 입력해주세요.');
-      }      
-      if(!registerForm.price){
+      }
+      if (!registerForm.price) {
         throw new Error('가격을 입력해주세요.');
       }
-      if(!registerForm.transactionType){
+      if (!registerForm.transactionType) {
         throw new Error('거래 유형을 선택해주세요.');
       }
-      if(!registerForm.registrationType){
+      if (!registerForm.registrationType) {
         throw new Error('등록 유형을 선택해주세요.');
       }
-      if(registerForm.transactionType === '대면'){
-        if(!registerForm.meetingPlace){
-        throw new Error('대면 거래는 장소입력이 필수입니다.');
+      if (registerForm.transactionType === '대면') {
+        if (!registerForm.meetingPlace) {
+          throw new Error('대면 거래는 장소입력이 필수입니다.');
         }
       }
-      if(!registerForm.categoryId){
+      if (!registerForm.categoryId) {
         throw new Error('카테고리를 선택해주세요.');
       }
-      if(!registerForm.hobbyId){
+      if (!registerForm.hobbyId) {
         throw new Error('취미를 선택해주세요.');
       }
-      if(!registerForm.maxParticipants){
+      if (!registerForm.maxParticipants) {
         throw new Error('모집 인원을 입력해주세요.');
       }
-      if(!registerForm.startDate){
+      if (!registerForm.startDate) {
         throw new Error('시작 일시를 입력해주세요.');
       }
-      if(!registerForm.endDate){
+      if (!registerForm.endDate) {
         throw new Error('종료 일시를 입력해주세요.');
       }
-      if(!registerForm.days){
+      if (!registerForm.days) {
         throw new Error('진행 요일을 선택해주세요.');
       }
-      
-      if(!registerForm.description){
+
+      if (!registerForm.description) {
         throw new Error('상품 설명을 입력해주세요.');
       }
 
@@ -125,8 +125,9 @@ const ProductRegister = () => {
       }
 
       // 이미지 중복 제거
-      const uniqueImages = registerForm.images.filter((image, index, self) =>
-        index === self.findIndex((img) => img.name === image.name && img.size === image.size)
+      const uniqueImages = registerForm.images.filter(
+        (image, index, self) =>
+          index === self.findIndex((img) => img.name === image.name && img.size === image.size)
       );
 
       const productData = {
@@ -149,7 +150,7 @@ const ProductRegister = () => {
       };
 
       const response = await registerProduct(productData, uniqueImages);
-      
+
       if (response.status === 'success') {
         toast.success('상품이 성공적으로 등록되었습니다.');
         dispatch(resetProductForm());

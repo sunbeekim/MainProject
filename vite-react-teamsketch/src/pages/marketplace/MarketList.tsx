@@ -7,7 +7,11 @@ import { mockAPI } from '../../mock/mockAPI';
 import { IProduct as IMockProduct } from '../../mock/mockData';
 import { IProduct } from '../../types/product';
 import Card from '../../components/features/card/Card';
-import { getProducts, useProductImage, extractImageIdFromPath } from '../../services/api/productAPI';
+import {
+  getProducts,
+  useProductImage,
+  extractImageIdFromPath
+} from '../../services/api/productAPI';
 
 // mock 데이터를 실제 API 응답 타입으로 변환하는 함수
 const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
@@ -42,24 +46,20 @@ const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
 const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) => {
   const imageId = thumbnailPath ? extractImageIdFromPath(thumbnailPath) : null;
   const { data: imageBlob, isLoading, error } = useProductImage(imageId || 0);
-  
+
   if (!thumbnailPath) return <div>이미지 없음</div>;
   if (isLoading) return <div>로딩중...</div>;
   if (error || !imageBlob) {
     // 이미지 ID를 사용하여 고유한 랜덤 이미지 생성
-    const mockImageUrl = `https://picsum.photos/600/400?random=${imageId || Math.floor(Math.random() * 1000)}`;
-    return (
-      <img 
-        src={mockImageUrl} 
-        alt="상품 이미지"
-        className="w-full h-full object-cover"
-      />
-    );
+    const mockImageUrl = `https://picsum.photos/600/400?random=${
+      imageId || Math.floor(Math.random() * 1000)
+    }`;
+    return <img src={mockImageUrl} alt="상품 이미지" className="w-full h-full object-cover" />;
   }
 
   return (
-    <img 
-      src={URL.createObjectURL(imageBlob)} 
+    <img
+      src={URL.createObjectURL(imageBlob)}
       alt="상품 이미지"
       className="w-full h-full object-cover"
     />
@@ -79,7 +79,7 @@ const MarketList = () => {
         if (!response.data || response.data.length === 0) {
           const mockResponse = await mockAPI.market.getLatestProducts();
           return mockResponse.data.products.map(convertMockToProduct);
-        }     
+        }
         return response.data || [];
       } catch (error) {
         console.error('API 요청 실패:', error);
@@ -102,12 +102,12 @@ const MarketList = () => {
   const handleProductClick = (product: IProduct) => {
     navigate('/product-details', {
       state: {
-        productData: {         
+        productData: {
           images: product.imagePaths || [],
           dopamine: product.dopamine,
           id: product.id,
           email: product.email,
-          nickname: product.nickname || '',         
+          nickname: product.nickname || '',
           thumbnailPath: product.thumbnailPath || '',
           registrationType: product.registrationType,
           transactionType: product.transactionType,
@@ -139,16 +139,15 @@ const MarketList = () => {
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
 
       {/* 최신 상품 */}
-      <div className="mt-4">        
+      <div className="mt-4">
         <div className="no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10">
             {latestProducts.map((product: IProduct) => (
               <div key={product.id} className="w-full flex-shrink-0 ">
-                
                 <Card
                   title={product.title}
                   description={product.description}
-                  image={<ProductImage thumbnailPath={product.thumbnailPath}  />}
+                  image={<ProductImage thumbnailPath={product.thumbnailPath} />}
                   price={product.price.toString()}
                   dopamine={product.dopamine}
                   currentParticipants={product.currentParticipants}

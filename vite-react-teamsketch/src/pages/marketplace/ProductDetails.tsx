@@ -25,8 +25,6 @@ const ProductDetails = () => {
     console.log('location.state.productData', location.state.productData);
   }, [dispatch, location.state.productData]);
 
-
-
   const productData = location.state?.productData || {
     id: 1,
     images: ['https://picsum.photos/600/400?random=1'],

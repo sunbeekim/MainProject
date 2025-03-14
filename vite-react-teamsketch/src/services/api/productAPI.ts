@@ -1,10 +1,10 @@
 import { axiosInstance, uploadInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
-import { 
-  IProduct, 
-  IProductRegisterRequest, 
-  IProductRegisterResponse, 
-  IProductListResponse 
+import {
+  IProduct,
+  IProductRegisterRequest,
+  IProductRegisterResponse,
+  IProductListResponse
 } from '../../types/product';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -13,11 +13,10 @@ export const registerProduct = async (
   productData: Omit<IProductRegisterRequest, 'images'>,
   images: File[]
 ): Promise<IProductRegisterResponse> => {
-
   let count = 0;
   try {
     const formData = new FormData();
-    
+
     // 상품 데이터를 JSON 문자열로 변환하여 추가
     formData.append(
       'request',
@@ -27,8 +26,9 @@ export const registerProduct = async (
     );
 
     // 이미지 파일들 추가 (중복 제거)
-    const uniqueImages = images.filter((image, index, self) =>
-      index === self.findIndex((img) => img.name === image.name && img.size === image.size)
+    const uniqueImages = images.filter(
+      (image, index, self) =>
+        index === self.findIndex((img) => img.name === image.name && img.size === image.size)
     );
 
     uniqueImages.forEach((image) => {
@@ -133,7 +133,7 @@ export const useProductImage = (imageId: number) => {
     enabled: !!imageId,
     retry: false, // 실패 시 재시도하지 않음
     staleTime: 1000 * 60 * 5, // 5분 동안 캐시 유지
-    gcTime: 1000 * 60 * 10, // 10분 동안 가비지 컬렉션 방지
+    gcTime: 1000 * 60 * 10 // 10분 동안 가비지 컬렉션 방지
   });
 };
 
@@ -144,7 +144,7 @@ interface RegisterProductParams {
 
 export const useRegisterProduct = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation<IProductRegisterResponse, Error, RegisterProductParams>({
     mutationFn: ({ productData, images }) => registerProduct(productData, images),
     onSuccess: (data) => {
