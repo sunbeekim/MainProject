@@ -22,6 +22,19 @@ const CardDetails = () => {
     owner: ''
   });
 
+ // OCR에서 추출한 카드 정보 (테스트용 더미 데이터)
+ const exampleOCRResponse = {
+  name: "Shinhan Card", 
+  number: "1234123412341234", 
+  owner: "HONG GIL DONG",
+  expiryDate: "12/29", 
+};
+
+// 버튼 클릭 시 OCR 결과를 카드 UI에 반영
+const handleOCRResult = () => {
+  setCardInfo(exampleOCRResponse);
+  };
+  
   // 입력값 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,12 +50,12 @@ const CardDetails = () => {
   
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white shadow-md rounded-lg">
+    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-xl font-bold mb-4">카드 상세 정보</h2>
       <p className="text-gray-600 mb-4">카드 ID: {cardId}</p>
       
       {/* 카드 모양 UI */}
-      <div className="w-96 h-56 relative bg-gradient-to-r from-purple-400 to-violet-500 text-white p-6 rounded-xl shadow-md mb-4">
+      <div className="w-96 h-56 relative bg-gradient-to-r from-purple-400 to-violet-500 text-white p-6 rounded-xl shadow-md mb-4 ">
         <div className="text-lg font-semibold">{cardInfo.name || '카드 이름'}</div>
         <img src={creditCardImg} alt="Card Chip" className="w-12 h-10 absolute top-14 left-5" />
          <div className="mt-12 text-2xl font-bold tracking-widest text-gray-100">
@@ -53,9 +66,10 @@ const CardDetails = () => {
           <span className="text-gray-300 text-xs ">VALID THRU</span>
           <span className="ml-2 text-base font-semibold">{cardInfo.expiryDate || 'MM/YY'}</span>
         </div>
+     
       </div>
-
-      {/* 카드 정보 입력 폼 */}
+      
+      카드 정보 입력 폼
       <div className="space-y-3">
         <input
           type="text"
@@ -99,7 +113,14 @@ const CardDetails = () => {
         >
           저장하기
         </button>
+        
       </div>
+      <button
+        onClick={handleOCRResult}
+        className="px-4 py-2 text-white rounded-full"
+      >
+        (테스트)
+      </button>
     </div>
   );
 };
