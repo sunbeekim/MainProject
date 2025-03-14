@@ -46,7 +46,7 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
   if (!thumbnailPath) return <div>이미지 없음</div>;
   if (isLoading) return <div>로딩중...</div>;
   if (error || !imageBlob) {
-    // mock 이미지 URL 생성
+    // 이미지 ID를 사용하여 고유한 랜덤 이미지 생성
     const mockImageUrl = `https://picsum.photos/600/400?random=${imageId || Math.floor(Math.random() * 1000)}`;
     return (
       <img 
@@ -102,7 +102,7 @@ const MarketList = () => {
   const handleProductClick = (product: IProduct) => {
     navigate('/product-details', {
       state: {
-        productData: {
+        productData: {         
           images: product.imagePaths || [],
           dopamine: product.dopamine,
           id: product.id,

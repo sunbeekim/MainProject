@@ -80,12 +80,13 @@ const ProductDetails = () => {
   // 이미지 URL 처리
   const processedImages = productData.images.map((imagePath: string) => {
     if (imagePath.startsWith('http')) return imagePath;
+    console.log('imagePath', imagePath);
     return `${import.meta.env.VITE_API_URL}/api/core/market/images${imagePath}`;
   });
 
   // 가격 포맷팅 함수
-  const formatPrice = (price: string) => {
-    return price;
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('ko-KR');
   };
 
   // 거래 유형 포맷팅
@@ -101,6 +102,7 @@ const ProductDetails = () => {
 
   return (
     <PDLayout
+      title={productData.title}
       images={processedImages}
       category={`${formatTransactionType(productData.registrationType)} | ${mainCategory}`}
       hobby={subCategory}

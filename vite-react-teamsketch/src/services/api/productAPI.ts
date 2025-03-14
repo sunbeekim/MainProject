@@ -13,6 +13,8 @@ export const registerProduct = async (
   productData: Omit<IProductRegisterRequest, 'images'>,
   images: File[]
 ): Promise<IProductRegisterResponse> => {
+
+  let count = 0;
   try {
     const formData = new FormData();
     
@@ -31,7 +33,11 @@ export const registerProduct = async (
 
     uniqueImages.forEach((image) => {
       formData.append('images', image);
+      count++;
+      console.log('이미지 추가:', image.name, 'count:', count);
     });
+    console.log('formData', formData);
+    console.log('uniqueImages', uniqueImages);
 
     const response = await uploadInstance.post(apiConfig.endpoints.core.registerProduct, formData, {
       headers: {
@@ -66,17 +72,24 @@ export const getProductById = async (id: number): Promise<IProduct> => {
     throw new Error('상품 상세 조회에 실패했습니다.');
   }
 };
-
+let count2 = 0;
 // 상품 이미지 조회
-export const getProductImage = async (imageId: number): Promise<Blob> => {
+export const getProductImage = async (imageId: number): Promise<Blob | null> => {
   try {
     const response = await axiosInstance.get(apiConfig.endpoints.core.getProductImage(imageId), {
       responseType: 'blob'
     });
+    count2++;
+    console.log('상품 이미지 조회 성공:', imageId, 'count:', count2);
     return response.data;
-  } catch (err) {
-    console.error('상품 이미지 조회 에러:', err);
-    throw new Error('상품 이미지 조회에 실패했습니다.');
+  } catch (err: any) {
+    // 404 에러는 자세한 로그를 출력하지 않음
+    if (err.response && err.response.status === 404) {
+      console.log(`이미지 ID ${imageId}를 찾을 수 없습니다.`);
+    } else {
+      console.error('상품 이미지 조회 에러:', err);
+    }
+    return null;
   }
 };
 
@@ -117,7 +130,10 @@ export const useProductImage = (imageId: number) => {
   return useQuery({
     queryKey: ['productImage', imageId],
     queryFn: () => getProductImage(imageId),
-    enabled: !!imageId
+    enabled: !!imageId,
+    retry: false, // 실패 시 재시도하지 않음
+    staleTime: 1000 * 60 * 5, // 5분 동안 캐시 유지
+    gcTime: 1000 * 60 * 10, // 10분 동안 가비지 컬렉션 방지
   });
 };
 

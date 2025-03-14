@@ -17,18 +17,18 @@ interface PRLayoutProps {
 }
 
 const PRLayout = ({
-  title,
-  productTitle,
-  price,
-  transactionType,
-  registrationType,
+  title = '상품 등록',
+  productTitle = '제목',
+  price = 10000,
+  transactionType = '비대면',
+  registrationType = '판매',
   category,
-  participants,
-  schedule,
+  participants = 2,
+  schedule = '2025-01-01 ~ 2025-01-01',
   images,
-  description,
+  description = '설명',
   submitButton,
-  meetingPlace
+  meetingPlace = '테스트 장소'
 }: PRLayoutProps) => {
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">

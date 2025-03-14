@@ -9,6 +9,7 @@ import ProductImage from '../features/image/ProductImage';
 import { FaMapMarkerAlt, FaUsers, FaCalendarAlt, FaClock } from 'react-icons/fa';
 
 interface PDLayoutProps {
+  title?: string;
   images?: string[];
   category?: string;
   hobby?: string;
@@ -30,6 +31,7 @@ interface PDLayoutProps {
 }
 
 const PDLayout: React.FC<PDLayoutProps> = ({
+  title = 'dfsfgsafd',
   images,
   category,
   hobby,
@@ -115,7 +117,9 @@ const PDLayout: React.FC<PDLayoutProps> = ({
         {/* 카테고리 및 정보 */}
         <GridItem>
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className="mb-4 md:mb-0"><h1 className="text-2xl font-bold">{title}</h1></div>
             <div className="flex items-center gap-4 mb-4 md:mb-0">
+              
               <span className="px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium">{category}</span>
               <span className="text-gray-300">{<CgArrowLongRightC />}</span>
               <span className="px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium">{hobby}</span>
