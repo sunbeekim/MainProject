@@ -3,7 +3,7 @@ import { setUser } from '../../store/slices/userSlice';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { RootState } from '../../store/store';
 import MyPageLayout from '../../components/layout/MyPageLayout';
-import { getProfileImage } from '../../services/api/imageAPI';
+import { getProfileImage } from '../../services/api/profileImageAPI';
 import { FileResponse } from '../../types/fileResponse';
 import { useEffect } from 'react';
 import { FaUserCog, FaBoxOpen, FaCreditCard, FaHistory, FaHeadset } from 'react-icons/fa';
@@ -56,7 +56,6 @@ const MyPage = () => {
       onClick: () => navigate('/profile-manage')
     },
     {
-
       icon: <FaBoxOpen size={20} />,
       label: '상품 관리',
       color: 'hover:bg-purple-50 dark:hover:bg-purple-900/30',
@@ -65,7 +64,7 @@ const MyPage = () => {
     {
       icon: <FaBoxOpen className="w-6 h-6" />,
       label: '거래 내역',
-      color: 'text-blue-500',
+      color: 'text-blue-500'
     },
     {
       icon: <FaCreditCard className="w-6 h-6" />,

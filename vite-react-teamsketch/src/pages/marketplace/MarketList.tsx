@@ -1,39 +1,90 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FloatingButton from '../../components/common/FloatingButton';
 import Category from '../../components/common/CategoryIcon';
 import { mockAPI } from '../../mock/mockAPI';
-import { IProduct } from '../../mock/mockData';
+import { IProduct as IMockProduct } from '../../mock/mockData';
+import { IProduct } from '../../types/product';
 import Card from '../../components/features/card/Card';
-import { IGetProduct } from '../../types/product';
-import { getProducts } from '../../services/api/productAPI';
+import {
+  getProducts,
+  useProductImage,
+  extractImageIdFromPath
+} from '../../services/api/productAPI';
 
-// 타입 정의 추가
-type ProductType = IGetProduct | IProduct;
+// mock 데이터를 실제 API 응답 타입으로 변환하는 함수
+const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
+  id: mockProduct.id,
+  productCode: `MOCK-${mockProduct.id}`,
+  title: mockProduct.title,
+  description: mockProduct.description,
+  price: mockProduct.price,
+  email: 'mock@example.com',
+  categoryId: 1, // 기본 카테고리 ID
+  hobbyId: 1, // 기본 취미 ID
+  transactionType: '대면',
+  registrationType: '판매',
+  maxParticipants: mockProduct.maxParticipants,
+  currentParticipants: mockProduct.currentParticipants,
+  days: [],
+  startDate: new Date().toISOString(),
+  endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  latitude: null,
+  longitude: null,
+  meetingPlace: mockProduct.location,
+  address: mockProduct.location,
+  createdAt: mockProduct.createdAt,
+  imagePaths: [mockProduct.image],
+  thumbnailPath: mockProduct.image,
+  nickname: 'Mock User',
+  bio: null,
+  dopamine: mockProduct.dopamine,
+  visible: true
+});
+
+const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) => {
+  const imageId = thumbnailPath ? extractImageIdFromPath(thumbnailPath) : null;
+  const { data: imageBlob, isLoading, error } = useProductImage(imageId || 0);
+
+  if (!thumbnailPath) return <div>이미지 없음</div>;
+  if (isLoading) return <div>로딩중...</div>;
+  if (error || !imageBlob) {
+    // 이미지 ID를 사용하여 고유한 랜덤 이미지 생성
+    const mockImageUrl = `https://picsum.photos/600/400?random=${
+      imageId || Math.floor(Math.random() * 1000)
+    }`;
+    return <img src={mockImageUrl} alt="상품 이미지" className="w-full h-full object-cover" />;
+  }
+
+  return (
+    <img
+      src={URL.createObjectURL(imageBlob)}
+      alt="상품 이미지"
+      className="w-full h-full object-cover"
+    />
+  );
+});
 
 const MarketList = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
   // 최신 상품 Query
-  const { data: latestProducts = [], isLoading: isLatestLoading } = useQuery<ProductType[]>({
+  const { data: latestProducts = [], isLoading: isLatestLoading } = useQuery<IProduct[]>({
     queryKey: ['latestProducts', selectedCategory],
     queryFn: async () => {
       try {
-        const filter = selectedCategory ? { categoryId: selectedCategory } : undefined;
-        const response = await getProducts(filter);
-        console.log(response);
-        if (response.length === 0) {
-          console.log('상품이 없습니다.');
+        const response = await getProducts();
+        if (!response.data || response.data.length === 0) {
           const mockResponse = await mockAPI.market.getLatestProducts();
-          return mockResponse.data.products;
+          return mockResponse.data.products.map(convertMockToProduct);
         }
-        return response || [];
+        return response.data || [];
       } catch (error) {
         console.error('API 요청 실패:', error);
         const mockResponse = await mockAPI.market.getLatestProducts();
-        return mockResponse.data.products;
+        return mockResponse.data.products.map(convertMockToProduct);
       }
     },
     gcTime: 600000,
@@ -48,34 +99,32 @@ const MarketList = () => {
     setSelectedCategory(categoryId === 0 ? null : categoryId);
   };
 
-  const handleProductClick = (product: ProductType) => {
+  const handleProductClick = (product: IProduct) => {
     navigate('/product-details', {
       state: {
         productData: {
-          images:
-            'imagePaths' in product && Array.isArray(product.imagePaths)
-              ? product.imagePaths
-              : ['image' in product ? product.image : ''],
-          dopamine: 'dopamine' in product ? product.dopamine : 5,
+          images: product.imagePaths || [],
+          dopamine: product.dopamine,
           id: product.id,
-          email: 'email' in product ? product.email : '',
-          nickname: 'nickname' in product ? product.nickname : '',
-          thumbnailPath: 'thumbnailPath' in product ? product.thumbnailPath : '',
-          registrationType: 'registrationType' in product ? product.registrationType : '',
-          transactionType: 'transactionType' in product ? product.transactionType : '',
-          meetingPlace: 'meetingPlace' in product ? product.meetingPlace : '',
+          email: product.email,
+          nickname: product.nickname || '',
+          thumbnailPath: product.thumbnailPath || '',
+          registrationType: product.registrationType,
+          transactionType: product.transactionType,
+          meetingPlace: product.meetingPlace || '',
           description: product.description,
-          maxParticipants: 'maxParticipants' in product ? product.maxParticipants : 0,
-          currentParticipants: 'currentParticipants' in product ? product.currentParticipants : 0,
-          address: 'address' in product ? product.address : '',
-          startDate: 'startDate' in product ? product.startDate : '',
-          endDate: 'endDate' in product ? product.endDate : '',
+          maxParticipants: product.maxParticipants,
+          currentParticipants: product.currentParticipants,
+          address: product.address || '',
+          startDate: product.startDate,
+          endDate: product.endDate,
           title: product.title,
           price: product.price,
-          categoryId: 'categoryId' in product ? product.categoryId : 0,
-          hobbyId: 'hobbyId' in product ? product.hobbyId : 0,
-          latitude: 'latitude' in product ? product.latitude : 0,
-          longitude: 'longitude' in product ? product.longitude : 0
+          categoryId: product.categoryId,
+          hobbyId: product.hobbyId,
+          latitude: product.latitude || 0,
+          longitude: product.longitude || 0,
+          days: product.days || []
         }
       }
     });
@@ -93,31 +142,17 @@ const MarketList = () => {
       <div className="mt-4">
         <div className="no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10">
-            {latestProducts.map((product: ProductType) => (
+            {latestProducts.map((product: IProduct) => (
               <div key={product.id} className="w-full flex-shrink-0 ">
                 <Card
                   title={product.title}
                   description={product.description}
-                  image={
-                    'thumbnailPath' in product && product.thumbnailPath
-                      ? `${product.thumbnailPath}`
-                      : 'image' in product
-                      ? product.image
-                      : ''
-                  }
+                  image={<ProductImage thumbnailPath={product.thumbnailPath} />}
                   price={product.price.toString()}
-                  dopamine={'dopamine' in product ? product.dopamine : 5}
-                  currentParticipants={
-                    'currentParticipants' in product ? product.currentParticipants : 0
-                  }
-                  maxParticipants={'maxParticipants' in product ? product.maxParticipants : 0}
-                  location={
-                    'location' in product
-                      ? product.location
-                      : 'meetingPlace' in product
-                      ? product.meetingPlace || ''
-                      : ''
-                  }
+                  dopamine={product.dopamine}
+                  currentParticipants={product.currentParticipants}
+                  maxParticipants={product.maxParticipants}
+                  location={product.address || product.meetingPlace || ''}
                   onClick={() => handleProductClick(product)}
                 />
               </div>

@@ -37,7 +37,7 @@ const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, i
   return (
     <div className="flex flex-col h-full w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg">
       {/* 채팅 헤더 */}
-      <div className="p-4 bg-gradient-to-r from-violet-500 to-purple-500">
+      <div className="p-4 bg-primary-400">
         <h2 className="text-xl font-bold text-white">{title}</h2>
         {subtitle && (
           <p className="text-sm text-violet-100 mt-1 opacity-90">{subtitle}</p>
@@ -85,7 +85,7 @@ const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, i
             type="text"
             className="flex-1 px-4 py-3 text-base rounded-xl border border-gray-200 dark:border-gray-600 
                      bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white
-                     focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-purple-500
+                     focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-500
                      transition-all duration-200"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -94,10 +94,10 @@ const Chat: React.FC<ChatProps> = ({ title, subtitle, messages, onSendMessage, i
           />
           <button
             type="submit"
-            className="px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl
+            className="px-6 py-3 bg-primary-500 text-white rounded-xl
                      hover:opacity-90 transition-all duration-200 font-medium
                      disabled:opacity-50 disabled:cursor-not-allowed
-                     focus:outline-none focus:ring-2 focus:ring-violet-500"
+                     focus:outline-none focus:ring-2 focus:ring-primary-500"
             disabled={isLoading || !newMessage.trim()}
           >
             전송

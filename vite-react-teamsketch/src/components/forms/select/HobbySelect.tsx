@@ -37,7 +37,7 @@ const HobbySelect: React.FC<HobbySelectProps> = ({
       onChange={handleHobbySelect}
       className="w-full bg-primary-300 text-text-light dark:bg-gray-800"
       placeholder="취미를 선택해주세요"
-      value={selectedHobbies.find((h) => h.categoryId === categoryId)?.hobbyId.toString()}
+      value={selectedHobbies.find((h) => h.categoryId === categoryId)?.hobbyId.toString() || ''}
       disabled={!categoryId}
     />
   );
