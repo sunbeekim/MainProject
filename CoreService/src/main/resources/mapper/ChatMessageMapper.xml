@@ -6,96 +6,83 @@
     <insert id="saveChatMessage" parameterType="com.example.demo.model.chat.ChatMessage" 
             useGeneratedKeys="true" keyProperty="messageId">
         INSERT INTO messages (
-            chatroomId,
-            senderEmail,
-            content,
-            messageType,
-            sentAt,
-            isRead
+            chatroom_id, sender_email, content, message_type, sent_at, is_read
         ) VALUES (
-            #{chatroomId},
-            #{senderEmail},
-            #{content},
-            #{messageType},
-            #{sentAt},
-            #{isRead}
+            #{chatroomId}, #{senderEmail}, #{content}, #{messageType}, #{sentAt}, #{isRead}
         )
     </insert>
     
     <!-- 메시지 조회 (ID로) -->
     <select id="findMessageById" parameterType="int" resultMap="chatMessageResultMap">
         SELECT 
-            m.messageId,
-            m.chatroomId,
-            m.senderEmail,
-            m.content,
-            m.messageType,
-            m.sentAt,
-            m.isRead,
-            u.nickname AS senderName
+            m.*,
+            u.nickname AS sender_name
         FROM 
             messages m
-        LEFT JOIN 
-            Users u ON m.senderEmail = u.email
+            LEFT JOIN users u ON m.sender_email = u.email
         WHERE 
-            m.messageId = #{messageId}
+            m.message_id = #{messageId}
     </select>
     
     <!-- 채팅방 메시지 목록 조회 (페이징) -->
     <select id="findMessagesByChatRoomId" resultMap="chatMessageResultMap">
         SELECT 
-            m.messageId,
-            m.chatroomId,
-            m.senderEmail,
-            m.content,
-            m.messageType,
-            m.sentAt,
-            m.isRead,
-            u.nickname AS senderName
+            m.*,
+            u.nickname AS sender_name
         FROM 
             messages m
-        LEFT JOIN 
-            Users u ON m.senderEmail = u.email
+            LEFT JOIN users u ON m.sender_email = u.email
         WHERE 
-            m.chatroomId = #{chatroomId}
+            m.chatroom_id = #{chatroomId}
         ORDER BY 
-            m.sentAt DESC
+            m.sent_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
     
     <!-- 채팅방 메시지 총 개수 -->
     <select id="countMessagesByChatRoomId" parameterType="int" resultType="int">
-        SELECT COUNT(*) FROM messages WHERE chatroomId = #{chatroomId}
+        SELECT 
+            COUNT(*) 
+        FROM 
+            messages 
+        WHERE 
+            chatroom_id = #{chatroomId}
     </select>
     
     <!-- 메시지 읽음 상태 업데이트 -->
     <update id="updateMessageReadStatus">
-        UPDATE messages
-        SET isRead = 1
+        UPDATE 
+            messages
+        SET 
+            is_read = true
         WHERE 
-            chatroomId = #{chatroomId}
-            AND senderEmail != #{receiverEmail}
-            AND isRead = 0
+            chatroom_id = #{chatroomId}
+            AND sender_email != #{receiverEmail}
+            AND is_read = false
     </update>
     
     <!-- 읽지 않은 메시지 개수 조회 -->
     <select id="countUnreadMessages" resultType="int">
-        SELECT COUNT(*) 
-        FROM messages 
-        WHERE chatroomId = #{chatroomId}
-          AND senderEmail != #{receiverEmail}
-          AND isRead = false
+        SELECT 
+            COUNT(*) 
+        FROM 
+            messages 
+        WHERE 
+            chatroom_id = #{chatroomId}
+            AND sender_email != #{receiverEmail}
+            AND is_read = false
     </select>
     
     <!-- 결과 매핑 -->
     <resultMap id="chatMessageResultMap" type="com.example.demo.model.chat.ChatMessage">
-        <id property="messageId" column="messageId" />
-        <result property="chatroomId" column="chatroomId" />
-        <result property="senderEmail" column="senderEmail" />
-        <result property="content" column="content" />
-        <result property="messageType" column="messageType" />
-        <result property="sentAt" column="sentAt" />
-        <result property="isRead" column="isRead" />
-        <result property="senderName" column="senderName" />
+        <id property="messageId" column="message_id"/>
+        <result property="chatroomId" column="chatroom_id"/>
+        <result property="senderEmail" column="sender_email"/>
+        <result property="content" column="content"/>
+        <result property="messageType" column="message_type"/>
+        <result property="sentAt" column="sent_at"/>
+        <result property="isRead" column="is_read"/>
+        <result property="senderName" column="sender_name"/>
     </resultMap>
+
 </mapper>
