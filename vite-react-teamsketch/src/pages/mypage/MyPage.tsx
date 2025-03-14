@@ -3,7 +3,7 @@ import { setUser } from '../../store/slices/userSlice';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { RootState } from '../../store/store';
 import MyPageLayout from '../../components/layout/MyPageLayout';
-import { getProfileImage } from '../../services/api/imageAPI';
+import { getProfileImage } from '../../services/api/profileImageAPI';
 import { FileResponse } from '../../types/fileResponse';
 import { useEffect } from 'react';
 import { FaUserCog, FaBoxOpen, FaCreditCard, FaHistory, FaHeadset } from 'react-icons/fa';

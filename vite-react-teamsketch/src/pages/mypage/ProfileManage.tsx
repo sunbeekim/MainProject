@@ -12,7 +12,7 @@ import InterestSelect from '../../components/forms/select/InterestSelect';
 import HobbySelect from '../../components/forms/select/HobbySelect';
 import BaseLabelBox from '../../components/common/BaseLabelBox';
 import ImageUpload from '../../components/features/upload/ImageUpload';
-import { coreProfile } from '../../services/api/imageAPI';
+import { coreProfile } from '../../services/api/profileImageAPI';
 import ProfileManageLayout from '../../components/layout/ProfileManageLayout';
 import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
 import { useNavigate } from 'react-router-dom';

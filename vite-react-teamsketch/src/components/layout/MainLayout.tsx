@@ -30,7 +30,6 @@ import TransactionDetail from '../../pages/Transaction history/TransactionDetail
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
-import TestAPI from '../../testpages/TestAPI';
 import TestGrid from '../../testpages/TestGrid';
 
 const MainLayout = () => {
@@ -101,7 +100,6 @@ const MainLayout = () => {
           <Route path="/test/pages" element={<TestPages />} />
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
-          <Route path="/test/api" element={<TestAPI />} />
           <Route path="/test/grid" element={<TestGrid />} />
         </Routes>
       </div>
