@@ -84,7 +84,7 @@ const MyPage = () => {
       icon: <FaHeadset className="w-6 h-6" />,
       label: 'AI 고객센터',
       color: 'text-indigo-500',
-      onClick: () => navigate('/servicechat')
+      onClick: () => navigate('/cs-list')
     }
   ];
 
