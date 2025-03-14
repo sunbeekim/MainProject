@@ -12,14 +12,8 @@ import { apiConfig } from '../services/api/apiConfig';
 
 export const useCategories = () => {
   const dispatch = useAppDispatch();
-  const {
-    categories,
-    selectedCategoryId,
-    loading,
-    error,
-    constantCategories,
-    constantHobbies
-  } = useAppSelector((state) => state.category);
+  const { categories, selectedCategoryId, loading, error, constantCategories, constantHobbies } =
+    useAppSelector((state) => state.category);
 
   const fetchCategories = async () => {
     try {
@@ -38,7 +32,7 @@ export const useCategories = () => {
     }
   };
 
-  // const fetchHobbiesByCategory = async (categoryId: number) => {   
+  // const fetchHobbiesByCategory = async (categoryId: number) => {
   //   const response = await axiosInstance.get(
   //     apiConfig.endpoints.core.getHobbiesByCategory(categoryId)
   //   );
@@ -66,7 +60,7 @@ export const useCategories = () => {
       await fetchCategories();
       await fetchAllHobbies();
     };
-    
+
     initializeData();
   }, []);
 

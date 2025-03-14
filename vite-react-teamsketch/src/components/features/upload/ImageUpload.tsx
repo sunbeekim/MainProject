@@ -51,12 +51,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
 
     // 다중 이미지 업로드 처리
-    if (images.length < maxImages) {
-      const formData = new FormData();
-      formData.append('file', file);
-      onFileSelect?.(file);
-      onUpload(formData);
+    if (images.length >= maxImages) {
+      alert(`최대 ${maxImages}개의 이미지만 업로드할 수 있습니다.`);
+      return;
     }
+
+    // 이미지가 이미 존재하는지 확인 (중복 체크 강화)
+    const isDuplicate = images.some((img) => img.name === file.name && img.size === file.size);
+
+    if (isDuplicate) {
+      console.log('중복 이미지 감지됨 (ImageUpload):', file.name);
+      alert('이미 추가된 이미지입니다.');
+      return;
+    }
+
+    console.log('이미지 추가 (ImageUpload):', file.name);
+    onFileSelect?.(file);
   };
 
   const handleUpload = async () => {
@@ -84,9 +94,19 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     <div className={`space-y-4 ${className}`}>
       <div className="flex flex-col items-center gap-4">
         <div className={`flex gap-4 ${borderStyle}`}>
-          {type === 'ocr' && <CameraCapture onCapture={handleFileSelect} className='text-primary-500'/>}
-          {type === 'image' && <ImageSelector onFileSelect={handleFileSelect} className='text-primary-500'/>}
-          {type === 'prod' && <ProdSelector onFileSelect={handleFileSelect} className='text-primary-500'/>}
+          {type === 'ocr' && (
+            <CameraCapture onCapture={handleFileSelect} className="text-primary-500" />
+          )}
+          {type === 'image' && (
+            <ImageSelector onFileSelect={handleFileSelect} className="text-primary-500" />
+          )}
+          {type === 'prod' && (
+            <ProdSelector
+              onFileSelect={handleFileSelect}
+              className="text-primary-500"
+              multiple={multiple}
+            />
+          )}
           {type === 'profile' && (
             <ProfileSelector
               onFileSelect={handleFileSelect}
@@ -177,7 +197,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
         {/* 단일 이미지 업로드 버튼 */}
         {!multiple && selectedFile && (
-          <Button variant="primary" onClick={handleUpload} disabled={isLoading}>
+          <Button className="bg-primary-400" onClick={handleUpload} disabled={isLoading}>
             {isLoading ? '업로드 중...' : '업로드'}
           </Button>
         )}

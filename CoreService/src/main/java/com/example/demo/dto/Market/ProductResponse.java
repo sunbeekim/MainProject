@@ -22,6 +22,11 @@ public class ProductResponse {
     private String transactionType;
     private String registrationType;
     private int maxParticipants;  // 모집인원 추가
+    private int currentParticipants; // 추가
+    private boolean isVisible;
+
+    private List<String> days;  // 요일 정보 (월,화,수,목,금,토,일)
+
     private LocalDateTime startDate;  // 일정 시작일 추가
     private LocalDateTime endDate;  // 일정 종료일 추가
     private Double latitude; // 거래 장소 위도
@@ -37,4 +42,11 @@ public class ProductResponse {
 
     // 대표 이미지 추가
     private String thumbnailPath;
+
+    // 유저 정보 추가
+    private String nickname;
+    private String bio;
+    private int dopamine;
+
+
 }

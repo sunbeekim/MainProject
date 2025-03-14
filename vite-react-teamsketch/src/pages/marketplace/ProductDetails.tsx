@@ -6,51 +6,63 @@ import LocationInfo from '../../components/features/location/LocationInfo';
 import { useDispatch } from 'react-redux';
 import { setEndLocation } from '../../store/slices/mapSlice';
 import { useAppSelector } from '../../store/hooks';
+import { useEffect } from 'react';
 
 const ProductDetails = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { constantCategories, constantHobbies } = useAppSelector((state) => state.category);
-  dispatch(setEndLocation({
-    lat: location.state.productData.latitude,
-    lng: location.state.productData.longitude,
-    address: location.state.productData.address,
-    meetingPlace: location.state.productData.meetingPlace
-  }));
+
+  useEffect(() => {
+    dispatch(
+      setEndLocation({
+        lat: location.state.productData.latitude,
+        lng: location.state.productData.longitude,
+        address: location.state.productData.address,
+        meetingPlace: location.state.productData.meetingPlace
+      })
+    );
+    console.log('location.state.productData', location.state.productData);
+  }, [dispatch, location.state.productData]);
 
   const productData = location.state?.productData || {
-    images: ['https://via.placeholder.com/800x600/3498db/ffffff?text=기본+이미지'],
-    dopamine: 0,
-    id: 0,
-    email: '',
-    nickname: '',
-    description: '상품 설명이 없습니다.',
-    maxParticipants: 0,
+    id: 1,
+    images: ['https://picsum.photos/600/400?random=1'],
+    productCode: ``,
+    title: 'mockProduct.title',
+    description: 'mockProduct.description',
+    price: 'mockProduct.price',
+    email: 'mock@example.com',
+    categoryId: 1, // 기본 카테고리 ID
+    hobbyId: 1, // 기본 취미 ID
+    transactionType: '대면',
+    registrationType: '판매',
+    maxParticipants: 1,
     currentParticipants: 0,
-    startDate: '',
-    endDate: '',
-    meetingPlace: '',
-    address: '',
-    title: '상품명이 없습니다.',
-    price: 0,
-    categoryId: 0,
-    hobbyId: 0,
-    latitude: 0,
-    longitude: 0,
-    registrationType: '',
-    transactionType: '',
-    thumbnailPath: ''
+    days: [],
+    startDate: new Date().toISOString(),
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    latitude: null,
+    longitude: null,
+    meetingPlace: 'mockProduct.location',
+    address: 'mockProduct.location',
+    createdAt: 'mockProduct.createdAt',
+    imagePaths: ['mockProduct.image'],
+    thumbnailPath: 'mockProduct.image',
+    nickname: 'Mock User',
+    dopamine: 1,
+    visible: true
   };
 
   // categoryId를 사용하여 카테고리 이름 찾기
-  const mainCategory = constantCategories.find(
-    (category) => category.categoryId === productData.categoryId
-  )?.categoryName || '카테고리 없음';
+  const mainCategory =
+    constantCategories.find((category) => category.categoryId === productData.categoryId)
+      ?.categoryName || '카테고리 없음';
 
   // hobbyId를 사용하여 취미 이름 찾기
-  const subCategory = constantHobbies.find(
-    (hobby) => hobby.hobbyId === productData.hobbyId
-  )?.hobbyName || '취미 없음';
+  const subCategory =
+    constantHobbies.find((hobby) => hobby.hobbyId === productData.hobbyId)?.hobbyName ||
+    '취미 없음';
 
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
@@ -64,11 +76,11 @@ const ProductDetails = () => {
   };
 
   // 이미지 URL 처리
-  const processedImages = productData.images.map((imagePath: string) =>
-    imagePath.startsWith('http') 
-      ? imagePath 
-      : `${import.meta.env.VITE_API_URL}/api/core/market/images${imagePath}`
-  );
+  const processedImages = productData.images.map((imagePath: string) => {
+    if (imagePath.startsWith('http')) return imagePath;
+    console.log('imagePath', imagePath);
+    return `${import.meta.env.VITE_API_URL}/api/core/market/images${imagePath}`;
+  });
 
   // 가격 포맷팅 함수
   const formatPrice = (price: number) => {
@@ -88,6 +100,7 @@ const ProductDetails = () => {
 
   return (
     <PDLayout
+      title={productData.title}
       images={processedImages}
       category={`${formatTransactionType(productData.registrationType)} | ${mainCategory}`}
       hobby={subCategory}
@@ -98,19 +111,19 @@ const ProductDetails = () => {
       currentParticipants={productData.currentParticipants}
       startDate={formatDate(productData.startDate)}
       endDate={formatDate(productData.endDate)}
-      meetingPlace={`${productData.meetingPlace} (${productData.address})`}
-      btName={"신청"}
+      meetingPlace={productData.meetingPlace}
+      btName={'신청'}
       price={formatPrice(productData.price)}
-      transactionType={formatTransactionType(productData.transactionType)}
+      transactionType={productData.transactionType}
       email={productData.email}
       nickname={productData.nickname || '닉x'}
-      map={<LocationLayout           
-        childrenCenter={<OpenMap nonClickable={true}/>}
-        childrenBottom={
-            <LocationInfo             
-                showEndLocation={true}                                   
-            />}                
-    ></LocationLayout> }
+      day={productData.days || []}
+      map={
+        <LocationLayout
+          childrenCenter={<OpenMap nonClickable={true} />}
+          childrenBottom={<LocationInfo showEndLocation={true} />}
+        ></LocationLayout>
+      }
     />
   );
 };

@@ -12,7 +12,7 @@ import InterestSelect from '../../components/forms/select/InterestSelect';
 import HobbySelect from '../../components/forms/select/HobbySelect';
 import BaseLabelBox from '../../components/common/BaseLabelBox';
 import ImageUpload from '../../components/features/upload/ImageUpload';
-import { coreProfile } from '../../services/api/imageAPI';
+import { coreProfile } from '../../services/api/profileImageAPI';
 import ProfileManageLayout from '../../components/layout/ProfileManageLayout';
 import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
 import { useNavigate } from 'react-router-dom';
@@ -126,6 +126,7 @@ const ProfileManage = () => {
           currentImage={user.profileImagePath instanceof File ? user.profileImagePath : null}
         />
       }
+      email={user.email || 'test@test.com'}
       userInfoName={
         <BaseLabelBox label="이름">
           <BaseInput
@@ -133,6 +134,7 @@ const ProfileManage = () => {
             value={user.name}
             onChange={handleChange}
             placeholder="이름을 입력하세요"
+            className="border-primary-500"
           />
         </BaseLabelBox>
       }
@@ -143,6 +145,7 @@ const ProfileManage = () => {
             value={user.nickname}
             onChange={handleChange}
             placeholder="닉네임을 입력하세요"
+            className="border-primary-500"
           />
         </BaseLabelBox>
       }
@@ -154,6 +157,7 @@ const ProfileManage = () => {
             value={user.bio || ''}
             onChange={handleChange}
             placeholder="소개글을 입력하세요"
+            className="border-primary-500"
           />
         </BaseLabelBox>
       }

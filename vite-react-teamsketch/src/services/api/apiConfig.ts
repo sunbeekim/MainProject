@@ -27,15 +27,14 @@ export const apiConfig = {
       getProfileImage: `${BASE_URL}/core/profiles/image`,
       getCategory: `${BASE_URL}/core/hobbies/categories`,
       getHobbies: `${BASE_URL}/core/hobbies`,
-      getHobbiesByCategory: (categoryId: number) => `${BASE_URL}/core/hobbies/categories/${categoryId}`,
+      getHobbiesByCategory: (categoryId: number) =>
+        `${BASE_URL}/core/hobbies/categories/${categoryId}`,
       updateProfile: `${BASE_URL}/core/profiles/me`,
       registerProduct: `${BASE_URL}/core/market/products/registers`,
       uploadProductImages: `${BASE_URL}/core/market/images/upload`,
-      getProducts: `${BASE_URL}/core/market/products`,
+      getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
-      test: `${BASE_URL}/core/test`,
-      
-      // 다른 core 서비스 엔드포인트들...
+      getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
     },
     ai: {
       base: `${BASE_URL}/ai`,

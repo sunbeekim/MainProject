@@ -6,13 +6,16 @@ import com.example.demo.mapper.Market.ProductMapper;
 import com.example.demo.mapper.Market.ProductImageMapper;
 import com.example.demo.model.Market.Product;
 import com.example.demo.model.Market.ProductImage;
+import com.example.demo.util.BaseResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,20 +23,35 @@ import java.util.stream.Collectors;
 public class ProductService {
     private final ProductMapper productMapper;
     private final ProductImageMapper productImageMapper;
-    private final ImageUploadService imageUploadService;  //이미지 업로드 서비스 추가
+    private final NotificationService notificationService;
+    private final ImageUploadService imageUploadService;
 
-    public ResponseEntity<Object> createProduct(ProductRequest request) {
+    /** 전체 상품 목록 조회 (등록자 상품 조회 항상가능, 비로그인자 모집 중인 상품 조회 가능) **/
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getAllProducts(String email) {
         try {
-            // "대면" 거래일 경우, 위치 정보가 없으면 예외 발생
-            if ("대면".equals(request.getTransactionType())) {
-                if (request.getLatitude() == null || request.getLongitude() == null || request.getMeetingPlace() == null) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                            "status", 400,
-                            "error", "Bad Request",
-                            "message", "대면 거래의 경우 위도(latitude), 경도(longitude), 거래 장소(meetingPlace)는 필수 입력 값입니다."
-                    ));
-                }
+            List<ProductResponse> products = productMapper.findAll(email).stream()
+                    .map(this::convertToProductResponse)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new BaseResponse<>(products));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "전체 상품 조회 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+
+    /** 상품 등록 (이미지도 함께 업로드) **/
+    public ResponseEntity<BaseResponse<ProductResponse>> createProduct(String email, ProductRequest request, List<MultipartFile> images) {
+        try {
+            if ("대면".equals(request.getTransactionType()) &&
+                    (request.getLatitude() == null || request.getLongitude() == null || request.getMeetingPlace() == null)) {
+                return ResponseEntity.badRequest()
+                        .body(new BaseResponse<>(null, "대면 거래의 경우 위치 정보는 필수 입력 값입니다."));
             }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String daysJson = objectMapper.writeValueAsString(request.getDays()); // List<String> → JSON 변환
 
             // 상품 정보 저장
             Product product = Product.builder()
@@ -41,149 +59,337 @@ public class ProductService {
                     .title(request.getTitle())
                     .description(request.getDescription())
                     .price(request.getPrice())
-                    .email(request.getEmail())
+                    .email(email)
                     .categoryId(request.getCategoryId())
-                    .hobbyId(request.getHobbyId()) // 취미 ID 추가
+                    .hobbyId(request.getHobbyId())
                     .transactionType(request.getTransactionType())
                     .registrationType(request.getRegistrationType())
-                    .maxParticipants(request.getMaxParticipants()) // 모집인원 추가
-                    .startDate(request.getStartDate()) // 일정 시작일 추가
-                    .endDate(request.getEndDate()) // 일정 종료일 추가
+                    .maxParticipants(request.getMaxParticipants())
+                    .currentParticipants(0)
+                    .isVisible(true)
+                    .startDate(request.getStartDate())
+                    .endDate(request.getEndDate())
                     .latitude(request.getLatitude())
                     .longitude(request.getLongitude())
                     .meetingPlace(request.getMeetingPlace())
                     .address(request.getAddress())
+                    .days(daysJson)
                     .build();
 
             productMapper.insertProduct(product);
             Long productId = product.getId();
 
+            // 이미지 업로드 및 DB 저장
+            if (images != null && !images.isEmpty()) {
+                // 한 개의 이미지도 리스트로 만들어서 `uploadProductImages` 호출
+                ResponseEntity<Object> response = imageUploadService.uploadProductImages(email, productId, images);
 
-            // 이미지 경로가 있을 경우 ProductImages 테이블에 저장
-            if (request.getImagePaths() != null && !request.getImagePaths().isEmpty()) {
-                for (String path : request.getImagePaths()) {
-                    ProductImage productImage = ProductImage.builder()
-                            .productId(productId)
-                            .imagePath(path)
-                            .isThumbnail(false)
-                            .build();
+                // 업로드된 이미지 경로를 가져와서 ProductImage 테이블에 저장
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+                    List<String> imagePaths = (List<String>) responseBody.get("imagePaths");
 
-                    productImageMapper.insertProductImage(productImage); // 실제 DB에 삽입하는 부분
+                    for (String imagePath : imagePaths) {
+                        ProductImage productImage = ProductImage.builder()
+                                .productId(productId)
+                                .imagePath(imagePath)
+                                .isThumbnail(false)
+                                .build();
+                        productImageMapper.insertProductImage(productImage);
+                    }
                 }
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of(
-                    "status", 200,
-                    "message", "상품이 성공적으로 등록되었습니다.",
-                    "productId", productId
-            ));
+            // 변환된 ProductResponse 생성
+            ProductResponse productResponse = convertToProductResponse(product);
+
+            // 성공 메시지
+            return ResponseEntity.ok(new BaseResponse<>("success", "상품이 성공적으로 등록되었습니다.", productResponse));
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", 500,
-                    "error", "Internal Server Error",
-                    "message", ex.getMessage()
-            ));
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>("error", "상품 등록 중 오류 발생: " + ex.getMessage()));
         }
     }
 
-    public ProductResponse getProductById(Long id) {
-        Product product = productMapper.findById(id);
+
+    /** 상품 요청 등록 (구매 요청/판매 요청) + 알림 전송  **/
+    public ResponseEntity<BaseResponse<Map<String, Object>>> createProductRequest(String requesterEmail, Long productId) {
+        try {
+            String productOwnerEmail = productMapper.findEmailByProductId(productId);
+            if (productOwnerEmail == null) {
+                return ResponseEntity.badRequest()
+                        .body(new BaseResponse<>(null, "해당 상품을 찾을 수 없습니다."));
+            }
+
+            // 요청 등록 및 관련 데이터 업데이트
+            productMapper.insertProductRequest(productId, requesterEmail);
+            productMapper.increaseCurrentParticipants(productId);
+            productMapper.updateProductVisibility(productId); // 모집 마감 여부 확인
+
+            // 알림 전송
+            notificationService.sendNotification(productOwnerEmail, requesterEmail, productId);
+
+            // 상품 정보 가져오기 (등록자는 마감된 상품도 조회 가능)
+            Product product = productMapper.findById(productId, requesterEmail);
+            if (product == null) {
+                return ResponseEntity.internalServerError()
+                        .body(new BaseResponse<>(null, "상품 요청은 저장되었지만, 상품 정보를 가져오는 데 실패했습니다."));
+            }
+
+            // 모집 인원 충족 시 자동으로 상태를 '완료'로 변경
+            if (product.getCurrentParticipants() >= product.getMaxParticipants()) {
+                productMapper.updateRequestStatusToComplete(productId);
+            }
+
+            // 요청 유형 구분 (구매 요청인지 판매 요청인지 확인)
+            String requestType = product.getRegistrationType().equals("판매") ? "구매 요청" : "판매 요청";
+
+            // 요청 정보 그룹화
+            Map<String, Object> requestInfo = new HashMap<>();
+            requestInfo.put("productId", product.getId());
+            requestInfo.put("requesterEmail", requesterEmail);
+            requestInfo.put("status", "대기");
+            requestInfo.put("approvalStatus", "미승인");
+            requestInfo.put("requestType", requestType); // 요청 유형 추가 (구매 요청 or 판매 요청)
+
+            // 최종 응답 데이터 구성
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("status", "success");
+            responseData.put("message", "상품 요청이 등록되었습니다.");
+            responseData.put("requestInfo", requestInfo);
+            responseData.put("requestedProductId", product.getId()); // 요청한 상품 ID 포함
+            responseData.put("productInfo", convertToProductResponse(product)); // `convertToProductResponse()`로 변환된 데이터 사용
+
+            return ResponseEntity.ok(new BaseResponse<>(responseData));
+
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "상품 요청 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+    /** 승인된 요청 목록 조회 **/
+    public ResponseEntity<BaseResponse<Map<String, Object>>> getApprovedRequests(Long productId) {
+        try {
+            // 승인된 요청 목록 가져오기
+            List<Map<String, Object>> approvedRequests = productMapper.findApprovedRequests(productId);
+
+            // 데이터가 없을 경우 처리
+            if (approvedRequests == null || approvedRequests.isEmpty()) {
+                return ResponseEntity.ok(new BaseResponse<>(null, "승인된 요청이 없습니다."));
+            }
+
+            // 응답 데이터 구성
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("status", "success");
+            responseData.put("data", approvedRequests);
+
+            return ResponseEntity.ok(new BaseResponse<>(responseData));
+
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "승인된 요청 조회 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+
+
+    /** 개별 상품 조회 **/
+    public ProductResponse getProductById(Long id, String email) {
+        Product product = productMapper.findById(id, email);
         if (product == null) {
             throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
         }
 
-        // 상품 ID에 해당하는 이미지 경로 리스트 가져오기
-        List<String> imagePaths = productImageMapper.findByProductId(id).stream()
-                .map(ProductImage::getImagePath)
+        return convertToProductResponse(product);
+    }
+
+    /** 상품 요청 승인 **/
+    public ResponseEntity<BaseResponse<String>> approveProductRequest(String ownerEmail, Long productId, Long requestId) {
+        try {
+            // 상품 정보 가져오기 (등록자는 is_visible = FALSE 여도 조회 가능하도록)
+            Product product = productMapper.findById(productId, ownerEmail);
+
+            if (product == null) {
+                return ResponseEntity.status(404).body(new BaseResponse<>("해당 상품을 찾을 수 없습니다."));
+            }
+
+            // 요청자의 이메일 가져오기
+            String requesterEmail = productMapper.findRequesterEmailByRequestId(requestId);
+
+            // 등록자와 요청자가 같은 경우 승인 불가능
+            if (ownerEmail.equals(requesterEmail)) {
+                return ResponseEntity.status(403).body(new BaseResponse<>("승인 실패: 등록자와 요청자가 동일합니다."));
+            }
+
+            // 상품 등록자가 아닌 경우 승인 불가능
+            if (!product.getEmail().equals(ownerEmail)) {
+                return ResponseEntity.status(403).body(new BaseResponse<>("해당 상품의 등록자만 요청을 승인할 수 있습니다."));
+            }
+
+            // 현재 승인된 참여 인원 가져오기 (미승인 요청 제외)
+            int approvedParticipants = productMapper.getCurrentParticipants(productId);
+
+            // 최대 인원 확인 (승인된 인원 기준)
+            if (approvedParticipants >= product.getMaxParticipants()) {
+                return ResponseEntity.status(400).body(new BaseResponse<>("승인 불가: 최대 참여 인원을 초과할 수 없습니다."));
+            }
+            // 상품 요청 승인 처리
+            productMapper.updateRequestApprovalStatus(requestId, "승인");
+
+            // 승인된 요청 수 증가 반영 후 체크
+            approvedParticipants++;
+
+            // 모집이 완료된 경우 자동으로 상태를 '완료'로 변경
+            if (approvedParticipants >= product.getMaxParticipants()) {
+                // 승인된 요청들의 상태도 '완료'로 변경
+                productMapper.updateRequestStatusToComplete(productId);
+                // 상품 모집 상태 마감 처리
+                productMapper.updateProductStatusToComplete(productId);
+            }
+
+            return ResponseEntity.ok(new BaseResponse<>("상품 요청이 승인되었습니다."));
+
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>("상품 요청 승인 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+    /** 상품 목록 조회 (is_visible = TRUE인 상품만 조회) **/
+    public List<ProductResponse> getProducts(Long categoryId, String sort) {
+        return productMapper.findFilteredProducts(categoryId, sort).stream()
+                .map(this::convertToProductResponse) // DTO 변환
+                .filter(ProductResponse::isVisible) // 모집 마감된 상품 제외
+                .collect(Collectors.toList());
+    }
+
+    /** 특정 사용자가 등록한 상품 목록 조회 (구매, 판매, 구매 요청, 판매 요청) **/
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getProductsByUserAndType(String email, List<String> types) {
+        try {
+            List<Product> products = productMapper.findProductsByEmailAndType(email, types);
+
+            // ProductResponse로 변환
+            List<ProductResponse> productResponses = products.stream()
+                    .map(this::convertToProductResponse)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new BaseResponse<>(productResponses));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "사용자별 상품 목록 조회 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+    /** 내가 등록한 상품 목록 조회 (구매만) **/
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRegisteredBuyProducts(String email) {
+        try {
+            List<Product> products = productMapper.findMyRegisteredBuyProducts(email); // `ProductWithImagesMap` 사용
+
+            List<ProductResponse> productResponses = products.stream()
+                    .map(this::convertToProductResponse) // 변환 로직 추가
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new BaseResponse<>(productResponses));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "내 등록 상품 조회 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+    /** 내가 등록한 상품 목록 조회 (판매만) **/
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRegisteredSellProducts(String email) {
+        try {
+            List<Product> products = productMapper.findMyRegisteredSellProducts(email);  // Product 객체 반환
+
+            List<ProductResponse> productResponses = products.stream()
+                    .map(this::convertToProductResponse) // ProductResponse로 변환
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new BaseResponse<>(productResponses));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "내 등록 상품 조회 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+    /** 내가 요청한 상품 목록 조회 (구매 요청만) **/
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRequestedBuyProducts(String email) {
+        try {
+            List<Product> products = productMapper.findMyRequestedBuyProducts(email);  // Product 객체 반환
+
+            List<ProductResponse> productResponses = products.stream()
+                    .map(this::convertToProductResponse) // ProductResponse로 변환
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new BaseResponse<>(productResponses));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "내 요청 상품 조회 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+
+    /** 내가 요청한 상품 목록 조회 (판매 요청만) **/
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRequestedSellProducts(String email) {
+        try {
+            List<Product> products = productMapper.findMyRequestedSellProducts(email);  // Product 객체 반환
+
+            List<ProductResponse> productResponses = products.stream()
+                    .map(this::convertToProductResponse) // ProductResponse로 변환
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new BaseResponse<>(productResponses));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "내 요청 상품 조회 중 오류 발생: " + ex.getMessage()));
+        }
+    }
+
+    /** 상품 객체를 ProductResponse로 변환 **/
+    private ProductResponse convertToProductResponse(Product product) {
+        List<String> imageUrls = productImageMapper.findByProductId(product.getId()).stream()
+                .map(image -> "/api/core/market/products/images/" + image.getId()) // 이미지 엔드포인트 반환
                 .collect(Collectors.toList());
 
+        // `days` JSON 문자열을 List<String>으로 변환
+        List<String> daysList = null;
+        if (product.getDays() != null) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                daysList = objectMapper.readValue(product.getDays(), new TypeReference<List<String>>() {});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return ProductResponse.builder()
                 .id(product.getId())
-                .productCode(product.getProductCode()) // productCode 추가
+                .productCode(product.getProductCode())
                 .title(product.getTitle())
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .email(product.getEmail())
                 .categoryId(product.getCategoryId())
-                .hobbyId(product.getHobbyId()) // 취미 ID 추가
+                .hobbyId(product.getHobbyId())
                 .transactionType(product.getTransactionType())
                 .registrationType(product.getRegistrationType())
-                .maxParticipants(product.getMaxParticipants()) // 모집인원 추가
-                .startDate(product.getStartDate()) // 일정 시작일 추가
-                .endDate(product.getEndDate()) // 일정 종료일 추가
+                .maxParticipants(product.getMaxParticipants())
+                .currentParticipants(product.getCurrentParticipants())
+                .isVisible(product.isVisible())
+                .startDate(product.getStartDate())
+                .endDate(product.getEndDate())
                 .latitude(product.getLatitude())
                 .longitude(product.getLongitude())
                 .meetingPlace(product.getMeetingPlace())
                 .address(product.getAddress())
                 .createdAt(product.getCreatedAt())
-                .imagePaths(imagePaths)  // 이미지 리스트 추가
-                .thumbnailPath(product.getThumbnailPath()) // 대표 이미지 추가
+                .imagePaths(imageUrls)
+                .thumbnailPath(imageUrls.isEmpty() ? null : imageUrls.get(0))
+                .nickname(product.getNickname())
+                .bio(product.getBio())
+                .dopamine(product.getDopamine())
+                .days(daysList)
                 .build();
     }
-
-    // MySQL에서 정렬하도록 변경
-    public List<ProductResponse> getProducts(Long categoryId, String sort) {
-        // 정렬 옵션 확인
-        if (sort != null && !sort.equals("price") && !sort.equals("createdAt")) {
-            throw new IllegalArgumentException("잘못된 정렬 옵션입니다. 'price' 또는 'createdAt'만 사용할 수 있습니다.");
-        }
-
-        // DB에서 정렬 수행
-        List<Product> products = productMapper.findFilteredProducts(categoryId, sort);
-
-        return products.stream()
-                .map(product -> ProductResponse.builder()
-                        .id(product.getId())
-                        .productCode(product.getProductCode()) // productCode 추가
-                        .title(product.getTitle())
-                        .description(product.getDescription())
-                        .price(product.getPrice())
-                        .email(product.getEmail())
-                        .categoryId(product.getCategoryId())
-                        .hobbyId(product.getHobbyId()) // 취미 ID 추가
-                        .transactionType(product.getTransactionType())
-                        .registrationType(product.getRegistrationType())
-                        .maxParticipants(product.getMaxParticipants()) // 모집인원 추가
-                        .startDate(product.getStartDate()) // 일정 시작일 추가
-                        .endDate(product.getEndDate()) // 일정 종료일 추가
-                        .latitude(product.getLatitude())
-                        .longitude(product.getLongitude())
-                        .meetingPlace(product.getMeetingPlace())
-                        .address(product.getAddress())
-                        .createdAt(product.getCreatedAt())
-                        .imagePaths(product.getImagePaths()) // 이미지 경로 추가
-                        .thumbnailPath(product.getThumbnailPath()) // 대표 이미지 추가
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 내가 등록한 상품 목록 조회 (구매만)
-     */
-    public List<ProductResponse> getMyRegisteredBuyProducts(String email) {
-        return productMapper.findProductsByEmailAndType(email, List.of("구매"));
-    }
-
-    /**
-     * 내가 등록한 상품 목록 조회 (판매만)
-     */
-    public List<ProductResponse> getMyRegisteredSellProducts(String email) {
-        return productMapper.findProductsByEmailAndType(email, List.of("판매"));
-    }
-
-    /**
-     * 내가 요청한 상품 목록 조회 (구매 요청만)
-     */
-    public List<ProductResponse> getMyRequestedBuyProducts(String email) {
-        return productMapper.findProductsByEmailAndType(email, List.of("구매 요청"));
-    }
-
-    /**
-     * 내가 요청한 상품 목록 조회 (판매 요청만)
-     */
-    public List<ProductResponse> getMyRequestedSellProducts(String email) {
-        return productMapper.findProductsByEmailAndType(email, List.of("판매 요청"));
-    }
 }
-

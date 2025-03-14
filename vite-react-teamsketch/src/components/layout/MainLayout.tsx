@@ -22,13 +22,14 @@ import NotificationList from '../../pages/notification/NotificationList';
 import RegisteredCard from '../../pages/payment/RegisteredCard';
 import CardDetails from '../../pages/payment/CardDetails';
 import TransactionList from '../../pages/Transaction history/TrasactionList';
-import SellList from '../../pages/Transaction history/SellList';
-import BuyList from '../../pages/Transaction history/BuyList';
+import SalesList from '../../pages/Transaction history/SalesList';
+import PurchaseList from '../../pages/Transaction history/PurchaseList';
+import MyProducts from '../../pages/mypage/MyProducts';
+import TransactionDetail from '../../pages/Transaction history/TransactionDetail';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
-import TestAPI from '../../testpages/TestAPI';
 import TestGrid from '../../testpages/TestGrid';
 
 const MainLayout = () => {
@@ -89,14 +90,16 @@ const MainLayout = () => {
           <Route path="/registered-card" element={<RegisteredCard />} />
           <Route path="/card-details/:cardId" element={<CardDetails />} />
           <Route path="/transaction-list" element={<TransactionList />} />
-          <Route path="/sell-list" element={<SellList />} />
-          <Route path="/buy-list" element={<BuyList />} />
-         
+          <Route path="/sales-list" element={<SalesList />} />
+
+          <Route path="/purchase-list" element={<PurchaseList />} />
+          <Route path="/my-products" element={<MyProducts />} />
+          <Route path="/transaction-detail/:transactionId" element={<TransactionDetail />} />
+
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
-          <Route path="/test/api" element={<TestAPI />} />
           <Route path="/test/grid" element={<TestGrid />} />
         </Routes>
       </div>

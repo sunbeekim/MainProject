@@ -25,7 +25,7 @@ const InterestSelect: React.FC<InterestSelectProps> = ({ onInterestSelect, selec
       onChange={handleCategorySelect}
       className="w-full bg-primary-300 text-text-light dark:bg-gray-800"
       placeholder="관심사를 선택해주세요"
-      value={selectedCategory?.toString()}
+      value={selectedCategory ? selectedCategory.toString() : ''}
     />
   );
 };

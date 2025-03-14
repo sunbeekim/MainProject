@@ -80,9 +80,23 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
+//    public String getUsername(String token) {
+//        return Jwts.parserBuilder().setSigningKey(secretKey).build()
+//                .parseClaimsJws(token).getBody().getSubject();
+//    }
+
     public String getUsername(String token) {
-        return Jwts.parserBuilder().setSigningKey(secretKey).build()
-                .parseClaimsJws(token).getBody().getSubject();
+        // "Bearer " 제거 후 순수 토큰만 추출
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);  // "Bearer " 부분 제거
+        }
+
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
   
     public Integer getUserId(String token) {
