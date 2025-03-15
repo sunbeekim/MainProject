@@ -284,9 +284,10 @@ public class ProfileService {
                         .build();
             }
         } else {
-            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber();
+            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber().replace(" ", "");
             System.out.println("VerifyPhoneNumber: " + verifyPhoneNumber+"\n"+"getPhoneNumber:"+request.getPhoneNumber());
-            if (verifyPhoneNumber != request.getPhoneNumber()) {
+            if (!verifyPhoneNumber.equals(request.getPhoneNumber())) {
+                System.out.println("전화번호가 일치하지 않습니다.");
                 return PasswordChangeResponse.builder()
                 .success(false)
                 .message("전화번호가 일치하지 않습니다.")
@@ -296,6 +297,7 @@ public class ProfileService {
         
         // 새 비밀번호와 확인 비밀번호 일치 확인
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            System.out.println("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
             return PasswordChangeResponse.builder()
                     .success(false)
                     .message("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.")
@@ -305,7 +307,7 @@ public class ProfileService {
         // 비밀번호 변경
         String newPasswordHash = passwordUtils.hashPassword(request.getNewPassword(), null).get("hashedPassword");
         userMapper.updateUserPasswordHash(email, newPasswordHash);
-        
+        System.out.println("비밀번호가 성공적으로 변경되었습니다.");
         return PasswordChangeResponse.builder()
                 .success(true)
                 .message("비밀번호가 성공적으로 변경되었습니다.")
