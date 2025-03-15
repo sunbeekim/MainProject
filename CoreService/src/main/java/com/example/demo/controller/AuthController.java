@@ -46,4 +46,63 @@ public class AuthController {
             return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
         }
     }
+
+    /**
+     * 회원 탈퇴
+     */
+    @PostMapping("/me/withdrawal")
+    public ResponseEntity<ApiResponse<WithdrawalResponse>> withdraw(
+            @RequestHeader("Authorization") String token,
+            @RequestBody WithdrawalRequest request) {
+
+        WithdrawalResponse response = userService.withdrawUserByToken(token, request);
+
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(response, "400"));
+        }
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+    
+    /**
+     * 비밀번호 변경
+     */
+    @PutMapping("/me/password")
+    public ResponseEntity<PasswordChangeResponse> changePassword(
+            @RequestHeader("Authorization") String token,
+            @RequestBody PasswordChangeRequest request) {
+
+        PasswordChangeResponse response = userService.changePasswordByToken(token, request);
+
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+        /**
+     * 비밀번호 변경
+     */
+    @PutMapping("/me/password/notoken")
+    public ResponseEntity<PasswordChangeResponse> changePassword(
+            
+            @RequestBody PasswordChangeRequest request) {
+                
+        PasswordChangeResponse response = userService.changePassword(request);
+
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 이메일 존재 여부 검증
+     */
+
+    /**
+     * 이메일과 전화번호 검증증
+     */
 }

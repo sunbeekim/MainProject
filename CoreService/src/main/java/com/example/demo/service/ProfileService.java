@@ -269,19 +269,28 @@ public class ProfileService {
                     .message("존재하지 않는 사용자입니다.")
                     .build();
         }
-        
-        // 현재 비밀번호 확인
-        boolean isCurrentPasswordValid = passwordUtils.verifyPassword(
-                request.getCurrentPassword(),
-                user.getPasswordHash(),
-                null
-        );
-        
-        if (!isCurrentPasswordValid) {
-            return PasswordChangeResponse.builder()
-                    .success(false)
-                    .message("현재 비밀번호가 일치하지 않습니다.")
-                    .build();
+
+        if (request.getIsToken().equals("true")) {
+            // 현재 비밀번호 확인
+            boolean isCurrentPasswordValid = passwordUtils.verifyPassword(
+                    request.getCurrentPassword(),
+                    user.getPasswordHash(),
+                    null);
+
+            if (!isCurrentPasswordValid) {
+                return PasswordChangeResponse.builder()
+                        .success(false)
+                        .message("현재 비밀번호가 일치하지 않습니다.")
+                        .build();
+            }
+        } else {
+            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber();
+            if (verifyPhoneNumber != request.getPhoneNumber()) {
+                return PasswordChangeResponse.builder()
+                .success(false)
+                .message("전화번호가 일치하지 않습니다.")
+                .build();
+            }
         }
         
         // 새 비밀번호와 확인 비밀번호 일치 확인

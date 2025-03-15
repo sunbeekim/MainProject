@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { SignupForm, ProfileUpdateRequest } from '../../types/auth';
+import { IPasswordChange } from '../../types/passwordChange'
 
 interface LoginCredentials {
   email: string;
@@ -28,6 +29,11 @@ interface SmsResponse {
 }
 
 interface VerifyOtpResponse {
+  success: boolean;
+  message: string;
+}
+
+interface PasswordChangeResponse {
   success: boolean;
   message: string;
 }
@@ -75,6 +81,15 @@ const verifyOtpApi = async ({ phoneNumber, otp }: VerifyOtpRequest): Promise<Ver
   return response.data;
 };
 
+// 비토큰 비밀번호 변경
+export const passwordChangeNoneToken = async (passwordRequestData: IPasswordChange): Promise<PasswordChangeResponse> => {
+  const response = await axiosInstance.put<PasswordChangeResponse>(
+    apiConfig.endpoints.core.passwordChangeNoneToken,
+    passwordRequestData
+  );
+  return response.data; // ✅ `response.data`를 반환해야 `PasswordChangeResponse` 타입과 일치
+};
+
 // //이메일 전송 API
 // const sendEmailApi = async (email: string): Promise<EmailResponse> => {
 //   const response = await axiosInstance.post(apiConfig.endpoints.assist.sendEmail, { email });
@@ -100,6 +115,13 @@ const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: loginApi
+  });
+};
+
+// 비토큰 비번 변경 훅훅
+export const usePasswordChangeNT = () => {
+  return useMutation({
+    mutationFn: passwordChangeNoneToken
   });
 };
 

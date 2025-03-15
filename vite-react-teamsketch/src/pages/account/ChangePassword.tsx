@@ -60,7 +60,7 @@ const ChangePassword = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        <Button type="submit" variant="primary" className="w-full">
+        <Button type="submit" variant="primary" className="w-full  bg-purple-600">
           비밀번호 변경
         </Button>
       </form>

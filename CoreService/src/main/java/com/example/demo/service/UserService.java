@@ -99,8 +99,8 @@ public class UserService {
     /**
      * 비밀번호 변경
      */
-    public PasswordChangeResponse changePassword(String email, PasswordChangeRequest request) {
-        return profileService.changePassword(email, request);
+    public PasswordChangeResponse changePassword(PasswordChangeRequest request) {
+        return profileService.changePassword(request.getEmail(), request);
     }
     
     /**
