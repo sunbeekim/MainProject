@@ -3,14 +3,13 @@ import GridItem from '../common/GridItem';
 import BaseButton from '../common/BaseButton';
 import ImageUpload from '../features/upload/ImageUpload';
 import { FaArrowRight } from 'react-icons/fa';
-
 interface MyPageLayoutProps {
   email?: string;
   name?: string;
   nickname?: string;
   profileImagePath?: File | null;
   followerCount?: number;
-  point?: number;
+  points?: number;
   dopamine?: number;
   onProfileUpdate?: () => void;
   menuItems?: {
@@ -26,15 +25,13 @@ const MyPageLayout = ({
   name,
   nickname,
   profileImagePath = null,
-  followerCount,
-  point,
+  followerCount = 126,
+  points = 1200,
   dopamine,
   onProfileUpdate = () => {},
   menuItems = []
 }: MyPageLayoutProps) => {
-  followerCount = 326;
-  point = 1200;
-  dopamine = 85;
+
 
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800 overflow-y-auto">
@@ -69,7 +66,7 @@ const MyPageLayout = ({
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-500 dark:text-gray-400">포인트</p>
-              <p className="text-lg font-bold text-primary">{point}</p>
+              <p className="text-lg font-bold text-primary">{points}</p>
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-500 dark:text-gray-400">도파민</p>
