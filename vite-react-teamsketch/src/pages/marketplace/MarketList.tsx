@@ -87,8 +87,8 @@ const MarketList = () => {
         return mockResponse.data.products.map(convertMockToProduct);
       }
     },
-    gcTime: 600000,
-    staleTime: 300000
+    gcTime: 60000,
+    staleTime: 30000
   });
 
   const handleNavigateToProductRegister = () => {

@@ -88,7 +88,8 @@ public class AuthController {
     public ResponseEntity<PasswordChangeResponse> changePassword(
             
             @RequestBody PasswordChangeRequest request) {
-                
+        System.out.println("/me/password/notoken에 접근했습니다.");
+        System.out.println(request);
         PasswordChangeResponse response = userService.changePassword(request);
 
         if (!response.isSuccess()) {

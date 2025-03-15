@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(
                             "/api/core/auth/signup", 
                             "/api/core/auth/login",
+                            "/api/core/auth/me/password/notoken",
                             "/api/core/hobbies",
                             "/api/core/hobbies/simple",  // 추가된 API 경로
                             "/api/core/hobbies/categories",

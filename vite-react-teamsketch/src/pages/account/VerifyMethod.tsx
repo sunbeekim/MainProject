@@ -31,17 +31,18 @@ const VerifyMethod = () => {
       dispatch(updatePasswordInfo({ email: inputValue }));
     } else {
       sendSms(inputValue, {
-        onSuccess: (data) => {
-          dispatch(updatePasswordInfo({ phoneNumber: inputValue })); // Redux 상태 업데이트
+        onSuccess: (data) => {          
           console.log('전송 성공:', data.message);
         },
       });
     }
+    dispatch(updatePasswordInfo({ phoneNumber: inputValue })); // Redux 상태 업데이트
 
     navigate('/verfication-code', { state: { method, inputValue } });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(inputValue);
     setInputValue(e.target.value); // 입력값 상태 업데이트
   };
 
