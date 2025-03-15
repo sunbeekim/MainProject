@@ -6,6 +6,7 @@
 
     <!-- 상품 추가 -->
     <insert id="insertProduct" parameterType="com.example.demo.model.Market.Product" useGeneratedKeys="true" keyProperty="id">
+
         INSERT INTO Products (
             product_code, title, description, price, email, category_id, hobby_id,
             transaction_type, registration_type, max_participants, current_participants,
