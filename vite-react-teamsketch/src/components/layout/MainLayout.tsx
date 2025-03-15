@@ -29,6 +29,8 @@ import TransactionDetail from '../../pages/Transaction history/TransactionDetail
 import CSList from '../../pages/CScenter/CSList';
 import InquiryHistory from '../../pages/CScenter/InquiryHistory';
 import DeleteAccount from '../../pages/account/DeleteAccount';
+import OCRUpload from '../../pages/payment/OCRUpload';
+import DeleteModal from '../../pages/payment/DeleteModal';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
@@ -100,6 +102,8 @@ const MainLayout = () => {
           <Route path="/cs-list" element={<CSList />} />
           <Route path="/inquiry-history" element={<InquiryHistory />} />
           <Route path="/delete-account" element={<DeleteAccount />} />
+          <Route path="/ocr-upload" element={<OCRUpload />} />
+          <Route path="/delete-modal" element={<DeleteModal/>} />
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />

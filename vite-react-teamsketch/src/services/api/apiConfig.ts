@@ -21,6 +21,7 @@ export const apiConfig = {
       login: `${BASE_URL}/core/auth/login`,
       logout: `${BASE_URL}/core/auth/logout`,
       user: `${BASE_URL}/core/user`,
+      passwordChangeNoneToken : `${BASE_URL}/core/auth/me/password/notoken`,
       userinfo: `${BASE_URL}/core/profiles/me`,
       uploadProfile: `${BASE_URL}/core/profiles/me/image`,
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,

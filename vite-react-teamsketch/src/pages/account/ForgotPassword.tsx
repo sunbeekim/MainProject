@@ -1,23 +1,27 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginLayout from '../../components/layout/LoginLayout';
 import Button from '../../components/common/BaseButton';
 import EmailInput from '../../components/forms/input/EmailInput';
-
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { updatePasswordInfo } from '../../store/slices/passwordChangeSlice';
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
+  const email = useAppSelector((state) => state.passwordChange.email);
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+    dispatch(updatePasswordInfo({ email: e.target.value}));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('입력된 이메일:', email);
-
+    // 아 여기에 api 호출 해도 되구나나
+    // api 호출 응답 성공 시 
+    
     navigate('/verify-method');
   };
+
+ 
 
   return (
     <LoginLayout
@@ -42,7 +46,7 @@ const ForgotPassword = () => {
           onChange={handleChange}
           placeholder="이메일을 입력하세요"
         />
-        <Button type="submit" variant="primary" className="w-full">
+        <Button type="submit" className="w-full bg-primary-500"        >
           다음
         </Button>
       </form>

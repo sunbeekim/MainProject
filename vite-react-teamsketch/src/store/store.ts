@@ -13,6 +13,8 @@ import userReducer from './slices/userSlice';
 import categoryReducer from './slices/categorySlice';
 import productReducer from './slices/productSlice';
 import cardSlice from './slices/cardSlice';
+import passwordChangeSlice from './slices/passwordChangeSlice';
+
 // `combineReducers`를 사용하여 Redux Reducer 결합
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -24,7 +26,8 @@ const rootReducer = combineReducers({
   user: userReducer, // user 상태를 persist에 저장
   category: categoryReducer, // category 상태를 persist에 저장
   product: productReducer, // product 상태를 persist에 저장
-  cardInfo: cardSlice // card 상태를 persist에 저장
+  cardInfo: cardSlice, // card 상태를 persist에 저장
+  passwordChange: passwordChangeSlice
 });
 
 // Redux Persist 설정
