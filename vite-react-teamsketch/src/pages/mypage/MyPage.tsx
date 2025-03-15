@@ -90,11 +90,13 @@ const MyPage = () => {
 
   return (
     <div className="h-full w-full bg-white dark:bg-gray-800 flex flex-col">
-      <MyPageLayout
+      <MyPageLayout        
         email={user.email || ''}
         name={user.name || ''}
         nickname={user.nickname || ''}
         profileImagePath={user.profileImagePath as File | null}
+        points={user.points}
+        dopamine={user.dopamine}
         onProfileUpdate={handleProfileUpdate}
         menuItems={menuItems}
       />
