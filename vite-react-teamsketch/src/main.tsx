@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import './assets/styles/index.css';
@@ -32,17 +31,15 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById('root')!).render(
-  
-    <ThemeProvider>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <QueryClientProvider client={queryClient}>
-            <Router>
-              <App />
-            </Router>
-          </QueryClientProvider>
-        </PersistGate>
-      </Provider>
-    </ThemeProvider>
-  
+  <ThemeProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <QueryClientProvider client={queryClient}>
+          <Router>
+            <App />
+          </Router>
+        </QueryClientProvider>
+      </PersistGate>
+    </Provider>
+  </ThemeProvider>
 );

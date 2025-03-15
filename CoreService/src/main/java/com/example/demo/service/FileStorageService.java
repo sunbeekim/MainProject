@@ -20,8 +20,8 @@ import jakarta.annotation.PostConstruct;
 @Slf4j
 public class FileStorageService {
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    // 프로필 이미지 저장 경로를 리소스의 static 폴더 내 profile-images 디렉토리로 변경
+    private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/profile-images";
     
     @Value("${file.default-profile-image}")
     private String defaultProfileImage;
@@ -139,5 +139,12 @@ public class FileStorageService {
                 log.error("빈 기본 프로필 이미지 생성 실패: {}", ioe.getMessage());
             }
         }
+    }
+
+    /**
+     * 기본 프로필 이미지 파일명을 반환합니다.
+     */
+    public String getDefaultProfileImageName() {
+        return defaultProfileImage;
     }
 }

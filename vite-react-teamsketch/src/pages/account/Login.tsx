@@ -12,6 +12,7 @@ import { google, kakao, naver } from '../../assets/images/login';
 import EmailInput from '../../components/forms/input/EmailInput';
 import LoginPasswordInput from '../../components/forms/input/LoginPasswordInput';
 import { validateEmail, validatePassword } from '../../utils/validation';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -67,6 +68,8 @@ const Login = () => {
             lastLoginTime: userinfo.data.lastLoginTime || null,
             loginFailedAttempts: 0,
             loginIsLocked: false,
+            dopamine: userinfo.data.dopamine || 0,
+            points: userinfo.data.points || 0,
             interest: userinfo.data.hobbies?.map((hobby: any) => hobby.categoryName) || [],
             hobby:
               userinfo.data.hobbies?.map((hobby: any) => ({
@@ -87,8 +90,10 @@ const Login = () => {
         err instanceof Error
           ? (err as any).response.data.data.message
           : '로그인 중 오류가 발생했습니다.'
+          
       );
       console.error('로그인 에러:', err);
+      toast.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -212,12 +217,7 @@ const Login = () => {
             data-testid="password-input"
             disabled={isLoading}
             error={validationErrors.password}
-          />
-          {error && (
-            <div className="text-red-500 text-sm text-center mt-2" role="alert">
-              {error}
-            </div>
-          )}
+          />          
         </LoginLayout>
       </form>
     </>
