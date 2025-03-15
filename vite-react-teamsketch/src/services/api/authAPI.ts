@@ -83,11 +83,17 @@ const verifyOtpApi = async ({ phoneNumber, otp }: VerifyOtpRequest): Promise<Ver
 
 // 비토큰 비밀번호 변경
 export const passwordChangeNoneToken = async (passwordRequestData: IPasswordChange): Promise<PasswordChangeResponse> => {
-  const response = await axiosInstance.put<PasswordChangeResponse>(
-    apiConfig.endpoints.core.passwordChangeNoneToken,
-    passwordRequestData
-  );
-  return response.data; // ✅ `response.data`를 반환해야 `PasswordChangeResponse` 타입과 일치
+    const response = await axiosInstance.put<PasswordChangeResponse>(
+      apiConfig.endpoints.core.passwordChangeNoneToken,
+      passwordRequestData,
+      {
+        withCredentials: false,
+      }
+      
+    );
+    console.log("API response:", response);
+    
+    return response.data; // ✅ `response.data`를 반환
 };
 
 // //이메일 전송 API

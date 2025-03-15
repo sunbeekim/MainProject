@@ -285,6 +285,7 @@ public class ProfileService {
             }
         } else {
             String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber();
+            System.out.println("VerifyPhoneNumber: " + verifyPhoneNumber+"\n"+"getPhoneNumber:"+request.getPhoneNumber());
             if (verifyPhoneNumber != request.getPhoneNumber()) {
                 return PasswordChangeResponse.builder()
                 .success(false)
