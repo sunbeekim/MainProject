@@ -10,7 +10,6 @@ import com.example.demo.model.Market.Product;
 import com.example.demo.model.User;
 import com.example.demo.model.chat.ChatMessage;
 import com.example.demo.model.chat.ChatRoom;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +18,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +43,9 @@ public class ChatMessageService {
     
     @Value("${chat.default.page-size:20}")
     private int defaultPageSize;
+
+    // 이미지 저장 경로 설정 - resources/static 하위 폴더로 변경
+    private final String CHAT_IMAGE_DIR = System.getProperty("user.dir") + "/src/main/resources/static/chat-images";
 
     /**
      * 메시지 전송
@@ -79,9 +87,32 @@ public class ChatMessageService {
         chatMessageMapper.saveChatMessage(message);
         
         // 채팅방 정보 업데이트 (마지막 메시지, 시간)
-        chatRoom.setLastMessage(message.getContent());
-        chatRoom.setLastMessageTime(message.getSentAt());
-        chatRoomMapper.updateChatRoom(chatRoom);
+        String lastMessage = "";
+        
+        // 메시지 타입에 따라 lastMessage 다르게 설정
+        switch (request.getMessageType()) {
+            case "TEXT":
+                lastMessage = request.getContent();
+                break;
+            case "IMAGE":
+                lastMessage = "이미지를 보냈습니다.";
+                break;
+            case "FILE":
+                lastMessage = "파일을 보냈습니다.";
+                break;
+            case "OFFER":
+                lastMessage = "제안을 보냈습니다.";
+                break;
+            default:
+                lastMessage = request.getContent();
+        }
+        
+        // updateChatRoom 대신 updateChatRoomLastMessage 사용
+        chatRoomMapper.updateChatRoomLastMessage(
+                request.getChatroomId(),
+                lastMessage,
+                message.getSentAt()
+        );
         
         // 발신자 정보 추가 (for 실시간 메시지)
         User sender = userMapper.findByEmail(senderEmail);
@@ -191,5 +222,53 @@ public class ChatMessageService {
         // 채팅방의 읽지 않은 메시지 카운트 업데이트
         // unreadCount가 0이 되었으므로 메시지를 모두 읽었다는 의미
         return unreadCount == 0;
+    }
+
+    /**
+     * 이미지 메시지 전송
+     */
+    @Transactional
+    public ChatMessage sendImageMessage(String userEmail, Integer chatroomId, MultipartFile image) {
+        try {
+            // 채팅방 존재 여부 확인
+            ChatRoom chatRoom = chatRoomMapper.findChatRoomById(chatroomId, userEmail);
+            if (chatRoom == null) {
+                throw new RuntimeException("존재하지 않는 채팅방입니다.");
+            }
+            
+            // 이미지 저장 디렉토리 확인 및 생성
+            Path chatImageDir = Paths.get(CHAT_IMAGE_DIR, "chatroom_" + chatroomId);
+            if (!Files.exists(chatImageDir)) {
+                Files.createDirectories(chatImageDir);
+                log.info("채팅 이미지 저장 디렉토리 생성: {}", chatImageDir);
+            }
+            
+            // 이미지 파일 저장
+            String originalFilename = image.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            
+            String newFilename = UUID.randomUUID().toString() + extension;
+            Path imagePath = chatImageDir.resolve(newFilename);
+            Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+            log.info("채팅 이미지 저장 완료: {}", imagePath);
+            
+            // 이미지 경로 설정 (웹에서 접근 가능한 경로)
+            String imageUrl = "/chat-images/chatroom_" + chatroomId + "/" + newFilename;
+            
+            // 이미지 메시지 생성 및 저장
+            ChatMessageRequest request = new ChatMessageRequest();
+            request.setChatroomId(chatroomId);
+            request.setMessageType("IMAGE");
+            request.setContent(imageUrl); // 이미지 URL을 메시지 내용으로 저장
+            
+            return sendMessage(userEmail, request);
+            
+        } catch (Exception e) {
+            log.error("이미지 메시지 전송 실패: {}", e.getMessage());
+            throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 }
