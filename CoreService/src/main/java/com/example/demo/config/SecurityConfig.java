@@ -3,6 +3,11 @@ package com.example.demo.config;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.security.oauth2.CustomOAuth2UserService;
+import com.example.demo.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.example.demo.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import com.example.demo.security.oauth2.OAuth2AuthenticationFailureHandler;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -13,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,6 +32,10 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenBlacklistService jwtTokenBlacklistService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,12 +47,13 @@ public class SecurityConfig {
                         .requestMatchers(
                             "/api/core/auth/signup", 
                             "/api/core/auth/login",
+                            "/api/core/auth/oauth2/**", // OAuth2 관련 URL 추가
                             "/api/core/hobbies",
-                            "/api/core/hobbies/simple",  // 추가된 API 경로
+                            "/api/core/hobbies/simple",
                             "/api/core/hobbies/categories",
                             "/api/core/hobbies/*/categories",
-                            "/api/core/hobbies/categories/*",  // 카테고리별 취미 목록 조회 접근 허용
-                            "/api/core/profiles/user/*",  // 닉네임으로 공개 프로필 조회는 인증 없이 접근 가능
+                            "/api/core/hobbies/categories/*",
+                            "/api/core/profiles/user/*",
                             "/api/core/market/*",
                             "/ws/**",
                             "/api/core/market/products/requests/approved",
@@ -51,7 +63,11 @@ public class SecurityConfig {
                             "/api/core/market/products/images/**",
                             "/api/core/market/products/{id}",
                             "/topic/**",
-                            "/app/**"
+                            "/app/**",
+                            // 정적 리소스에 대한 접근 허용
+                            "/profile-images/**",
+                            "/chat-images/**",
+                            "/uploads/**"
                         ).permitAll() 
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
 
@@ -72,6 +88,20 @@ public class SecurityConfig {
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
                         UsernamePasswordAuthenticationFilter.class
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(endpoint -> endpoint
+                                .baseUri("/api/core/auth/oauth2/authorize")
+                                .authorizationRequestRepository(authorizationRequestRepository)
+                        )
+                        .redirectionEndpoint(endpoint -> endpoint
+                                .baseUri("/api/core/auth/oauth2/callback/*")
+                        )
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
                 );
 
         return http.build();
