@@ -4,8 +4,7 @@ import Button from "../../components/common/BaseButton";
 import LoginLayout from "../../components/layout/LoginLayout";
 import PasswordInput from "../../components/forms/input/PasswordInput";
 import { validatePassword } from '../../utils/validation';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { updatePasswordInfo } from "../../store/slices/passwordChangeSlice";
+import { useAppSelector } from '../../store/hooks';
 import { toast } from 'react-toastify'
 import { usePasswordChangeNT } from '../../services/api/authAPI';
 
@@ -17,13 +16,13 @@ const ResetPassword = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
     const [error, setError] = useState('');
-    const dispatch = useAppDispatch();
     const passwordChangeInfo = useAppSelector((state) => state.passwordChange);
-    const passwordChange = usePasswordChangeNT()
+    const passwordChange = usePasswordChangeNT();
 
+   
     
-    dispatch(updatePasswordInfo({ isToken: 'false' }));
-    console.log(passwordChangeInfo);
+    console.log("현재 비밀번호 변경 정보:", passwordChangeInfo);
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -35,9 +34,16 @@ const ResetPassword = () => {
         if (password.length < 8) {
             toast.error('비밀번호는 8자 이상이어야 합니다.');
             return;
-        }        
+        }
+        
+        // 이메일이나 전화번호가 없는 경우 처리
+        if (!passwordChangeInfo.email || !passwordChangeInfo.phoneNumber) {
+            toast.error('이메일과 전화번호 정보가 필요합니다.');
+            return;
+        }
+        
         const passwordCaNoToData = {
-            isToken: passwordChangeInfo.isToken,
+            isToken: 'false', // 명시적으로 문자열 'false' 설정
             email: passwordChangeInfo.email,
             phoneNumber: passwordChangeInfo.phoneNumber,
             currentPassword: '',
@@ -46,7 +52,6 @@ const ResetPassword = () => {
         };
         console.log("passwordCaNoToData",passwordCaNoToData);
         try {
-            // 이건 좀 어려운 버전전
             const response = await passwordChange.mutateAsync(passwordCaNoToData);
 
             // 이건 react-query 사용 안하고 api 호출 함수 자체를 가져와서 쓰는 방법법
@@ -86,10 +91,18 @@ const ResetPassword = () => {
             if (response.success) {
                 toast.success('비밀번호가 성공적으로 변경되었습니다.');
                 navigate('/login');
-            } 
-        } catch (error : any) {                
-          const errorMessage = error.response?.data?.message;
-            toast.error("Error message:", errorMessage);            
+            } else {
+                // 서버에서 success: false로 응답한 경우
+                toast.error(response.message || '비밀번호 변경에 실패했습니다.');
+            }
+        } catch (error: any) {
+            console.error('비밀번호 변경 오류:', error);
+            
+            // 서버 응답에서 에러 메시지 추출
+            const errorMessage = error.response?.data?.message || 
+                               '비밀번호 변경 중 오류가 발생했습니다.';
+            
+            toast.error(errorMessage);
         }
     }
 
@@ -97,8 +110,6 @@ const ResetPassword = () => {
         const { value } = e.target;
         let validationResult = { isValid: true, message: '' };
         validationResult = validatePassword(value); 
-        // dispatch(updatePasswordInfo({ newPassword: e.target.value}));
-        // dispatch(updatePasswordInfo({ confirmPassword: confirmPassword}));
         setPassword(e.target.value);
         setError(validationResult.message);
     }
@@ -107,7 +118,6 @@ const ResetPassword = () => {
         <LoginLayout
             title={<h1 className="text-2xl font-bold text-center">비밀번호 재설정</h1>}           
         >   
-
             <form onSubmit={handleSubmit} className="space-y-4">
                 <p className="text-sm text-gray-500 text-center">
                     새로운 비밀번호를 입력하세요.

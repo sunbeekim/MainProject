@@ -286,10 +286,11 @@ public class ProfileService {
                         .build();
             }
         } else {
-            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber();
-            System.out.println(
-                    "VerifyPhoneNumber: " + verifyPhoneNumber + "\n" + "getPhoneNumber:" + request.getPhoneNumber());
-            if (verifyPhoneNumber != request.getPhoneNumber()) {
+
+            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber().replace(" ", "");
+            System.out.println("VerifyPhoneNumber: " + verifyPhoneNumber+"\n"+"getPhoneNumber:"+request.getPhoneNumber());
+            if (!verifyPhoneNumber.equals(request.getPhoneNumber())) {
+                System.out.println("전화번호가 일치하지 않습니다.");
                 return PasswordChangeResponse.builder()
                         .success(false)
                         .message("전화번호가 일치하지 않습니다.")
@@ -299,6 +300,7 @@ public class ProfileService {
 
         // 새 비밀번호와 확인 비밀번호 일치 확인
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            System.out.println("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
             return PasswordChangeResponse.builder()
                     .success(false)
                     .message("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.")

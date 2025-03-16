@@ -97,7 +97,7 @@ public class UserService {
     }
     
     /**
-     * 비밀번호 변경
+     * 토큰없이 비밀번호 변경
      */
     public PasswordChangeResponse changePassword(PasswordChangeRequest request) {
         return profileService.changePassword(request.getEmail(), request);
