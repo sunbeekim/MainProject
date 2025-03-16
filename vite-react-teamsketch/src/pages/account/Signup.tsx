@@ -26,12 +26,13 @@ import { useSignup } from '../../services/api/authAPI';
 import { SignupForm, HobbiesRequest } from '../../types/auth';
 import HobbySelect from '../../components/forms/select/HobbySelect';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 const Signup = () => {
   const signupMutation = useSignup();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { formData, validationErrors, error } = useAppSelector((state) => state.signup);
+  const { formData, validationErrors } = useAppSelector((state) => state.signup);
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [selectedHobbies, setSelectedHobbies] = useState<HobbiesRequest[]>([]);
@@ -117,13 +118,19 @@ const Signup = () => {
       };
 
       console.log('회원가입 요청 데이터:', signupData); // 요청 데이터 로깅
-      const response = await signupMutation.mutateAsync(signupData);
-      console.log('회원가입 응답:', response); // 응답 데이터 로깅
-
+      await signupMutation.mutateAsync(signupData);
+      
+      // 회원가입 성공 처리
+      toast.success('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
       navigate('/login');
-    } catch (err) {
-      dispatch(setError(err instanceof Error ? err.message : '회원가입 중 오류가 발생했습니다.'));
-      console.error('회원가입 에러:', err); // 에러 로깅
+    } catch (error: any) {
+      // AxiosError에서 서버 응답 메시지 추출
+      const errorMessage = error.response?.data?.data?.message || 
+                          (error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.');
+      
+      dispatch(setError(errorMessage));
+      toast.error(errorMessage);
+      console.error('회원가입 에러:', error); // 에러 로깅
     }
   };
 
@@ -209,12 +216,7 @@ const Signup = () => {
               />
             </div>
           </div>
-        </div>
-        {error && (
-          <div className="text-red-500 text-sm text-center mb-2" role="alert">
-            {error}
-          </div>
-        )}
+        </div>      
       </SignupLayout>
     </form>
   );

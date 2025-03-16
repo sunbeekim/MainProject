@@ -8,6 +8,8 @@ export interface IUser {
   phoneNumber: string | null;
   nickname: string;
   bio: string | null;
+  dopamine: number;
+  points: number;
   loginMethod: 'EMAIL' | 'SOCIAL';
   socialProvider: 'GOOGLE' | 'KAKAO' | 'NAVER' | 'NONE';
   accountStatus: 'Active' | 'Deactivated' | 'Dormant' | 'Withdrawal';
@@ -39,6 +41,8 @@ const initialState: UserState = {
     phoneNumber: null,
     nickname: '',
     bio: null,
+    dopamine: 0,
+    points: 0,
     loginMethod: 'EMAIL',
     socialProvider: 'NONE',
     accountStatus: 'Active',

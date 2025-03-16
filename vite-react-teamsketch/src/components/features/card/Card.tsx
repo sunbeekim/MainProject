@@ -1,7 +1,9 @@
+import { ReactNode } from 'react';
+
 interface CardProps {
   title: string;
   description?: string;
-  image?: string;
+  image?: ReactNode;
   onClick?: () => void;
   className?: string;
   price?: string;
@@ -38,8 +40,14 @@ const Card = ({
       `}
     >
       {/* 좌측: 이미지 + 도파민 */}
-      <div className="relative w-32 h-full flex-shrink-0">
-        <img src={image || '/placeholder.png'} alt={title} className="w-full h-full object-cover" />
+      <div className="relative w-32 h-full flex-shrink-0 overflow-hidden">
+        {image || (
+          <img 
+            src="/placeholder.png" 
+            alt={title} 
+            className="w-full h-full object-cover"
+          />
+        )}
         {dopamine && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary-500/80 to-transparent p-2">
             <span className="text-white text-sm font-semibold">도파민 {dopamine}</span>

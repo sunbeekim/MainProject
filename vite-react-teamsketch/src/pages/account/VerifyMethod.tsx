@@ -5,12 +5,15 @@ import Button from '../../components/common/BaseButton';
 import TextInput from '../../components/forms/input/TextInput';
 import EmailInput from '../../components/forms/input/EmailInput';
 import { useSendSms } from '../../services/api/authAPI';
+import { useAppDispatch } from '../../store/hooks';
+import { updatePasswordInfo } from '../../store/slices/passwordChangeSlice';
 
 const VerifyMethod = () => {
   const [method, setMethod] = useState<'email' | 'phone' | null>(null);
   const [inputValue, setInputValue] = useState('');
   const navigate = useNavigate();
   const { mutate: sendSms } = useSendSms();
+  const dispatch = useAppDispatch();
 
   console.log(inputValue);
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,16 +26,23 @@ const VerifyMethod = () => {
       alert(`${method === 'email' ? '이메일' : '전화번호'}를 입력해주세요!`);
       return;
     }
-    sendSms(inputValue, {
-      onSuccess: (data) => {
-        console.log('전송 성공:', data.message);
-      }
-    });
+
+    if (method === 'email') {
+      dispatch(updatePasswordInfo({ email: inputValue }));
+    } else {
+      sendSms(inputValue, {
+        onSuccess: (data) => {          
+          console.log('전송 성공:', data.message);
+        },
+      });
+    }
+    dispatch(updatePasswordInfo({ phoneNumber: inputValue })); // Redux 상태 업데이트
 
     navigate('/verfication-code', { state: { method, inputValue } });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(inputValue);
     setInputValue(e.target.value); // 입력값 상태 업데이트
   };
 
@@ -106,7 +116,7 @@ const VerifyMethod = () => {
         )}
 
         {/* 인증 방법 선택 후 비밀번호 재설정 페이지로 이동 */}
-        <Button type="submit" variant="primary" className="w-full">
+        <Button type="submit" className="w-full bg-primary-500">
           비밀번호 재설정
         </Button>
       </form>
