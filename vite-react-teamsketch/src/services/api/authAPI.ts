@@ -38,6 +38,13 @@ interface PasswordChangeResponse {
   message: string;
 }
 
+interface PasswordResponse{
+  token: string,
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string
+}
+
 // 로그인 API
 const loginApi = async (credentials: LoginCredentials) => {
   const response = await axiosInstance.post(apiConfig.endpoints.core.login, credentials);
@@ -95,6 +102,31 @@ export const passwordChangeNoneToken = async (passwordRequestData: IPasswordChan
     
     return response.data; // ✅ `response.data`를 반환
 };
+
+export interface IwithdrawRsponse{
+  status: string,
+  data: {
+    success: boolean,
+    message: string,
+    withdrawalDate: Date,
+  },
+  code: string,
+}
+// 3번 요청 그리고 응답 구조 는 만들어서 사용해도 되고 그냥 해도 되고고
+// 엔드포인트 제가 어제 user 컨트롤러 삭제하고 auth로 올겼던거 같은데 옮겼네요 그럼 엔드포인트가 auth/me/~
+export const withdrawUserApi = async (password: string): Promise<IwithdrawRsponse> => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.deleteUser,{ password });
+  return response.data;
+};
+
+export const passwordApi = async ({ isToken, currentPassword, newPassword, confirmPassword }: { isToken: string, currentPassword: string, newPassword: string, confirmPassword: string }):
+  Promise<PasswordResponse> => {
+  const response = await axiosInstance.put(apiConfig.endpoints.core.passwordChange, { isToken, currentPassword, newPassword, confirmPassword },
+  );
+  return response.data;
+};
+
+
 
 // //이메일 전송 API
 // const sendEmailApi = async (email: string): Promise<EmailResponse> => {
@@ -184,6 +216,19 @@ export const useVerifyOtp = () => {
     }
   });
 };
+
+//회원탈퇴 Hook
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: withdrawUserApi// 회원 탈퇴 API 호출 함수
+  });
+}
+//비밀번호변경
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: passwordApi
+  });
+}
 
 // //이메일 전송 Hook
 // export const useSendEmail = () => {

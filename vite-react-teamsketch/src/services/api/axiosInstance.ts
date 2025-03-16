@@ -3,7 +3,7 @@ import { apiConfig } from './apiConfig';
 import { toast } from 'react-toastify';
 import { store } from '../../store/store';
 import { logout } from '../../store/slices/authSlice';
-
+// 1번 이미 있는 인스턴스 사용하면 됨됨
 // API 응답 타입 정의
 interface ApiResponse<T = any> {
   status: 'success' | 'error';

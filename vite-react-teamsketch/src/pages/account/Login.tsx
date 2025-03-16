@@ -28,7 +28,7 @@ const Login = () => {
     email: '',
     password: ''
   });
-  const [error, setError] = useState('');
+
 
   const handleLogin = async (loginData: LoginRequest) => {
     setIsLoading(true);
@@ -85,15 +85,10 @@ const Login = () => {
       } else {
         throw new Error(response || '로그인에 실패했습니다.');
       }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? (err as any).response.data.data.message
-          : '로그인 중 오류가 발생했습니다.'
-          
-      );
-      console.error('로그인 에러:', err);
-      toast.error(error);
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.data?.message || '알 수 없는 에러가 발생했습니다.';
+      console.error('로그인 에러:', errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +117,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+
 
     // 입력값 유효성 검사
     const emailValidation = validateEmail(formData.email);
@@ -217,7 +212,7 @@ const Login = () => {
             data-testid="password-input"
             disabled={isLoading}
             error={validationErrors.password}
-          />          
+          />
         </LoginLayout>
       </form>
     </>

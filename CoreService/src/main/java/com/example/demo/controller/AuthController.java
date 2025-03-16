@@ -63,15 +63,16 @@ public class AuthController {
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
-    
+
     /**
      * 비밀번호 변경
      */
+    // 로그인한 유저를 위한 비밀번호 변경(토큰 존재할때)
     @PutMapping("/me/password")
     public ResponseEntity<PasswordChangeResponse> changePassword(
             @RequestHeader("Authorization") String token,
             @RequestBody PasswordChangeRequest request) {
-
+        // 서비스 호출
         PasswordChangeResponse response = userService.changePasswordByToken(token, request);
 
         if (!response.isSuccess()) {
@@ -81,12 +82,12 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-        /**
+    /**
      * 비밀번호 변경
      */
     @PutMapping("/me/password/notoken")
     public ResponseEntity<PasswordChangeResponse> changePassword(
-            
+
             @RequestBody PasswordChangeRequest request) {
         System.out.println("/me/password/notoken에 접근했습니다.");
         System.out.println(request);

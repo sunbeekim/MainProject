@@ -1,28 +1,49 @@
 import { useNavigate } from "react-router-dom";
-
+import { useState } from "react";
+import { useDeleteAccount } from "../../services/api/authAPI";
+import { toast } from "react-toastify";
+import Loading from '../../components/common/Loading';
+import BaseButton from '../../components/common/BaseButton';
 const DeleteAccount = () => {
     const navigate = useNavigate();
+    const [password, setPassword] = useState('');
+    const deleteAccount = useDeleteAccount()
+    // 순서만 알려드릴게요요
+    // 회원 탈퇴 API 호출 함수
+    const [isLoading, setIsLoading] = useState(false);
+    // 탈퇴하기 버튼이 클릭되면 회원탈퇴가 이루어져야 하니까
+    // 리액트쿼리 굳이 안써도 되는 api 요청도 있어요
+    // 예를 들면 이런 단일 요청
+    // 반대로 저희 마켓플레이스는 이미지랑 여러데이터를 리스트형식으로 가져오니까 시간이 좀 걸리잖아요 그런것들은 리액트 쿼리 사용하면 좋아요 
+    // 그리고 기본적으로 authAPI.ts 여기서 리액트쿼리 사용해요요
+    // 이 함수에 api 요청 넣으면 돼요요
+    const handleDeleteAccount = async () => {
+        try {
+            setIsLoading(true);
+            if (password.trim() !== "") {
+                const response = await deleteAccount.mutateAsync(password);
+                if (response.status === "success") {
+                    localStorage.removeItem('accessToken');
+                    // 리덕스에 유저정보도 초기화 시켜야함
+                    navigate("/");// 탈퇴 후 홈 화면으로 이동
+                    toast.success("회원탈퇴가 완료되었습니다.");
+                }
+            } else {
+                toast.error("비밀번호를 입력해주세요.");
+                setIsLoading(false);
+                return;
+            }
+            setIsLoading(false);
+        } catch (error: any) {
+            setIsLoading(false);
+            toast.error(error);
+        }
 
-    const handleBackClick = () => { 
-        navigate(-1);
-    }
-
-    const handleDeleteAccount = () => {
-        alert("계정이 삭제되었습니다.");
-        navigate("/");
-    }
+    };
 
     return (
-        <div className="flex flex-col">
-            <div className="bg-primary-500 p-1 flex items-center justify-between sticky top-0 z-10 w-full">
-                <button onClick={handleBackClick} className="text-white text-xl font-semibold">
-                    &#8592;
-                </button>
-                <h1 className="absolute left-1/2 transform -translate-x-1/2 text-white text-lg font-semibold">
-                    회원 탈퇴
-                </h1>
-            </div>
-            
+        <div className="flex flex-col justify-center items-center">
+
             <h2 className="text-2xl font-bold text-center mb-4 mt-6">회원 탈퇴 안내</h2>
             <p className="text-center text-gray-600 mb-5">
                 회원 탈퇴를 진행하시기 전에 아래 내용을 반드시 확인해주세요:
@@ -56,13 +77,29 @@ const DeleteAccount = () => {
                 <span className="text-black"> 이 점을 충분히 이해하신 후 탈퇴 절차를 진행해 주세요. 탈퇴를 원하시면, 아래 "계정 삭제" 버튼을 클릭해 주세요.</span>
             </p>
 
+            {/* 비밀번호 입력 (이메일 로그인 사용자 경우에만) */}
+            <input
+                type="password"
+                placeholder="비밀번호 입력"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mb-4 p-2 border rounded w-[80%] text-center"
+            />
+
             {/* 계정 삭제 버튼 */}
-            <button 
-                onClick={handleDeleteAccount} 
-                className="bg-gradient-to-r from-violet-500 to-purple-500 text-white py-3 w-full text-lg font-semibold rounded-lg shadow-md active:from-violet-700 active:to-purple-700 hover:from-violet-700 hover:to-purple-700 transition-all"
+            <BaseButton
+                onClick={handleDeleteAccount}
+                className="bg-primary-500 w-[80%] flex justify-center items-center relative"
+                disabled={isLoading} // 로딩 중에는 버튼 비활성화
             >
-                계정 삭제
-            </button>
+                {isLoading ? (
+                    <div className="flex justify-center items-center">
+                        <Loading />
+                    </div>
+                ) : (
+                    <span>회원탈퇴</span>
+                )}
+            </BaseButton>
         </div>
     );
 }
