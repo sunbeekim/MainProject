@@ -18,8 +18,6 @@
                  )
     </insert>
 
-
-
     <!-- 상품 요청 등록 (ProductRequests 테이블에 저장) -->
     <insert id="insertProductRequest" parameterType="map">
         INSERT INTO ProductRequests (product_id, requester_email, created_at, updated_at, status, approval_status)
