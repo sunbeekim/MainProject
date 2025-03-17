@@ -3,7 +3,7 @@ import GridItem from '../../common/GridItem';
 import { ILocation } from '../../../types/map';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMyLocation, setEndLocation } from '../../../store/slices/mapSlice';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { RootState } from '../../../store/store';
 import { getAddressFromCoords } from '../../../services/third-party/myLocation';
 import { LuArrowDownToLine, LuArrowUpToLine } from 'react-icons/lu';
@@ -32,6 +32,8 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const myLocation = useSelector((state: RootState) => state.map.myLocation);
   const endLocation = useSelector((state: RootState) => state.map.endLocation);
+  const endLocationProcessed = useRef<boolean>(false);
+
   useEffect(() => {
     // 내 위치 가져오기
     setTimeout(() => {
@@ -70,32 +72,39 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
     }, 1000);
   }, []); // 내 위치는 컴포넌트 마운트 시 한 번만 실행
 
-  // endLocation이 변경될 때마다 주소 업데이트
+  // endLocation이 변경될 때 주소 업데이트 (최초 한 번만)
   useEffect(() => {
     const updateEndLocationAddress = async () => {
-      if (endLocation.lat && endLocation.lng) {
-        try {
-          const address = await getAddressFromCoords(endLocation.lat, endLocation.lng);
-          dispatch(
-            setEndLocation({
-              ...endLocation,
-              address: address
-            })
-          );
-        } catch (error) {
-          console.error('목적지 주소 변환 중 오류 발생:', error);
-          dispatch(
-            setEndLocation({
-              ...endLocation,
-              address: '주소를 가져올 수 없습니다.'
-            })
-          );
-        }
+      // 이미 처리된 경우 또는 좌표가 없는 경우 실행하지 않음
+      if (endLocationProcessed.current || !endLocation.lat || !endLocation.lng) {
+        return;
+      }
+
+      try {
+        const address = await getAddressFromCoords(endLocation.lat, endLocation.lng);
+        dispatch(
+          setEndLocation({
+            ...endLocation,
+            address: address
+          })
+        );
+        // 처리 완료 표시
+        endLocationProcessed.current = true;
+      } catch (error) {
+        console.error('목적지 주소 변환 중 오류 발생:', error);
+        dispatch(
+          setEndLocation({
+            ...endLocation,
+            address: '주소를 가져올 수 없습니다.'
+          })
+        );
+        // 에러가 발생해도 처리 완료로 표시
+        endLocationProcessed.current = true;
       }
     };
 
     updateEndLocationAddress();
-  }, [endLocation.lat, endLocation.lng]); // endLocation의 위도나 경도가 변경될 때마다 실행
+  }, [endLocation.lat, endLocation.lng, dispatch]);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-t-3xl shadow-lg max-h-[18rem]">

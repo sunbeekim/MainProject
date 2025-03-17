@@ -38,6 +38,7 @@ export const apiConfig = {
       updateProfile: `${BASE_URL}/core/profiles/me`,
       registerProduct: `${BASE_URL}/core/market/products/registers`,
       uploadProductImages: `${BASE_URL}/core/market/images/upload`,
+      getDefaultProfileImage: `${BASE_URL}/core/profiles/image/default`,
       getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
