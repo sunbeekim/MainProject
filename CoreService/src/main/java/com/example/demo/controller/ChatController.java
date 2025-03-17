@@ -129,11 +129,28 @@ public class ChatController {
             Long productId = chatRoom.getProductId();
             String requesterEmail = chatRoom.getBuyerEmail();
             
-            // 요청 정보 조회
+            // 요청 정보 조회 - 요청 ID를 찾을 수 없는 경우 대체 방법 사용
             Long requestId = productRequestMapper.findRequestId(productId, requesterEmail);
             
             if (requestId == null) {
-                return ResponseEntity.status(404).body(ApiResponse.error("해당 요청을 찾을 수 없습니다.", "404"));
+                // 요청 ID를 찾을 수 없는 경우, 해당 상품의 첫 번째 요청을 찾거나 새 요청 생성
+                log.info("채팅방 [{}]에 대한 요청 ID를 찾을 수 없어 대체 방법을 사용합니다.", chatroomId);
+                
+                // 상품에 대한 첫 번째 요청 찾기 시도
+                requestId = productRequestMapper.findFirstRequestIdByProductId(productId);
+                
+                if (requestId == null) {
+                    // 요청이 아직 없으면 새 요청 생성
+                    log.info("상품 [{}]에 대한 요청이 없어 새로 생성합니다.", productId);
+                    productMapper.insertProductRequest(productId, requesterEmail);
+                    
+                    // 새로 생성된 요청의 ID 가져오기
+                    requestId = productRequestMapper.findRequestId(productId, requesterEmail);
+                    
+                    if (requestId == null) {
+                        return ResponseEntity.status(500).body(ApiResponse.error("요청을 생성할 수 없습니다.", "500"));
+                    }
+                }
             }
             
             // 요청 승인 처리
@@ -147,41 +164,8 @@ public class ChatController {
             
             return ResponseEntity.ok(ApiResponse.success("요청이 승인되었습니다."));
         } catch (Exception e) {
-            log.error("요청 승인 중 오류: {}", e.getMessage());
-            return ResponseEntity.status(500).body(ApiResponse.error("요청 처리 중 오류가 발생했습니다.", "500"));
-        }
-    }
-
-    /**
-     * 메시지 읽음 상태 업데이트
-     */
-    @PutMapping("/{chatroomId}/read")
-    public ResponseEntity<ApiResponse<?>> updateMessagesReadStatus(
-            @RequestHeader("Authorization") String token,
-            @PathVariable Integer chatroomId) {
-        
-        String tokenWithoutBearer = tokenUtils.extractTokenWithoutBearer(token);
-        
-        if (!tokenUtils.isTokenValid(tokenWithoutBearer)) {
-            return ResponseEntity.status(401).body(ApiResponse.error("인증되지 않은 요청입니다.", "401"));
-        }
-        
-        String email = tokenUtils.getEmailFromToken(tokenWithoutBearer);
-        
-        try {
-            // 채팅방 존재 여부 확인
-            ChatRoom chatRoom = chatRoomMapper.findChatRoomById(chatroomId, email);
-            if (chatRoom == null) {
-                return ResponseEntity.status(404).body(ApiResponse.error("채팅방을 찾을 수 없습니다.", "404"));
-            }
-            
-            // 메시지 읽음 상태 업데이트
-            int updatedCount = chatMessageMapper.updateMessageReadStatus(chatroomId, email);
-            
-            return ResponseEntity.ok(ApiResponse.success("메시지가 읽음 상태로 업데이트 되었습니다."));
-        } catch (Exception e) {
-            log.error("메시지 읽음 상태 업데이트 중 오류: {}", e.getMessage());
-            return ResponseEntity.status(500).body(ApiResponse.error("메시지 읽음 상태 업데이트 중 오류가 발생했습니다.", "500"));
+            log.error("요청 승인 중 오류: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(ApiResponse.error("요청 처리 중 오류가 발생했습니다: " + e.getMessage(), "500"));
         }
     }
 }

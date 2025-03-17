@@ -3,6 +3,7 @@ package com.example.demo.config;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.security.JwtAuthenticationEntryPoint;
 import com.example.demo.security.oauth2.CustomOAuth2UserService;
 import com.example.demo.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.example.demo.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -36,13 +37,16 @@ public class SecurityConfig {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint; // 추가
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리
-                                                                                                              // 안함
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 안함
+                .exceptionHandling(exceptionHandling -> 
+                    exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
                 .authorizeHttpRequests(auth -> auth
                         // 인증이 필요 없는 API (모든 사용자 접근 가능)
                         .requestMatchers(
@@ -53,6 +57,7 @@ public class SecurityConfig {
 
                                 "/api/core/auth/signup",
                                 "/api/core/auth/login",
+                                "/api/core/auth/logout", // 로그아웃 경로 추가
                                 "/api/core/auth/me/password/notoken",
                                 "/api/core/auth/me/password",
                                 "/api/core/hobbies",
@@ -70,7 +75,12 @@ public class SecurityConfig {
                                 "/api/core/market/products/images/**",
                                 "/api/core/market/products/{id}",
                                 "/topic/**",
-                                "/app/**")
+                                "/app/**",
+                                "/api/core/chat/**",
+                                "/api/core/chat/rooms/**",
+                                "/api/core/chat/rooms/{chatroomId}/read",
+                                "/api/core/chat/rooms/{chatroomId}/approve",
+                                "/api/core/chat/messages/**")
                         .permitAll()
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
 
@@ -92,6 +102,8 @@ public class SecurityConfig {
                         new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
                         UsernamePasswordAuthenticationFilter.class
                 )
+                // 커스텀 로그아웃 처리를 위해 Spring Security의 기본 로그아웃 비활성화
+                .logout(logout -> logout.disable())
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(endpoint -> endpoint
                                 .baseUri("/api/core/auth/oauth2/authorize")

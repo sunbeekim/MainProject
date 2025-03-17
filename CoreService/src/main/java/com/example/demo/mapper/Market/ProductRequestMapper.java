@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Mapper
 @Repository
 public interface ProductRequestMapper {
@@ -22,4 +24,14 @@ public interface ProductRequestMapper {
     Long findRequestId(
         @Param("productId") Long productId, 
         @Param("requesterEmail") String requesterEmail);
+    
+    /**
+     * 상품 ID로 모든 요청 조회
+     */
+    List<ProductRequest> findByProductId(@Param("productId") Long productId);
+    
+    /**
+     * 상품 ID로 첫 번째 요청 ID 조회
+     */
+    Long findFirstRequestIdByProductId(@Param("productId") Long productId);
 }
