@@ -4,10 +4,6 @@ import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.security.JwtAuthenticationEntryPoint;
-import com.example.demo.security.oauth2.CustomOAuth2UserService;
-import com.example.demo.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import com.example.demo.security.oauth2.OAuth2AuthenticationSuccessHandler;
-import com.example.demo.security.oauth2.OAuth2AuthenticationFailureHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -19,8 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -33,17 +27,14 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenBlacklistService jwtTokenBlacklistService;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint; // 추가
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final OAuth2Config oauth2Config;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 안함
+                .csrf(csrf -> csrf.disable()) 
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
                 .exceptionHandling(exceptionHandling -> 
                     exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
@@ -54,18 +45,17 @@ public class SecurityConfig {
                                 "/profile-images/**",
                                 "/chat-images/**",
                                 "/uploads/**",
-
                                 "/api/core/auth/signup",
                                 "/api/core/auth/login",
-                                "/api/core/auth/logout", // 로그아웃 경로 추가
+                                "/api/core/auth/logout",
                                 "/api/core/auth/me/password/notoken",
                                 "/api/core/auth/me/password",
                                 "/api/core/hobbies",
-                                "/api/core/hobbies/simple", // 추가된 API 경로
+                                "/api.core/hobbies/simple", 
                                 "/api/core/hobbies/categories",
                                 "/api/core/hobbies/*/categories",
-                                "/api/core/hobbies/categories/*", // 카테고리별 취미 목록 조회 접근 허용
-                                "/api/core/profiles/user/*", // 닉네임으로 공개 프로필 조회는 인증 없이 접근 가능
+                                "/api/core/hobbies/categories/*",
+                                "/api/core/profiles/user/*", 
                                 "/api/core/market/*",
                                 "/ws/**",
                                 "/api/core/market/products/requests/approved",
@@ -82,7 +72,7 @@ public class SecurityConfig {
                                 "/api/core/chat/rooms/{chatroomId}/approve",
                                 "/api/core/chat/messages/**")
                         .permitAll()
-                        .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
+                        .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") 
 
                         // 인증이 필요한 API
                         .requestMatchers(
@@ -96,28 +86,17 @@ public class SecurityConfig {
                                 "/api/core/market/products/users/requests/sell")
                         .authenticated()
 
-                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                // 커스텀 로그아웃 처리를 위해 Spring Security의 기본 로그아웃 비활성화
-                .logout(logout -> logout.disable())
-                .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(endpoint -> endpoint
-                                .baseUri("/api/core/auth/oauth2/authorize")
-                                .authorizationRequestRepository(authorizationRequestRepository)
-                        )
-                        .redirectionEndpoint(endpoint -> endpoint
-                                .baseUri("/api/core/auth/oauth2/callback/*")
-                        )
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
-                        .failureHandler(oAuth2AuthenticationFailureHandler)
-                );
+                .logout(logout -> logout.disable());
+        
+        // OAuth2 설정을 OAuth2Config에 위임
+        oauth2Config.configure(http);
+        
         return http.build();
     }
 
