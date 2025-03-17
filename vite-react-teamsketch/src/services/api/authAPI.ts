@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { SignupForm, ProfileUpdateRequest } from '../../types/auth';
+import { IPasswordChange } from '../../types/passwordChange'
 
 interface LoginCredentials {
   email: string;
@@ -30,6 +31,18 @@ interface SmsResponse {
 interface VerifyOtpResponse {
   success: boolean;
   message: string;
+}
+
+interface PasswordChangeResponse {
+  success: boolean;
+  message: string;
+}
+
+interface PasswordResponse{
+  token: string,
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string
 }
 
 // 로그인 API
@@ -75,14 +88,54 @@ const verifyOtpApi = async ({ phoneNumber, otp }: VerifyOtpRequest): Promise<Ver
   return response.data;
 };
 
+// 비토큰 비밀번호 변경
+export const passwordChangeNoneToken = async (passwordRequestData: IPasswordChange): Promise<PasswordChangeResponse> => {
+    const response = await axiosInstance.put<PasswordChangeResponse>(
+      apiConfig.endpoints.core.passwordChangeNoneToken,
+      passwordRequestData,
+      {
+        withCredentials: false,
+      }
+      
+    );
+    console.log("API response:", response);
+    
+    return response.data; // ✅ `response.data`를 반환
+};
+
+export interface IwithdrawRsponse{
+  status: string,
+  data: {
+    success: boolean,
+    message: string,
+    withdrawalDate: Date,
+  },
+  code: string,
+}
+// 3번 요청 그리고 응답 구조 는 만들어서 사용해도 되고 그냥 해도 되고고
+// 엔드포인트 제가 어제 user 컨트롤러 삭제하고 auth로 올겼던거 같은데 옮겼네요 그럼 엔드포인트가 auth/me/~
+export const withdrawUserApi = async (password: string): Promise<IwithdrawRsponse> => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.deleteUser,{ password });
+  return response.data;
+};
+
+export const passwordApi = async ({ isToken, currentPassword, newPassword, confirmPassword }: { isToken: string, currentPassword: string, newPassword: string, confirmPassword: string }):
+  Promise<PasswordResponse> => {
+  const response = await axiosInstance.put(apiConfig.endpoints.core.passwordChange, { isToken, currentPassword, newPassword, confirmPassword },
+  );
+  return response.data;
+};
+
+
+
 // //이메일 전송 API
-// const sendEmailApi = async (email: string): Promise<EmailResponse> => { 
+// const sendEmailApi = async (email: string): Promise<EmailResponse> => {
 //   const response = await axiosInstance.post(apiConfig.endpoints.assist.sendEmail, { email });
 //   return response.data;
 // }
 
 // //이메일 인증 API
-// const verifyOtpEmailApi = async ({ email, otp }: VerifyOtpRequest): Promise<VerifyOtpResponse> => { 
+// const verifyOtpEmailApi = async ({ email, otp }: VerifyOtpRequest): Promise<VerifyOtpResponse> => {
 //   const response = await axiosInstance.post(apiConfig.endpoints.assist.verifyOtpEmail, {
 //     email,
 //     otp
@@ -100,6 +153,13 @@ const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: loginApi
+  });
+};
+
+// 비토큰 비번 변경 훅훅
+export const usePasswordChangeNT = () => {
+  return useMutation({
+    mutationFn: passwordChangeNoneToken
   });
 };
 
@@ -157,6 +217,19 @@ export const useVerifyOtp = () => {
   });
 };
 
+//회원탈퇴 Hook
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: withdrawUserApi// 회원 탈퇴 API 호출 함수
+  });
+}
+//비밀번호변경
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: passwordApi
+  });
+}
+
 // //이메일 전송 Hook
 // export const useSendEmail = () => {
 //   return useMutation({
@@ -179,11 +252,9 @@ export const useVerifyOtp = () => {
 //   });
 // };
 
-
 // 프로필 수정 Hook
 export const useUpdateProfile = () => {
   return useMutation({
     mutationFn: updateProfileApi
   });
 };
-

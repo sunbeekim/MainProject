@@ -1,6 +1,6 @@
 const isDev = process.env.NODE_ENV === 'development';
 const BASE_URL = isDev ? 'http://localhost:8080/api' : 'https://sunbee.world/api';
-
+// 2번
 export const apiConfig = {
   baseURL: BASE_URL,
   endpoints: {
@@ -21,21 +21,26 @@ export const apiConfig = {
       login: `${BASE_URL}/core/auth/login`,
       logout: `${BASE_URL}/core/auth/logout`,
       user: `${BASE_URL}/core/user`,
+      // 여기에 추가해보실래요? 이건 아실테니 쉽게 하는 방법 알려드릴게요 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요요
+      // 이름정한걸 복사사
+      deleteUser: `${BASE_URL}/core/auth/me/withdrawal`,
+      passwordChange:`${BASE_URL}/core/auth/me/password
+`,
+      passwordChangeNoneToken : `${BASE_URL}/core/auth/me/password/notoken`,
       userinfo: `${BASE_URL}/core/profiles/me`,
       uploadProfile: `${BASE_URL}/core/profiles/me/image`,
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,
       getProfileImage: `${BASE_URL}/core/profiles/image`,
       getCategory: `${BASE_URL}/core/hobbies/categories`,
       getHobbies: `${BASE_URL}/core/hobbies`,
-      getHobbiesByCategory: (categoryId: number) => `${BASE_URL}/core/hobbies/categories/${categoryId}`,
+      getHobbiesByCategory: (categoryId: number) =>
+        `${BASE_URL}/core/hobbies/categories/${categoryId}`,
       updateProfile: `${BASE_URL}/core/profiles/me`,
       registerProduct: `${BASE_URL}/core/market/products/registers`,
       uploadProductImages: `${BASE_URL}/core/market/images/upload`,
-      getProducts: `${BASE_URL}/core/market/products`,
+      getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
-      test: `${BASE_URL}/core/test`,
-      
-      // 다른 core 서비스 엔드포인트들...
+      getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
     },
     ai: {
       base: `${BASE_URL}/ai`,

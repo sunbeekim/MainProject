@@ -45,27 +45,27 @@ const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect, category
 
   const getCategoryEmoji = (categoryName: string): string => {
     const emojiMap: { [key: string]: string } = {
-      '전체': '🔍',
+      전체: '🔍',
       '건강과 웰빙': '💪',
-      '게임': '🎮',
+      게임: '🎮',
       '공연 예술': '🎭',
       '기술과 공학': '🔧',
       '독서와 문학': '📚',
-      '반려동물': '🐶',
+      반려동물: '🐶',
       '사회 활동': '👥',
-      '수공예': '🔨',
-      '수집': '🎁',
-      '스포츠': '🏃',
+      수공예: '🔨',
+      수집: '🎁',
+      스포츠: '🏃',
       '시각 예술': '🎨',
       '실내 운동': '🏃',
       '야외 활동': '🏃',
       '언어 학습': '🎓',
-      '여행': '🌍',
+      여행: '🌍',
       '요리와 음식': '🍽️',
-      '음악': '🎵',
-      '자기계발': '📚',
+      음악: '🎵',
+      자기계발: '📚',
       '자연과 환경': '🌳',
-      '창작 활동': '🎨',
+      '창작 활동': '🎨'
     };
     return emojiMap[categoryName] || '🔥';
   };
@@ -94,7 +94,11 @@ const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect, category
           >
             <span className="text-xl">{getCategoryEmoji('전체')}</span>
           </button>
-          <span className={`${getTextSize()} font-medium text-center text-primary-700 dark:text-primary-300`}>전체</span>
+          <span
+            className={`${getTextSize()} font-medium text-center text-primary-700 dark:text-primary-300`}
+          >
+            전체
+          </span>
         </div>
 
         {categories.map((category) => (
@@ -121,7 +125,9 @@ const CategoryIcon: React.FC<ICategoryIconProps> = ({ onCategorySelect, category
             >
               <span className="text-xl">{getCategoryEmoji(category.categoryName)}</span>
             </button>
-            <span className={`${getTextSize()} font-medium text-center text-primary-700 dark:text-primary-300`}>
+            <span
+              className={`${getTextSize()} font-medium text-center text-primary-700 dark:text-primary-300`}
+            >
               {category.categoryName}
             </span>
           </div>

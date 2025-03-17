@@ -14,7 +14,7 @@ interface ProfileManageLayoutProps {
 }
 
 const ProfileManageLayout = ({
-  email = 'test@test.com',
+  email,
   image,
   userInfoName,
   userInfoNickname,

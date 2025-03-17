@@ -48,15 +48,15 @@ const LogoutModal = ({ isOpen, onClose, onLogout }: LogoutModalProps) => {
         <div className="self-stretch justify-start items-start gap-2 inline-flex">
           <button
             onClick={onClose}
-            className="grow shrink basis-0 h-10 px-4 py-3 rounded-xl border border-[#F9B0BA] justify-center items-center gap-2 flex overflow-hidden  bg-[#ffffff] hover:bg-[#F9B0BA]"
+            className="grow shrink basis-0 h-10 px-4 py-3 rounded-xl border border-purple-400 justify-center items-center gap-2 flex overflow-hidden  bg-[#ffffff] hover:bg-purple-500"
           >
             <div className="text-[#4A4A4A] text-xs font-semibold font-['Inter']">취소</div>
           </button>
           <button
             onClick={handleLogout}
-            className="grow shrink basis-0 h-10 px-4 py-3 bg-[#F6CED8] rounded-xl justify-center items-center gap-2 flex overflow-hidden hover:bg-[#F9B0BA]"
+            className="grow shrink basis-0 h-10 px-4 py-3 bg-purple-400 rounded-xl justify-center items-center gap-2 flex overflow-hidden hover:bg-purple-500"
           >
-            <div className="text-[#4A4A4A] text-xs font-semibold font-['Inter']">로그아웃</div>
+            <div className="text-white text-xs font-semibold font-['Inter']">로그아웃</div>
           </button>
         </div>
       </div>

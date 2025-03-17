@@ -42,9 +42,9 @@ const Header = () => {
                 className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
               >
                 testpage
-              </button>              
+              </button>
               <Iconalarm hasNotification={hasUnreadNotifications} className="w-6 h-6" />
-            </div>            
+            </div>
           )
         };
 

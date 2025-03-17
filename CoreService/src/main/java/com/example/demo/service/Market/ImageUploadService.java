@@ -46,15 +46,9 @@ public class ImageUploadService {
                 file.transferTo(filePath.toFile());
 
                 String imageUrl = "/uploads/product_" + email + "/product_" + productId + "/" + fileName;
-                uploadedPaths.add(imageUrl);
 
-//                // DB 저장 (여기서 productimages 테이블에 INSERT)
-//                ProductImage productImage = ProductImage.builder()
-//                        .productId(productId)
-//                        .imagePath(imageUrl)
-//                        .isThumbnail(false) // 기본적으로 썸네일 아님
-//                        .build();
-//                productImageMapper.insertProductImage(productImage); // DB에 저장
+                uploadedPaths.add(imageUrl);                
+
             }
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body(Map.of(

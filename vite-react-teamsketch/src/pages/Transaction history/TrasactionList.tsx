@@ -30,11 +30,11 @@ const TransactionList = () => {
 
     return (
       <div className="flex flex-col">
-      <div className="bg-[#ECCEF5] p-1 flex items-center justify-between sticky top-0 z-10 w-full">
+      <div className="bg-primary-500 p-1 flex items-center justify-between sticky top-0 z-10 w-full">
         <button onClick={handleBackClick} className="text-white text-xl font-semibold">
           &#8592;
         </button>
-        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-[#330019] text-lg font-semibold">
+        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-white text-lg font-semibold">
           거래 내역
         </h1>
       </div>

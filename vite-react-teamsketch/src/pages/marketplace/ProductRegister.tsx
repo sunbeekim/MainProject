@@ -11,6 +11,7 @@ import HobbySelect from '../../components/forms/select/HobbySelect';
 import BaseButton from '../../components/common/BaseButton';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import DaySelect from '../../components/forms/radiobutton/DaySelect';
+import { toast } from 'react-toastify';
 import {
   updateProductForm,
   addProductImage,
@@ -25,7 +26,6 @@ const ProductRegister = () => {
   const dispatch = useAppDispatch();
   const { registerForm, isLoading } = useAppSelector((state) => state.product);
   const { user } = useAppSelector((state) => state.user);
-  console.log(registerForm);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -37,11 +37,7 @@ const ProductRegister = () => {
   };
 
   const handleInterestSelect = (categoryId: number) => {
-    dispatch(
-      updateProductForm({
-        categoryId,        
-      })
-    );
+    dispatch(updateProductForm({ categoryId }));
   };
 
   const handleHobbySelect = (categoryId: number, hobbyId: number) => {
@@ -51,12 +47,23 @@ const ProductRegister = () => {
   const handleFileUpload = async (formData: FormData): Promise<void> => {
     const file = formData.get('file') as File;
     if (file) {
-      dispatch(addProductImage(file));
+      // 이미지 중복 체크
+      const isDuplicate = registerForm.images?.some(
+        (img) => img.name === file.name && img.size === file.size
+      );
+
+      if (!isDuplicate) {
+        dispatch(addProductImage(file));
+      }
     }
   };
 
   const handleRemoveImage = (index: number) => {
+    const removedImage = registerForm.images[index];
     dispatch(removeProductImage(index));
+    if (removedImage) {
+      toast.info(`이미지 "${removedImage.name}" 제거됨`);
+    }
   };
 
   const handleSubmit = async () => {
@@ -66,15 +73,44 @@ const ProductRegister = () => {
       }
 
       // 필수 필드 검증
-      if (
-        !registerForm.title ||
-        !registerForm.description ||
-        !registerForm.price ||
-        !registerForm.categoryId ||
-        !registerForm.transactionType ||
-        !registerForm.registrationType
-      ) {
-        throw new Error('필수 항목을 모두 입력해주세요.');
+      if (!registerForm.title) {
+        throw new Error('제목을 입력해주세요.');
+      }
+      if (!registerForm.price) {
+        throw new Error('가격을 입력해주세요.');
+      }
+      if (!registerForm.transactionType) {
+        throw new Error('거래 유형을 선택해주세요.');
+      }
+      if (!registerForm.registrationType) {
+        throw new Error('등록 유형을 선택해주세요.');
+      }
+      if (registerForm.transactionType === '대면') {
+        if (!registerForm.meetingPlace) {
+          throw new Error('대면 거래는 장소입력이 필수입니다.');
+        }
+      }
+      if (!registerForm.categoryId) {
+        throw new Error('카테고리를 선택해주세요.');
+      }
+      if (!registerForm.hobbyId) {
+        throw new Error('취미를 선택해주세요.');
+      }
+      if (!registerForm.maxParticipants) {
+        throw new Error('모집 인원을 입력해주세요.');
+      }
+      if (!registerForm.startDate) {
+        throw new Error('시작 일시를 입력해주세요.');
+      }
+      if (!registerForm.endDate) {
+        throw new Error('종료 일시를 입력해주세요.');
+      }
+      if (!registerForm.days) {
+        throw new Error('진행 요일을 선택해주세요.');
+      }
+
+      if (!registerForm.description) {
+        throw new Error('상품 설명을 입력해주세요.');
       }
 
       // 대면 거래인 경우 위치 정보 검증
@@ -88,6 +124,12 @@ const ProductRegister = () => {
         throw new Error('대면 거래의 경우 위치 정보가 필요합니다.');
       }
 
+      // 이미지 중복 제거
+      const uniqueImages = registerForm.images.filter(
+        (image, index, self) =>
+          index === self.findIndex((img) => img.name === image.name && img.size === image.size)
+      );
+
       const productData = {
         title: registerForm.title,
         description: registerForm.description,
@@ -98,30 +140,32 @@ const ProductRegister = () => {
         transactionType: registerForm.transactionType,
         registrationType: registerForm.registrationType,
         meetingPlace: registerForm.meetingPlace,
-        latitude: registerForm.latitude,
-        longitude: registerForm.longitude,
+        latitude: registerForm.latitude || undefined,
+        longitude: registerForm.longitude || undefined,
         address: registerForm.address,
         maxParticipants: Number(registerForm.maxParticipants) || 1,
-        selectedDays: registerForm.selectedDays || [],
+        days: registerForm.days,
         startDate: registerForm.startDate,
         endDate: registerForm.endDate
       };
 
-      console.log('productData', productData);
-
-      const response = await registerProduct(productData, registerForm.images || []);
+      const response = await registerProduct(productData, uniqueImages);
 
       if (response.status === 'success') {
+        toast.success('상품이 성공적으로 등록되었습니다.');
         dispatch(resetProductForm());
         navigate('/');
       } else {
-        throw new Error(response.data.message || '상품 등록에 실패했습니다.');
+        toast.error(response.message || '상품 등록에 실패했습니다.');
+        throw new Error(response.message || '상품 등록에 실패했습니다.');
       }
     } catch (error) {
-      dispatch(setError(error instanceof Error ? error.message : '상품 등록에 실패했습니다.'));
+      const errorMessage = error instanceof Error ? error.message : '상품 등록에 실패했습니다.';
+      toast.error(errorMessage);
+      dispatch(setError(errorMessage));
     }
   };
-
+  console.log('productData', registerForm);
   return (
     <PRLayout
       title={<h1>상품 등록</h1>}
@@ -154,8 +198,8 @@ const ProductRegister = () => {
             <RadioButton
               label="대면"
               value="대면"
-              checkedTextColor='text-white'
-              checkedBackgroundColor='bg-primary-500'
+              checkedTextColor="text-white"
+              checkedBackgroundColor="bg-primary-500"
               checked={registerForm.transactionType === '대면'}
               onChange={(value) => handleRadioButtonChange('transactionType', value)}
               variant="circle"
@@ -165,8 +209,8 @@ const ProductRegister = () => {
             <RadioButton
               label="비대면"
               value="비대면"
-              checkedTextColor='text-white'
-              checkedBackgroundColor='bg-primary-500'
+              checkedTextColor="text-white"
+              checkedBackgroundColor="bg-primary-500"
               checked={registerForm.transactionType === '비대면'}
               onChange={(value) => handleRadioButtonChange('transactionType', value)}
               variant="circle"
@@ -186,8 +230,8 @@ const ProductRegister = () => {
           <RadioButton
             label="판매"
             value="판매"
-            checkedTextColor='text-white'
-            checkedBackgroundColor='bg-primary-500'
+            checkedTextColor="text-white"
+            checkedBackgroundColor="bg-primary-500"
             checked={registerForm.registrationType === '판매'}
             onChange={(value) => handleRadioButtonChange('registrationType', value)}
             variant="circle"
@@ -198,8 +242,8 @@ const ProductRegister = () => {
             label="구매"
             value="구매"
             checked={registerForm.registrationType === '구매'}
-            checkedTextColor='text-white'
-            checkedBackgroundColor='bg-primary-500'
+            checkedTextColor="text-white"
+            checkedBackgroundColor="bg-primary-500"
             onChange={(value) => handleRadioButtonChange('registrationType', value)}
             variant="circle"
             size="sm"
@@ -228,8 +272,16 @@ const ProductRegister = () => {
           </BaseLabelBox>
         </div>
       }
+      meetingPlace={
+        registerForm.transactionType === '대면' && (
+          <BaseLabelBox label="장소">
+            {registerForm.meetingPlace ? registerForm.meetingPlace : '장소를 선택해주세요'}
+          </BaseLabelBox>
+        )
+      }
       participants={
         <div className="flex items-center gap-4">
+          모집인원
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -241,7 +293,7 @@ const ProductRegister = () => {
                         ? registerForm.maxParticipants - 1
                         : 1
                     })
-                  )
+                  );
                 }
               }}
               className="border p-2 border-primary-500 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center text-black text-lg focus:text-white focus:bg-primary-500 transition-colors"
@@ -262,8 +314,8 @@ const ProductRegister = () => {
               }
               className="border p-2 border-primary-500 rounded-md hover:bg-primary-light w-7 h-7 flex items-center justify-center text-black text-lg focus:text-white focus:bg-primary-500 transition-colors"
             >
-                +
-              </button>
+              +
+            </button>
           </div>
         </div>
       }
@@ -297,9 +349,9 @@ const ProductRegister = () => {
               <label className="text-sm text-gray-600 mb-2 block">진행 요일</label>
               <DaySelect
                 onDaySelect={(days: string[]) => {
-                  dispatch(updateProductForm({ selectedDays: days }));
+                  dispatch(updateProductForm({ days: days }));
                 }}
-                selectedDays={registerForm.selectedDays || []}
+                selectedDays={registerForm.days || []}
               />
             </div>
           </div>
@@ -310,7 +362,7 @@ const ProductRegister = () => {
           type="prod"
           multiple={true}
           images={registerForm.images}
-          borderStyle="border-primary-300 border-2 rounded-lg"
+          borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500"
           onFileSelect={(file) => {
             const formData = new FormData();
             formData.append('file', file);
@@ -325,7 +377,7 @@ const ProductRegister = () => {
         <BaseLabelBox label="상품 설명">
           <TextAreaInput
             name="description"
-            className='border-primary-300 border-2'
+            className="border-primary-300 border-2"
             value={registerForm.description}
             onChange={handleChange}
             placeholder="상품에 대한 상세한 설명을 입력하세요"
