@@ -133,8 +133,7 @@ const ProductRegister = () => {
       const productData = {
         title: registerForm.title,
         description: registerForm.description,
-        price: registerForm.price,
-        email: user.email,
+        price: registerForm.price,        
         hobbyId: registerForm.hobbyId,
         categoryId: registerForm.categoryId,
         transactionType: registerForm.transactionType,

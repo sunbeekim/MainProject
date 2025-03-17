@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, memo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FloatingButton from '../../components/common/FloatingButton';
@@ -13,6 +13,8 @@ import {
   useProductImage,
   extractImageIdFromPath
 } from '../../services/api/productAPI';
+import Loading from '../../components/common/Loading';
+import { toast } from 'react-toastify';
 
 // mock 데이터를 실제 API 응답 타입으로 변환하는 함수
 const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
@@ -47,22 +49,49 @@ const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
 const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) => {
   const imageId = thumbnailPath ? extractImageIdFromPath(thumbnailPath) : null;
   const { data: imageBlob, isLoading, error } = useProductImage(imageId || 0);
+  const [imgError, setImgError] = useState(false);
 
-  if (!thumbnailPath) return <div>이미지 없음</div>;
-  if (isLoading) return <div>로딩중...</div>;
-  if (error || !imageBlob) {
+  // 이미지가 없는 경우 기본 이미지 표시
+  if (!thumbnailPath) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+        <span className="text-gray-400">이미지 없음</span>
+      </div>
+    );
+  }
+
+  // 로딩 중인 경우 로딩 컴포넌트 표시
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gray-50">
+        <Loading />
+      </div>
+    );
+  }
+
+  // 에러가 발생했거나 이미지 로드에 실패한 경우 대체 이미지 표시
+  if (error || !imageBlob || imgError) {
     // 이미지 ID를 사용하여 고유한 랜덤 이미지 생성
     const mockImageUrl = `https://picsum.photos/600/400?random=${
       imageId || Math.floor(Math.random() * 1000)
     }`;
-    return <img src={mockImageUrl} alt="상품 이미지" className="w-full h-full object-cover" />;
+    return (
+      <img 
+        src={mockImageUrl} 
+        alt="상품 이미지" 
+        className="w-full h-full object-cover"
+        onError={() => setImgError(true)}
+      />
+    );
   }
 
+  // 정상적으로 이미지 표시
   return (
     <img
       src={URL.createObjectURL(imageBlob)}
       alt="상품 이미지"
       className="w-full h-full object-cover"
+      onError={() => setImgError(true)}
     />
   );
 });
@@ -71,9 +100,10 @@ const MarketList = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [categoryName, setCategoryName] = useState<string>('전체');
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   // 상품 Query - 카테고리 선택에 따라 다른 API 호출
-  const { data: products = [], isLoading } = useQuery({
+  const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products', selectedCategory],
     queryFn: async () => {
       try {
@@ -85,7 +115,7 @@ const MarketList = () => {
         } else {
           response = await getProducts();
         }
-        
+        console.log('response', response);
         // 응답 데이터가 없으면 목 데이터 사용
         if (!response.data || response.data.length === 0) {
           // 카테고리가 선택된 경우 해당 카테고리의 목 데이터만 필터링
@@ -101,6 +131,9 @@ const MarketList = () => {
         return response.data || [];
       } catch (error) {
         console.error('API 요청 실패:', error);
+        // 에러 발생 시 한 번만 토스트 메시지 표시
+        toast.error('상품 목록을 불러오는 중 오류가 발생했습니다.');
+        
         // 에러 발생 시 목 데이터 사용
         if (selectedCategory) {
           const mockResponse = await mockAPI.market.getProductsByCategory(categoryName);
@@ -115,6 +148,25 @@ const MarketList = () => {
     staleTime: 30000
   });
 
+  // 페이지 로딩 상태 관리
+  useEffect(() => {
+    if (!isLoading) {
+      // 데이터 로딩이 완료되면 약간의 지연 후 로딩 상태 해제
+      const timer = setTimeout(() => {
+        setIsPageLoading(false);
+      }, 500); // 500ms 지연으로 모든 요소가 렌더링될 시간을 줍니다
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  // 에러 처리
+  useEffect(() => {
+    if (error) {
+      toast.error('상품 목록을 불러오는 중 오류가 발생했습니다.');
+    }
+  }, [error]);
+
   const handleNavigateToProductRegister = () => {
     navigate('/product/register');
   };
@@ -122,6 +174,7 @@ const MarketList = () => {
   const handleCategorySelect = (categoryId: number, name: string) => {
     setSelectedCategory(categoryId === 0 ? null : categoryId);
     setCategoryName(name);
+    setIsPageLoading(true); // 카테고리 변경 시 로딩 상태로 변경
     console.log(`카테고리 선택: ${name} (ID: ${categoryId})`);
   };
 
@@ -156,8 +209,13 @@ const MarketList = () => {
     });
   };
 
-  if (isLoading) {
-    return <div className="container mx-auto px-4 py-6">로딩 중...</div>;
+  if (isPageLoading) {
+    return (
+      <div className="container mx-auto px-4 py-6 flex flex-col items-center justify-center min-h-[60vh]">
+        <Loading />
+        <p className="mt-4 text-gray-600">상품 목록을 불러오는 중입니다...</p>
+      </div>
+    );
   }
 
   return (

@@ -46,7 +46,7 @@ const ListItem: React.FC<ListItemProps> = ({ nickname, title, description, point
       </div>
 
       <button
-        className="bg-[#FBCCC5] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#F9B0BA]"
+        className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-600"
         onClick={handleClick}
       >
         상세보기

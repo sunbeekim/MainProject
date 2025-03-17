@@ -15,6 +15,11 @@ RUN mkdir -p /data/redis
 # 기본 Redis 설정 생성 - 모든 인터페이스에서 접속 허용
 RUN echo "bind 0.0.0.0\nport 6379\nprotected-mode no\ndaemonize yes\nsupervised auto\ndir /data/redis\nappendonly yes\nloglevel notice\nlogfile /var/log/redis/redis-server.log" > /etc/redis/redis.conf
 
+# 보안 강화를 위해 로컬 접속만 허용하려면 다음과 같이 변경:
+# RUN echo "bind 127.0.0.1\nport 6379\nprotected-mode yes\ndaemonize yes\nsupervised auto\ndir /data/redis\nappendonly yes\nloglevel notice\nlogfile /var/log/redis/redis-server.log" > /etc/redis/redis.conf
+# 이 경우 외부에서 Redis에 직접 접근할 수 없으며, CoreService 내부에서만 접근 가능합니다.
+# GitHub Actions 워크플로우에서도 -p 6379:6379 포트 매핑을 제거해야 합니다.
+
 # Redis 로그 디렉토리 생성
 RUN mkdir -p /var/log/redis && chmod 777 /var/log/redis
 
@@ -26,6 +31,7 @@ ENV SPRING_REDIS_PORT=6379
 VOLUME ["/data/redis", "/var/log/redis"]
 
 EXPOSE 8081
+# 로컬 접속만 허용할 경우 아래 EXPOSE 명령을 제거하거나 주석 처리하세요
 EXPOSE 6379
 
 # 시작 스크립트 생성
