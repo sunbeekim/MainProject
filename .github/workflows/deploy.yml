@@ -296,8 +296,36 @@ jobs:
             
           # Redis 서비스가 실행 중인지 확인
           echo "Redis 서비스 실행 상태 확인 중..."
-          sleep 10
-          docker exec core-container redis-cli ping || echo "경고: Redis 서비스가 응답하지 않습니다."
+          sleep 15  # 충분한 시간 대기
+          
+          # Redis 컨테이너 로그 확인
+          echo "Core 컨테이너 로그 확인:"
+          docker logs core-container
+          
+          # Redis 서비스 상태 확인 (재시도 로직 추가)
+          max_attempts=5
+          attempt=1
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "Redis 연결 시도 $attempt/$max_attempts..."
+            if docker exec core-container redis-cli ping; then
+              echo "Redis 서비스가 정상적으로 응답합니다."
+              break
+            else
+              echo "Redis 서비스 응답 실패, 재시도 중..."
+              # 컨테이너 내부 Redis 프로세스 확인
+              docker exec core-container ps aux | grep redis
+              # Redis 포트 확인
+              docker exec core-container netstat -tulpn | grep 6379 || echo "포트 6379가 열려있지 않습니다."
+              
+              if [ $attempt -eq $max_attempts ]; then
+                echo "경고: Redis 서비스가 응답하지 않습니다. 계속 진행합니다."
+              fi
+              
+              attempt=$((attempt + 1))
+              sleep 5
+            fi
+          done
             
           docker run -d --name assist-container \
             --network teamsketch-network \
