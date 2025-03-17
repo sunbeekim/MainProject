@@ -118,8 +118,15 @@ export const withdrawUserApi = async (password: string): Promise<IwithdrawRspons
   const response = await axiosInstance.post(apiConfig.endpoints.core.deleteUser,{ password });
   return response.data;
 };
-
+// 여기에 토큰 추가하는게 맞지만 저희가 지금 인스턴스 사용중인데,
+// 미리 헤더를 포함하는 인스턴스를 만들어서 그걸 사용하기에
+// 여기서는 따로 추가안해도 됩니다
+// 요청기대값에 있는 isToken은 비밀번호 변경이
+// 토큰이 있는 경우와 없는경우를 구분하기 위한 문자열비교를 통해서 분기를 만들어 주는 것입니다다
 export const passwordApi = async ({ isToken, currentPassword, newPassword, confirmPassword }: { isToken: string, currentPassword: string, newPassword: string, confirmPassword: string }):
+  // 인스턴스에서 설정하지 않은 것을 이제 여기에 추가해서
+  // 만드는데 아까 적은것들이 아닌 put, post 같은것을 명시해주고()안에 기본이 아닌 apiConfig에 설정한
+  // 주소와 보낼 데이터를 담고 요청합니다 그러면 백엔드 주소인인 8080포트 gateway로 갑니다
   Promise<PasswordResponse> => {
   const response = await axiosInstance.put(apiConfig.endpoints.core.passwordChange, { isToken, currentPassword, newPassword, confirmPassword },
   );
@@ -128,7 +135,7 @@ export const passwordApi = async ({ isToken, currentPassword, newPassword, confi
 
 
 
-// //이메일 전송 API
+//이메일 전송 API
 // const sendEmailApi = async (email: string): Promise<EmailResponse> => {
 //   const response = await axiosInstance.post(apiConfig.endpoints.assist.sendEmail, { email });
 //   return response.data;
@@ -230,7 +237,7 @@ export const useChangePassword = () => {
   });
 }
 
-// //이메일 전송 Hook
+// //이메일 전송 Hook 
 // export const useSendEmail = () => {
 //   return useMutation({
 //     mutationFn: sendEmailApi,

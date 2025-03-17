@@ -24,6 +24,9 @@ const imageUrlPatterns = [
 ];
 
 // 기본 axios 인스턴스 생성
+// 헤더에 콘텐츠타입이 앱 json 형태로 보낸다는것이고
+// withCredentials: true 이게 브라우저가 가지고 있는 토큰을 함께 보내는 겁니다
+// 이 인스턴스(객체)는 기본url과 타임아웃, 헤더설정, 토큰전송여부를 가지고 있는 인스턴스입니다다
 export const axiosInstance = axios.create({
   baseURL: apiConfig.baseURL,
   timeout: 30000,
@@ -34,6 +37,7 @@ export const axiosInstance = axios.create({
 });
 
 // 파일 업로드용 인스턴스
+// 얘의 경우는 콘텐츠 타입이 위와 다르게 멀티파트로 파일용입니다다
 export const uploadInstance = axios.create({
   baseURL: apiConfig.baseURL,
   timeout: 30000,
