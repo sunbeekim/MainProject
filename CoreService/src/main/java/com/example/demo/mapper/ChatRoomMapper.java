@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -32,4 +33,11 @@ public interface ChatRoomMapper {
     void updateChatRoomStatus(
             @Param("chatroomId") Integer chatroomId, 
             @Param("status") String status);
+    
+    // 채팅방 마지막 메시지 및 시간 업데이트 (개별 파라미터)
+    void updateChatRoomLastMessage(
+        @Param("chatroomId") Integer chatroomId, 
+        @Param("lastMessage") String lastMessage, 
+        @Param("lastMessageTime") LocalDateTime lastMessageTime
+    );
 }

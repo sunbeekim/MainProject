@@ -59,7 +59,19 @@
             chatroom_id = #{chatroomId}
     </update>
     
-    <!-- 채팅방의 마지막 메시지 및 시간 업데이트 -->
+    <!-- 채팅방 마지막 메시지 및 시간 업데이트 -->
+    <update id="updateChatRoom" parameterType="com.example.demo.model.chat.ChatRoom">
+        UPDATE 
+            chatrooms
+        SET 
+            last_message = #{lastMessage},
+            last_message_time = #{lastMessageTime},
+            updated_at = NOW()
+        WHERE 
+            chatroom_id = #{chatroomId}
+    </update>
+
+    <!-- 채팅방 마지막 메시지 및 시간 업데이트 (직접 파라미터 사용) -->
     <update id="updateChatRoomLastMessage">
         UPDATE 
             chatrooms
@@ -83,6 +95,8 @@
         <result property="status" column="status"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="unreadCount" column="unread_count"/>
     </resultMap>
 
 </mapper>
+

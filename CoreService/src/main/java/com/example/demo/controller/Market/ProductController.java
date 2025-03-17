@@ -3,6 +3,8 @@ package com.example.demo.controller.Market;
 import com.example.demo.dto.Market.ProductRequest;
 import com.example.demo.dto.Market.ProductRequestDto;
 import com.example.demo.dto.Market.ProductResponse;
+import com.example.demo.dto.Market.NearbyProductRequest;
+
 import com.example.demo.model.Market.ProductImage;
 import com.example.demo.service.Market.ImageUploadService;
 import com.example.demo.service.Market.ProductService;
@@ -118,7 +120,7 @@ public class ProductController {
     }
 
 
-    /** ✅ 특정 사용자가 등록한 상품 목록 조회 (구매, 판매, 구매 요청, 판매 요청) **/
+    /** 특정 사용자가 등록한 상품 목록 조회 (구매, 판매, 구매 요청, 판매 요청) **/
     @PostMapping("/users")
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getProductsByUserAndType(
             @RequestHeader("Authorization") String token,
@@ -198,4 +200,15 @@ public class ProductController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+    /** 사용자의 위치 기반으로 특정 반경 내(유동적 거리) 있는 상품을 조회 **/
+    @PostMapping("/nearby")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getNearbyProducts(
+            @RequestBody NearbyProductRequest request) {
+        return productService.getNearbyProducts(request.getLatitude(), request.getLongitude(), request.getDistance());
+    }
 }
+
+
+
+

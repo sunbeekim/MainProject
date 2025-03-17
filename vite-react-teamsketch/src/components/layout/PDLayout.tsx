@@ -18,8 +18,8 @@ interface PDLayoutProps {
   description?: string;
   maxParticipants?: number;
   currentParticipants?: number;
-  startDate?: string;
-  endDate?: string;
+  startDate?: string | Array<number>;
+  endDate?: string | Array<number>;
   meetingPlace?: string;
   btName?: string;
   price?: string;

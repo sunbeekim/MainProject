@@ -6,14 +6,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import com.example.demo.filter.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class RouteConfig {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
 
-    // 현재 개발용 local로 해놔서서
-    private String activeProfile = "local";
+    @Value("${SPRING_PROFILES_ACTIVE:local}")
+    private String activeProfile;
+
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {

@@ -27,8 +27,17 @@ export const mockAPI = {
     // 카테고리별 상품 조회
     getProductsByCategory: async (category: string) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      const filteredProducts = [...mockLatestProducts, ...mockRecommendedProducts]
-        .filter(product => product.category === category);
+      const allProducts = [...mockLatestProducts, ...mockRecommendedProducts];
+      
+      // 전체 카테고리인 경우 모든 상품 반환
+      if (category === '전체') {
+        return createResponse({
+          products: allProducts
+        });
+      }
+      
+      // 카테고리명으로 필터링
+      const filteredProducts = allProducts.filter(product => product.category === category);
       return createResponse({
         products: filteredProducts
       });

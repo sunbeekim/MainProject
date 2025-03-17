@@ -2,7 +2,19 @@ import { axiosInstance, uploadInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { FileResponse } from '../../types/fileResponse';
 
+const getImageFilename = (imageUrl: string): string | null => {
+  if (!imageUrl) return null; // URL이 없을 경우 예외 처리
+
+  const parts = imageUrl.split("/profile-images/");
+  return parts.length > 1 ? parts[1] : null; // 파일명이 존재하면 반환
+};
+
 export const getProfileImage = async (): Promise<FileResponse | null> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.error('토큰이 없습니다.');
+    return null;
+  }
   console.log('getProfileImage 함수 호출됨');
 
   try {
@@ -13,9 +25,14 @@ export const getProfileImage = async (): Promise<FileResponse | null> => {
 
     if (infoResponse.data?.data?.imageUrl) {
       const imageUrl = infoResponse.data.data.imageUrl;
-      const filename = imageUrl.split('/image/')[1];
+      const filename = getImageFilename(imageUrl);
       console.log('imageUrl', imageUrl);
       console.log('이미지 파일명:', filename);
+
+      if (!filename) {
+        console.error('유효한 이미지 파일명을 추출할 수 없습니다.');
+        return null;
+      }
 
       try {
         const imageResponse = await axiosInstance.get(

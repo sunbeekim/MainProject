@@ -7,7 +7,8 @@ import { validatePassword } from '../../utils/validation';
 import { useAppSelector } from '../../store/hooks';
 import { toast } from 'react-toastify'
 import { usePasswordChangeNT } from '../../services/api/authAPI';
-
+import { resetPasswordInfo } from '../../store/slices/passwordChangeSlice';
+import { useAppDispatch } from '../../store/hooks';
 // , passwordChangeNoneToken
 
 // import axios from 'axios';
@@ -18,6 +19,7 @@ const ResetPassword = () => {
     const [error, setError] = useState('');
     const passwordChangeInfo = useAppSelector((state) => state.passwordChange);
     const passwordChange = usePasswordChangeNT();
+    const dispatch = useAppDispatch();
 
    
     
@@ -89,6 +91,7 @@ const ResetPassword = () => {
         
             console.log("response:", response.success);
             if (response.success) {
+                dispatch(resetPasswordInfo());
                 toast.success('비밀번호가 성공적으로 변경되었습니다.');
                 navigate('/login');
             } else {
