@@ -26,23 +26,25 @@ const OCRUpload = () => {
     }
   };
 
+
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">OCR 이미지 업로드</h2>
-      
+
       {/* OCR 촬영 이미지 업로드 */}
-      <ImageUpload 
-        onUpload={handleOCRUpload} 
-        className="max-w-md mx-auto" 
-        type="ocr" 
+      <ImageUpload
+        onUpload={handleOCRUpload}
+        className="max-w-md mx-auto"
+        type="ocr"
         borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500"
       />
 
       {/* OCR 선택 이미지 업로드 */}
-      <ImageUpload 
-        onUpload={handleOCRUpload} 
-        className="max-w-md mx-auto mt-4" 
-        type="image" 
+      <ImageUpload
+        onUpload={handleOCRUpload}
+        className="max-w-md mx-auto mt-4"
+        type="image"
         borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500"
       />
 
@@ -60,10 +62,10 @@ const OCRUpload = () => {
           </div>
         </div>
       )}
+      {/* OCR 결과를 CardDetails에 전달 */}
+      {ocrResult && <CardDetails ocrResult={ocrResult} />}
+    </div>
 
-<CardDetails />
-      </div>
-      
   );
 };
 
