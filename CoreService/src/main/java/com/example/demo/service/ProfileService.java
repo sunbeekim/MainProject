@@ -263,7 +263,7 @@ public class ProfileService {
      */
     @Transactional
     public PasswordChangeResponse changePassword(String email, PasswordChangeRequest request) {
-        // 사용자 존재 여부 확인
+        // 사용자 존재 여부 확인 이메일 존재하는지 확인하고고
         User user = userMapper.findByEmail(email);
         if (user == null) {
             return PasswordChangeResponse.builder()
@@ -271,9 +271,9 @@ public class ProfileService {
                     .message("존재하지 않는 사용자입니다.")
                     .build();
         }
-
+        // 프론트에서 보낸 isToken이 true이니까
         if (request.getIsToken().equals("true")) {
-            // 현재 비밀번호 확인
+            // 현재 비밀번호 확인 이곳을 실행합니다다
             boolean isCurrentPasswordValid = passwordUtils.verifyPassword(
                     request.getCurrentPassword(),
                     user.getPasswordHash(),
@@ -285,12 +285,11 @@ public class ProfileService {
                         .message("현재 비밀번호가 일치하지 않습니다.")
                         .build();
             }
-        } else {
-
-            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber().replace(" ", "");
-            System.out.println("VerifyPhoneNumber: " + verifyPhoneNumber+"\n"+"getPhoneNumber:"+request.getPhoneNumber());
-            if (!verifyPhoneNumber.equals(request.getPhoneNumber())) {
-                System.out.println("전화번호가 일치하지 않습니다.");
+        } else { // if문이 성공했으니 여기는 건너뜁니다다
+            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber();
+            System.out.println(
+                    "VerifyPhoneNumber: " + verifyPhoneNumber + "\n" + "getPhoneNumber:" + request.getPhoneNumber());
+            if (verifyPhoneNumber != request.getPhoneNumber()) {
                 return PasswordChangeResponse.builder()
                         .success(false)
                         .message("전화번호가 일치하지 않습니다.")
@@ -300,7 +299,6 @@ public class ProfileService {
 
         // 새 비밀번호와 확인 비밀번호 일치 확인
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            System.out.println("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
             return PasswordChangeResponse.builder()
                     .success(false)
                     .message("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.")
@@ -310,11 +308,12 @@ public class ProfileService {
         // 비밀번호 변경
         String newPasswordHash = passwordUtils.hashPassword(request.getNewPassword(), null).get("hashedPassword");
         userMapper.updateUserPasswordHash(email, newPasswordHash);
-
+        // 여기까지 오면 성공입니다다
         return PasswordChangeResponse.builder()
                 .success(true)
                 .message("비밀번호가 성공적으로 변경되었습니다.")
                 .build();
+        // 반환 값으로는 success boolean과 message String으로 반환됩니다다
     }
 
     /**
@@ -322,14 +321,17 @@ public class ProfileService {
      */
     public PasswordChangeResponse changePasswordByToken(String token, PasswordChangeRequest request) {
         String tokenWithoutBearer = tokenUtils.extractTokenWithoutBearer(token);
+        // 여기서 토큰 검증하고고
         if (!tokenUtils.isTokenValid(tokenWithoutBearer)) {
             return PasswordChangeResponse.builder()
                     .success(false)
                     .message("유효하지 않은 인증 토큰입니다.")
                     .build();
         }
-
+        // 토큰에서 이메일 추출
         String email = tokenUtils.getEmailFromToken(tokenWithoutBearer);
+        // 이제서야 어제 제가 수정했던 메서드를 호출합니다
+        // 실제 비밀번호 변경이 일어나는 메서드입니다다
         return changePassword(email, request);
     }
 

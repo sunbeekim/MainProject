@@ -55,10 +55,62 @@ export const registerProduct = async (
 export const getProducts = async (): Promise<IProductListResponse> => {
   try {
     const response = await axiosInstance.get(apiConfig.endpoints.core.getProducts);
+    
+    // 응답 데이터 확인
+    if (!response.data || !response.data.data) {
+      console.warn('상품 목록 응답 데이터가 비어있습니다.');
+      return { status: 'success', data: [], message: '데이터가 없습니다.' };
+    }
+    
+    // 기본 이미지 가져오기 시도
+    let defaultImagePath = '/default-product-image.jpg'; // 기본값 설정
+    try {
+      const defaultImageResponse = await axiosInstance.get(apiConfig.endpoints.core.getDefaultProfileImage);
+      if (defaultImageResponse.data && defaultImageResponse.data.imagePath) {
+        defaultImagePath = defaultImageResponse.data.imagePath;
+      }
+    } catch (error) {
+      console.warn('기본 이미지 조회 실패, 기본값 사용:', error);
+    }
+    
+    // 각 상품에 이미지 경로가 없는 경우 기본 이미지 경로 삽입
+    if (Array.isArray(response.data.data)) {
+      response.data.data.forEach((product: IProduct) => {
+        // imagePaths가 없거나 빈 배열인 경우 기본 이미지 경로 설정
+        if (!product.imagePaths || product.imagePaths.length === 0) {
+          product.imagePaths = [defaultImagePath];
+        }
+        
+        // thumbnailPath가 null인 경우 기본 이미지 경로 설정
+        if (!product.thumbnailPath) {
+          product.thumbnailPath = defaultImagePath;
+        }
+      });
+    }
+    
     return response.data;
   } catch (err) {
     console.error('상품 목록 조회 에러:', err);
     throw new Error('상품 목록 조회에 실패했습니다.');
+  }
+};
+
+// 카테고리별 상품 조회
+export const getProductsByCategory = async (categoryId: number): Promise<IProductListResponse> => {
+  try {
+    const requestData = {
+      categoryId: categoryId,
+      sort: "latest" // 기본값은 최신순
+    };
+    
+    const response = await axiosInstance.post(
+      `${apiConfig.endpoints.core.base}/market/products/all/filter`, 
+      requestData
+    );
+    return response.data;
+  } catch (err) {
+    console.error('카테고리별 상품 조회 에러:', err);
+    throw new Error('카테고리별 상품 조회에 실패했습니다.');
   }
 };
 

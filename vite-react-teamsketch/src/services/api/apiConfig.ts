@@ -21,8 +21,8 @@ export const apiConfig = {
       login: `${BASE_URL}/core/auth/login`,
       logout: `${BASE_URL}/core/auth/logout`,
       user: `${BASE_URL}/core/user`,
-      // 여기에 추가해보실래요? 이건 아실테니 쉽게 하는 방법 알려드릴게요 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요요
-      // 이름정한걸 복사사
+      // 여기에 추가해보실래요? 이건 아실테니 쉽게 하는 방법 알려드릴게요 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요
+      // 이름정한걸 복사
       deleteUser: `${BASE_URL}/core/auth/me/withdrawal`,
       passwordChange:`${BASE_URL}/core/auth/me/password
 `,
@@ -38,6 +38,7 @@ export const apiConfig = {
       updateProfile: `${BASE_URL}/core/profiles/me`,
       registerProduct: `${BASE_URL}/core/market/products/registers`,
       uploadProductImages: `${BASE_URL}/core/market/images/upload`,
+      getDefaultProfileImage: `${BASE_URL}/core/profiles/image/default`,
       getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,

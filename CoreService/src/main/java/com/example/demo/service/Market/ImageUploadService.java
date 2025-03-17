@@ -46,7 +46,9 @@ public class ImageUploadService {
                 file.transferTo(filePath.toFile());
 
                 String imageUrl = "/uploads/product_" + email + "/product_" + productId + "/" + fileName;
+
                 uploadedPaths.add(imageUrl);                
+
             }
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body(Map.of(

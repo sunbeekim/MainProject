@@ -4,6 +4,7 @@ import LogoutModal from '../account/LogoutModal';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
+import { clearUser } from '../../store/slices/userSlice';
 import NotificationSettings from '../notification/NotificationSetting';
 
 const Setting = () => {
@@ -15,7 +16,7 @@ const Setting = () => {
   const handleLogout = () => {
     console.log('로그아웃 실행!');
     dispatch(logout());
-    localStorage.removeItem('token');
+    dispatch(clearUser());
     setLogoutModalOpen(false);
     navigate('/login');
   };
