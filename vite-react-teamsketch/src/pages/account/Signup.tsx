@@ -3,9 +3,9 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   updateField,
   setValidationError,
-  setError,
   addHobby,
-  removeHobby
+  removeHobby,
+  resetSignupInfo
 } from '../../store/slices/signupSlice';
 //import { Category } from '../../types/auth';
 import SignupLayout from '../../components/layout/SignupLayout';
@@ -89,7 +89,6 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(setError(''));
 
     try {
       // 모든 필수 필드 검증
@@ -97,7 +96,7 @@ const Signup = () => {
       const missingFields = requiredFields.filter((field) => !formData[field as keyof SignupForm]);
 
       if (missingFields.length > 0) {
-        dispatch(setError('모든 필수 항목을 입력해주세요.'));
+        toast.error('모든 필수 항목을 입력해주세요.');
         return;
       }
 
@@ -119,6 +118,7 @@ const Signup = () => {
 
       console.log('회원가입 요청 데이터:', signupData); // 요청 데이터 로깅
       await signupMutation.mutateAsync(signupData);
+      dispatch(resetSignupInfo());
       
       // 회원가입 성공 처리
       toast.success('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
@@ -128,7 +128,6 @@ const Signup = () => {
       const errorMessage = error.response?.data?.data?.message || 
                           (error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.');
       
-      dispatch(setError(errorMessage));
       toast.error(errorMessage);
       console.error('회원가입 에러:', error); // 에러 로깅
     }

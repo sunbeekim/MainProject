@@ -118,8 +118,8 @@ const ProfileManage = () => {
         toast.warning('프로필이 수정되었지만 최신 정보를 불러오지 못했습니다.');
         navigate('/mypage');
       }
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : '프로필 수정 중 오류가 발생했습니다.');
+    } catch (err : any) {
+      toast.error(err.response.data.data.message || '프로필 수정 중 오류가 발생했습니다.');
       console.error('프로필 수정 에러:', err);
     }
   };

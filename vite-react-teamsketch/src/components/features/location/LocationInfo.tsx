@@ -129,7 +129,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
                   <div className="w-2 h-2 bg-white rounded-full absolute top-2 animate-pulse" />
                 </div>
                 <div>
-                  <p className="text-white/80 dark:text-gray-300 text-sm">목적지</p>
+                  <p className="text-white/80 dark:text-gray-300 text-sm">장소</p>
                   <p className="font-medium text-sm text-white dark:text-gray-100 truncate">
                     {endLocation?.address || '위치를 선택해주세요'}
                   </p>
