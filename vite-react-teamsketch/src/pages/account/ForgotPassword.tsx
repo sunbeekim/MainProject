@@ -15,7 +15,6 @@ const ForgotPassword = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('입력된 이메일:', email);
-    // 아 여기에 api 호출 해도 되구나나
     // api 호출 응답 성공 시 
     
     navigate('/verify-method');

@@ -10,7 +10,7 @@ interface ProfileManageLayoutProps {
   userInfoInterest: React.ReactNode;
   userInfoHobby: React.ReactNode;
   saveButton: React.ReactNode;
-  error: React.ReactNode;
+  error?: React.ReactNode;
 }
 
 const ProfileManageLayout = ({

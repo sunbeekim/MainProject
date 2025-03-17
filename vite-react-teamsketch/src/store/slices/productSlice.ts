@@ -11,7 +11,7 @@ interface ProductState {
   registerForm: {
     title: string;
     description: string;
-    price: number;
+    price: number | null;
     categoryId: number;
     hobbyId: number;
     transactionType: '대면' | '비대면';
@@ -39,7 +39,7 @@ const initialState: ProductState = {
   registerForm: {
     title: '',
     description: '',
-    price: 0,
+    price: null,
     categoryId: 0,
     hobbyId: 0,
     transactionType: '대면',
@@ -91,7 +91,7 @@ const productSlice = createSlice({
       state.registerForm = {
         title: '',
         description: '',
-        price: 0,
+        price: null,
         categoryId: 0,
         hobbyId: 0,
         transactionType: '대면',
@@ -114,7 +114,7 @@ const productSlice = createSlice({
       state.registerForm = {
         title: '',
         description: '',
-        price: 0,
+        price: null,
         categoryId: 0,
         hobbyId: 0,
         transactionType: '대면',

@@ -16,7 +16,7 @@ import { coreProfile } from '../../services/api/profileImageAPI';
 import ProfileManageLayout from '../../components/layout/ProfileManageLayout';
 import TextAreaInput from '../../components/forms/textarea/TextAreaInput';
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 interface UserHobby {
   hobbyId: number;
   categoryId: number;
@@ -41,8 +41,6 @@ const ProfileManage = () => {
   const [selectedHobbies, setSelectedHobbies] = useState<UserHobby[]>(
     user.hobby?.map(({ hobbyId, categoryId }) => ({ hobbyId, categoryId })) || []
   );
-
-  const [error, setError] = useState<string>('');
 
   // 입력 핸들러 통합
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -77,46 +75,57 @@ const ProfileManage = () => {
       const response = await axiosInstance.put(apiConfig.endpoints.core.updateProfile, updateData);
 
       console.log('프로필 업데이트 응답:', response.data);
+      console.log('프로필 code', response.data.code);
+      
+      // 응답 데이터 구조 확인
+      if (response.data && response.data.data) {
+        toast.success(response.data.data.message || '프로필이 성공적으로 수정되었습니다.');
+        
+        // updatedProfile 데이터 확인
+        const updatedProfile = response.data.data.updatedProfile;
+        
+        if (updatedProfile) {
+          dispatch(
+            setUser({
+              ...user,
+              name: updatedProfile.name || user.name,
+              nickname: updatedProfile.nickname || user.nickname,
+              bio: updatedProfile.bio || user.bio || '',
+              hobby: updatedProfile.hobbies ? updatedProfile.hobbies.map((hobby: any) => ({
+                hobbyId: hobby.hobbyId,
+                hobbyName: hobby.hobbyName,
+                categoryId: hobby.categoryId,
+                categoryName: hobby.categoryName
+              })) : user.hobby
+            })
+          );
 
-      if (response.data.success === true) {
-        // updatedProfile에서 데이터를 가져오도록 수정
-        const updatedProfile = response.data.updatedProfile;
-
-        dispatch(
-          setUser({
-            ...user,
-            name: updatedProfile.name,
-            nickname: updatedProfile.nickname,
-            bio: updatedProfile.bio,
-            hobby: updatedProfile.hobbies.map((hobby: any) => ({
-              hobbyId: hobby.hobbyId,
-              hobbyName: hobby.hobbyName,
-              categoryId: hobby.categoryId,
-              categoryName: hobby.categoryName
-            }))
-          })
-        );
-
-        setSelectedHobbies(
-          updatedProfile.hobbies.map((hobby: any) => ({
-            hobbyId: hobby.hobbyId,
-            categoryId: hobby.categoryId
-          }))
-        );
+          if (updatedProfile.hobbies) {
+            setSelectedHobbies(
+              updatedProfile.hobbies.map((hobby: any) => ({
+                hobbyId: hobby.hobbyId,
+                categoryId: hobby.categoryId
+              }))
+            );
+          }
+        } else {
+          console.log('updatedProfile 데이터가 없습니다. 기존 사용자 정보를 유지합니다.');
+        }
 
         navigate('/mypage');
       } else {
-        throw new Error(response.data.message || '프로필 수정에 실패했습니다.');
+        console.error('예상치 못한 응답 구조:', response.data);
+        toast.warning('프로필이 수정되었지만 최신 정보를 불러오지 못했습니다.');
+        navigate('/mypage');
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '프로필 수정 중 오류가 발생했습니다.');
+    } catch (err : any) {
+      toast.error(err.response.data.data.message || '프로필 수정 중 오류가 발생했습니다.');
       console.error('프로필 수정 에러:', err);
     }
   };
 
   return (
-    <ProfileManageLayout
-      error={error && <div className="text-red-500 text-sm text-center mb-2">{error}</div>}
+    <ProfileManageLayout     
       image={
         <ImageUpload
           onUpload={coreProfile}
@@ -137,7 +146,7 @@ const ProfileManage = () => {
             className="border-primary-500"
           />
         </BaseLabelBox>
-      }
+      }     
       userInfoNickname={
         <BaseLabelBox label="닉네임">
           <BaseInput

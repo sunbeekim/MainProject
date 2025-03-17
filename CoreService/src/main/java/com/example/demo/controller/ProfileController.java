@@ -210,16 +210,35 @@ public class ProfileController {
      * 정적 리소스로 접근하도록 리다이렉션 처리
      */
     @GetMapping("/image/{filename:.+}")
-    public ResponseEntity<Void> getProfileImage(@PathVariable String filename) {
+    public ResponseEntity<?> getProfileImage(@PathVariable String filename) {
         try {
-            // 정적 리소스 경로로 리다이렉트
-            return ResponseEntity
-                    .status(302)
-                    .header(HttpHeaders.LOCATION, "/profile-images/" + filename)
-                    .build();
+            // 파일 경로 생성
+            java.nio.file.Path imagePath = java.nio.file.Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/profile-images/" + filename);
+            java.io.File file = imagePath.toFile();
+            
+            // 파일이 존재하는지 확인
+            if (!file.exists()) {
+                log.error("프로필 이미지 파일을 찾을 수 없음: {}", filename);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 파일 내용 읽기
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(file.toURI());
+            
+            // MIME 타입 감지
+            String contentType = java.nio.file.Files.probeContentType(imagePath);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            
+            // 이미지 직접 반환
+            return ResponseEntity.ok()
+                    .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
         } catch (Exception ex) {
-            log.error("프로필 이미지 리다이렉션 실패: {}", ex.getMessage());
-            return ResponseEntity.notFound().build();
+            log.error("프로필 이미지 제공 실패: {}", ex.getMessage());
+            return ResponseEntity.status(500).body("이미지 로드 중 오류가 발생했습니다.");
         }
     }
     
@@ -228,16 +247,37 @@ public class ProfileController {
      * 정적 리소스로 접근하도록 리다이렉션 처리
      */
     @GetMapping("/image/default")
-    public ResponseEntity<Void> getDefaultProfileImage() {
+    public ResponseEntity<?> getDefaultProfileImage() {
         try {
-            // 정적 리소스 경로로 리다이렉트
-            return ResponseEntity
-                    .status(302)
-                    .header(HttpHeaders.LOCATION, "/profile-images/" + fileStorageService.getDefaultProfileImageName())
-                    .build();
+            String defaultImageName = fileStorageService.getDefaultProfileImageName();
+            
+            // 파일 경로 생성
+            java.nio.file.Path imagePath = java.nio.file.Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/profile-images/" + defaultImageName);
+            java.io.File file = imagePath.toFile();
+            
+            // 파일이 존재하는지 확인
+            if (!file.exists()) {
+                log.error("기본 프로필 이미지 파일을 찾을 수 없음: {}", defaultImageName);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 파일 내용 읽기
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(file.toURI());
+            
+            // MIME 타입 감지
+            String contentType = java.nio.file.Files.probeContentType(imagePath);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            
+            // 이미지 직접 반환
+            return ResponseEntity.ok()
+                    .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
         } catch (Exception ex) {
-            log.error("기본 프로필 이미지 리다이렉션 실패: {}", ex.getMessage());
-            return ResponseEntity.notFound().build();
+            log.error("기본 프로필 이미지 제공 실패: {}", ex.getMessage());
+            return ResponseEntity.status(500).body("이미지 로드 중 오류가 발생했습니다.");
         }
     }
     
