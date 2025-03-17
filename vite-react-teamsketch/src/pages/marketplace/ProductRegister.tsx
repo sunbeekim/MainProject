@@ -133,8 +133,7 @@ const ProductRegister = () => {
       const productData = {
         title: registerForm.title,
         description: registerForm.description,
-        price: registerForm.price,
-        email: user.email,
+        price: registerForm.price,        
         hobbyId: registerForm.hobbyId,
         categoryId: registerForm.categoryId,
         transactionType: registerForm.transactionType,
@@ -184,7 +183,7 @@ const ProductRegister = () => {
         <BaseLabelBox label="가격">
           <TextInput
             name="price"
-            value={registerForm.price}
+            value={registerForm.price || ''}
             onChange={handleChange}
             type="number"
             placeholder="가격을 입력하세요"

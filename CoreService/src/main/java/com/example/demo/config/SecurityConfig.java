@@ -42,13 +42,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 안함
                 .exceptionHandling(exceptionHandling -> 
                     exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // 인증이 필요 없는 API (모든 사용자 접근 가능)
                         .requestMatchers(
                                 // 정적 리소스에 대한 접근 허용
                                 "/profile-images/**",
@@ -69,7 +69,6 @@ public class SecurityConfig {
                                 "/api/core/market/*",
                                 "/ws/**",
                                 "/api/core/market/products/requests/approved",
-                                "/api/core/market/products/requests/complete",
                                 "/api/core/market/products/all",
                                 "/api/core/market/products/all/filter",
                                 "/api/core/market/products/images/**",
@@ -83,8 +82,6 @@ public class SecurityConfig {
                                 "/api/core/chat/messages/**")
                         .permitAll()
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
-
-                        // 인증이 필요한 API
                         .requestMatchers(
                                 "/api/core/market/products/registers",
                                 "/api/core/market/products/requests",

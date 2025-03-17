@@ -65,14 +65,31 @@ const ProductDetails = () => {
     '취미 없음';
 
   // 날짜 포맷팅 함수
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | Array<number>) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
-      date.getDate()
-    ).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(
-      date.getMinutes()
-    ).padStart(2, '0')}`;
+    
+    // 배열 형태의 날짜 처리 [년, 월, 일, 시, 분]
+    if (Array.isArray(dateString)) {
+      const [year, month, day, hour, minute] = dateString;
+      // 월은 0부터 시작하므로 +1 하지 않음
+      return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    }
+    
+    // 문자열 형태의 날짜 처리
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return '날짜 형식 오류';
+      }
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+        date.getDate()
+      ).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(
+        date.getMinutes()
+      ).padStart(2, '0')}`;
+    } catch (error) {
+      console.error('날짜 포맷팅 오류:', error);
+      return '날짜 형식 오류';
+    }
   };
 
   // 이미지 URL 처리

@@ -59,6 +59,7 @@ const signupSlice = createSlice({
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
     },
+    resetSignupInfo: () => initialState,
     addHobby: (state, action: PayloadAction<HobbiesRequest>) => {
       const exists = state.formData.hobbies?.some(
         hobby => hobby.hobbyId === action.payload.hobbyId && 
@@ -83,6 +84,7 @@ export const {
   setValidationError, 
   setError, 
   addHobby, 
-  removeHobby 
+  removeHobby,
+  resetSignupInfo
 } = signupSlice.actions;
 export default signupSlice.reducer;
