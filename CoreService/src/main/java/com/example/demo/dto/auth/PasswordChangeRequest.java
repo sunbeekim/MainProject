@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PasswordChangeRequest {
+    private String isToken;
+    private String email;
+    private String phoneNumber;
     private String currentPassword;
     private String newPassword;
     private String confirmPassword;

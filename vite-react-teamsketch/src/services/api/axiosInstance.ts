@@ -3,7 +3,7 @@ import { apiConfig } from './apiConfig';
 import { toast } from 'react-toastify';
 import { store } from '../../store/store';
 import { logout } from '../../store/slices/authSlice';
-
+// 1번 이미 있는 인스턴스 사용하면 됨됨
 // API 응답 타입 정의
 interface ApiResponse<T = any> {
   status: 'success' | 'error';
@@ -82,8 +82,8 @@ const setupInterceptors = (instance: AxiosInstance) => {
           case 500:
             toast.error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             break;
-          default:
-            toast.error('오류가 발생했습니다.');
+          // default:
+          //   toast.error('오류가 발생했습니다.');
         }
       } else if (error.request) {
         toast.error('서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.');

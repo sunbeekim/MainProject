@@ -62,6 +62,25 @@ export const getProducts = async (): Promise<IProductListResponse> => {
   }
 };
 
+// 카테고리별 상품 조회
+export const getProductsByCategory = async (categoryId: number): Promise<IProductListResponse> => {
+  try {
+    const requestData = {
+      categoryId: categoryId,
+      sort: "latest" // 기본값은 최신순
+    };
+    
+    const response = await axiosInstance.post(
+      `${apiConfig.endpoints.core.base}/market/products/all/filter`, 
+      requestData
+    );
+    return response.data;
+  } catch (err) {
+    console.error('카테고리별 상품 조회 에러:', err);
+    throw new Error('카테고리별 상품 조회에 실패했습니다.');
+  }
+};
+
 // 상품 상세 조회
 export const getProductById = async (id: number): Promise<IProduct> => {
   try {

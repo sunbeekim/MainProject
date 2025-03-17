@@ -1,8 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { logout } from '../../store/slices/authSlice';
-import { clearUser } from '../../store/slices/userSlice';
-import { useLogout } from '../../services/api/authAPI';
 
 interface LogoutModalProps {
   isOpen: boolean;
@@ -10,26 +5,7 @@ interface LogoutModalProps {
   onLogout: () => void;
 }
 
-const LogoutModal = ({ isOpen, onClose, onLogout }: LogoutModalProps) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const logoutMutation = useLogout();
-
-  const handleLogout = () => {
-    logoutMutation.mutate();
-    // 로그아웃 처리
-    dispatch(logout());
-    dispatch(clearUser());
-
-    // 모달 닫기
-    onClose();
-
-    // 부모 컴포넌트의 로그아웃 핸들러 호출
-    onLogout();
-
-    // 로그인 페이지로 이동
-    navigate('/login');
-  };
+const LogoutModal = ({ isOpen, onClose, onLogout }: LogoutModalProps) => {  
 
   if (!isOpen) return null;
 
@@ -48,15 +24,15 @@ const LogoutModal = ({ isOpen, onClose, onLogout }: LogoutModalProps) => {
         <div className="self-stretch justify-start items-start gap-2 inline-flex">
           <button
             onClick={onClose}
-            className="grow shrink basis-0 h-10 px-4 py-3 rounded-xl border border-[#F9B0BA] justify-center items-center gap-2 flex overflow-hidden  bg-[#ffffff] hover:bg-[#F9B0BA]"
+            className="grow shrink basis-0 h-10 px-4 py-3 rounded-xl border border-purple-400 justify-center items-center gap-2 flex overflow-hidden  bg-[#ffffff] hover:bg-purple-500"
           >
             <div className="text-[#4A4A4A] text-xs font-semibold font-['Inter']">취소</div>
           </button>
           <button
-            onClick={handleLogout}
-            className="grow shrink basis-0 h-10 px-4 py-3 bg-[#F6CED8] rounded-xl justify-center items-center gap-2 flex overflow-hidden hover:bg-[#F9B0BA]"
+            onClick={onLogout}
+            className="grow shrink basis-0 h-10 px-4 py-3 bg-purple-400 rounded-xl justify-center items-center gap-2 flex overflow-hidden hover:bg-purple-500"
           >
-            <div className="text-[#4A4A4A] text-xs font-semibold font-['Inter']">로그아웃</div>
+            <div className="text-white text-xs font-semibold font-['Inter']">로그아웃</div>
           </button>
         </div>
       </div>

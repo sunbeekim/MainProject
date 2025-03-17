@@ -70,4 +70,10 @@ public interface ProductMapper {
 
     // 전체 상품 조회
     List<Product> findAll(@Param("email") String email);
+
+    // 특정 반경 내(유동적 거리) 있는 상품 조회
+    List<ProductResponse> findNearbyProducts(@Param("latitude") double latitude,
+                                             @Param("longitude") double longitude,
+                                             @Param("distance") double distance);
 }
+
