@@ -52,7 +52,8 @@ public class SecurityConfig {
                                 "/api/core/market/products/registers",
                                 "/api/core/market/products/requests",
                                 "/api/core/market/products/requests/approve",
-                                "/api/core/market/products/users/**"
+                                "/api/core/market/products/users/**",
+                                "/api/core/market/products/nearby"
                         ).authenticated()
 
                         .anyRequest().authenticated()

@@ -17,15 +17,13 @@
                  )
     </insert>
 
-
-
     <!-- 상품 요청 등록 (ProductRequests 테이블에 저장) -->
     <insert id="insertProductRequest" parameterType="map">
         INSERT INTO ProductRequests (product_id, requester_email, created_at, updated_at, status, approval_status)
         VALUES (#{productId}, #{requesterEmail}, NOW(), NOW(), '대기', '미승인');
     </insert>
 
-    <!-- ✅ 모집 인원 증가 -->
+    <!-- 모집 인원 증가 -->
     <update id="increaseCurrentParticipants">
         UPDATE Products
         SET current_participants = (
@@ -43,14 +41,14 @@
         WHERE id = #{productId} AND current_participants >= max_participants;
     </update>
 
-    <!-- ✅ 상품 요청 승인 여부 업데이트 -->
+    <!-- 상품 요청 승인 여부 업데이트 -->
     <update id="updateRequestApprovalStatus">
         UPDATE ProductRequests
         SET approval_status = #{approvalStatus}, status = '완료', updated_at = NOW()
         WHERE id = #{requestId};
     </update>
 
-    <!-- ✅ 모집 마감 처리 -->
+    <!-- 모집 마감 처리 -->
     <update id="updateProductStatusToComplete">
         UPDATE Products
         SET is_visible = FALSE
@@ -63,7 +61,7 @@
     </update>
 
 
-    <!-- ✅ 상품 요청 상태를 '완료'로 변경 (승인된 요청만) -->
+    <!-- 상품 요청 상태를 '완료'로 변경 (승인된 요청만) -->
     <update id="updateRequestStatusToComplete">
         UPDATE ProductRequests
         SET status = '완료', updated_at = NOW()
@@ -76,7 +74,7 @@
         SELECT email FROM Products WHERE id = #{productId}
     </select>
 
-    <!-- ✅ 승인된 요청만 가져오기 (productId만으로 조회) -->
+    <!-- 승인된 요청만 가져오기 (productId만으로 조회) -->
     <select id="findApprovedRequests" parameterType="long" resultType="map">
         SELECT
             pr.id AS id,
@@ -98,7 +96,7 @@
         WHERE id = #{requestId}
     </select>
 
-    <!-- ✅ 개별 상품 조회 (마감된 상품은 등록자와 승인된 사용자만 조회 가능) -->
+    <!-- 개별 상품 조회 (마감된 상품은 등록자와 승인된 사용자만 조회 가능) -->
     <select id="findById" parameterType="map" resultMap="ProductWithImagesMap">
         SELECT
         p.*, u.nickname, u.bio, p.days,
@@ -114,17 +112,17 @@
         WHERE p.id = #{id}
         AND (
         p.is_visible = TRUE
-        OR p.email = #{email}  <!-- ✅ 등록자는 조회 가능 -->
+        OR p.email = #{email}  <!-- 등록자는 조회 가능 -->
         OR EXISTS (
         SELECT 1 FROM ProductRequests pr
         WHERE pr.product_id = p.id
         AND pr.requester_email = #{email}
-        AND pr.approval_status = '승인'  <!-- ✅ 승인된 사용자만 조회 가능 -->
+        AND pr.approval_status = '승인'  <!-- 승인된 사용자만 조회 가능 -->
         )
         );
     </select>
 
-    <!-- ✅ 승인된 요청만 카운트하는 쿼리 -->
+    <!-- 승인된 요청만 카운트하는 쿼리 -->
     <select id="getCurrentParticipants" parameterType="long" resultType="int">
         SELECT COUNT(*) FROM ProductRequests
         WHERE product_id = #{productId} AND approval_status = '승인';
@@ -281,21 +279,45 @@
         u.nickname,
         u.bio,
         p.days,
-        COALESCE(pd.dopamine, 50) AS dopamine,  <!-- ✅ 도파민 추가 -->
+        COALESCE(pd.dopamine, 50) AS dopamine,  <!-- 도파민 추가 -->
         pi.image_path
         FROM products p
         LEFT JOIN users u ON p.email = u.email
         LEFT JOIN productimages pi ON p.id = pi.product_id
-        LEFT JOIN (  <!-- ✅ 도파민 테이블 JOIN 추가 -->
+        LEFT JOIN (  <!-- 도파민 테이블 JOIN 추가 -->
         SELECT email, SUM(dopamine) AS dopamine
         FROM pointsdopamineactivity
         GROUP BY email
         ) pd ON u.email = pd.email
         WHERE p.is_visible = TRUE
         <if test="email != null">
-            OR p.email = #{email}  <!-- ✅ 로그인한 사용자는 본인이 등록한 상품도 조회 가능 -->
+            OR p.email = #{email}  <!-- 로그인한 사용자는 본인이 등록한 상품도 조회 가능 -->
         </if>
         ORDER BY p.id DESC;
+    </select>
+
+    <!-- 사용자의 위치 기반으로 특정 반경 내(유동적 거리) 있는 상품을 조회하는 쿼리 -->
+    <select id="findNearbyProducts" resultType="com.example.demo.dto.Market.ProductResponse">
+        SELECT
+        p.*,
+        u.nickname,
+        u.bio,
+        COALESCE(pd.dopamine, 50) AS dopamine,
+        pi.image_path,
+        (6371 * acos(cos(radians(#{latitude})) * cos(radians(p.latitude)) *
+        cos(radians(p.longitude) - radians(#{longitude})) + sin(radians(#{latitude})) *
+        sin(radians(p.latitude)))) AS distance
+        FROM Products p
+        LEFT JOIN users u ON p.email = u.email
+        LEFT JOIN productimages pi ON p.id = pi.product_id
+        LEFT JOIN (
+        SELECT email, SUM(dopamine) AS dopamine
+        FROM pointsdopamineactivity
+        GROUP BY email
+        ) pd ON u.email = pd.email
+        WHERE p.transaction_type = '대면'
+        HAVING distance  &lt;= #{distance}  <!-- 'HAVING'으로 거리 필터링 -->
+        ORDER BY distance ASC;
     </select>
 
 

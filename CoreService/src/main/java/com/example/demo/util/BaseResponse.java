@@ -11,31 +11,52 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseResponse<T> {
-    private String status;  // ✅ "success" 또는 "error"
-    private String message; // ✅ 응답 메시지
-    private T data;         // ✅ 응답 데이터 (에러 시 null)
+    private String status;  // 상태 필드 (success / error)
+    private String message; // 메시지 필드
+    private T data;
 
-    // ✅ 성공 응답 생성자
+    // 기본 생성자 (성공 응답)
     public BaseResponse(T data) {
         this.status = "success";
         this.message = "요청이 성공적으로 처리되었습니다.";
         this.data = data;
     }
 
-    // ✅ 커스텀 메시지를 포함한 성공 응답
+    // 커스텀 메시지를 포함한 성공 응답
     public BaseResponse(T data, String message) {
         this.status = "success";
         this.message = message;
         this.data = data;
     }
 
-    // ✅ 에러 응답을 제네릭 타입에 맞게 반환 (🚀 중요!)
-    public static <T> BaseResponse<T> errorResponse(String message, T data) {
-        return new BaseResponse<>("error", message, data);
+    // 정적 성공 응답 메서드 추가 (data만)
+    public static <T> BaseResponse<T> success(T data) {
+        return new BaseResponse<>(data, "요청이 성공적으로 처리되었습니다.");
     }
 
-    // ✅ 데이터가 필요 없는 에러 응답
-    public static <T> BaseResponse<T> errorResponse(String message) {
-        return new BaseResponse<>("error", message, null);
+    // 정적 성공 응답 메서드 추가 (data + custom message)
+    public static <T> BaseResponse<T> success(T data, String message) {
+        return new BaseResponse<>(data, message);
+    }
+
+    // 에러 응답 (명확한 타입 지정)
+    public static <T> BaseResponse<T> error(String message) {
+        BaseResponse<T> response = new BaseResponse<>(null);
+        response.status = "error";
+        response.message = message;
+        return response;
+    }
+
+    // Getter 추가
+    public String getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public T getData() {
+        return data;
     }
 }

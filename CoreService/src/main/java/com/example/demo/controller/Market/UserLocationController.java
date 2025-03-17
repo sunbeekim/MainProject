@@ -24,30 +24,30 @@ public class UserLocationController {
             @RequestBody LocationRequest request,
             @RequestHeader(value = "Authorization", required = false) String token) {
 
-        // ✅ 토큰이 없으면 에러 응답 반환
+        // 토큰이 없으면 에러 메시지 반환
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity
-                    .status(401)
-                    .body(new BaseResponse<>("error", "토큰이 누락되었습니다. 인증이 필요합니다.", null));
+            return ResponseEntity.status(401).body(BaseResponse.error("토큰이 누락되었습니다. 인증이 필요합니다."));
         }
 
-        // ✅ 토큰 검증
+        // JWT에서 이메일 추출
         String email;
         try {
             email = jwtTokenProvider.getUsername(token);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(BaseResponse.errorResponse("유효하지 않은 토큰입니다."));
+            return ResponseEntity.status(401).body(BaseResponse.error("유효하지 않은 토큰입니다."));
         }
 
-        // ✅ 위치 정보 저장
+        // 위치 정보 객체 생성
         UserLocation location = new UserLocation();
         location.setEmail(email);
         location.setLatitude(request.getLatitude());
         location.setLongitude(request.getLongitude());
         location.setLocationName(request.getLocationName());
 
+        // 위치 정보 저장
         userLocationService.updateUserLocation(location);
 
-        return ResponseEntity.ok(new BaseResponse<>("위치 업데이트 완료"));
+        // 성공 응답
+        return ResponseEntity.ok(new BaseResponse<>("사용자 위치 업데이트 완료"));
     }
 }

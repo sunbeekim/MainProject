@@ -79,7 +79,7 @@ public class ProductService {
             productMapper.insertProduct(product);
             Long productId = product.getId();
 
-            // 이미지 업로드 및 DB 저장
+            // 이미지 업로드 및 DB 저장 --? 삭제
             if (images != null && !images.isEmpty()) {
                 // 한 개의 이미지도 리스트로 만들어서 `uploadProductImages` 호출
                 ResponseEntity<Object> response = imageUploadService.uploadProductImages(email, productId, images);
@@ -108,10 +108,9 @@ public class ProductService {
 
         } catch (Exception ex) {
             return ResponseEntity.internalServerError()
-                    .body(BaseResponse.<ProductResponse>errorResponse("상품 등록 중 오류 발생: " + ex.getMessage()));
+                    .body(BaseResponse.<ProductResponse>error("상품 등록 중 오류 발생: " + ex.getMessage()));
         }
     }
-
 
     /** 상품 요청 등록 (구매 요청/판매 요청) + 알림 전송  **/
     public ResponseEntity<BaseResponse<Map<String, Object>>> createProductRequest(String requesterEmail, Long productId) {
@@ -192,7 +191,6 @@ public class ProductService {
     }
 
 
-
     /** 개별 상품 조회 **/
     public ProductResponse getProductById(Long id, String email) {
         Product product = productMapper.findById(id, email);
@@ -263,6 +261,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+
     /** 특정 사용자가 등록한 상품 목록 조회 (구매, 판매, 구매 요청, 판매 요청) **/
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getProductsByUserAndType(String email, List<String> types) {
         try {
@@ -328,6 +327,54 @@ public class ProductService {
         }
     }
 
+    /** 사용자의 위치 기반으로 특정 반경 내(유동적 거리) 있는 상품을 조회 **/
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getNearbyProducts(
+            Double latitude,
+            Double longitude,
+            Double distance) {
+
+        // 디버그 확인
+        System.out.println("Received - latitude: " + latitude + ", longitude: " + longitude + ", distance: " + distance);
+
+        // 필수 값 검증 (누락된 값이 있으면 즉시 반환)
+        if (latitude == null || latitude == 0.0) {
+            return ResponseEntity.badRequest().body(BaseResponse.error("위도 값이 누락되었습니다."));
+        }
+        if (longitude == null || longitude == 0.0) {
+            return ResponseEntity.badRequest().body(BaseResponse.error("경도 값이 누락되었습니다."));
+        }
+        if (distance == null || distance == 0.0) {
+            return ResponseEntity.badRequest().body(BaseResponse.error("거리 값이 누락되었습니다."));
+        }
+
+        // 모든 값이 정상적으로 들어왔을 때만 상품 검색 수행
+        List<ProductResponse> products = productMapper.findNearbyProducts(latitude, longitude, distance);
+
+        // 상품이 없을 때 200 OK + 메시지 반환
+        if (products == null || products.isEmpty()) {
+            return ResponseEntity.ok(BaseResponse.success(Collections.emptyList(), "주변에 검색된 상품이 없습니다. 거리 반경을 늘리거나, 등록 위치를 확인하세요."));
+        }
+
+        // 중복 제거를 위한 Map 사용
+        Map<Long, ProductResponse> productMap = new HashMap<>();
+        products.forEach(product -> productMap.putIfAbsent(product.getId(), product));
+
+        // 이미지 리스트 및 썸네일 설정
+        productMap.values().forEach(product -> {
+            List<String> imagePaths = productImageMapper.findByProductId(product.getId())
+                    .stream()
+                    .map(image -> image.getImagePath())
+                    .collect(Collectors.toList());
+
+            product.setImagePaths(imagePaths);
+
+            if (!imagePaths.isEmpty()) {
+                product.setThumbnailPath(imagePaths.get(0));
+            }
+        });
+
+        return ResponseEntity.ok(BaseResponse.success(List.copyOf(productMap.values()), "주변 상품 조회가 완료되었습니다."));
+    }
 
     /** 내가 요청한 상품 목록 조회 (판매 요청만) **/
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getMyRequestedSellProducts(String email) {
@@ -342,7 +389,10 @@ public class ProductService {
         } catch (Exception ex) {
             return ResponseEntity.internalServerError()
                     .body(new BaseResponse<>(null, "내 요청 상품 조회 중 오류 발생: " + ex.getMessage()));
+
         }
+
+
     }
 
     /** 상품 객체를 ProductResponse로 변환 **/
@@ -390,4 +440,7 @@ public class ProductService {
                 .days(daysList)
                 .build();
     }
+
+
+
 }
