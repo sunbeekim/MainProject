@@ -3,6 +3,11 @@ package com.example.demo.config;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.security.oauth2.CustomOAuth2UserService;
+import com.example.demo.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.example.demo.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import com.example.demo.security.oauth2.OAuth2AuthenticationFailureHandler;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -13,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,6 +32,10 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenBlacklistService jwtTokenBlacklistService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -35,6 +46,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 인증이 필요 없는 API (모든 사용자 접근 가능)
                         .requestMatchers(
+                                // 정적 리소스에 대한 접근 허용
+                                "/profile-images/**",
+                                "/chat-images/**",
+                                "/uploads/**",
+
                                 "/api/core/auth/signup",
                                 "/api/core/auth/login",
                                 "/api/core/auth/me/password/notoken",
@@ -74,8 +90,22 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
-                        UsernamePasswordAuthenticationFilter.class);
-
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(endpoint -> endpoint
+                                .baseUri("/api/core/auth/oauth2/authorize")
+                                .authorizationRequestRepository(authorizationRequestRepository)
+                        )
+                        .redirectionEndpoint(endpoint -> endpoint
+                                .baseUri("/api/core/auth/oauth2/callback/*")
+                        )
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
+                );
         return http.build();
     }
 

@@ -8,12 +8,14 @@ import com.example.demo.service.ChatMessageService;
 import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
@@ -147,6 +149,36 @@ public class ChatMessageController {
         } catch (Exception e) {
             log.error("메시지 읽음 상태 업데이트 중 오류 발생: {}", e.getMessage());
             return ResponseEntity.status(500).body(ApiResponse.error("서버 오류가 발생했습니다.", "500"));
+        }
+    }
+
+    /**
+     * 이미지 메시지 전송 (REST)
+     */
+    @PostMapping(value = "/messages/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<?>> sendImageMessage(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("chatroomId") Integer chatroomId,
+            @RequestParam("image") MultipartFile image) {
+        
+        String tokenWithoutBearer = tokenUtils.extractTokenWithoutBearer(token);
+        
+        if (!tokenUtils.isTokenValid(tokenWithoutBearer)) {
+            return ResponseEntity.status(401).body(ApiResponse.error("인증되지 않은 요청입니다.", "401"));
+        }
+        
+        if (image == null || image.isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("이미지 파일이 필요합니다.", "400"));
+        }
+        
+        String email = tokenUtils.getEmailFromToken(tokenWithoutBearer);
+        
+        try {
+            ChatMessage message = chatMessageService.sendImageMessage(email, chatroomId, image);
+            return ResponseEntity.ok(ApiResponse.success(message));
+        } catch (Exception e) {
+            log.error("이미지 메시지 전송 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error("이미지 메시지 전송 실패: " + e.getMessage(), "400"));
         }
     }
 }
