@@ -80,7 +80,7 @@ const ProdLocationMap = () => {
         childrenButton={
           <BaseButton
             variant="primary"
-            className="w-full rounded-none"
+            className="w-full rounded-none pb-8"
             onClick={handleLocationConfirm}
           >
             위치 선택 완료

@@ -13,10 +13,7 @@ import { RiUserFill } from 'react-icons/ri';
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isChatRoom = location.pathname.includes('/chat/');
-  const isServiceChat = location.pathname.includes('/servicechat');
-  
-
+ 
   const getPathForLabel = (label: string) => {
     switch (label) {
       case '마켓':
@@ -42,7 +39,7 @@ const Footer = () => {
     },
     {
       icon:
-        location.pathname === '/chat' ? <IoChatbubbleEllipses /> : <IoChatbubbleEllipsesOutline />,
+        location.pathname === '/chat-list' ? <IoChatbubbleEllipses /> : <IoChatbubbleEllipsesOutline />,
       label: '채팅',
       onClick: () => navigate('/chat-list')
     },
@@ -63,9 +60,7 @@ const Footer = () => {
       onClick: () => navigate('/mypage')
     }
   ];
-  if (isChatRoom || isServiceChat) {
-    return null; // 채팅방 페이지에서는 Footer를 렌더링하지 않음
-  }
+
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-50 bg-primary-500 dark:bg-background-dark dark:bg-opacity-90">
       <nav

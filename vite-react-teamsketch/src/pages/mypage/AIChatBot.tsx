@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { receiveMessage, setError, sendMessage } from '../../store/slices/chatSlice';
-import { useSendChatMessage } from '../../services/api/chatAPI';
+import { useSendChatMessage } from '../../services/api/serviceChatAPI';
 import Loading from '../../components/common/Loading';
 
 const AIChatBot = () => {
@@ -44,9 +44,9 @@ const AIChatBot = () => {
   };
   
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
-      {/* 채팅 헤더 */}
-      <div className="p-4 bg-primary-400">
+    <div className="flex flex-col h-full w-full bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      {/* 서비스 정보 */}
+      <div className="p-4 bg-primary-400 z-10">
         <h2 className="text-xl font-bold text-white">네이버 클라우드 + TinyLlama 고객센터</h2>
         <p className="text-sm text-violet-100 mt-1 opacity-90">AI 기반 고객 상담 서비스</p>
       </div>
@@ -86,11 +86,11 @@ const AIChatBot = () => {
       </div>
 
       {/* 입력 폼 */}
-      <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div className="p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 w-full flex-shrink-0">
         <form onSubmit={handleSendMessage} className="flex gap-3">
           <input
             type="text"
-            className="flex-1 px-4 py-3 text-base rounded-xl border border-gray-200 dark:border-gray-600 
+            className="flex-1 px-4 py-2 text-base rounded-xl border border-gray-200 dark:border-gray-600 
                      bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white
                      focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-500
                      transition-all duration-200"
@@ -101,7 +101,7 @@ const AIChatBot = () => {
           />
           <button
             type="submit"
-            className="px-6 py-3 bg-primary-500 text-white rounded-xl
+            className="px-4 py-2 bg-primary-500 text-white rounded-xl
                      hover:opacity-90 transition-all duration-200 font-medium
                      disabled:opacity-50 disabled:cursor-not-allowed
                      focus:outline-none focus:ring-2 focus:ring-primary-500"
