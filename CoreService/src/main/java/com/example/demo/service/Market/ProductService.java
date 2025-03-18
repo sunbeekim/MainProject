@@ -2,29 +2,35 @@ package com.example.demo.service.Market;
 
 import com.example.demo.dto.Market.ProductRequest;
 import com.example.demo.dto.Market.ProductResponse;
+import com.example.demo.dto.chat.ChatRoomRequest;
+import com.example.demo.dto.chat.ChatRoomResponse;
 import com.example.demo.mapper.Market.ProductMapper;
 import com.example.demo.mapper.Market.ProductImageMapper;
 import com.example.demo.model.Market.Product;
 import com.example.demo.model.Market.ProductImage;
+import com.example.demo.service.ChatService;
 import com.example.demo.util.BaseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
-
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
     private final ProductMapper productMapper;
     private final ProductImageMapper productImageMapper;
     private final NotificationService notificationService;
     private final ImageUploadService imageUploadService;
+    private final ChatService chatService;
 
     /** 전체 상품 목록 조회 (등록자 상품 조회 항상가능, 비로그인자 모집 중인 상품 조회 가능) **/
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getAllProducts(String email) {
@@ -393,6 +399,78 @@ public class ProductService {
         }
 
 
+    }
+
+    /** 
+     * 상품 요청, 채팅방 생성, 알림 전송을 통합 처리하는 메소드
+     * 세 가지 작업을 하나의 트랜잭션으로 일관성 있게 처리합니다.
+     */
+    @Transactional
+    public ResponseEntity<BaseResponse<Map<String, Object>>> createProductRequestWithChatAndNotification(
+            String requesterEmail, Long productId) {
+        try {
+            // 1. 상품 정보 및 등록자 확인
+            String productOwnerEmail = productMapper.findEmailByProductId(productId);
+            if (productOwnerEmail == null) {
+                return ResponseEntity.badRequest()
+                        .body(new BaseResponse<>(null, "해당 상품을 찾을 수 없습니다."));
+            }
+
+            // 2. 상품 요청 등록 및 관련 데이터 업데이트
+            productMapper.insertProductRequest(productId, requesterEmail);
+            productMapper.increaseCurrentParticipants(productId);
+            productMapper.updateProductVisibility(productId);
+
+            // 3. 채팅방 생성
+            ChatRoomRequest chatRoomRequest = new ChatRoomRequest();
+            chatRoomRequest.setProductId(productId);
+            // optional: 채팅방 이름 설정
+            // chatRoomRequest.setChatname("상품 문의");
+            
+            ChatRoomResponse chatResponse = chatService.createOrGetChatRoom(requesterEmail, chatRoomRequest);
+            
+            if (!chatResponse.isSuccess()) {
+                throw new RuntimeException("채팅방 생성 실패: " + chatResponse.getMessage());
+            }
+
+            // 4. 알림 전송
+            notificationService.sendNotification(productOwnerEmail, requesterEmail, productId);
+
+            // 5. 상품 정보 가져오기
+            Product product = productMapper.findById(productId, requesterEmail);
+            if (product == null) {
+                return ResponseEntity.internalServerError()
+                        .body(new BaseResponse<>(null, "상품 요청은 저장되었지만, 상품 정보를 가져오는 데 실패했습니다."));
+            }
+
+            // 6. 모집 인원 충족 시 상태 업데이트
+            if (product.getCurrentParticipants() >= product.getMaxParticipants()) {
+                productMapper.updateRequestStatusToComplete(productId);
+            }
+
+            // 7. 응답 데이터 구성
+            Map<String, Object> responseData = new HashMap<>();
+            
+            // 요청 정보
+            Map<String, Object> requestInfo = new HashMap<>();
+            requestInfo.put("productId", product.getId());
+            requestInfo.put("requesterEmail", requesterEmail);
+            requestInfo.put("status", "대기");
+            requestInfo.put("approvalStatus", "미승인");
+            requestInfo.put("requestType", product.getRegistrationType().equals("판매") ? "구매 요청" : "판매 요청");
+            
+            // 채팅방 정보
+            responseData.put("requestInfo", requestInfo);
+            responseData.put("chatInfo", chatResponse);
+            responseData.put("productInfo", convertToProductResponse(product));
+
+            return ResponseEntity.ok(new BaseResponse<>(responseData, "상품 요청 및 채팅방 생성이 완료되었습니다."));
+
+        } catch (Exception ex) {
+            log.error("통합 처리 중 오류 발생: {}", ex.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body(new BaseResponse<>(null, "처리 중 오류 발생: " + ex.getMessage()));
+        }
     }
 
     /** 상품 객체를 ProductResponse로 변환 **/
