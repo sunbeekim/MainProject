@@ -5,7 +5,6 @@ import com.example.demo.dto.hobby.HobbyRequest;
 import com.example.demo.model.Category;
 import com.example.demo.model.Hobby;
 import com.example.demo.model.UserHobby;
-import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.HobbyService;
 import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ public class HobbyController {
 
     private final HobbyService hobbyService;
     private final TokenUtils tokenUtils;
-    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * 모든 취미 목록 조회 (카테고리 정보 포함)

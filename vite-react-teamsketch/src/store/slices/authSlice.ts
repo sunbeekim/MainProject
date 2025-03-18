@@ -79,6 +79,7 @@ const authSlice = createSlice({
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('persist:root');
+      localStorage.removeItem('locationSet');
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;

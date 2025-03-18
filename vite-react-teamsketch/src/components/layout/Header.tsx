@@ -9,7 +9,6 @@ import { useAppSelector } from '../../store/hooks';
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isAuthPage = ['/login', '/signup'].includes(location.pathname);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const { token } = useAppSelector((state) => state.auth);
 
@@ -30,7 +29,27 @@ const Header = () => {
     }
   }, [token]);
 
+  // URL 경로를 기반으로 제목 추출하는 함수
+  const getFormattedTitle = (path: string) => {
+    const pathSegments = path.split('/').filter(Boolean);
+    const lastSegment = pathSegments[pathSegments.length - 1] || '404';
+    return lastSegment
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const getHeaderContent = () => {
+    // 채팅방 경로 확인
+    if (location.pathname.startsWith('/chat/')) {
+      const email = location.pathname.split('/chat/')[1];
+      // 이메일에서 사용자명 추출 (@ 앞부분)
+      const username = email.split('@')[0];
+      return {
+        title: `${username}님과의 대화`
+      };
+    }
+
     switch (location.pathname) {
       case '/':
         return {
@@ -47,14 +66,9 @@ const Header = () => {
             </div>
           )
         };
-
-      case '/login':
+      case '/servicechat':
         return {
-          title: '로그인'
-        };
-      case '/signup':
-        return {
-          title: '회원가입'
+          title: 'AI 고객센터'
         };
       case '/mypage':
         return {
@@ -72,9 +86,21 @@ const Header = () => {
         return {
           title: '설정'
         };
+      case '/chat-list':
+        return {
+          title: '채팅목록'
+        };
+      case '/notification':
+        return {
+          title: '알림'
+        };
+      case '/my-location':
+        return {
+          title: '내 위치 설정'
+        };  
       default:
         return {
-          title: '404'
+          title: getFormattedTitle(location.pathname)
         };
     }
   };
@@ -89,11 +115,7 @@ const Header = () => {
       <Grid cols={3} gap="sm" className="items-center px-2 py-1 h-12">
         {/* 왼쪽: 백버튼 */}
         <GridItem className="flex items-center h-full">
-          {!isAuthPage ? (
-            <BackButton className="text-light hover:bg-primary-dark p-1 rounded text-sm" />
-          ) : (
-            <div className="w-8" />
-          )}
+          <BackButton className="text-light hover:bg-primary-dark p-1 rounded text-sm" />
         </GridItem>
 
         {/* 중앙: 타이틀 */}

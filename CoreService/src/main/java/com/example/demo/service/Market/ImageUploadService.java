@@ -1,7 +1,5 @@
 package com.example.demo.service.Market;
 
-import com.example.demo.mapper.Market.ProductImageMapper;
-import com.example.demo.model.Market.ProductImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,6 @@ import java.util.UUID;
 public class ImageUploadService {
     // **파일 저장 경로를 `/src/main/resources/static/uploads/`로 변경**
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
-    private final ProductImageMapper productImageMapper; // MyBatis 매퍼 추가
 
     public ResponseEntity<Object> uploadProductImages(String email, Long productId, List<MultipartFile> files) {
         List<String> uploadedPaths = new ArrayList<>();
