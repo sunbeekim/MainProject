@@ -1,7 +1,6 @@
 package com.example.demo.security.oauth2;
 
 import com.example.demo.util.CookieUtils;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;

@@ -4,7 +4,6 @@ import com.example.demo.dto.chat.ChatRoomRequest;
 import com.example.demo.dto.chat.ChatRoomResponse;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.mapper.ChatRoomMapper;
-import com.example.demo.mapper.ChatMessageMapper;  // 추가된 import
 import com.example.demo.mapper.Market.ProductMapper;
 import com.example.demo.mapper.Market.ProductRequestMapper;
 import com.example.demo.model.chat.ChatRoom;
