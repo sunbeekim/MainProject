@@ -18,8 +18,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [show, setShow] = useState(true);
 
+  // 개별상품 조회를 통해 email 받아와서 함께하기 버튼 렌더링 여부 판단 api호출
+
   const handleJoinClick = () => {
     if (show) {
+      // 상품승인 api호출
       console.log('함께하기 버튼 클릭됨');
       setShow(false);
       setIsDisabled(true);

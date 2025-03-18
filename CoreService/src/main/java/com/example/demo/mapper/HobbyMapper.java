@@ -16,6 +16,8 @@ public interface HobbyMapper {
     
     // 취미 ID로 취미 조회
     Hobby getHobbyById(Long hobbyId);
+
+    List<Category> getCategoriesByHobbyId(Long hobbyId);
     
     // 모든 카테고리 목록 조회
     List<Category> getAllCategories();

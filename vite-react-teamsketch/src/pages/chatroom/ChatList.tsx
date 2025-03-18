@@ -1,6 +1,6 @@
 import React from "react";
 import ChatListItem from "./ChatListItem"; 
-
+import { useEffect } from "react";
 interface Chat {
   id: number;
   nickname: string;
@@ -17,6 +17,10 @@ const ChatList: React.FC = () => {
     { id: 2, nickname: "집순이", lastMessage: "반가워", time: "1:15 PM", imageUrl: "https://picsum.photos/600/400",unreadCount:0, email: "test@example.com"},
     { id: 3, nickname: "알라딘딘", lastMessage: "어디야?", time: "12:00 PM", imageUrl: "https://picsum.photos/600/400",unreadCount:3,email: "test@example.com"}
   ];
+
+  useEffect(() => {
+    // 채팅방 목록 조회 api호출 받은 값 중 해당하는 채팅방 클릭시 전달
+  }, []);
 
   return (
     <div className="flex justify-center">

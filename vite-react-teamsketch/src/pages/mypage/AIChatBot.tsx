@@ -44,7 +44,7 @@ const AIChatBot = () => {
   };
   
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* 채팅 헤더 */}
       <div className="p-4 bg-primary-400">
         <h2 className="text-xl font-bold text-white">네이버 클라우드 + TinyLlama 고객센터</h2>

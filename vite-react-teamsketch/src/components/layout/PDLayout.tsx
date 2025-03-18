@@ -1,7 +1,6 @@
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
 import DaySelect from '../forms/radiobutton/DaySelect';
-import BaseButton from '../common/BaseButton';
 import BaseLabelBox from '../common/BaseLabelBox';
 import { CgArrowLongRightC } from 'react-icons/cg';
 import { useState } from 'react';
@@ -21,7 +20,7 @@ interface PDLayoutProps {
   startDate?: string | Array<number>;
   endDate?: string | Array<number>;
   meetingPlace?: string;
-  btName?: string;
+  btName?: React.ReactNode;
   price?: string;
   transactionType?: string;
   email?: string;
@@ -245,13 +244,8 @@ const PDLayout: React.FC<PDLayoutProps> = ({
         )}
 
         {/* 신청 or 등록하기 버튼 */}
-        <GridItem>
-          <BaseButton
-            variant="primary"
-            className="w-full py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            {btName}하기
-          </BaseButton>
+        <GridItem>          
+            {btName}          
         </GridItem>
       </Grid>
     </div>

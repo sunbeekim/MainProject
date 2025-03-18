@@ -13,7 +13,7 @@ const MyPage = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: RootState) => state.user.user);
   const queryClient = useQueryClient();
-  console.log(user);
+  
   const navigate = useNavigate();
 
   const {
@@ -30,8 +30,11 @@ const MyPage = () => {
     refetchOnWindowFocus: true
   });
 
-  // 쿼리 상태 로깅
-  console.log('Query Status:', { isLoading, isError, error, profileImage });
+  useEffect(() => {
+    console.log(user);
+    // 쿼리 상태 로깅
+    console.log('Query Status:', { isLoading, isError, error, profileImage });
+  }, [user]);
 
   useEffect(() => {
     if (profileImage) {

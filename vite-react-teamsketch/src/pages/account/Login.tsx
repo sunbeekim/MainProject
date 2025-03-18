@@ -81,7 +81,7 @@ const Login = () => {
           })
         );
 
-        navigate('/');
+        navigate('/my-location');
       } else {
         throw new Error(response || '로그인에 실패했습니다.');
       }
