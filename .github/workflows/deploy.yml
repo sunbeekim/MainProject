@@ -291,7 +291,6 @@ jobs:
           docker run -d --name core-container \
             --network teamsketch-network \
             -p 8081:8081 \
-            # 로컬 접속만 허용할 경우 아래 주석 처리
             -p 6379:6379 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
             
