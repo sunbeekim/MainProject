@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -12,4 +13,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + System.getProperty("user.dir") + "/src/main/resources/static/uploads/");
     }
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/ws/**") // 웹소켓 허용
+                .allowedOriginPatterns("*") // allowedOrigins("*") → allowedOriginPatterns("*") 로 변경
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true); // allowCredentials 사용
+    }
+
 }

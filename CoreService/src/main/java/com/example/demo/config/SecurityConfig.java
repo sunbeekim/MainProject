@@ -4,6 +4,8 @@ import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,8 +29,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**", "/topic/**")) // WebSocket 경로에서 CSRF 제외
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                "default-src 'self'; " +
+                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+                                        "connect-src 'self' ws://localhost:8081 ws://127.0.0.1:8081; " +
+                                        "img-src 'self' data:;"
+                        ))
+                )
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/core/auth/signup",
@@ -43,7 +54,10 @@ public class SecurityConfig {
                                 "/api/core/market/products/all",
                                 "/api/core/market/products/all/filter",
                                 "/api/core/market/products/images/**",
-                                "/api/core/market/products/{id}"
+                                "/api/core/market/products/{id}",
+
+                                "/ws/**",  // WebSocket 경로 인증 없이 허용
+                                "/topic/**"
                         ).permitAll()
 
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN")
@@ -58,9 +72,23 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
+
+                // WebSocket 요청에 대해 JWT 필터 제외
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12); // 보안 강도 12 권장
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // LocalDateTime 등의 Java 8 시간 타입 지원
+        return objectMapper;
     }
 }

@@ -1,29 +1,31 @@
 package com.example.demo.service.Market;
+/** 상품 요청 발생 시 이메일 및 푸시 알림 전송 **/
 
+import com.example.demo.dto.Market.NotificationMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+
 public class NotificationService {
-
     /** 상품 요청 발생 시 이메일 및 푸시 알림 전송 **/
-    public void sendNotification(String recipientEmail, String requesterEmail, Long productId) {
-        String subject = "새로운 상품 요청 도착!";
-        String message = "사용자 " + requesterEmail + "님이 상품 (ID: " + productId + ")에 대한 요청을 보냈습니다.";
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ChannelTopic topic;
+    private final SimpMessagingTemplate messagingTemplate;
 
-        // 이메일 전송
-        sendEmail(recipientEmail, subject, message);
+    public void sendNotification(String receiverEmail, String message) {
+        NotificationMessage notification = new NotificationMessage(receiverEmail, message);
 
-        // 푸시 알림 전송
-        sendPushNotification(recipientEmail, message);
-    }
+        // Redis Pub/Sub으로 알림 전송
+        redisTemplate.convertAndSend(topic.getTopic(), notification); // converAndSend = 알림을 발행함 여러 서버 실시간 동기화
 
-    private void sendEmail(String recipient, String subject, String message) {
-        System.out.println("이메일 전송: " + recipient + " | 제목: " + subject + " | 내용: " + message);
-    }
+        // WebSocket을 통해 클라이언트에게 즉시 전송
+        messagingTemplate.convertAndSend("/topic/user/" + receiverEmail, notification);
+        // 등록자뿐만 아닌 특정 사용자에게도 알람 전송 "요청자"
 
-    private void sendPushNotification(String recipient, String message) {
-        System.out.println("푸시 알림 전송: " + recipient + " | 내용: " + message);
     }
 }
