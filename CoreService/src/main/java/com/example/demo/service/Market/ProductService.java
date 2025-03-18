@@ -424,8 +424,6 @@ public class ProductService {
             // 3. 채팅방 생성
             ChatRoomRequest chatRoomRequest = new ChatRoomRequest();
             chatRoomRequest.setProductId(productId);
-            // optional: 채팅방 이름 설정
-            // chatRoomRequest.setChatname("상품 문의");
             
             ChatRoomResponse chatResponse = chatService.createOrGetChatRoom(requesterEmail, chatRoomRequest);
             
