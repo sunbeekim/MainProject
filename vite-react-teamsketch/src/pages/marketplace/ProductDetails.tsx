@@ -6,14 +6,29 @@ import LocationInfo from '../../components/features/location/LocationInfo';
 import { useDispatch } from 'react-redux';
 import { setEndLocation } from '../../store/slices/mapSlice';
 import { useAppSelector } from '../../store/hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import BaseButton from '../../components/common/BaseButton';
+import { useNavigate } from 'react-router-dom';
 
 const ProductDetails = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const { constantCategories, constantHobbies } = useAppSelector((state) => state.category);
-
+  const productEmail = location.state?.productData.email || '';
+  console.log('productEmail', productEmail);
+  const productId = location.state?.productData.id || '';
+  console.log('productId', productId);
+  const productCode = location.state?.productData.productCode || '';
+  console.log('productCode', productCode);
+  const currentUserEmail = useAppSelector((state) => state.auth.user?.email);
+  console.log('currentUserEmail', currentUserEmail);
+  const [isMyProduct, setIsMyProduct] = useState(false);
+  
   useEffect(() => {
+    if (productEmail === currentUserEmail) {
+      setIsMyProduct(true);
+    }
     dispatch(
       setEndLocation({
         lat: location.state.productData.latitude,
@@ -115,6 +130,12 @@ const ProductDetails = () => {
     return types[type as keyof typeof types] || type;
   };
 
+  const handleApply = () => {
+    // 상품요청 api호출
+    // 채팅방 생성 api호출
+    console.log('신청하기');
+  };
+
   return (
     <PDLayout
       title={productData.title}
@@ -129,7 +150,25 @@ const ProductDetails = () => {
       startDate={formatDate(productData.startDate)}
       endDate={formatDate(productData.endDate)}
       meetingPlace={productData.meetingPlace}
-      btName={'신청'}
+      
+      btName={
+        isMyProduct ? (
+        <BaseButton
+          onClick={() => navigate('/marketplace/product/edit')}
+          variant="primary"
+          className="w-full py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          수정하기
+        </BaseButton>
+      ) : (
+        <BaseButton
+          onClick={handleApply}
+          variant="primary"
+          className="w-full py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          신청하기
+        </BaseButton>
+      )}
       price={formatPrice(productData.price)}
       transactionType={productData.transactionType}
       email={productData.email}

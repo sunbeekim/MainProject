@@ -26,6 +26,15 @@ public class HobbyController {
     private final HobbyService hobbyService;
     private final TokenUtils tokenUtils;
     private final JwtTokenProvider jwtTokenProvider;
+
+    /**
+     * 모든 취미 목록 조회 (카테고리 정보 포함)
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<Hobby>>> getAllHobbies() {
+        List<Hobby> hobbies = hobbyService.getAllHobbiesWithCategories();
+        return ResponseEntity.ok(ApiResponse.success(hobbies));
+    }
     
     /**
      * 모든 취미 목록 조회 (카테고리 정보 미포함)

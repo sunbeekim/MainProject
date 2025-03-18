@@ -27,7 +27,20 @@ public class HobbyService {
     public List<Hobby> getAllHobbies() {
         return hobbyMapper.getAllHobbies();
     }
-    
+    /**
+     * 모든 취미와 그에 해당하는 카테고리 목록을 조회합니다.
+     */
+    public List<Hobby> getAllHobbiesWithCategories() {
+        List<Hobby> hobbies = hobbyMapper.getAllHobbies();
+        
+        // 각 취미에 해당하는 카테고리 목록을 설정
+        for (Hobby hobby : hobbies) {
+            List<Category> categories = hobbyMapper.getCategoriesByHobbyId(hobby.getHobbyId());
+            hobby.setCategories(categories);
+        }
+        
+        return hobbies;
+    }
     /**
      * 취미 ID로 취미를 조회합니다.
      */
