@@ -1,5 +1,5 @@
 import ThemeToggle from '../../components/common/ThemeToggle';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import LogoutModal from '../account/LogoutModal';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -80,14 +80,6 @@ const Setting = () => {
         onClose={() => setLogoutModalOpen(false)}
         onLogout={handleLogout}
       />
-
-
-      {/* 고객센터 챗봇 */}
-      <button className="w-full text-[#6003FF] hover:text-primary-dark px-4 py-2 rounded-lg bg-[#F3F2FF] dark:bg-[#1C1C1C] dark:text-white transition-colors">
-        <Link to="/servicechat" className="flex items-center justify-center">
-          고객센터 챗봇
-        </Link>
-      </button>
     </div>
 
 
