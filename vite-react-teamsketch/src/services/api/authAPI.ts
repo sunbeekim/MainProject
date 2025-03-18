@@ -103,6 +103,7 @@ export const passwordChangeNoneToken = async (passwordRequestData: IPasswordChan
     return response.data; // ✅ `response.data`를 반환
 };
 
+//회원 탈퇴
 export interface IwithdrawRsponse{
   status: string,
   data: {
@@ -140,28 +141,29 @@ export interface LocationResponse {
   data: null;
 }
 
-//사용자 위치 저장
 export const saveLocationApi = async ({latitude, longitude}: {  latitude: number, longitude: number}): Promise<LocationResponse> => {
   const response = await axiosInstance.post(apiConfig.endpoints.core.mylocation, { latitude, longitude });
   return response.data;
 };
   
+//사용자 위치 기반 인근 위치 파악
+export interface Product{
+  id: number;
+  name: string;
+  price: number;
+  imagePaths: string[];
+  thumbnailPath: string;
+}
+export interface NearbyLocationResponse{
+  status: string;
+  message: string;
+  data:Product[];
+}
 
-
-//이메일 전송 API
-// const sendEmailApi = async (email: string): Promise<EmailResponse> => {
-//   const response = await axiosInstance.post(apiConfig.endpoints.assist.sendEmail, { email });
-//   return response.data;
-// }
-
-// //이메일 인증 API
-// const verifyOtpEmailApi = async ({ email, otp }: VerifyOtpRequest): Promise<VerifyOtpResponse> => {
-//   const response = await axiosInstance.post(apiConfig.endpoints.assist.verifyOtpEmail, {
-//     email,
-//     otp
-//   });
-//   return response.data;
-// }
+export const nearbyProdApi = async ({ latitude, longitude, distance }: { latitude: number, longitude: number, distance: number }): Promise<NearbyLocationResponse> => { 
+  const response = await axiosInstance.post(apiConfig.endpoints.core.prodlocation, { latitude, longitude, distance });
+  return response.data;
+};
 
 // 프로필 수정 API
 const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
@@ -176,7 +178,7 @@ export const useLogin = () => {
   });
 };
 
-// 비토큰 비번 변경 훅훅
+// 비토큰 비번 변경 훅
 export const usePasswordChangeNT = () => {
   return useMutation({
     mutationFn: passwordChangeNoneToken
@@ -243,40 +245,25 @@ export const useDeleteAccount = () => {
     mutationFn: withdrawUserApi// 회원 탈퇴 API 호출 함수
   });
 }
-//비밀번호변경
+//비밀번호 변경
 export const useChangePassword = () => {
   return useMutation({
     mutationFn: passwordApi
   });
 }
 
+//사용자 위치 저장
 export const useMyLocation = () => {
   return useMutation({
     mutationFn: saveLocationApi
   });
 }
 
-// //이메일 전송 Hook 
-// export const useSendEmail = () => {
-//   return useMutation({
-//     mutationFn: sendEmailApi,
-//     onError: (error: any) => {
-//       console.error('Email 전송 실패:', error);
-//       throw new Error(error.response?.data?.message || 'Email 전송에 실패했습니다.');
-//     }
-//   });
-// };
-
-// //이메일 인증 Hook
-// export const userVerifyOtpEmail = () => {
-//   return useMutation({
-//     mutationFn: verifyOtpEmailApi,
-//     onError: (error: any) => {
-//       console.error('OTP 검증 실패:', error);
-//       throw new Error(error.response?.data?.message || '인증번호 확인에 실패했습니다.');
-//     }
-//   });
-// };
+export const useNearLocation = () => { 
+  return useMutation({
+    mutationFn: nearbyProdApi
+  });
+}
 
 // 프로필 수정 Hook
 export const useUpdateProfile = () => {

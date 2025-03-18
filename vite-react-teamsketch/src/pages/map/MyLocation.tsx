@@ -12,9 +12,6 @@ import { useState } from 'react';
 import Loading from '../../components/common/Loading';
 import { RootState } from '../../store/store';
 
-
-
-
 // map 슬라이스에서 선택된 위치 위도경도를 받아와서 api 호출
 // 사용자 위치 등록 로그인 후 이동되는 페이지
 const MyLocation = () => {
