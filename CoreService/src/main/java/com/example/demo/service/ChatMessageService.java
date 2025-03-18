@@ -10,7 +10,6 @@ import com.example.demo.model.Market.Product;
 import com.example.demo.model.User;
 import com.example.demo.model.chat.ChatMessage;
 import com.example.demo.model.chat.ChatRoom;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +38,6 @@ public class ChatMessageService {
     private final UserMapper userMapper;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic channelTopic;
-    private final ObjectMapper objectMapper;
     
     @Value("${chat.default.page-size:20}")
     private int defaultPageSize;
