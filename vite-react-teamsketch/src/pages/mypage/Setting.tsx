@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
 import { clearUser } from '../../store/slices/userSlice';
-import NotificationSettings from '../notification/NotificationSetting';
+
 
 const Setting = () => {
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -31,6 +31,9 @@ const Setting = () => {
     navigate('/delete-account');
   };
 
+  const handleNotification = () => {
+    navigate('/notification-setting');
+  }
   return (
     <div className="p-4 space-y-4">
       {/* 모드 변경 */}
@@ -40,10 +43,12 @@ const Setting = () => {
       </div>
 
       {/* 알림 설정 */}
-      <div className="flex items-center justify-between p-3 bg-[#F3F2FF] dark:bg-[#1C1C1C] rounded-lg">
-        <span className="text-[#4A4A4A] dark:text-white">알림 On/Off</span>
-        <NotificationSettings />
-      </div>
+      <button
+        onClick={handleNotification}
+        className="w-full px-4 py-2 text-white bg-purple-300 hover:bg-purple-500 rounded-lg transition-colors"
+      >
+        알림 설정
+      </button>
 
       {/* 로그아웃 */}
       <button
@@ -85,7 +90,7 @@ const Setting = () => {
       </button>
     </div>
 
-    
+
   );
 };
 

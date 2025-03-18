@@ -19,6 +19,7 @@ import ChangePassword from '../../pages/account/ChangePassword';
 import ProductDetails from '../../pages/marketplace/ProductDetails';
 import ProfileManage from '../../pages/mypage/ProfileManage';
 import NotificationList from '../../pages/notification/NotificationList';
+import NotificationSetting from '../../pages/notification/NotificationSetting';
 import RegisteredCard from '../../pages/payment/RegisteredCard';
 import CardDetails from '../../pages/payment/CardDetails';
 import TransactionList from '../../pages/Transaction history/TrasactionList';
@@ -30,7 +31,7 @@ import CSList from '../../pages/CScenter/CSList';
 import InquiryHistory from '../../pages/CScenter/InquiryHistory';
 import DeleteAccount from '../../pages/account/DeleteAccount';
 import OCRUpload from '../../pages/payment/OCRUpload';
-import DeleteModal from '../../pages/payment/DeleteModal';
+
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
@@ -80,6 +81,7 @@ const MainLayout = () => {
           <Route path="/location" element={<ShareLocationMap />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notification" element={<NotificationList />} />
+          <Route path="/notification-setting" element={<NotificationSetting />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/product/register" element={<ProductRegister />} />
@@ -94,6 +96,7 @@ const MainLayout = () => {
           <Route path="/product-details" element={<ProductDetails />} />
           <Route path="/registered-card" element={<RegisteredCard />} />
           <Route path="/card-details/:cardId" element={<CardDetails />} />
+
           <Route path="/transaction-list" element={<TransactionList />} />
           <Route path="/sales-list" element={<SalesList />} />
           <Route path="/purchase-list" element={<PurchaseList />} />
@@ -103,7 +106,7 @@ const MainLayout = () => {
           <Route path="/inquiry-history" element={<InquiryHistory />} />
           <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/ocr-upload" element={<OCRUpload />} />
-          <Route path="/delete-modal" element={<DeleteModal/>} />
+
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
