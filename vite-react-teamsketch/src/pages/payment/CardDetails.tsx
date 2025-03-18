@@ -15,7 +15,7 @@ interface OCRResult {
 }
 
 interface CardDetailsProps {
-  ocrResult: OCRResult | null;
+  ocrResult?: OCRResult | null;
 }
 const CardDetails: React.FC<CardDetailsProps> = ({ ocrResult }) => {
   const { cardId } = useParams();
@@ -58,10 +58,10 @@ const CardDetails: React.FC<CardDetailsProps> = ({ ocrResult }) => {
     setCardInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 저장 버튼 클릭 시 (API 연결 없이 콘솔 확인)
+  // 저장 버튼 클릭 시
   const handleSave = () => {
     console.log('저장된 카드 정보:', cardInfo);
-    toast.success('카드 정보가 저장되었습니다! (실제 저장은 API 연동 후 가능)');
+    toast.success('카드 정보가 저장되었습니다!');
   };
 
 

@@ -21,9 +21,9 @@ export const getProfileImage = async (): Promise<FileResponse | null> => {
     console.log('이미지 정보 요청 URL:', apiConfig.endpoints.core.getProfileImageInfo);
     const infoResponse = await axiosInstance.get(apiConfig.endpoints.core.getProfileImageInfo);
 
-    console.log('이미지 정보 응답:', infoResponse);
+    console.log('이미지 정보 응답:', infoResponse.data.data.imageUrl);
 
-    if (infoResponse.data?.data?.imageUrl) {
+    if (infoResponse.data?.imageUrl) {
       const imageUrl = infoResponse.data.data.imageUrl;
       const filename = getImageFilename(imageUrl);
       console.log('imageUrl', imageUrl);

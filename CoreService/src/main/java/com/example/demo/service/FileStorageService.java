@@ -126,7 +126,7 @@ public class FileStorageService {
             try {
                 // 애플리케이션 리소스에서 기본 이미지 복사 시도
                 try {
-                    Path resourcePath = Paths.get(getClass().getResource("/static/images/default-profile.jpeg").toURI());
+                    Path resourcePath = Paths.get(getClass().getResource("/static/images/default-profile.png").toURI());
                     Files.copy(resourcePath, defaultImagePath, StandardCopyOption.REPLACE_EXISTING);
                     log.info("기본 프로필 이미지 파일 생성 완료: {}", defaultImagePath);
                 } catch (Exception e) {

@@ -123,7 +123,7 @@ public class ChatMessageController {
     /**
      * 메시지 읽음 상태 업데이트
      */
-    @PutMapping("/rooms/{chatroomId}/read")
+    @PutMapping("/rooms/{chatroomId}/messages/read")
     public ResponseEntity<ApiResponse<?>> markMessagesAsRead(
             @RequestHeader("Authorization") String token,
             @PathVariable Integer chatroomId) {

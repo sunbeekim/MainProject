@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isAuthPage = ['/login', '/signup'].includes(location.pathname);
+  const isAuthPage = ['/login', '/signup', '/my-location'].includes(location.pathname);
   useCategories();
 
   useEffect(() => {

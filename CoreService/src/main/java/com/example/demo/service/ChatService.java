@@ -4,10 +4,12 @@ import com.example.demo.dto.chat.*;
 import com.example.demo.mapper.ChatRoomMapper;
 import com.example.demo.mapper.ChatMessageMapper;
 import com.example.demo.mapper.Market.ProductMapper;
+import com.example.demo.mapper.Market.ProductRequestMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.mapper.Market.ProductImageMapper;
 import com.example.demo.model.Market.Product;
 import com.example.demo.model.Market.ProductImage;
+import com.example.demo.model.Market.ProductRequest;
 import com.example.demo.model.User;
 import com.example.demo.model.chat.ChatMessage;
 import com.example.demo.model.chat.ChatRoom;
@@ -30,6 +32,7 @@ public class ChatService {
     private final ProductMapper productMapper;
     private final UserMapper userMapper;
     private final ProductImageMapper productImageMapper;
+    private final ProductRequestMapper productRequestMapper;
 
     /**
      * 채팅방 생성 또는 조회
@@ -55,6 +58,21 @@ public class ChatService {
         
         String buyerEmail = userEmail;
         
+        // 모집 완료된 상품의 경우 승인된 사용자만 채팅방 접근 허용
+        if (!product.isVisible() && !sellerEmail.equals(userEmail)) {
+            // 상품 요청 정보 확인
+            ProductRequest productRequest = productRequestMapper.findByProductIdAndRequesterEmail(
+                request.getProductId(), buyerEmail);
+            
+            // 모집 완료된 상품인데 승인되지 않은 사용자인 경우
+            if (productRequest == null || !"승인".equals(productRequest.getApprovalStatus())) {
+                return ChatRoomResponse.builder()
+                        .success(false)
+                        .message("모집이 완료된 상품은 승인된 사용자만 채팅이 가능합니다.")
+                        .build();
+            }
+        }
+        
         ChatRoom existingChatRoom = chatRoomMapper.findChatRoomByProductAndBuyer(
                 request.getProductId(), buyerEmail);
         
@@ -62,9 +80,10 @@ public class ChatService {
         boolean isNewChatRoom = false;
         
         if (existingChatRoom == null) {
+            // 새로운 채팅방 생성
             chatRoom = ChatRoom.builder()
-                    .chatname(product.getTitle() + " 거래 채팅")
-                    .productId(product.getId())
+                    .chatname(request.getChatname() != null ? request.getChatname() : product.getTitle() + " 거래 채팅")
+                    .productId(request.getProductId())
                     .buyerEmail(buyerEmail)
                     .lastMessage("채팅이 시작되었습니다.")
                     .lastMessageTime(LocalDateTime.now())
@@ -72,17 +91,6 @@ public class ChatService {
                     .build();
             
             chatRoomMapper.createChatRoom(chatRoom);
-            
-            ChatMessage systemMessage = ChatMessage.builder()
-                    .chatroomId(chatRoom.getChatroomId())
-                    .senderEmail(buyerEmail)
-                    .content("채팅이 시작되었습니다.")
-                    .messageType("SYSTEM")
-                    .sentAt(LocalDateTime.now())
-                    .isRead(false)
-                    .build();
-            
-            chatMessageMapper.saveChatMessage(systemMessage);
             isNewChatRoom = true;
         } else {
             chatRoom = existingChatRoom;
@@ -123,27 +131,22 @@ public class ChatService {
         
         for (ChatRoom room : chatRooms) {
             Product product = productMapper.findById(room.getProductId(), userEmail);
-            if (product == null) {
-                continue;
+            if (product != null) {
+                room.setProductName(product.getTitle());
+                
+                // 대화 상대 정보 설정
+                String otherEmail = room.getSellerEmail().equals(userEmail) ? room.getBuyerEmail() : room.getSellerEmail();
+                User otherUser = userMapper.findByEmail(otherEmail);
+                if (otherUser != null) {
+                    room.setOtherUserName(otherUser.getNickname());
+                }
+                
+                // 상품 이미지 설정
+                String thumbnailPath = getProductThumbnailImage(room.getProductId());
+                room.setProductImageUrl(thumbnailPath);
+                
+                enhancedChatRooms.add(room);
             }
-            
-            String sellerEmail = product.getEmail();
-            String otherUserEmail = sellerEmail.equals(userEmail) ? 
-                    room.getBuyerEmail() : sellerEmail;
-            
-            User otherUser = userMapper.findByEmail(otherUserEmail);
-            if (otherUser == null) {
-                continue;
-            }
-            
-            String thumbnailPath = getProductThumbnailImage(room.getProductId());
-            
-            room.setProductName(product.getTitle());
-            room.setProductImageUrl(thumbnailPath);
-            room.setOtherUserName(otherUser.getNickname());
-            room.setSellerEmail(sellerEmail);
-            
-            enhancedChatRooms.add(room);
         }
         
         return ChatRoomResponse.builder()
@@ -183,6 +186,21 @@ public class ChatService {
                     .build();
         }
         
+        // 모집 완료된 상품의 경우 승인된 사용자만 채팅방 접근 허용
+        if (!product.isVisible() && buyerEmail.equals(userEmail)) {
+            // 상품 요청 정보 확인
+            ProductRequest productRequest = productRequestMapper.findByProductIdAndRequesterEmail(
+                    product.getId(), buyerEmail);
+            
+            // 모집 완료된 상품인데 승인되지 않은 사용자인 경우
+            if (productRequest == null || !"승인".equals(productRequest.getApprovalStatus())) {
+                return ChatRoomResponse.builder()
+                        .success(false)
+                        .message("모집이 완료된 상품은 승인된 사용자만 채팅이 가능합니다.")
+                        .build();
+            }
+        }
+        
         String thumbnailPath = getProductThumbnailImage(product.getId());
         
         String otherUserEmail = sellerEmail.equals(userEmail) ? 
@@ -196,6 +214,7 @@ public class ChatService {
                     .build();
         }
         
+        // 메시지 읽음 상태 업데이트
         chatMessageMapper.updateMessageReadStatus(chatroomId, userEmail);
         
         return ChatRoomResponse.builder()
@@ -220,18 +239,11 @@ public class ChatService {
      * 상품 썸네일 이미지 가져오기
      */
     private String getProductThumbnailImage(Long productId) {
-        String thumbnailPath = null;
         List<ProductImage> images = productImageMapper.findByProductId(productId);
-        for (ProductImage image : images) {
-            if (image.getIsThumbnail()) {
-                thumbnailPath = image.getImagePath();
-                break;
-            }
+        if (images != null && !images.isEmpty()) {
+            return "/api/core/market/products/images/" + images.get(0).getId();
         }
-        if (thumbnailPath == null && !images.isEmpty()) {
-            thumbnailPath = images.get(0).getImagePath();
-        }
-        return thumbnailPath;
+        return null;
     }
     
     /**
@@ -247,8 +259,7 @@ public class ChatService {
                     .build();
         }
         
-        chatRoom.setStatus(status);
-        chatRoomMapper.updateChatRoom(chatRoom);
+        chatRoomMapper.updateChatRoomStatus(chatroomId, status);
         
         return ChatRoomResponse.builder()
                 .success(true)

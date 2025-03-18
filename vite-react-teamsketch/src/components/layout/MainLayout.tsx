@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import MarketList from '../../pages/marketplace/MarketList';
 import Login from '../../pages/account/Login';
@@ -19,6 +19,7 @@ import ChangePassword from '../../pages/account/ChangePassword';
 import ProductDetails from '../../pages/marketplace/ProductDetails';
 import ProfileManage from '../../pages/mypage/ProfileManage';
 import NotificationList from '../../pages/notification/NotificationList';
+import NotificationSetting from '../../pages/notification/NotificationSetting';
 import RegisteredCard from '../../pages/payment/RegisteredCard';
 import CardDetails from '../../pages/payment/CardDetails';
 import TransactionList from '../../pages/Transaction history/TrasactionList';
@@ -30,7 +31,7 @@ import CSList from '../../pages/CScenter/CSList';
 import InquiryHistory from '../../pages/CScenter/InquiryHistory';
 import DeleteAccount from '../../pages/account/DeleteAccount';
 import OCRUpload from '../../pages/payment/OCRUpload';
-import DeleteModal from '../../pages/payment/DeleteModal';
+import MyLocation from '../../pages/map/MyLocation';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
@@ -40,6 +41,18 @@ import TestGrid from '../../testpages/TestGrid';
 const MainLayout = () => {
   const [footerHeight, setFooterHeight] = useState<number>(0);
   const [headerHeight, setHeaderHeight] = useState<number>(0);
+  const location = useLocation();
+
+  // content-scroll 클래스를 제외할 경로 목록
+  const noScrollPaths = [
+    '/my-location',
+    '/sharelocation',
+    '/product/location',
+    '/servicechat'
+  ];
+
+  // 현재 경로가 noScrollPaths에 포함되어 있는지 확인
+  const shouldApplyScroll = !noScrollPaths.some(path => location.pathname.includes(path));
 
   useEffect(() => {
     const updateHeights = () => {
@@ -65,7 +78,7 @@ const MainLayout = () => {
   return (
     <main className="fixed inset-0 w-full">
       <div
-        className="content-scroll"
+        className={shouldApplyScroll ? "content-scroll" : ""}
         style={{
           height: `calc(100vh - env(safe-area-inset-bottom))`,
           paddingBottom: `${footerHeight}px`,
@@ -77,9 +90,10 @@ const MainLayout = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/servicechat" element={<ServiceChat />} />
-          <Route path="/location" element={<ShareLocationMap />} />
+          <Route path="/sharelocation" element={<ShareLocationMap />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notification" element={<NotificationList />} />
+          <Route path="/notification-setting" element={<NotificationSetting />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/product/register" element={<ProductRegister />} />
@@ -93,7 +107,7 @@ const MainLayout = () => {
           <Route path="/profile-manage" element={<ProfileManage />} />
           <Route path="/product-details" element={<ProductDetails />} />
           <Route path="/registered-card" element={<RegisteredCard />} />
-          <Route path="/card-details/:cardId" element={<CardDetails />} />
+          <Route path="/card-details/:cardId" element={<CardDetails ocrResult={null} />} />
           <Route path="/transaction-list" element={<TransactionList />} />
           <Route path="/sales-list" element={<SalesList />} />
           <Route path="/purchase-list" element={<PurchaseList />} />
@@ -103,7 +117,7 @@ const MainLayout = () => {
           <Route path="/inquiry-history" element={<InquiryHistory />} />
           <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/ocr-upload" element={<OCRUpload />} />
-          <Route path="/delete-modal" element={<DeleteModal/>} />
+          <Route path="/my-location" element={<MyLocation />} />
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />

@@ -182,6 +182,7 @@ const MarketList = () => {
     navigate('/product-details', {
       state: {
         productData: {
+          productCode: product.productCode,
           images: product.imagePaths || [],
           dopamine: product.dopamine,
           id: product.id,

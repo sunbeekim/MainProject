@@ -15,6 +15,7 @@ const Footer = () => {
   const location = useLocation();
   const isChatRoom = location.pathname.includes('/chat/');
   const isServiceChat = location.pathname.includes('/servicechat');
+  
 
   const getPathForLabel = (label: string) => {
     switch (label) {
@@ -52,9 +53,9 @@ const Footer = () => {
       onClick: () => navigate('/notification')
     },
     {
-      icon: location.pathname === '/location' ? <HiMapPin /> : <HiOutlineMapPin />,
+      icon: location.pathname === '/my-location' ? <HiMapPin /> : <HiOutlineMapPin />,
       label: '위치',
-      onClick: () => navigate('/location')
+      onClick: () => navigate('/my-location')
     },
     {
       icon: location.pathname === '/mypage' ? <RiUserFill /> : <CgUser />,
