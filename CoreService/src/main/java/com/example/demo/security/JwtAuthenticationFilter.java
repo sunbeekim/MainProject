@@ -62,6 +62,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * HTTP 요청 헤더에서 JWT 토큰을 추출합니다.
+     * "Authorization: Bearer [token]" 형식에서 토큰 부분만 반환합니다.
+     */
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
@@ -70,3 +74,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
+

@@ -2,16 +2,22 @@ package com.example.demo.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import com.example.demo.security.JwtTokenBlacklistService;
 import com.example.demo.security.JwtTokenProvider;
 
+/**
+ * 토큰 관련 유틸리티 클래스
+ */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TokenUtils {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final JwtTokenBlacklistService blacklistService;
+    private final JwtTokenBlacklistService jwtTokenBlacklistService;
 
     /**
      * 토큰에서 Bearer 접두사를 제거합니다
@@ -31,7 +37,7 @@ public class TokenUtils {
             return false;
         }
 
-        return jwtTokenProvider.validateToken(token) && !blacklistService.isBlacklisted(token);
+        return jwtTokenProvider.validateToken(token) && !jwtTokenBlacklistService.isBlacklisted(token);
     }
 
     /**
@@ -54,5 +60,21 @@ public class TokenUtils {
         }
         
         return jwtTokenProvider.getUsername(token);
+    }
+
+    /**
+     * Authorization 헤더에서 이메일 정보를 추출합니다.
+     * 토큰이 유효하지 않은 경우 null을 반환합니다.
+     * @param authHeader Authorization 헤더 값 (Bearer 토큰 포함)
+     * @return 사용자 이메일 또는 null (토큰이 유효하지 않은 경우)
+     */
+    public String getEmailFromAuthHeader(String authHeader) {
+        String token = extractTokenWithoutBearer(authHeader);
+        
+        if (!isTokenValid(token)) {
+            return null;
+        }
+        
+        return getEmailFromToken(token);
     }
 }

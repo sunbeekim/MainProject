@@ -26,8 +26,13 @@ public interface ChatMessageMapper {
     // 채팅방 메시지 총 개수
     int countMessagesByChatRoomId(Integer chatroomId);
     
-    // 메시지 읽음 상태 업데이트
-    void updateMessageReadStatus(
+    /**
+     * 메시지 읽음 상태 업데이트
+     * @param chatroomId 채팅방 ID
+     * @param receiverEmail 수신자 이메일
+     * @return 업데이트된 메시지 수
+     */
+    int updateMessageReadStatus(
             @Param("chatroomId") Integer chatroomId, 
             @Param("receiverEmail") String receiverEmail);
 

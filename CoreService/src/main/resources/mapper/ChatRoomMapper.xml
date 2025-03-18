@@ -35,15 +35,26 @@
             AND cr.buyer_email = #{buyerEmail}
     </select>
     
-    <!-- 사용자와 관련된 채팅방 목록 조회 -->
+    <!-- 사용자와 관련된 채팅방 목록 조회 (수정: 승인/진행중인 상태만 반환) -->
     <select id="findChatRoomsByUser" resultMap="chatRoomResultMap">
         SELECT 
-            cr.*, p.email as seller_email
+            cr.*, p.email as seller_email,
+            (SELECT COUNT(*) FROM messages m 
+             WHERE m.chatroom_id = cr.chatroom_id 
+             AND m.sender_email != #{email} 
+             AND m.is_read = false) as unread_count
         FROM 
             chatrooms cr
             JOIN products p ON cr.product_id = p.id
+            LEFT JOIN ProductRequests pr ON cr.product_id = pr.product_id AND cr.buyer_email = pr.requester_email
         WHERE 
-            p.email = #{email} OR cr.buyer_email = #{email}
+            (p.email = #{email} OR cr.buyer_email = #{email})
+            AND (
+                pr.approval_status = '승인'
+                OR pr.status = '진행중'
+                OR p.email = #{email}
+                OR pr.approval_status IS NULL
+            )
         ORDER BY 
             cr.last_message_time DESC
     </select>

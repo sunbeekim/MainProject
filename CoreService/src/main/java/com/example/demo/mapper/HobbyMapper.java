@@ -17,13 +17,6 @@ public interface HobbyMapper {
     // 취미 ID로 취미 조회
     Hobby getHobbyById(Long hobbyId);
     
-    /**
-     * 취미 ID로 카테고리 목록 조회
-     * @deprecated 카테고리 우선 선택 방식으로 변경됨
-     */
-    @Deprecated
-    List<Category> getCategoriesByHobbyId(Long hobbyId);
-    
     // 모든 카테고리 목록 조회
     List<Category> getAllCategories();
     
@@ -42,6 +35,6 @@ public interface HobbyMapper {
     // 사용자의 모든 취미 삭제
     void deleteAllUserHobbies(String email);
     
-    // 카테고리 ID로 취미 목록 조회 (추가)
+    // 카테고리 ID로 취미 목록 조회
     List<Hobby> getHobbiesByCategoryId(Long categoryId);
 }
