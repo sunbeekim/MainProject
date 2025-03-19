@@ -117,75 +117,74 @@ public class ProductService {
         }
     }
 
-  /**  상품 요청, 채팅방 생성, 알림 전송을 통합 처리하는 메소드
-      세 가지 작업을 하나의 트랜잭션으로 일관성 있게 처리
-     **/
-     @Transactional
-    public ResponseEntity<BaseResponse<Map<String, Object>>> createProductRequestWithChatAndNotification(
-            String requesterEmail, Long productId) {
-        try {
-            // 1. 상품 정보 및 등록자 확인
-            String productOwnerEmail = productMapper.findEmailByProductId(productId);
-            if (productOwnerEmail == null) {
-                return ResponseEntity.badRequest()
-                        .body(new BaseResponse<>(null, "해당 상품을 찾을 수 없습니다."));
-            }
+  /**  상품 요청, 채팅방 생성, 알림 전송을 통합 처리하는 메소드 세 가지 작업을 하나의 트랜잭션으로 일관성 있게 처리 **/
+  @Transactional
+  public ResponseEntity<BaseResponse<Map<String, Object>>> createProductRequestWithChatAndNotification(
+          String requesterEmail, Long productId) {
+      try {
+          // 1. 상품 정보 및 등록자 확인
+          String productOwnerEmail = productMapper.findEmailByProductId(productId);
+          if (productOwnerEmail == null) {
+              return ResponseEntity.badRequest()
+                      .body(new BaseResponse<>(null, "해당 상품을 찾을 수 없습니다."));
+          }
 
-            // 2. 상품 요청 등록 및 관련 데이터 업데이트
-            productMapper.insertProductRequest(productId, requesterEmail);
-            productMapper.increaseCurrentParticipants(productId);
-            productMapper.updateProductVisibility(productId);
+          // 2. 상품 요청 등록 (구매 요청/판매 요청) & 모집 인원 증가
+          productMapper.insertProductRequest(productId, requesterEmail);
+          productMapper.increaseCurrentParticipants(productId);
+          productMapper.updateProductVisibility(productId); // 모집 마감 여부 확인
 
-            // 3. 채팅방 생성
-            ChatRoomRequest chatRoomRequest = new ChatRoomRequest();
-            chatRoomRequest.setProductId(productId);
-            
-            ChatRoomResponse chatResponse = chatService.createOrGetChatRoom(requesterEmail, chatRoomRequest);
-            
-            if (!chatResponse.isSuccess()) {
-                throw new RuntimeException("채팅방 생성 실패: " + chatResponse.getMessage());
-            }
+          // 3. 상품 정보 가져오기 (기존 코드 유지)
+          Product product = productMapper.findById(productId, requesterEmail);
+          if (product == null) {
+              return ResponseEntity.internalServerError()
+                      .body(new BaseResponse<>(null, "상품 요청은 저장되었지만, 상품 정보를 가져오는 데 실패했습니다."));
+          }
 
-            // 4. 알림 전송 (등록자 & 요청자)
-            notificationService.sendNotification(productOwnerEmail, requesterEmail, productId);
-            notificationService.sendNotification(requesterEmail, productOwnerEmail, productId);  // 요청자에게도 알림 전송
+          // 4. 상품명 포함 알림 추가 (병합 전 코드 유지)
+          String productName = product.getTitle();
+          String message = String.format("\"%s\"에 대한 새로운 요청이 도착했습니다!", productName);
+          notificationService.sendNotification(productOwnerEmail, message);
 
-            // 5. 상품 정보 가져오기
-            Product product = productMapper.findById(productId, requesterEmail);
-            if (product == null) {
-                return ResponseEntity.internalServerError()
-                        .body(new BaseResponse<>(null, "상품 요청은 저장되었지만, 상품 정보를 가져오는 데 실패했습니다."));
-            }
+          // 5. 채팅방 생성 (기존과 동일)
+          ChatRoomRequest chatRoomRequest = new ChatRoomRequest();
+          chatRoomRequest.setProductId(productId);
 
-            // 6. 모집 인원 충족 시 상태 업데이트
-            if (product.getCurrentParticipants() >= product.getMaxParticipants()) {
-                productMapper.updateRequestStatusToComplete(productId);
-            }
+          ChatRoomResponse chatResponse = chatService.createOrGetChatRoom(requesterEmail, chatRoomRequest);
 
-            // 7. 응답 데이터 구성
-            Map<String, Object> responseData = new HashMap<>();
-            
-            // 요청 정보
-            Map<String, Object> requestInfo = new HashMap<>();
-            requestInfo.put("productId", product.getId());
-            requestInfo.put("requesterEmail", requesterEmail);
-            requestInfo.put("status", "대기");
-            requestInfo.put("approvalStatus", "미승인");
-            requestInfo.put("requestType", product.getRegistrationType().equals("판매") ? "구매 요청" : "판매 요청");
-            
-            // 채팅방 정보
-            responseData.put("requestInfo", requestInfo);
-            responseData.put("chatInfo", chatResponse);
-            responseData.put("productInfo", convertToProductResponse(product));
+          if (!chatResponse.isSuccess()) {
+              throw new RuntimeException("채팅방 생성 실패: " + chatResponse.getMessage());
+          }
 
-            return ResponseEntity.ok(new BaseResponse<>(responseData, "상품 요청 및 채팅방 생성이 완료되었습니다."));
+          // 6. 모집 인원 충족 시 상태 업데이트
+          if (product.getCurrentParticipants() >= product.getMaxParticipants()) {
+              productMapper.updateRequestStatusToComplete(productId);
+          }
 
-        } catch (Exception ex) {
-            log.error("통합 처리 중 오류 발생: {}", ex.getMessage());
-            return ResponseEntity.internalServerError()
-                    .body(new BaseResponse<>(null, "처리 중 오류 발생: " + ex.getMessage()));
-        }
-    }
+          // 7. 응답 데이터 구성
+          Map<String, Object> responseData = new HashMap<>();
+
+          // 요청 정보
+          Map<String, Object> requestInfo = new HashMap<>();
+          requestInfo.put("productId", product.getId());
+          requestInfo.put("requesterEmail", requesterEmail);
+          requestInfo.put("status", "대기");
+          requestInfo.put("approvalStatus", "미승인");
+          requestInfo.put("requestType", product.getRegistrationType().equals("판매") ? "구매 요청" : "판매 요청");
+
+          // 채팅방 정보 추가
+          responseData.put("requestInfo", requestInfo);
+          responseData.put("chatInfo", chatResponse);
+          responseData.put("productInfo", convertToProductResponse(product));
+
+          return ResponseEntity.ok(new BaseResponse<>(responseData, "상품 요청 및 채팅방 생성이 완료되었습니다."));
+
+      } catch (Exception ex) {
+          log.error("통합 처리 중 오류 발생: {}", ex.getMessage());
+          return ResponseEntity.internalServerError()
+                  .body(new BaseResponse<>(null, "처리 중 오류 발생: " + ex.getMessage()));
+      }
+  }
 
     /** 승인된 요청 목록 조회 **/
     public ResponseEntity<BaseResponse<Map<String, Object>>> getApprovedRequests(Long productId) {

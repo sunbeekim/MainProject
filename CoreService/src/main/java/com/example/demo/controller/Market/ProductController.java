@@ -51,7 +51,7 @@ public class ProductController {
             @RequestHeader("Authorization") String token, @RequestBody ProductRequestDto request) {
 
         String email = jwtTokenProvider.getUsername(token);
-        return productService.createProductRequest(email, request.getProductId());
+        return productService.createProductRequestWithChatAndNotification(email, request.getProductId());
     }
 
     /** 상품 요청 + 채팅방 생성 + 알림 통합 엔드포인트 **/

@@ -12,6 +12,7 @@ import com.example.demo.model.chat.ChatMessage;
 import com.example.demo.model.chat.ChatRoom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -31,14 +32,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatMessageService {
-
     private final ChatMessageMapper chatMessageMapper;
     private final ChatRoomMapper chatRoomMapper;
     private final ProductMapper productMapper;
     private final UserMapper userMapper;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final ChannelTopic channelTopic;
-    
+
+    // 📌 `@Qualifier`를 필드에 직접 적용하여 명확하게 지정
+    private final @Qualifier("chatChannelTopic") ChannelTopic chatChannelTopic;
+
     @Value("${chat.default.page-size:20}")
     private int defaultPageSize;
 
@@ -120,7 +122,7 @@ public class ChatMessageService {
         
         try {
             // Redis를 통해 메시지 발행
-            redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+            redisTemplate.convertAndSend(chatChannelTopic.getTopic(), message);
         } catch (Exception e) {
             log.error("Redis 메시지 발행 실패: {}", e.getMessage());
         }
