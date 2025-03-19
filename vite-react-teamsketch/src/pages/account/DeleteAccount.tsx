@@ -8,15 +8,15 @@ const DeleteAccount = () => {
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const deleteAccount = useDeleteAccount()
-    // 순서만 알려드릴게요요
+    // 순서만 알려드릴게요
     // 회원 탈퇴 API 호출 함수
     const [isLoading, setIsLoading] = useState(false);
     // 탈퇴하기 버튼이 클릭되면 회원탈퇴가 이루어져야 하니까
     // 리액트쿼리 굳이 안써도 되는 api 요청도 있어요
     // 예를 들면 이런 단일 요청
     // 반대로 저희 마켓플레이스는 이미지랑 여러데이터를 리스트형식으로 가져오니까 시간이 좀 걸리잖아요 그런것들은 리액트 쿼리 사용하면 좋아요 
-    // 그리고 기본적으로 authAPI.ts 여기서 리액트쿼리 사용해요요
-    // 이 함수에 api 요청 넣으면 돼요요
+    // 그리고 기본적으로 authAPI.ts 여기서 리액트쿼리 사용해요
+    // 이 함수에 api 요청 넣으면 돼요
     const handleDeleteAccount = async () => {
         try {
             setIsLoading(true);

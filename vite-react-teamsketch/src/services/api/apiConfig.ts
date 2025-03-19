@@ -23,7 +23,11 @@ export const apiConfig = {
       user: `${BASE_URL}/core/user`,
       // 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요
       // 이름정한걸 복사
-      prodlocation:`${BASE_URL}/core/market/products/nearby`,
+      myprodregibuy: `${BASE_URL}/core/market/products/users/registers/buy`,
+      myprodregisell: `${BASE_URL}/core/market/products/users/registers/sell`,
+      myprodreqbuy: `${BASE_URL}/core/market/products/users/requests/buy`,
+      myprodreqsell: `${BASE_URL}/core/market/products/users/requests/sell`,
+      userprod: `${BASE_URL}/core/market/products/users`,
       mylocation:`${BASE_URL}/core/market/users/location`,
       deleteUser: `${BASE_URL}/core/auth/me/withdrawal`,
       passwordChange:`${BASE_URL}/core/auth/me/password
