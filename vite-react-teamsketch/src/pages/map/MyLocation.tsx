@@ -7,20 +7,16 @@ import { useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 
 import { saveLocationApi } from '../../services/api/authAPI';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { setMyLocation } from '../../store/slices/mapSlice';
-import { useState } from 'react';
+import { useState } from 'react'
 import Loading from '../../components/common/Loading';
 import { RootState } from '../../store/store';
-        
-      
 
 // map 슬라이스에서 선택된 위치 위도경도를 받아와서 api 호출
 // 사용자 위치 등록 로그인 후 이동되는 페이지
 const MyLocation = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const myLocation = useSelector((state: RootState) => state.map.myLocation);
 
@@ -37,12 +33,12 @@ const MyLocation = () => {
       console.log('위치 선택 완료');
       if (myLocation.lat !== 0 && myLocation.lng !== 0) {
         const response = await saveLocationApi({
+          locationName: myLocation.meetingPlace,
           latitude: myLocation.lat,
-          longitude: myLocation.lng,
+          longitude: myLocation.lng
         });
 
         if (response.status === 'success') {
-          dispatch(setMyLocation(response.data));
           // 위치 선택 완료 시 localStorage에 플래그 설정
           localStorage.setItem('locationSet', 'true');
           toast.success('위치 업데이트 완료');
@@ -62,19 +58,16 @@ const MyLocation = () => {
   };
 
   return (
-    <div 
-      className={`w-full bg-white dark:bg-gray-800 flex flex-col h-screen ${!isFirstLogin ? 'pb-12' : ''}`}
+    <div
+      className={`w-full bg-white dark:bg-gray-800 flex flex-col h-screen ${
+        !isFirstLogin ? 'pb-12' : ''
+      }`}
     >
       <LocationLayout
-        childrenTop={<SearchLocation onLocationSelect={() => { }} />}
-        childrenCenter={<OpenMap nonClickable={false} />}
+        childrenTop={<SearchLocation onLocationSelect={() => {}} />}
+        childrenCenter={<OpenMap nonClickable={false} mode="myLocation" />}
         childrenBottom={
-          <LocationInfo
-            showEndLocation={false}
-            showMyLocation={true}
-            showYourLocation={false}
-
-          />
+          <LocationInfo showEndLocation={false} showMyLocation={true} showYourLocation={false} mode="myLocation" />
         }
         childrenButton={
           <BaseButton

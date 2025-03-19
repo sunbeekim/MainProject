@@ -1,5 +1,4 @@
 interface ILocation {
-  id: string;
   meetingPlace: string;
   address: string;
   lat: number;
