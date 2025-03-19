@@ -26,12 +26,11 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private static final List<String> PUBLIC_PATHS = Arrays.asList(// 여기에 다 허용해놔서 가집니다
-            // cors를 여기서 막으면 core 서버가 허용한 엔드포인트 접근자체가 막힙니다
-            // 현재는 다 허용했기에 core 서버로 요청이 가집니다
+    private static final List<String> PUBLIC_PATHS = Arrays.asList(
             "/api/core/**",
-            "/api/assist/**", // 테스트 채팅
-            "/api/fastapi/**");
+            "/api/assist/**",
+            "/api/fastapi/**"           
+    );
 
     public static class Config {
         // 필터 설정을 위한 설정 클래스
@@ -47,6 +46,12 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
             System.out.println("JwtAuthenticationFilter 실행");
             ServerHttpRequest request = exchange.getRequest();
             String path = request.getPath().value();
+
+            // WebSocket 요청인 경우 필터링하지 않음
+            if (path.startsWith("/ws/")) {
+                System.out.println("WebSocket 요청 감지: " + path);
+                return chain.filter(exchange);
+            }
 
             if (isPublicPath(path)) {
                 return chain.filter(exchange);

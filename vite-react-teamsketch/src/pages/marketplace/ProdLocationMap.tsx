@@ -7,13 +7,12 @@ import BaseButton from '../../components/common/BaseButton';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { updateProductForm } from '../../store/slices/productSlice';
 import { setEndLocation } from '../../store/slices/mapSlice';
-import { useNearLocation } from '../../services/api/authAPI';
 
 const ProdLocationMap = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const endLocation = useAppSelector((state) => state.map.endLocation);
-  const NearLocation = useNearLocation();
+
 
   // 검색을 통한 위치 선택 처리
   const handleEndLocationSelect = (location: {
@@ -60,13 +59,7 @@ const ProdLocationMap = () => {
 
   // 위치 선택 완료 처리
   const handleLocationConfirm = async () => {
-    if (endLocation) {
-      try {
-        const distance = 5.0
-        const result = await NearLocation.mutateAsync({ latitude: endLocation.lat, longitude: endLocation.lng, distance: distance });
-
-        console.log(result);
-
+    if (endLocation) {   
         dispatch(
           updateProductForm({
             latitude: endLocation.lat,
@@ -75,10 +68,7 @@ const ProdLocationMap = () => {
             meetingPlace: endLocation.meetingPlace
           })
         );
-        navigate(-1);
-      } catch (error) {
-        console.log(error);
-      }
+        navigate(-1);     
     }
   };
 
