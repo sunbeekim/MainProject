@@ -47,12 +47,6 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
             ServerHttpRequest request = exchange.getRequest();
             String path = request.getPath().value();
 
-            // WebSocket 요청인 경우 필터링하지 않음
-            if (path.startsWith("/ws/")) {
-                System.out.println("WebSocket 요청 감지: " + path);
-                return chain.filter(exchange);
-            }
-
             if (isPublicPath(path)) {
                 return chain.filter(exchange);
             }
