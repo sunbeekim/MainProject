@@ -4,21 +4,21 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Leaflet 기본 CSS
 import './Leaflet.css'; // 커스텀 CSS
 import { RootState } from '../../../store/store';
-import { setEndLocation } from '../../../store/slices/mapSlice';
+import { setEndLocation, setMyLocation, setYourLocation } from '../../../store/slices/mapSlice';
 import { getAddressFromCoord } from '../../../services/api/productAPI';
 
 interface OpenStreetMapProps {
   children?: React.ReactNode;
   nonClickable?: boolean;
   className?: string;
+  mode?: 'myLocation' | 'yourLocation' | 'endLocation';
 }
 
-const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className }) => {
+const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className, mode = 'endLocation' }) => {
   const dispatch = useDispatch();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const [markers, setMarkers] = useState<L.Marker[]>([]);
-
   const { myLocation, yourLocation, endLocation } = useSelector((state: RootState) => state.map);
 
   // 초기 지도 생성
@@ -35,15 +35,52 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
       newMap.on('click', async (e) => {
         if (nonClickable) return;
         const { lat, lng } = e.latlng;
-        const meetingPlace = await getAddressFromCoord(lat, lng);
-        dispatch(
-          setEndLocation({
+        
+        try {
+          const location = await getAddressFromCoord(lat, lng);
+          if (!location) {
+            throw new Error('주소를 가져올 수 없습니다.');
+          }
+
+          const locationData = {
             lat,
             lng,
-            address: `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`,
-            meetingPlace: meetingPlace.name
-          })
-        );
+            address: location.address,
+            meetingPlace: location.name
+          };
+          
+          switch (mode) {
+            case 'myLocation':
+              dispatch(setMyLocation(locationData));
+              break;
+            case 'yourLocation':
+              dispatch(setYourLocation(locationData));
+              break;
+            case 'endLocation':
+              dispatch(setEndLocation(locationData));
+              break;
+          }
+        } catch (error) {
+          console.error('주소 변환 중 오류 발생:', error);
+          const locationData = {
+            lat,
+            lng,
+            address: '주소를 가져올 수 없습니다.',
+            meetingPlace: '위치 정보 없음'
+          };
+          
+          switch (mode) {
+            case 'myLocation':
+              dispatch(setMyLocation(locationData));
+              break;
+            case 'yourLocation':
+              dispatch(setYourLocation(locationData));
+              break;
+            case 'endLocation':
+              dispatch(setEndLocation(locationData));
+              break;
+          }
+        }
       });
 
       mapInstanceRef.current = newMap;
@@ -61,56 +98,58 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
+    // 기존 마커 제거
     markers.forEach((marker) => marker.remove());
     const newMarkers: L.Marker[] = [];
 
-    // 내 위치 마커 (파란색)
-    if (myLocation.lat && myLocation.lng) {
-      const myIcon = L.divIcon({
+    const addMarker = (location: { lat: number; lng: number }, type: 'my' | 'your' | 'end') => {
+      if (!location?.lat || !location?.lng) return;
+
+      const iconColors = {
+        my: '#3B82F6',
+        your: '#EF4444',
+        end: '#10B981'
+      };
+
+      const popupTexts = {
+        my: '내 위치',
+        your: '상대방 위치',
+        end: '목적지'
+      };
+
+      const icon = L.divIcon({
         className: 'custom-marker',
-        html: '<div class="marker-content" style="background-color: #3B82F6;"></div>',
+        html: `<div class="marker-content" style="background-color: ${iconColors[type]};"></div>`,
         iconSize: [30, 30],
         iconAnchor: [15, 15]
       });
-      const marker = L.marker([myLocation.lat, myLocation.lng], { icon: myIcon })
-        .addTo(mapInstanceRef.current)
-        .bindPopup('내 위치');
+
+      const marker = L.marker([location.lat, location.lng], { icon })
+        .addTo(mapInstanceRef.current!)
+        .bindPopup(popupTexts[type]);
+      
       newMarkers.push(marker);
-      mapInstanceRef.current.setView([myLocation.lat, myLocation.lng], 13);
+    };
+
+    // 각 위치에 대한 마커 추가
+    if (myLocation?.lat && myLocation?.lng) {
+      addMarker(myLocation, 'my');
+    }
+    if (yourLocation?.lat && yourLocation?.lng) {
+      addMarker(yourLocation, 'your');
+    }
+    if (endLocation?.lat && endLocation?.lng) {
+      addMarker(endLocation, 'end');
     }
 
-    // 상대방 위치 마커 (빨간색)
-    if (yourLocation.lat && yourLocation.lng) {
-      const yourIcon = L.divIcon({
-        className: 'custom-marker',
-        html: '<div class="marker-content" style="background-color: #EF4444;"></div>',
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
-      });
-      const marker = L.marker([yourLocation.lat, yourLocation.lng], { icon: yourIcon })
-        .addTo(mapInstanceRef.current)
-        .bindPopup('상대방 위치');
-      newMarkers.push(marker);
-      mapInstanceRef.current.setView([yourLocation.lat, yourLocation.lng], 13);
-    }
-
-    // 목적지 마커 (초록색)
-    if (endLocation.lat && endLocation.lng) {
-      const endIcon = L.divIcon({
-        className: 'custom-marker',
-        html: '<div class="marker-content" style="background-color: #10B981;"></div>',
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
-      });
-      const marker = L.marker([endLocation.lat, endLocation.lng], { icon: endIcon })
-        .addTo(mapInstanceRef.current)
-        .bindPopup('목적지');
-      newMarkers.push(marker);
-      mapInstanceRef.current.setView([endLocation.lat, endLocation.lng], 13);
+    // 마지막으로 추가된 마커의 위치로 지도 중심 이동
+    const lastMarker = newMarkers[newMarkers.length - 1];
+    if (lastMarker) {
+      mapInstanceRef.current.setView(lastMarker.getLatLng(), 13);
     }
 
     setMarkers(newMarkers);
-  }, [myLocation, yourLocation, endLocation]);
+  }, [myLocation?.lat, myLocation?.lng, yourLocation?.lat, yourLocation?.lng, endLocation?.lat, endLocation?.lng]);
 
   return <div ref={mapRef} className={`w-full h-full ${className}`} />;
 };
