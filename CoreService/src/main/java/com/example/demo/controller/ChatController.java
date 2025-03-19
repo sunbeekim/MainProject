@@ -4,7 +4,6 @@ import com.example.demo.dto.chat.ChatRoomRequest;
 import com.example.demo.dto.chat.ChatRoomResponse;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.mapper.ChatRoomMapper;
-import com.example.demo.mapper.ChatMessageMapper;  // 추가된 import
 import com.example.demo.mapper.Market.ProductMapper;
 import com.example.demo.mapper.Market.ProductRequestMapper;
 import com.example.demo.model.chat.ChatRoom;
@@ -26,7 +25,6 @@ public class ChatController {
     private final ChatRoomMapper chatRoomMapper;
     private final ProductMapper productMapper;
     private final ProductRequestMapper productRequestMapper;
-    private final ChatMessageMapper chatMessageMapper;  // 추가된 의존성
 
     /**
      * 채팅방 생성/조회
@@ -145,37 +143,6 @@ public class ChatController {
         } catch (Exception e) {
             log.error("요청 승인 중 오류: {}", e.getMessage());
             return ResponseEntity.status(500).body(ApiResponse.error("요청 처리 중 오류가 발생했습니다.", "500"));
-        }
-    }
-
-    /**
-     * 메시지 읽음 상태 업데이트
-     */
-    @PutMapping("/{chatroomId}/read")
-    public ResponseEntity<ApiResponse<?>> updateMessagesReadStatus(
-            @RequestHeader("Authorization") String token,
-            @PathVariable Integer chatroomId) {
-        
-        String email = tokenUtils.getEmailFromAuthHeader(token);
-        
-        if (email == null) {
-            return ResponseEntity.status(401).body(ApiResponse.error("인증되지 않은 요청입니다.", "401"));
-        }
-        
-        try {
-            // 채팅방 존재 여부 확인
-            ChatRoom chatRoom = chatRoomMapper.findChatRoomById(chatroomId, email);
-            if (chatRoom == null) {
-                return ResponseEntity.status(404).body(ApiResponse.error("채팅방을 찾을 수 없습니다.", "404"));
-            }
-            
-            // 메시지 읽음 상태 업데이트
-            int updatedCount = chatMessageMapper.updateMessageReadStatus(chatroomId, email);
-            
-            return ResponseEntity.ok(ApiResponse.success("메시지가 읽음 상태로 업데이트 되었습니다."));
-        } catch (Exception e) {
-            log.error("메시지 읽음 상태 업데이트 중 오류: {}", e.getMessage());
-            return ResponseEntity.status(500).body(ApiResponse.error("메시지 읽음 상태 업데이트 중 오류가 발생했습니다.", "500"));
         }
     }
 }

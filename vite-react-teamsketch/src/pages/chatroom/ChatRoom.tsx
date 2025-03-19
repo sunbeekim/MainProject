@@ -1,6 +1,7 @@
 import MessageInput from '../../components/features/chat/MessageInput';
 import { useState } from 'react';
 import { useRef, useEffect } from 'react';
+
 interface ChatRoomProps {
   nickname?: string;
   imageUrl?: string;
@@ -55,15 +56,15 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
-      {/* 헤더 */}
+      {/* 채팅 상대방 정보 */}
       <div
         className="bg-gradient-to-r from-primary-500 to-primary-600 dark:from-gray-800 dark:to-gray-700 
-        p-3 flex items-center justify-between shadow-md sticky top-0 z-10"
+        p-3 flex items-center justify-between shadow-md z-10"
       >
-        {/* 왼쪽 - 프로필 및 닉네임 */}
-        <div className="flex items-center space-x-4">
+        {/* 프로필 정보 */}
+        <div className="flex items-center space-x-3">
           {/* 프로필 이미지 */}
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden ring-2 ring-white/30 shrink-0">
+          <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/30 shrink-0">
             <img
               src={imageUrl || 'https://picsum.photos/600/400'}
               alt="프로필"
@@ -72,12 +73,12 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ nickname, imageUrl }) => {
           </div>
 
           {/* 닉네임 */}
-          <span className="text-base md:text-lg font-medium text-white dark:text-white">
+          <span className="text-base font-medium text-white dark:text-white">
             {nickname || '상대방닉네임'}
           </span>
         </div>
 
-        {/* 버튼 (조건부 렌더링) */}
+        {/* 함께하기 버튼 (조건부 렌더링) */}
         {show && (
           <button
             onClick={handleJoinClick}

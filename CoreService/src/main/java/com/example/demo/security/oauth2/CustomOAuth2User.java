@@ -4,11 +4,9 @@ import com.example.demo.model.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 public class CustomOAuth2User implements OAuth2User {

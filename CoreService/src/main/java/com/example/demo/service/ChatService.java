@@ -11,7 +11,6 @@ import com.example.demo.model.Market.Product;
 import com.example.demo.model.Market.ProductImage;
 import com.example.demo.model.Market.ProductRequest;
 import com.example.demo.model.User;
-import com.example.demo.model.chat.ChatMessage;
 import com.example.demo.model.chat.ChatRoom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
