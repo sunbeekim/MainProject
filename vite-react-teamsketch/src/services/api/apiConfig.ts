@@ -51,6 +51,8 @@ export const apiConfig = {
       approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
       updateMessagesRead: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/read`,
       sendMessage: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/messages`,
+
+      requestProduct: `${BASE_URL}/core/market/products/requests`,
     },
     ai: {
       base: `${BASE_URL}/ai`,
