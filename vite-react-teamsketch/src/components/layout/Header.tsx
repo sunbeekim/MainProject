@@ -5,12 +5,14 @@ import BackButton from '../forms/button/BackButton';
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
 import { useAppSelector } from '../../store/hooks';
+// import { useRedis } from '../../services/real-time/useRedis';
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const { token } = useAppSelector((state) => state.auth);
+  // const { subscribe: subscribeRedis, unsubscribe: unsubscribeRedis } = useRedis();
 
   // 읽지 않은 알림 체크
   useEffect(() => {
@@ -28,6 +30,18 @@ const Header = () => {
       checkUnreadNotifications();
     }
   }, [token]);
+
+  // useEffect(() => {
+  //   // 필요한 채널만 구독
+  //   subscribeRedis('notification-channel', (message: any) => {
+  //     // 알림 처리 로직
+  //     console.log('알림 수신:', message);
+  //   });
+
+  //   return () => {
+  //     unsubscribeRedis('notification-channel');
+  //   };
+  // }, []);
 
   // URL 경로를 기반으로 제목 추출하는 함수
   const getFormattedTitle = (path: string) => {
