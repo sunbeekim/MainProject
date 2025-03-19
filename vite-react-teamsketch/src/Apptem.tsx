@@ -89,7 +89,22 @@ const App = () => {
         />
       </Routes>
       {shouldShowFooter && <Footer />}
-      <ToastContainer />
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        toastClassName={() =>
+          'relative flex items-center rounded-lg shadow-lg bg-primary-500 text-white text-sm p-4 mb-4 mt-12'
+        }
+        progressClassName="bg-primary-500"
+      />
     </div>
   );
 };
