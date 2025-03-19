@@ -4,21 +4,21 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Leaflet 기본 CSS
 import './Leaflet.css'; // 커스텀 CSS
 import { RootState } from '../../../store/store';
-import { setEndLocation } from '../../../store/slices/mapSlice';
+import { setEndLocation, setMyLocation, setYourLocation } from '../../../store/slices/mapSlice';
 import { getAddressFromCoord } from '../../../services/api/productAPI';
 
 interface OpenStreetMapProps {
   children?: React.ReactNode;
   nonClickable?: boolean;
   className?: string;
+  mode?: 'myLocation' | 'yourLocation' | 'endLocation';
 }
 
-const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className }) => {
+const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className, mode = 'endLocation' }) => {
   const dispatch = useDispatch();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const [markers, setMarkers] = useState<L.Marker[]>([]);
-
   const { myLocation, yourLocation, endLocation } = useSelector((state: RootState) => state.map);
 
   // 초기 지도 생성
@@ -35,15 +35,38 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
       newMap.on('click', async (e) => {
         if (nonClickable) return;
         const { lat, lng } = e.latlng;
-        const meetingPlace = await getAddressFromCoord(lat, lng);
-        dispatch(
-          setEndLocation({
-            lat,
-            lng,
-            address: `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`,
-            meetingPlace: meetingPlace.name
-          })
-        );
+        const location = await getAddressFromCoord(lat, lng);
+        console.log('location', location);
+        
+        switch (mode) {
+          case 'myLocation':
+            console.log('myLocation');
+            dispatch(setMyLocation({
+              lat,
+              lng,
+              address: `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`,
+              meetingPlace: location.name
+            }));
+            break;
+          case 'yourLocation':
+            console.log('yourLocation');
+            dispatch(setYourLocation({
+              lat,
+              lng,
+              address: `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`,
+              meetingPlace: location.name
+            }));
+            break;
+          case 'endLocation':
+            console.log('endLocation');
+            dispatch(setEndLocation({
+              lat,
+              lng,
+              address: `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`,
+              meetingPlace: location.name
+            }));
+            break;
+        }
       });
 
       mapInstanceRef.current = newMap;

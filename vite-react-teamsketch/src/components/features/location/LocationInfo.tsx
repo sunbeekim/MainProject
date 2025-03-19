@@ -2,7 +2,7 @@ import Grid from '../../common/Grid';
 import GridItem from '../../common/GridItem';
 import { ILocation } from '../../../types/map';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMyLocation, setEndLocation } from '../../../store/slices/mapSlice';
+import { setMyLocation, setYourLocation, setEndLocation } from '../../../store/slices/mapSlice';
 import { useEffect, useState, useRef } from 'react';
 import { RootState } from '../../../store/store';
 import { getAddressFromCoords } from '../../../services/third-party/myLocation';
@@ -18,6 +18,7 @@ interface LocationInfoProps {
   showMyLocation?: boolean;
   showYourLocation?: boolean;
   showEndLocation?: boolean;
+  mode: 'myLocation' | 'yourLocation' | 'endLocation';
 }
 
 const LocationInfo: React.FC<LocationInfoProps> = ({
@@ -26,85 +27,91 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
   onCopyLocation,
   showMyLocation = false,
   showYourLocation = false,
-  showEndLocation = false
+  showEndLocation = false,
+  mode = 'endLocation'
 }) => {
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(true);
   const myLocation = useSelector((state: RootState) => state.map.myLocation);
   const endLocation = useSelector((state: RootState) => state.map.endLocation);
-  const endLocationProcessed = useRef<boolean>(false);
+  
+  // 각 위치 타입별 처리 상태를 추적
+  const locationProcessed = useRef({
+    myLocation: false,
+    yourLocation: false,
+    endLocation: false
+  });
 
+  // 선택된 위치의 주소 업데이트 함수
+  const updateLocationAddress = async (location: ILocation) => {
+    
+    console.log('위치 정보가 있습니다.');
+    try {
+      const address = await getAddressFromCoords(location.lat, location.lng);
+      
+      switch (mode) {
+        case 'myLocation':
+          dispatch(setMyLocation({ ...location, address }));
+          break;
+        case 'yourLocation':
+          dispatch(setYourLocation({ ...location, address }));
+          break;
+        case 'endLocation':
+          dispatch(setEndLocation({ ...location, address }));
+          break;
+      }
+      locationProcessed.current[mode] = true;
+    } catch (error) {
+      console.error(`${mode} 주소 변환 중 오류 발생:`, error);
+      const errorAction = {
+        myLocation: setMyLocation,
+        yourLocation: setYourLocation,
+        endLocation: setEndLocation
+      }[mode];
+      
+      dispatch(errorAction({ ...location, address: '주소를 가져올 수 없습니다.' }));
+      locationProcessed.current[mode] = true;
+    }
+  };
+
+  // 모드가 변경될 때마다 해당 위치의 주소를 업데이트
   useEffect(() => {
-    // 내 위치 가져오기
-    setTimeout(() => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            try {
-              const address = await getAddressFromCoords(
-                position.coords.latitude,
-                position.coords.longitude
-              );
-
-              dispatch(
-                setMyLocation({
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
-                  address: address
-                })
-              );
-            } catch (error) {
-              console.error('주소 변환 중 오류 발생:', error);
-              dispatch(
-                setMyLocation({
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
-                  address: '주소를 가져올 수 없습니다.'
-                })
-              );
-            }
-          },
-          (error) => {
-            console.error('위치 정보를 가져오지 못함:', error);
-          }
-        );
-      }
-    }, 1000);
-  }, []); // 내 위치는 컴포넌트 마운트 시 한 번만 실행
-
-  // endLocation이 변경될 때 주소 업데이트 (최초 한 번만)
-  useEffect(() => {
-    const updateEndLocationAddress = async () => {
-      // 이미 처리된 경우 또는 좌표가 없는 경우 실행하지 않음
-      if (endLocationProcessed.current || !endLocation.lat || !endLocation.lng) {
-        return;
-      }
-
-      try {
-        const address = await getAddressFromCoords(endLocation.lat, endLocation.lng);
-        dispatch(
-          setEndLocation({
-            ...endLocation,
-            address: address
-          })
-        );
-        // 처리 완료 표시
-        endLocationProcessed.current = true;
-      } catch (error) {
-        console.error('목적지 주소 변환 중 오류 발생:', error);
-        dispatch(
-          setEndLocation({
-            ...endLocation,
-            address: '주소를 가져올 수 없습니다.'
-          })
-        );
-        // 에러가 발생해도 처리 완료로 표시
-        endLocationProcessed.current = true;
-      }
+    const locationMap = {
+      myLocation,
+      yourLocation,
+      endLocation
     };
 
-    updateEndLocationAddress();
-  }, [endLocation.lat, endLocation.lng, dispatch]);
+    // 선택된 모드의 위치에 대해서만 주소 업데이트
+    if (locationMap[mode]) {
+      updateLocationAddress(locationMap[mode]);
+    }
+  }, [mode, myLocation.lat, myLocation.lng, yourLocation?.lat, yourLocation?.lng, endLocation.lat, endLocation.lng]);
+
+  // 내 위치 자동 가져오기 (최초 1회)
+  useEffect(() => {
+    if (mode === 'myLocation' && !locationProcessed.current.myLocation) {
+      setTimeout(() => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const newLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+                address: '위치를 가져오는 중...',
+                meetingPlace: '위치를 가져오는 중...'
+              };
+              dispatch(setMyLocation(newLocation));
+              await updateLocationAddress(newLocation);
+            },
+            (error) => {
+              console.error('위치 정보를 가져오지 못함:', error);
+            }
+          );
+        }
+      }, 1000);
+    }
+  }, [mode]);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-t-3xl shadow-lg max-h-[18rem]">
