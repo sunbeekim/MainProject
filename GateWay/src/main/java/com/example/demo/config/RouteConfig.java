@@ -52,6 +52,10 @@ public class RouteConfig {
                         .path("/api/fastapi/**")
                         .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
                         .uri(fastapiUri))
+                .route("coreWebSocket", r -> r
+                        .path("/ws/**", "/ws/redis/**")
+                        .uri(coreUri))
                 .build();
+                
     }
 }

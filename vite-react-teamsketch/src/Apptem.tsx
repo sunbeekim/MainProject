@@ -89,7 +89,6 @@ const App = () => {
         />
       </Routes>
       {shouldShowFooter && <Footer />}
-      
       <ToastContainer
         position="top-center"
         autoClose={2000}
