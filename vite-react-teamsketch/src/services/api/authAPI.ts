@@ -141,8 +141,8 @@ export interface LocationResponse {
   data: null;
 }
 
-export const saveLocationApi = async ({latitude, longitude}: {  latitude: number, longitude: number}): Promise<LocationResponse> => {
-  const response = await axiosInstance.post(apiConfig.endpoints.core.mylocation, { latitude, longitude });
+export const saveLocationApi = async ({latitude, longitude, locationName}: {  latitude: number, longitude: number, locationName: string}): Promise<LocationResponse> => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.mylocation, { latitude, longitude, locationName });
   return response.data;
 };
   
