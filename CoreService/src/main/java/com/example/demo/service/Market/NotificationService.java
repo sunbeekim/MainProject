@@ -1,29 +1,31 @@
 package com.example.demo.service.Market;
 
+import com.example.demo.dto.Market.NotificationMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor  // 자동으로 생성자 생성
 public class NotificationService {
-
     /** 상품 요청 발생 시 이메일 및 푸시 알림 전송 **/
-    public void sendNotification(String recipientEmail, String requesterEmail, Long productId) {
-        String subject = "새로운 상품 요청 도착!";
-        String message = "사용자 " + requesterEmail + "님이 상품 (ID: " + productId + ")에 대한 요청을 보냈습니다.";
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
-        // 이메일 전송
-        sendEmail(recipientEmail, subject, message);
+    // 알림용 Topic을 명확하게 지정
+    private final @Qualifier("notificationChannelTopic") ChannelTopic notificationChannelTopic;
 
-        // 푸시 알림 전송
-        sendPushNotification(recipientEmail, message);
-    }
+    public void sendNotification(String receiverEmail, String message) {
+        NotificationMessage notification = new NotificationMessage(receiverEmail, message);
 
-    private void sendEmail(String recipient, String subject, String message) {
-        System.out.println("이메일 전송: " + recipient + " | 제목: " + subject + " | 내용: " + message);
-    }
+        // Redis Pub/Sub으로 알림 전송
+        redisTemplate.convertAndSend(notificationChannelTopic.getTopic(), notification);
 
-    private void sendPushNotification(String recipient, String message) {
-        System.out.println("푸시 알림 전송: " + recipient + " | 내용: " + message);
+        // WebSocket을 통해 클라이언트에게 즉시 전송
+        messagingTemplate.convertAndSend("/topic/user/" + receiverEmail, notification);
     }
 }
+

@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.listener.NotificationSubscriber;
 import com.example.demo.listener.RedisMessageListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,13 +24,22 @@ public class RedisConfig {
     private int redisPort;
     
     @Value("${chat.redis.topic.name:chat}")
-    private String topicName;
+    private String chatTopicName;
 
+    @Value("${notification.redis.topic.name:notification}")
+    private String notificationTopicName;
+
+    /**
+     * Redis ConnectionFactory 설정
+     */
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 
+    /**
+     * RedisTemplate 설정
+     */
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
@@ -39,23 +49,48 @@ public class RedisConfig {
         return redisTemplate;
     }
 
+    /**
+     * Redis Message Listener 설정
+     */
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer( // 메서드 이름 변경
+    public RedisMessageListenerContainer redisMessageListenerContainer(
             RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter messageListenerAdapter) { // 매개변수 이름도 변경
+            MessageListenerAdapter chatListenerAdapter,
+            NotificationSubscriber notificationSubscriber) {
+
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(messageListenerAdapter, channelTopic());
+
+        // 채팅 메시지 리스너
+        container.addMessageListener(chatListenerAdapter, chatChannelTopic());
+
+        // 알림 메시지 리스너
+        container.addMessageListener(notificationSubscriber, notificationChannelTopic());
+
         return container;
     }
-    
+
+    /**
+     * Redis 메시지 리스너 어댑터 (채팅)
+     */
     @Bean
-    public MessageListenerAdapter messageListenerAdapter(RedisMessageListener redisMessageListener) { // 메서드 이름 변경
+    public MessageListenerAdapter chatListenerAdapter(RedisMessageListener redisMessageListener) {
         return new MessageListenerAdapter(redisMessageListener, "onMessage");
     }
 
+    /**
+     * Redis 채널 설정 (채팅)
+     */
     @Bean
-    public ChannelTopic channelTopic() {
-        return new ChannelTopic(topicName);
+    public ChannelTopic chatChannelTopic() {
+        return new ChannelTopic(chatTopicName);
+    }
+
+    /**
+     * Redis 채널 설정 (알림)
+     */
+    @Bean
+    public ChannelTopic notificationChannelTopic() {
+        return new ChannelTopic(notificationTopicName);
     }
 }
