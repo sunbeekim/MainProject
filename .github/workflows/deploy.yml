@@ -154,14 +154,20 @@ jobs:
           cd CoreService
           chmod +x ./gradlew
           ./gradlew clean build
-      - name: Build & Push Core Docker Image
+      - name: Build & Push Core Docker Image with Redis
         shell: bash
         run: |
           # 로그인 재시도
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          
+          # Redis 설정이 포함된 Dockerfile 확인
+          echo "Dockerfile에 Redis 설정이 포함되어 있는지 확인합니다."
+          grep -q "redis-server" ./CoreService/Dockerfile || echo "경고: Dockerfile에 Redis 설정이 없습니다."
+          
           # 빌드 및 푸시
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest ./CoreService || exit 1
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest || exit 1
+          
           # 로그아웃
           docker logout
 
@@ -281,11 +287,45 @@ jobs:
             -p 8080:8080 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
 
-          # 다른 백엔드 서버들 실행
+          # CoreService 실행 (Redis 포함)
           docker run -d --name core-container \
             --network teamsketch-network \
             -p 8081:8081 \
+            -p 6379:6379 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
+            
+          # Redis 서비스가 실행 중인지 확인
+          echo "Redis 서비스 실행 상태 확인 중..."
+          sleep 15  # 충분한 시간 대기
+          
+          # Redis 컨테이너 로그 확인
+          echo "Core 컨테이너 로그 확인:"
+          docker logs core-container
+          
+          # Redis 서비스 상태 확인 (재시도 로직 추가)
+          max_attempts=5
+          attempt=1
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "Redis 연결 시도 $attempt/$max_attempts..."
+            if docker exec core-container redis-cli ping; then
+              echo "Redis 서비스가 정상적으로 응답합니다."
+              break
+            else
+              echo "Redis 서비스 응답 실패, 재시도 중..."
+              # 컨테이너 내부 Redis 프로세스 확인
+              docker exec core-container ps aux | grep redis
+              # Redis 포트 확인
+              docker exec core-container netstat -tulpn | grep 6379 || echo "포트 6379가 열려있지 않습니다."
+              
+              if [ $attempt -eq $max_attempts ]; then
+                echo "경고: Redis 서비스가 응답하지 않습니다. 계속 진행합니다."
+              fi
+              
+              attempt=$((attempt + 1))
+              sleep 5
+            fi
+          done
             
           docker run -d --name assist-container \
             --network teamsketch-network \

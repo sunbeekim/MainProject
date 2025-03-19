@@ -89,7 +89,7 @@ const VerficationCode = () => {
           인증코드 재전송
         </span>
 
-          <Button type="submit" variant="primary" className="w-full">
+          <Button type="submit" className="w-full bg-primary-500">
             확인
           </Button>
         </div>

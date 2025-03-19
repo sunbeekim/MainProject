@@ -22,28 +22,20 @@ const SignupLayout = ({
       <Grid cols={1} gap="sm" className="h-full grid-rows-[1fr_3fr_1fr] items-center">
         {/* 로고 및 타이틀 */}
         <GridItem className="flex items-center justify-center">
-          <div className="text-2xl font-bold text-primary-500 dark:text-primary-400">
-            {title}
-          </div>
+          <div className="text-2xl font-bold text-primary-500 dark:text-primary-400">{title}</div>
         </GridItem>
 
         {/* 메인 폼 */}
         <GridItem className="flex items-center justify-center">
           <div className="w-[70%] sm:w-[60%] md:w-[50%] lg:w-[40%] space-y-6">
             {/* 회원가입 폼 */}
-            <div className="space-y-4">
-              {children}
-            </div>
+            <div className="space-y-4">{children}</div>
 
             {/* 회원가입 버튼 */}
-            <div className="pt-4">
-              {signupButton}
-            </div>
+            <div className="pt-4">{signupButton}</div>
 
             {/* 구분선 */}
-            <div className="relative">
-              {divider}
-            </div>
+            <div className="relative">{divider}</div>
           </div>
         </GridItem>
 

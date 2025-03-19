@@ -3,7 +3,7 @@ import { setUser } from '../../store/slices/userSlice';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { RootState } from '../../store/store';
 import MyPageLayout from '../../components/layout/MyPageLayout';
-import { getProfileImage } from '../../services/api/imageAPI';
+import { getProfileImage } from '../../services/api/profileImageAPI';
 import { FileResponse } from '../../types/fileResponse';
 import { useEffect } from 'react';
 import { FaUserCog, FaBoxOpen, FaCreditCard, FaHistory, FaHeadset } from 'react-icons/fa';
@@ -13,7 +13,7 @@ const MyPage = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: RootState) => state.user.user);
   const queryClient = useQueryClient();
-  console.log(user);
+  
   const navigate = useNavigate();
 
   const {
@@ -30,8 +30,11 @@ const MyPage = () => {
     refetchOnWindowFocus: true
   });
 
-  // 쿼리 상태 로깅
-  console.log('Query Status:', { isLoading, isError, error, profileImage });
+  useEffect(() => {
+    console.log(user);
+    // 쿼리 상태 로깅
+    console.log('Query Status:', { isLoading, isError, error, profileImage });
+  }, [user]);
 
   useEffect(() => {
     if (profileImage) {
@@ -57,15 +60,16 @@ const MyPage = () => {
     },
     {
 
-      icon: <FaBoxOpen size={20} />,
+      icon: <FaBoxOpen className="w-6 h-6" />,
       label: '상품 관리',
-      color: 'hover:bg-purple-50 dark:hover:bg-purple-900/30',
+      color: 'text-blue-500',
       onClick: () => navigate('/my-products')
     },
     {
       icon: <FaBoxOpen className="w-6 h-6" />,
       label: '거래 내역',
       color: 'text-blue-500',
+      onClick: () => navigate('/transaction-list')
     },
     {
       icon: <FaCreditCard className="w-6 h-6" />,
@@ -83,7 +87,7 @@ const MyPage = () => {
       icon: <FaHeadset className="w-6 h-6" />,
       label: 'AI 고객센터',
       color: 'text-indigo-500',
-      onClick: () => navigate('/servicechat')
+      onClick: () => navigate('/cs-list')
     }
   ];
 
@@ -94,6 +98,8 @@ const MyPage = () => {
         name={user.name || ''}
         nickname={user.nickname || ''}
         profileImagePath={user.profileImagePath as File | null}
+        points={user.points}
+        dopamine={user.dopamine}
         onProfileUpdate={handleProfileUpdate}
         menuItems={menuItems}
       />

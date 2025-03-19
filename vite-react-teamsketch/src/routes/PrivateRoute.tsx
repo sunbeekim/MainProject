@@ -15,4 +15,4 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   return <>{children}</>;
 };
 
-export default PrivateRoute; 
+export default PrivateRoute;

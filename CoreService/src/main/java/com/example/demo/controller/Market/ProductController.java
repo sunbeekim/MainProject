@@ -6,7 +6,6 @@ import com.example.demo.dto.Market.ProductResponse;
 import com.example.demo.dto.Market.NearbyProductRequest;
 
 import com.example.demo.model.Market.ProductImage;
-import com.example.demo.service.Market.ImageUploadService;
 import com.example.demo.service.Market.ProductService;
 import com.example.demo.mapper.Market.ProductImageMapper;
 import com.example.demo.util.BaseResponse;
@@ -34,7 +33,6 @@ public class ProductController {
     private final ProductService productService;
     private final JwtTokenProvider jwtTokenProvider;
     private final ProductImageMapper productImageMapper;
-    private final ImageUploadService imageUploadService;
 
     /** 상품 등록 (구매/판매) - 이미지 업로드 포함 **/
     @PostMapping(value = "/registers", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -54,6 +52,15 @@ public class ProductController {
 
         String email = jwtTokenProvider.getUsername(token);
         return productService.createProductRequest(email, request.getProductId());
+    }
+
+    /** 상품 요청 + 채팅방 생성 + 알림 통합 엔드포인트 **/
+    @PostMapping("/requests/with-chat")
+    public ResponseEntity<BaseResponse<Map<String, Object>>> createRequestWithChat(
+            @RequestHeader("Authorization") String token, @RequestBody ProductRequestDto request) {
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.createProductRequestWithChatAndNotification(email, request.getProductId());
     }
 
     /** 상품 요청 승인 (등록자만 승인 가능) **/

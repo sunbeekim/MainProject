@@ -56,7 +56,7 @@ const SearchLocation = ({ onLocationSelect }: SearchLocationProps) => {
   };
 
   return (
-    <div className="relative w-full p-4">
+    <div className="relative w-full p-4 bg-primary-200">
       <div className="flex items-center">
         <div className="flex-[1] "></div>
         <div className="flex-[9] ">

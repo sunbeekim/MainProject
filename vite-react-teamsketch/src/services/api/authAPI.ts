@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { SignupForm, ProfileUpdateRequest } from '../../types/auth';
+import { IPasswordChange } from '../../types/passwordChange'
 
 interface LoginCredentials {
   email: string;
@@ -30,6 +31,18 @@ interface SmsResponse {
 interface VerifyOtpResponse {
   success: boolean;
   message: string;
+}
+
+interface PasswordChangeResponse {
+  success: boolean;
+  message: string;
+}
+
+interface PasswordResponse{
+  token: string,
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string
 }
 
 // 로그인 API
@@ -75,20 +88,82 @@ const verifyOtpApi = async ({ phoneNumber, otp }: VerifyOtpRequest): Promise<Ver
   return response.data;
 };
 
-// //이메일 전송 API
-// const sendEmailApi = async (email: string): Promise<EmailResponse> => { 
-//   const response = await axiosInstance.post(apiConfig.endpoints.assist.sendEmail, { email });
-//   return response.data;
-// }
+// 비토큰 비밀번호 변경
+export const passwordChangeNoneToken = async (passwordRequestData: IPasswordChange): Promise<PasswordChangeResponse> => {
+    const response = await axiosInstance.put<PasswordChangeResponse>(
+      apiConfig.endpoints.core.passwordChangeNoneToken,
+      passwordRequestData,
+      {
+        withCredentials: false,
+      }
+      
+    );
+    console.log("API response:", response);
+    
+    return response.data; // ✅ `response.data`를 반환
+};
 
-// //이메일 인증 API
-// const verifyOtpEmailApi = async ({ email, otp }: VerifyOtpRequest): Promise<VerifyOtpResponse> => { 
-//   const response = await axiosInstance.post(apiConfig.endpoints.assist.verifyOtpEmail, {
-//     email,
-//     otp
-//   });
-//   return response.data;
-// }
+//회원 탈퇴
+export interface IwithdrawRsponse{
+  status: string,
+  data: {
+    success: boolean,
+    message: string,
+    withdrawalDate: Date,
+  },
+  code: string,
+}
+// 3번 요청 그리고 응답 구조 는 만들어서 사용해도 되고 그냥 해도 되고고
+// 엔드포인트 제가 어제 user 컨트롤러 삭제하고 auth로 올겼던거 같은데 옮겼네요 그럼 엔드포인트가 auth/me/~
+export const withdrawUserApi = async (password: string): Promise<IwithdrawRsponse> => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.deleteUser,{ password });
+  return response.data;
+};
+// 여기에 토큰 추가하는게 맞지만 저희가 지금 인스턴스 사용중인데,
+// 미리 헤더를 포함하는 인스턴스를 만들어서 그걸 사용하기에
+// 여기서는 따로 추가안해도 됩니다
+// 요청기대값에 있는 isToken은 비밀번호 변경이
+// 토큰이 있는 경우와 없는경우를 구분하기 위한 문자열비교를 통해서 분기를 만들어 주는 것입니다
+export const passwordApi = async ({ isToken, currentPassword, newPassword, confirmPassword }: { isToken: string, currentPassword: string, newPassword: string, confirmPassword: string }):
+  // 인스턴스에서 설정하지 않은 것을 이제 여기에 추가해서
+  // 만드는데 아까 적은것들이 아닌 put, post 같은것을 명시해주고()안에 기본이 아닌 apiConfig에 설정한
+  // 주소와 보낼 데이터를 담고 요청합니다 그러면 백엔드 주소인인 8080포트 gateway로 갑니다
+  Promise<PasswordResponse> => {
+  const response = await axiosInstance.put(apiConfig.endpoints.core.passwordChange, { isToken, currentPassword, newPassword, confirmPassword },
+  );
+  return response.data;
+};
+
+//사용자 위치 등록 mylocation
+export interface LocationResponse {
+  status: string;
+  message: string;
+  data: null;
+}
+
+export const saveLocationApi = async ({latitude, longitude, locationName}: {  latitude: number, longitude: number, locationName: string}): Promise<LocationResponse> => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.mylocation, { latitude, longitude, locationName });
+  return response.data;
+};
+  
+//사용자 위치 기반 인근 위치 파악
+export interface Product{
+  id: number;
+  name: string;
+  price: number;
+  imagePaths: string[];
+  thumbnailPath: string;
+}
+export interface NearbyLocationResponse{
+  status: string;
+  message: string;
+  data:Product[];
+}
+
+export const nearbyProdApi = async ({ latitude, longitude, distance }: { latitude: number, longitude: number, distance: number }): Promise<NearbyLocationResponse> => { 
+  const response = await axiosInstance.post(apiConfig.endpoints.core.prodlocation, { latitude, longitude, distance });
+  return response.data;
+};
 
 // 프로필 수정 API
 const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
@@ -100,6 +175,13 @@ const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: loginApi
+  });
+};
+
+// 비토큰 비번 변경 훅
+export const usePasswordChangeNT = () => {
+  return useMutation({
+    mutationFn: passwordChangeNoneToken
   });
 };
 
@@ -157,28 +239,31 @@ export const useVerifyOtp = () => {
   });
 };
 
-// //이메일 전송 Hook
-// export const useSendEmail = () => {
-//   return useMutation({
-//     mutationFn: sendEmailApi,
-//     onError: (error: any) => {
-//       console.error('Email 전송 실패:', error);
-//       throw new Error(error.response?.data?.message || 'Email 전송에 실패했습니다.');
-//     }
-//   });
-// };
+//회원탈퇴 Hook
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: withdrawUserApi// 회원 탈퇴 API 호출 함수
+  });
+}
+//비밀번호 변경
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: passwordApi
+  });
+}
 
-// //이메일 인증 Hook
-// export const userVerifyOtpEmail = () => {
-//   return useMutation({
-//     mutationFn: verifyOtpEmailApi,
-//     onError: (error: any) => {
-//       console.error('OTP 검증 실패:', error);
-//       throw new Error(error.response?.data?.message || '인증번호 확인에 실패했습니다.');
-//     }
-//   });
-// };
+//사용자 위치 저장
+export const useMyLocation = () => {
+  return useMutation({
+    mutationFn: saveLocationApi
+  });
+}
 
+export const useNearLocation = () => { 
+  return useMutation({
+    mutationFn: nearbyProdApi
+  });
+}
 
 // 프로필 수정 Hook
 export const useUpdateProfile = () => {
@@ -186,4 +271,3 @@ export const useUpdateProfile = () => {
     mutationFn: updateProfileApi
   });
 };
-

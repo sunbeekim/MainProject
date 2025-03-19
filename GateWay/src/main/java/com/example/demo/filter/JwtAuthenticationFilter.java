@@ -26,12 +26,13 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private static final List<String> PUBLIC_PATHS = Arrays.asList(
-        "/api/core/**",          
-        "/api/assist/**",  // 테스트 채팅
-        "/api/fastapi/**"
-    );
-    
+    private static final List<String> PUBLIC_PATHS = Arrays.asList(// 여기에 다 허용해놔서 가집니다
+            // cors를 여기서 막으면 core 서버가 허용한 엔드포인트 접근자체가 막힙니다
+            // 현재는 다 허용했기에 core 서버로 요청이 가집니다
+            "/api/core/**",
+            "/api/assist/**", // 테스트 채팅
+            "/api/fastapi/**");
+
     public static class Config {
         // 필터 설정을 위한 설정 클래스
     }
@@ -56,11 +57,11 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
                 ServerHttpResponse response = exchange.getResponse();
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-                
+
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("status", "error");
                 errorResponse.put("message", "로그인이 필요한 서비스입니다.");
-                
+
                 try {
                     byte[] bytes = new ObjectMapper().writeValueAsBytes(errorResponse);
                     DataBuffer buffer = response.bufferFactory().wrap(bytes);
@@ -78,9 +79,8 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     }
 
     private boolean isPublicPath(String path) {
-        return PUBLIC_PATHS.stream().anyMatch(p -> 
-            p.endsWith("**") ? path.startsWith(p.substring(0, p.length() - 2)) : path.equals(p)
-        );
+        return PUBLIC_PATHS.stream()
+                .anyMatch(p -> p.endsWith("**") ? path.startsWith(p.substring(0, p.length() - 2)) : path.equals(p));
     }
 
     private String extractToken(ServerHttpRequest request) {
@@ -98,9 +98,9 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     private boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes())
-                .build()
-                .parseClaimsJws(token);
+                    .setSigningKey(secretKey.getBytes())
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;

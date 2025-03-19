@@ -1,6 +1,6 @@
 const isDev = process.env.NODE_ENV === 'development';
 const BASE_URL = isDev ? 'http://localhost:8080/api' : 'https://sunbee.world/api';
-
+// 2번
 export const apiConfig = {
   baseURL: BASE_URL,
   endpoints: {
@@ -21,21 +21,38 @@ export const apiConfig = {
       login: `${BASE_URL}/core/auth/login`,
       logout: `${BASE_URL}/core/auth/logout`,
       user: `${BASE_URL}/core/user`,
+      // 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요
+      // 이름정한걸 복사
+      prodlocation:`${BASE_URL}/core/market/products/nearby`,
+      mylocation:`${BASE_URL}/core/market/users/location`,
+      deleteUser: `${BASE_URL}/core/auth/me/withdrawal`,
+      passwordChange:`${BASE_URL}/core/auth/me/password
+`,
+      passwordChangeNoneToken : `${BASE_URL}/core/auth/me/password/notoken`,
       userinfo: `${BASE_URL}/core/profiles/me`,
       uploadProfile: `${BASE_URL}/core/profiles/me/image`,
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,
       getProfileImage: `${BASE_URL}/core/profiles/image`,
       getCategory: `${BASE_URL}/core/hobbies/categories`,
       getHobbies: `${BASE_URL}/core/hobbies`,
-      getHobbiesByCategory: (categoryId: number) => `${BASE_URL}/core/hobbies/categories/${categoryId}`,
+      getHobbiesByCategory: (categoryId: number) =>
+        `${BASE_URL}/core/hobbies/categories/${categoryId}`,
       updateProfile: `${BASE_URL}/core/profiles/me`,
       registerProduct: `${BASE_URL}/core/market/products/registers`,
       uploadProductImages: `${BASE_URL}/core/market/images/upload`,
-      getProducts: `${BASE_URL}/core/market/products`,
+      getDefaultProfileImage: `${BASE_URL}/core/profiles/image/default`,
+      getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
-      test: `${BASE_URL}/core/test`,
-      
-      // 다른 core 서비스 엔드포인트들...
+      getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
+
+      getChatRooms: `${BASE_URL}/core/chat/rooms`,
+      createChatRoom: `${BASE_URL}/core/chat/rooms`,
+      getChatRoomDetail: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}`,
+      approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
+      updateMessagesRead: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/read`,
+      sendMessage: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/messages`,
+
+      requestProduct: `${BASE_URL}/core/market/products/requests`,
     },
     ai: {
       base: `${BASE_URL}/ai`,

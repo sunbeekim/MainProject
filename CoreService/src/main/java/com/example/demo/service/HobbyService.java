@@ -27,7 +27,6 @@ public class HobbyService {
     public List<Hobby> getAllHobbies() {
         return hobbyMapper.getAllHobbies();
     }
-
     /**
      * 모든 취미와 그에 해당하는 카테고리 목록을 조회합니다.
      */
@@ -42,21 +41,11 @@ public class HobbyService {
         
         return hobbies;
     }
-    
     /**
      * 취미 ID로 취미를 조회합니다.
      */
     public Hobby getHobbyById(Long hobbyId) {
         return hobbyMapper.getHobbyById(hobbyId);
-    }
-
-    /**
-     * 취미 ID로 해당 취미에 속한 카테고리 목록을 조회합니다.
-     * @deprecated 카테고리 우선 선택 방식으로 변경됨
-     */
-    @Deprecated
-    public List<Category> getCategoriesByHobbyId(Long hobbyId) {
-        return hobbyMapper.getCategoriesByHobbyId(hobbyId);
     }
 
     /**

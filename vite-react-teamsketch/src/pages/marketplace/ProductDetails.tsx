@@ -6,69 +6,115 @@ import LocationInfo from '../../components/features/location/LocationInfo';
 import { useDispatch } from 'react-redux';
 import { setEndLocation } from '../../store/slices/mapSlice';
 import { useAppSelector } from '../../store/hooks';
+import { useEffect, useState } from 'react';
+import BaseButton from '../../components/common/BaseButton';
+import { useNavigate } from 'react-router-dom';
+import { requestProduct } from '../../services/api/productAPI';
+import { toast } from 'react-toastify';
 
 const ProductDetails = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const { constantCategories, constantHobbies } = useAppSelector((state) => state.category);
-  dispatch(setEndLocation({
-    lat: location.state.productData.latitude,
-    lng: location.state.productData.longitude,
-    address: location.state.productData.address,
-    meetingPlace: location.state.productData.meetingPlace
-  }));
+  const productEmail = location.state?.productData.email || '';
+  console.log('productEmail', productEmail);
+  const productId = location.state?.productData.id || '';
+  console.log('productId', productId);
+  const productCode = location.state?.productData.productCode || '';
+  console.log('productCode', productCode);
+  const currentUserEmail = useAppSelector((state) => state.auth.user?.email);
+  console.log('currentUserEmail', currentUserEmail);
+  const [isMyProduct, setIsMyProduct] = useState(false);
+  
+  useEffect(() => {
+    if (productEmail === currentUserEmail) {
+      setIsMyProduct(true);
+    }
+    dispatch(
+      setEndLocation({
+        lat: location.state.productData.latitude,
+        lng: location.state.productData.longitude,
+        address: location.state.productData.address,
+        meetingPlace: location.state.productData.meetingPlace
+      })
+    );
+    console.log('location.state.productData', location.state.productData);
+  }, [dispatch, location.state.productData]);
 
   const productData = location.state?.productData || {
-    images: ['https://via.placeholder.com/800x600/3498db/ffffff?text=기본+이미지'],
-    dopamine: 0,
-    id: 0,
-    email: '',
-    nickname: '',
-    description: '상품 설명이 없습니다.',
-    maxParticipants: 0,
+    id: 1,
+    images: ['https://picsum.photos/600/400?random=1'],
+    productCode: ``,
+    title: 'mockProduct.title',
+    description: 'mockProduct.description',
+    price: 'mockProduct.price',
+    email: 'mock@example.com',
+    categoryId: 1, // 기본 카테고리 ID
+    hobbyId: 1, // 기본 취미 ID
+    transactionType: '대면',
+    registrationType: '판매',
+    maxParticipants: 1,
     currentParticipants: 0,
-    startDate: '',
-    endDate: '',
-    meetingPlace: '',
-    address: '',
-    title: '상품명이 없습니다.',
-    price: 0,
-    categoryId: 0,
-    hobbyId: 0,
-    latitude: 0,
-    longitude: 0,
-    registrationType: '',
-    transactionType: '',
-    thumbnailPath: ''
+    days: [],
+    startDate: new Date().toISOString(),
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    latitude: null,
+    longitude: null,
+    meetingPlace: 'mockProduct.location',
+    address: 'mockProduct.location',
+    createdAt: 'mockProduct.createdAt',
+    imagePaths: ['mockProduct.image'],
+    thumbnailPath: 'mockProduct.image',
+    nickname: 'Mock User',
+    dopamine: 1,
+    visible: true
   };
 
   // categoryId를 사용하여 카테고리 이름 찾기
-  const mainCategory = constantCategories.find(
-    (category) => category.categoryId === productData.categoryId
-  )?.categoryName || '카테고리 없음';
+  const mainCategory =
+    constantCategories.find((category) => category.categoryId === productData.categoryId)
+      ?.categoryName || '카테고리 없음';
 
   // hobbyId를 사용하여 취미 이름 찾기
-  const subCategory = constantHobbies.find(
-    (hobby) => hobby.hobbyId === productData.hobbyId
-  )?.hobbyName || '취미 없음';
+  const subCategory =
+    constantHobbies.find((hobby) => hobby.hobbyId === productData.hobbyId)?.hobbyName ||
+    '취미 없음';
 
   // 날짜 포맷팅 함수
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | Array<number>) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
-      date.getDate()
-    ).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(
-      date.getMinutes()
-    ).padStart(2, '0')}`;
+    
+    // 배열 형태의 날짜 처리 [년, 월, 일, 시, 분]
+    if (Array.isArray(dateString)) {
+      const [year, month, day, hour, minute] = dateString;
+      // 월은 0부터 시작하므로 +1 하지 않음
+      return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    }
+    
+    // 문자열 형태의 날짜 처리
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return '날짜 형식 오류';
+      }
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+        date.getDate()
+      ).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(
+        date.getMinutes()
+      ).padStart(2, '0')}`;
+    } catch (error) {
+      console.error('날짜 포맷팅 오류:', error);
+      return '날짜 형식 오류';
+    }
   };
 
   // 이미지 URL 처리
-  const processedImages = productData.images.map((imagePath: string) =>
-    imagePath.startsWith('http') 
-      ? imagePath 
-      : `${import.meta.env.VITE_API_URL}/api/core/market/images${imagePath}`
-  );
+  const processedImages = productData.images.map((imagePath: string) => {
+    if (imagePath.startsWith('http')) return imagePath;
+    console.log('imagePath', imagePath);
+    return `${import.meta.env.VITE_API_URL}/api/core/market/images${imagePath}`;
+  });
 
   // 가격 포맷팅 함수
   const formatPrice = (price: number) => {
@@ -86,8 +132,20 @@ const ProductDetails = () => {
     return types[type as keyof typeof types] || type;
   };
 
+  const handleApply = async () => {
+    const response = await requestProduct(productId);
+    if (response.status === 'success') {
+      toast.success('상품 신청이 완료되었습니다.');
+      navigate(`/`);
+    } else {
+      toast.error('상품 신청에 실패했습니다.');
+    }
+    console.log('신청하기', response);
+  };
+
   return (
     <PDLayout
+      title={productData.title}
       images={processedImages}
       category={`${formatTransactionType(productData.registrationType)} | ${mainCategory}`}
       hobby={subCategory}
@@ -98,19 +156,37 @@ const ProductDetails = () => {
       currentParticipants={productData.currentParticipants}
       startDate={formatDate(productData.startDate)}
       endDate={formatDate(productData.endDate)}
-      meetingPlace={`${productData.meetingPlace} (${productData.address})`}
-      btName={"신청"}
+      meetingPlace={productData.meetingPlace}
+      
+      btName={
+        isMyProduct ? (
+        <BaseButton
+          onClick={() => navigate('/marketplace/product/edit')}
+          variant="primary"
+          className="w-full py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          수정하기
+        </BaseButton>
+      ) : (
+        <BaseButton
+          onClick={handleApply}
+          variant="primary"
+          className="w-full py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          신청하기
+        </BaseButton>
+      )}
       price={formatPrice(productData.price)}
-      transactionType={formatTransactionType(productData.transactionType)}
+      transactionType={productData.transactionType}
       email={productData.email}
       nickname={productData.nickname || '닉x'}
-      map={<LocationLayout           
-        childrenCenter={<OpenMap nonClickable={true}/>}
-        childrenBottom={
-            <LocationInfo             
-                showEndLocation={true}                                   
-            />}                
-    ></LocationLayout> }
+      day={productData.days || []}
+      map={
+        <LocationLayout
+          childrenCenter={<OpenMap nonClickable={true} />}
+          childrenBottom={<LocationInfo showEndLocation={true} />}
+        ></LocationLayout>
+      }
     />
   );
 };

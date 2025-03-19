@@ -1,37 +1,96 @@
 package com.example.demo.config;
 
 import com.example.demo.listener.NotificationSubscriber;
+import com.example.demo.listener.RedisMessageListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
 
+    @Value("${spring.data.redis.host:localhost}")
+    private String redisHost;
+
+    @Value("${spring.data.redis.port:6379}")
+    private int redisPort;
+    
+    @Value("${chat.redis.topic.name:chat}")
+    private String chatTopicName;
+
+    @Value("${notification.redis.topic.name:notification}")
+    private String notificationTopicName;
+
+    /**
+     * Redis ConnectionFactory 설정
+     */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-        return template;
+    public RedisConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory(redisHost, redisPort);
     }
 
+    /**
+     * RedisTemplate 설정
+     */
     @Bean
-    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory, NotificationSubscriber notificationSubscriber) {
+    public RedisTemplate<String, Object> redisTemplate() {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        return redisTemplate;
+    }
+
+    /**
+     * Redis Message Listener 설정
+     */
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(
+            RedisConnectionFactory connectionFactory,
+            MessageListenerAdapter chatListenerAdapter,
+            NotificationSubscriber notificationSubscriber) {
+
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(notificationSubscriber, new ChannelTopic("notification"));  // "notification" 이라는 리스너 주제를 정함
-        return container; // 메시지를 구독 가능하게 설정 해줌
+
+        // 채팅 메시지 리스너
+        container.addMessageListener(chatListenerAdapter, chatChannelTopic());
+
+        // 알림 메시지 리스너
+        container.addMessageListener(notificationSubscriber, notificationChannelTopic());
+
+        return container;
     }
 
+    /**
+     * Redis 메시지 리스너 어댑터 (채팅)
+     */
     @Bean
-    public ChannelTopic topic() {
-        return new ChannelTopic("notification");
-    } // "notification" 메시지 구독한걸 반환
+    public MessageListenerAdapter chatListenerAdapter(RedisMessageListener redisMessageListener) {
+        return new MessageListenerAdapter(redisMessageListener, "onMessage");
+    }
+
+    /**
+     * Redis 채널 설정 (채팅)
+     */
+    @Bean
+    public ChannelTopic chatChannelTopic() {
+        return new ChannelTopic(chatTopicName);
+    }
+
+    /**
+     * Redis 채널 설정 (알림)
+     */
+    @Bean
+    public ChannelTopic notificationChannelTopic() {
+        return new ChannelTopic(notificationTopicName);
+    }
 }
