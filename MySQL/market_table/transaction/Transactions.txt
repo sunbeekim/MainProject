@@ -1,16 +1,16 @@
--- 6. 테이블 생성 (마켓 거래 테이블)
-
 CREATE TABLE Transactions (
-    transaction_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    transaction_type_id BIGINT UNIQUE,
-    transaction_status ENUM('PENDING', 'COMPLETED', 'CANCELLED') NOT NULL,
-    transaction_created_at DATETIME,
-    transaction_updated_at DATETIME,
-    service_id BIGINT,
-    email VARCHAR(255) NOT NULL,
-    payment_id BIGINT,  -- 결제 방법 추가
-    FOREIGN KEY (transaction_type_id) REFERENCES TransactionTypes(transaction_type_id),
-    FOREIGN KEY (service_id) REFERENCES Services(service_id),
-    FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE,
-    FOREIGN KEY (payment_id) REFERENCES Payments(payment_id) ON DELETE SET NULL
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    product_id BIGINT NOT NULL,  -- 거래된 상품 (FK)
+    buyer_email VARCHAR(255) NOT NULL, -- 구매자 (Users 테이블 참조)
+    seller_email VARCHAR(255) NOT NULL, -- 판매자 (Users 테이블 참조)
+    transaction_status ENUM('진행중', '완료', '취소') DEFAULT '진행중', -- 거래 상태
+    transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- 거래 일시
+    payment_status ENUM('완료', '미완료') DEFAULT '미완료', -- 결제 상태
+    price INT NOT NULL, -- 거래 가격 (포인트)
+    description TEXT, -- 거래 상세 설명
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE CASCADE, // 참조
+    FOREIGN KEY (buyer_email) REFERENCES Users(email) ON DELETE CASCADE, // 참조
+    FOREIGN KEY (seller_email) REFERENCES Users(email) ON DELETE CASCADE // 참조
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

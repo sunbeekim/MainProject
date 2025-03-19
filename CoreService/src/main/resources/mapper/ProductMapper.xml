@@ -304,9 +304,11 @@
         u.bio,
         COALESCE(pd.dopamine, 50) AS dopamine,
         pi.image_path,
-        (6371 * acos(cos(radians(#{latitude})) * cos(radians(p.latitude)) *
-        cos(radians(p.longitude) - radians(#{longitude})) + sin(radians(#{latitude})) *
-        sin(radians(p.latitude)))) AS distance
+        (6371 * acos(
+        cos(radians(#{latitude})) * cos(radians(p.latitude)) *
+        cos(radians(p.longitude) - radians(#{longitude})) +
+        sin(radians(#{latitude})) * sin(radians(p.latitude))
+        )) AS distance
         FROM Products p
         LEFT JOIN users u ON p.email = u.email
         LEFT JOIN productimages pi ON p.id = pi.product_id
@@ -316,7 +318,7 @@
         GROUP BY email
         ) pd ON u.email = pd.email
         WHERE p.transaction_type = '대면'
-        HAVING distance  &lt;= #{distance}  <!-- 'HAVING'으로 거리 필터링 -->
+        HAVING distance &lt;= #{distance} <!-- 'HAVING'으로 거리 필터링 -->
         ORDER BY distance ASC;
     </select>
 

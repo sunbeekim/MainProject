@@ -29,16 +29,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**", "/topic/**")) // WebSocket 경로에서 CSRF 제외
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .headers(headers -> headers
-                        .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "default-src 'self'; " +
-                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-                                        "connect-src 'self' ws://localhost:8081 ws://127.0.0.1:8081; " +
-                                        "img-src 'self' data:;"
-                        ))
-                )
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 안함
+
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -67,7 +60,12 @@ public class SecurityConfig {
                                 "/api/core/market/products/requests",
                                 "/api/core/market/products/requests/approve",
                                 "/api/core/market/products/users/**",
-                                "/api/core/market/products/nearby"
+                                "/api/core/market/products/nearby",
+                                "/api/core/market/transactions",
+                                "/api/core/market/transactions/**",
+                                "/api/core/market/payments",
+                                "/api/core/market/payments/**"
+
                         ).authenticated()
 
                         .anyRequest().authenticated()

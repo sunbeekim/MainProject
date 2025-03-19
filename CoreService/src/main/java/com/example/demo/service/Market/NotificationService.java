@@ -1,5 +1,4 @@
 package com.example.demo.service.Market;
-/** 상품 요청 발생 시 이메일 및 푸시 알림 전송 **/
 
 import com.example.demo.dto.Market.NotificationMessage;
 import lombok.RequiredArgsConstructor;
