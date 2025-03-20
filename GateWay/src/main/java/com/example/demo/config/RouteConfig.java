@@ -36,7 +36,7 @@ public class RouteConfig {
                 : "http://localhost:8001";
 
         final String webSocketUri = "prod".equals(activeProfile)
-                ? "wss://core-container:8081" // 도커 브릿지 네트워크로 사용하기 때문에 wss 사용 해도 되지만 ws도 가능
+                ? "ws://core-container:8081" // 도커 브릿지 네트워크로 사용하기 때문에 wss 사용 해도 되지만 ws도 가능
                 : "ws://localhost:8081";
 
         System.out.println("Core URI: " + coreUri);
