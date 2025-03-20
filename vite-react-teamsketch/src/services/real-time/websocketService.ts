@@ -8,7 +8,7 @@ const subscriptions: Map<string, StompSubscription> = new Map();
 
 // 환경 변수에서 백엔드 URL 가져오기 (기본값은 localhost:8080)
 const BACKEND_URL = apiConfig.endpoints.core.websocket;
-
+console.log("BACKEND_URL",BACKEND_URL);
 /**
  * WebSocket 연결 설정 및 관리를 위한 서비스
  */
@@ -56,9 +56,9 @@ export const websocketService = {
         console.error('WebSocket 에러:', frame);
       },
       // debug 함수 설정 - 디버깅 강화
-      debug: (str) => {
-        console.log('[STOMP]', str);
-      }
+    //   debug: (str) => {
+    //     console.log('[STOMP]', str);
+    //   }
     });
 
     // 연결 시작
