@@ -1,6 +1,6 @@
 const isDev = process.env.NODE_ENV === 'development';
 const BASE_URL = isDev ? 'http://localhost:8080/api' : 'https://sunbee.world/api';
-const REALTIME_URL = isDev ? 'http://localhost:8080/ws' : 'https://sunbee.world/ws';
+const REALTIME_URL = isDev ? 'ws://localhost:8080/ws' : 'wss://sunbee.world/ws';
 
 export const apiConfig = {
   baseURL: BASE_URL,
