@@ -109,5 +109,27 @@
         <result property="unreadCount" column="unread_count"/>
     </resultMap>
 
+    <!-- 모집중 또는 승인된 채팅방 조회-->
+    <select id="findActiveChatRoomsByUser" resultMap="ChatRoomMap">
+        SELECT cr.*, 
+               p.title AS product_name,
+               CASE WHEN cr.seller_email = #{email} THEN cr.buyer_email ELSE cr.seller_email END AS other_user_email
+        FROM chat_rooms cr
+        JOIN products p ON cr.product_id = p.id
+        LEFT JOIN product_requests pr ON p.id = pr.product_id 
+                                     AND pr.requester_email = cr.buyer_email
+        WHERE (cr.buyer_email = #{email} OR cr.seller_email = #{email})
+        AND (
+            (p.is_visible = true) -- 모집 중인 상품
+            OR 
+            (p.is_visible = false AND (
+                (cr.seller_email = #{email}) -- 판매자는 항상 접근 가능
+                OR
+                (cr.buyer_email = #{email} AND pr.approval_status = '승인') -- 구매자는 승인된 경우만 접근 가능
+            ))
+        )
+        ORDER BY cr.last_message_time DESC
+    </select>
+
 </mapper>
 

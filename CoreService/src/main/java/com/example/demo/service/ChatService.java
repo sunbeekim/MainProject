@@ -265,4 +265,43 @@ public class ChatService {
                 .message("채팅방 상태가 업데이트되었습니다.")
                 .build();
     }
+
+    /**
+     * 모집 중이거나 승인된 채팅방 목록 조회
+     */
+    public ChatRoomResponse getActiveChatRoomsByUser(String userEmail) {
+        List<ChatRoom> chatRooms = chatRoomMapper.findActiveChatRoomsByUser(userEmail);
+        List<ChatRoom> enhancedChatRooms = new ArrayList<>();
+        
+        for (ChatRoom room : chatRooms) {
+            Product product = productMapper.findById(room.getProductId(), userEmail);
+            if (product != null) {
+                room.setProductName(product.getTitle());
+                
+                // 대화 상대 정보 설정
+                String otherEmail = room.getSellerEmail().equals(userEmail) ? 
+                        room.getBuyerEmail() : room.getSellerEmail();
+                User otherUser = userMapper.findByEmail(otherEmail);
+                if (otherUser != null) {
+                    room.setOtherUserName(otherUser.getNickname());
+                }
+                
+                // 상품 이미지 설정
+                String thumbnailPath = getProductThumbnailImage(room.getProductId());
+                room.setProductImageUrl(thumbnailPath);
+                
+                // 읽지 않은 메시지 수 설정
+                int unreadCount = chatMessageMapper.countUnreadMessages(room.getChatroomId(), userEmail);
+                room.setUnreadCount(unreadCount);
+                
+                enhancedChatRooms.add(room);
+            }
+        }
+        
+        return ChatRoomResponse.builder()
+                .success(true)
+                .message("모집 중이거나 승인된 채팅방 목록 조회 성공")
+                .chatRooms(enhancedChatRooms)
+                .build();
+    }
 }
