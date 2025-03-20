@@ -35,8 +35,15 @@ export const useNotification = ({
     }
 
     try {
+      console.log(`[알림] ${userEmail} 사용자의 웹소켓 연결 시도...`);
       websocketService.connect(token);
-      setIsConnected(websocketService.isConnected());
+      
+      // 연결 상태를 주기적으로 확인하는 간단한 방법
+      setTimeout(() => {
+        const connected = websocketService.isConnected();
+        console.log(`[알림] 웹소켓 연결 상태: ${connected}`);
+        setIsConnected(connected);
+      }, 1000);
     } catch (error) {
       console.error('웹소켓 연결 오류:', error);
     }
@@ -55,11 +62,16 @@ export const useNotification = ({
 
   // 사용자 알림 구독
   useEffect(() => {
-    if (!userEmail || !isConnected) return;
+    if (!userEmail || !websocketService.isConnected()) {
+      console.log(`[알림] 구독 조건 미충족: userEmail=${!!userEmail}, connected=${websocketService.isConnected()}`);
+      return;
+    }
 
+    console.log(`[알림] ${userEmail} 사용자의 알림 구독 시작...`);
     const subscriptionId = websocketService.subscribeToUserNotifications(
       userEmail,
       (notification) => {
+        console.log('[알림] 새 알림 수신:', notification);
         setNotifications((prevNotifications) => [
           ...prevNotifications,
           {
@@ -72,10 +84,25 @@ export const useNotification = ({
 
     return () => {
       if (subscriptionId) {
+        console.log(`[알림] ${subscriptionId} 구독 해제`);
         websocketService.unsubscribe(subscriptionId);
       }
     };
   }, [userEmail, isConnected]);
+
+  // 웹소켓 연결 상태 모니터링
+  useEffect(() => {
+    const checkConnectionStatus = () => {
+      const connected = websocketService.isConnected();
+      if (isConnected !== connected) {
+        console.log(`[알림] 연결 상태 변경: ${isConnected} -> ${connected}`);
+        setIsConnected(connected);
+      }
+    };
+
+    const intervalId = setInterval(checkConnectionStatus, 5000);
+    return () => clearInterval(intervalId);
+  }, [isConnected]);
 
   // 컴포넌트 마운트 시 한 번 연결
   useEffect(() => {

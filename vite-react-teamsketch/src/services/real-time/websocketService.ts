@@ -6,7 +6,7 @@ let stompClient: Client | null = null;
 const subscriptions: Map<string, StompSubscription> = new Map();
 
 // 환경 변수에서 백엔드 URL 가져오기 (기본값은 localhost:8080)
-const BACKEND_URL = 'ws://localhost:8080/ws';
+const BACKEND_URL = 'ws://localhost:8081/ws';
 
 /**
  * WebSocket 연결 설정 및 관리를 위한 서비스
@@ -30,7 +30,7 @@ export const websocketService = {
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      debug: false
+      debug: true // 디버깅 활성화
     };
 
     // 사용자 설정과 기본 설정 병합
@@ -45,6 +45,8 @@ export const websocketService = {
       connectHeaders: token ? { 'Authorization': `Bearer ${token}` } : {},
       onConnect: () => {
         console.log('WebSocket 연결 성공');
+        // 연결 시 구독 재구성
+        websocketService.resubscribeAll();
       },
       onDisconnect: () => {
         console.log('WebSocket 연결 해제');
@@ -52,10 +54,10 @@ export const websocketService = {
       onStompError: (frame: IFrame) => {
         console.error('WebSocket 에러:', frame);
       },
-      // debug 함수 설정 - boolean 대신 항상 함수로 전달
-      debug: finalConfig.debug 
-        ? (str: string) => { console.log(str); }
-        : () => { /* 디버그 비활성화 */ }
+      // debug 함수 설정 - 디버깅 강화
+      debug: (str) => {
+        console.log('[STOMP]', str);
+      }
     });
 
     // 연결 시작
@@ -83,8 +85,21 @@ export const websocketService = {
    */
   subscribeToChatRoom: (chatroomId: number, callback: (message: IChatMessage) => void): string => {
     if (!stompClient || !stompClient.connected) {
-      console.error('WebSocket이 연결되지 않았습니다.');
-      return '';
+      console.error('WebSocket이 연결되지 않았습니다. 연결 시도 중...');
+      websocketService.connect();
+      
+      // 나중에 구독을 위해 콜백 함수를 저장
+      const destination = `/topic/chat.${chatroomId}`;
+      websocketService.saveSubscriptionCallback(destination, (message: IMessage) => {
+        try {
+          const chatMessage: IChatMessage = JSON.parse(message.body);
+          callback(chatMessage);
+        } catch (error) {
+          console.error('메시지 파싱 오류:', error);
+        }
+      });
+      
+      return destination;
     }
 
     const destination = `/topic/chat.${chatroomId}`;
@@ -118,9 +133,29 @@ export const websocketService = {
    * @returns 구독 ID (구독 해제 시 필요)
    */
   subscribeToUserNotifications: (userEmail: string, callback: (notification: INotification) => void): string => {
-    if (!stompClient || !stompClient.connected) {
-      console.error('WebSocket이 연결되지 않았습니다.');
+    if (!userEmail) {
+      console.error('WebSocket 알림 구독 오류: 사용자 이메일이 누락되었습니다.');
       return '';
+    }
+    
+    if (!stompClient || !stompClient.connected) {
+      console.error('WebSocket이 연결되지 않았습니다. 연결 시도 중...');
+      websocketService.connect();
+      
+      // 나중에 구독을 위해 콜백 함수를 저장
+      const destination = `/topic/user/${userEmail}`;
+      console.log(`웹소켓 연결 안됨: ${destination} 경로 콜백 저장`);
+      websocketService.saveSubscriptionCallback(destination, (message: IMessage) => {
+        try {
+          console.log(`받은 알림 메시지(저장된 콜백): ${message.body}`);
+          const notification: INotification = JSON.parse(message.body);
+          callback(notification);
+        } catch (error) {
+          console.error('알림 메시지 파싱 오류:', error);
+        }
+      });
+      
+      return destination;
     }
 
     const destination = `/topic/user/${userEmail}`;
@@ -131,20 +166,51 @@ export const websocketService = {
       return destination;
     }
 
+    console.log(`사용자 ${userEmail}의 알림 구독 시작: ${destination}`);
+    
     // 새 구독 생성
-    const subscription = stompClient.subscribe(destination, (message: IMessage) => {
-      try {
-        const notification: INotification = JSON.parse(message.body);
-        callback(notification);
-      } catch (error) {
-        console.error('알림 메시지 파싱 오류:', error);
-      }
+    try {
+      const subscription = stompClient.subscribe(destination, (message: IMessage) => {
+        console.log(`알림 메시지 수신(${destination}):`, message.body);
+        try {
+          const notification: INotification = JSON.parse(message.body);
+          callback(notification);
+        } catch (error) {
+          console.error('알림 메시지 파싱 오류:', error);
+          console.error('파싱 실패한 원본 메시지:', message.body);
+        }
+      });
+
+      // 구독 정보 저장
+      subscriptions.set(destination, subscription);
+      console.log(`알림 구독 성공: ${destination}`);
+      return destination;
+    } catch (error) {
+      console.error(`알림 구독 중 오류(${destination}): ${error}`);
+      return '';
+    }
+  },
+
+  // 보류 중인 구독을 위한 콜백 함수 저장소
+  pendingSubscriptions: new Map<string, (message: IMessage) => void>(),
+
+  // 콜백 함수 저장
+  saveSubscriptionCallback: (destination: string, callback: (message: IMessage) => void): void => {
+    websocketService.pendingSubscriptions.set(destination, callback);
+  },
+
+  // 연결 후 모든 대기 중인 구독 복원
+  resubscribeAll: (): void => {
+    if (!stompClient || !stompClient.connected) return;
+
+    websocketService.pendingSubscriptions.forEach((callback, destination) => {
+      console.log(`재구독 시도: ${destination}`);
+      const subscription = stompClient!.subscribe(destination, callback);
+      subscriptions.set(destination, subscription);
     });
 
-    // 구독 정보 저장
-    subscriptions.set(destination, subscription);
-    console.log(`사용자 ${userEmail}의 알림 구독 시작`);
-    return destination;
+    // 처리된 대기 구독 정리
+    websocketService.pendingSubscriptions.clear();
   },
 
   /**
