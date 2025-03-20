@@ -6,7 +6,7 @@ let stompClient: Client | null = null;
 const subscriptions: Map<string, StompSubscription> = new Map();
 
 // 환경 변수에서 백엔드 URL 가져오기 (기본값은 localhost:8080)
-const BACKEND_URL = 'ws://localhost:8081/ws';
+const BACKEND_URL = 'ws://localhost:8080/ws';
 
 /**
  * WebSocket 연결 설정 및 관리를 위한 서비스
