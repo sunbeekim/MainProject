@@ -10,13 +10,15 @@ import { useCategories } from './hooks/useCategories';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AUTH_PATHS, FULLSCREEN_PATHS, FOOTER_HIDDEN_PATHS, isInitialLocationPage } from './components/layout/MainLayout';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 
 const App = () => {
+  
   const navigate = useNavigate();
   const location = useLocation();
   
   // 토큰 및 위치 설정 여부 확인
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token') || undefined;
   const locationSet = localStorage.getItem('locationSet');
   
   // 헤더/푸터를 표시할지 여부 결정
@@ -71,9 +73,10 @@ const App = () => {
   }, [navigate, location.pathname, token, locationSet]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {shouldShowHeader && <Header />}
-      <Routes>
+    <WebSocketProvider token={token} autoConnect={!!token}>
+      <div className="flex flex-col min-h-screen">
+        {shouldShowHeader && <Header />}
+        <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -105,7 +108,8 @@ const App = () => {
         }
         progressClassName="bg-primary-500"
       />
-    </div>
+      </div>
+    </WebSocketProvider>
   );
 };
 

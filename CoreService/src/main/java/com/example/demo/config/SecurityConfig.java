@@ -60,9 +60,11 @@ public class SecurityConfig {
                                 "/api/core/market/products/images/**",
                                 "/api/core/market/products/{id}",
                                 // WebSocket 관련 허용
+                                "/ws",
                                 "/ws/**",
+                                "/ws/redis/**",                                                         
                                 "/topic/**",
-                                "/app/**",
+                                "/app/**",                           
                                 // 채팅 관련 API
                                 "/api/core/chat/**",
                                 "/api/core/chat/rooms/**",
