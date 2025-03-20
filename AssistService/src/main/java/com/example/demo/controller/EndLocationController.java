@@ -23,7 +23,7 @@ public class EndLocationController {
     @GetMapping("/search")
     public ResponseEntity<?> searchAddress(@RequestParam String query) {
         try {
-            log.info("Received search query: {}", query);
+         
             
             String kakaoUrl = "https://dapi.kakao.com/v2/local/search/keyword.json"
                 + "?query=" + query

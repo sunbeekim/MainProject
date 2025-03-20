@@ -57,6 +57,13 @@ dependencies {
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// Spring Boot Redis Starter
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// JSON 직렬화 관련 (옵션)
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 }
 
 

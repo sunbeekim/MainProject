@@ -1,5 +1,6 @@
 const isDev = process.env.NODE_ENV === 'development';
 const BASE_URL = isDev ? 'http://localhost:8080/api' : 'https://sunbee.world/api';
+
 // 2번
 export const apiConfig = {
   baseURL: BASE_URL,
@@ -55,6 +56,10 @@ export const apiConfig = {
       approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
       updateMessagesRead: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/read`,
       sendMessage: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/messages`,
+
+      requestProduct: `${BASE_URL}/core/market/products/requests/with-chat`,
+
+
     },
     ai: {
       base: `${BASE_URL}/ai`,

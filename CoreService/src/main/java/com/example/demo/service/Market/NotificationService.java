@@ -1,29 +1,50 @@
 package com.example.demo.service.Market;
 
+import com.example.demo.dto.Market.NotificationMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor  // 자동으로 생성자 생성
+@Slf4j  // 로깅 추가
 public class NotificationService {
-
     /** 상품 요청 발생 시 이메일 및 푸시 알림 전송 **/
-    public void sendNotification(String recipientEmail, String requesterEmail, Long productId) {
-        String subject = "새로운 상품 요청 도착!";
-        String message = "사용자 " + requesterEmail + "님이 상품 (ID: " + productId + ")에 대한 요청을 보냈습니다.";
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
-        // 이메일 전송
-        sendEmail(recipientEmail, subject, message);
+    // 알림용 Topic을 명확하게 지정
+    private final @Qualifier("notificationChannelTopic") ChannelTopic notificationChannelTopic;
 
-        // 푸시 알림 전송
-        sendPushNotification(recipientEmail, message);
-    }
+    public void sendNotification(String receiverEmail, String message) {
+        try {
+            log.info("알림 전송 시도: 수신자={}, 메시지={}", receiverEmail, message);
+            
+            NotificationMessage notification = new NotificationMessage(receiverEmail, message);
 
-    private void sendEmail(String recipient, String subject, String message) {
-        System.out.println("이메일 전송: " + recipient + " | 제목: " + subject + " | 내용: " + message);
-    }
-
-    private void sendPushNotification(String recipient, String message) {
-        System.out.println("푸시 알림 전송: " + recipient + " | 내용: " + message);
+            // WebSocket을 통해 클라이언트에게 즉시 전송 (먼저 처리)
+            String destination = "/topic/user/" + receiverEmail;
+            messagingTemplate.convertAndSend(destination, notification);
+            log.info("WebSocket으로 알림 전송 완료: destination={}", destination);
+            
+            // 세션 및 연결된 클라이언트 수 확인 (디버깅용)
+            log.info("messagingTemplate: {}", messagingTemplate);
+            
+            try {
+                // Redis Pub/Sub으로 알림 전송 (옵션)
+                redisTemplate.convertAndSend(notificationChannelTopic.getTopic(), notification);
+                log.info("Redis에 알림 발행 완료: topic={}", notificationChannelTopic.getTopic());
+            } catch (Exception redisEx) {
+                // Redis 문제가 있더라도 WebSocket 전송은 계속 진행
+                log.warn("Redis 발행 중 오류 발생 (WebSocket 전송은 완료됨): {}", redisEx.getMessage());
+            }
+        } catch (Exception e) {
+            log.error("알림 전송 중 오류 발생: {}", e.getMessage(), e);
+        }
     }
 }
+

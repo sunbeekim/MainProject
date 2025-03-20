@@ -7,6 +7,7 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import com.example.demo.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 
 @Configuration
 public class RouteConfig {
@@ -34,9 +35,15 @@ public class RouteConfig {
                 ? "http://fastapi-container:8001"
                 : "http://localhost:8001";
 
+        final String webSocketUri = "prod".equals(activeProfile)
+                ? "ws://core-container:8081"
+                : "ws://localhost:8081";
+
         System.out.println("Core URI: " + coreUri);
         System.out.println("Assist URI: " + assistUri);
         System.out.println("FastAPI URI: " + fastapiUri);
+        System.out.println("WebSocket URI: " + webSocketUri);
+        
         // 여기서 엔드포인트 이름에 따라 요청이 분배됩니다다
         return builder.routes()
                 .route("coreService", r -> r
@@ -52,6 +59,20 @@ public class RouteConfig {
                         .path("/api/fastapi/**")
                         .filters(f -> f.filter(jwtFilter.apply(new JwtAuthenticationFilter.Config())))
                         .uri(fastapiUri))
+                // 웹소켓 라우팅 개선
+                .route("coreSockJsWebSocket", r -> r
+                        .path("/ws/**", "/ws", "/sockjs/**", "/sockjs", "/topic/**")
+                        .filters(f -> f
+                                // 웹소켓 헤더 보존 및 추가
+                                .preserveHostHeader()
+                                .removeRequestHeader(HttpHeaders.HOST)
+                                .addRequestHeader("Connection", "Upgrade")
+                                .addRequestHeader("Upgrade", "websocket")                            
+                                .addRequestHeader("Sec-WebSocket-Version", "13")
+                                // 인증 필터 제외 (JWT 인증은 STOMP 단에서 처리)
+                        )
+                        .uri(coreUri))
                 .build();
+                
     }
 }

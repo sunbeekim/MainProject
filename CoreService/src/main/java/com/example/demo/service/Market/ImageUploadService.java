@@ -17,11 +17,12 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ImageUploadService {
-    // **파일 저장 경로를 `/src/main/resources/static/uploads/`로 변경**
+    // **파일 저장 경로를 `/src/main/resources/static/uploads/`로 설정**
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
 
     public ResponseEntity<Object> uploadProductImages(String email, Long productId, List<MultipartFile> files) {
         List<String> uploadedPaths = new ArrayList<>();
+
         if (files == null || files.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of(
                     "status", 400,
@@ -43,9 +44,9 @@ public class ImageUploadService {
                 file.transferTo(filePath.toFile());
 
                 String imageUrl = "/uploads/product_" + email + "/product_" + productId + "/" + fileName;
-
-                uploadedPaths.add(imageUrl);                
-
+                
+                //  업로드된 이미지 경로를 리스트에 추가
+                uploadedPaths.add(imageUrl);
             }
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body(Map.of(
@@ -62,3 +63,4 @@ public class ImageUploadService {
         ));
     }
 }
+

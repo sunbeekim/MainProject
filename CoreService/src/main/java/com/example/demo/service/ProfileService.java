@@ -198,7 +198,7 @@ public class ProfileService {
                                 .build();
                     }
                 } catch (Exception e) {
-                    log.error("취미-카테고리 관계 검증 중 오류 발생: {}", e.getMessage());
+                  
                     return ProfileUpdateResponse.builder()
                             .success(false)
                             .message("취미 정보 검증 중 오류가 발생했습니다.")
@@ -223,10 +223,10 @@ public class ProfileService {
         if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
             try {
                 hobbyService.registerUserHobbies(email, request.getHobbies());
-                log.info("프로필 업데이트 - 사용자 취미 등록 완료 - 이메일: {}, 취미 개수: {}",
-                        email, request.getHobbies().size());
+               
+                      
             } catch (Exception e) {
-                log.error("프로필 업데이트 - 취미 등록 중 오류 발생 - 이메일: {}, 오류: {}", email, e.getMessage());
+          
                 // 취미 등록 실패해도 프로필 업데이트는 성공으로 처리
             }
         }

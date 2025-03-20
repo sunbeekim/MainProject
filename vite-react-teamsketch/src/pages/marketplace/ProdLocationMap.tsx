@@ -8,7 +8,6 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { updateProductForm } from '../../store/slices/productSlice';
 import { setEndLocation } from '../../store/slices/mapSlice';
 
-
 const ProdLocationMap = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
