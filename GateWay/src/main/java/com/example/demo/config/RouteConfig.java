@@ -24,7 +24,7 @@ public class RouteConfig {
         System.out.println("현재 활성화된 프로필: " + activeProfile);
 
         final String coreUri = "prod".equals(activeProfile)
-                ? "http://core-container:8081"
+                ? "http://core-container:8081" // 도커네트워크브릿지 사용하지 않고 외부 도메인 사용 시 sunbee.world 사용하는 거처럼 외부에 독립적인 서버 설정 가능
                 : "http://localhost:8081"; // 이 url로 전달 됩니다다
 
         final String assistUri = "prod".equals(activeProfile)
@@ -36,7 +36,7 @@ public class RouteConfig {
                 : "http://localhost:8001";
 
         final String webSocketUri = "prod".equals(activeProfile)
-                ? "ws://core-container:8081"
+                ? "ws://core-container:8081" // 도커 브릿지 네트워크로 사용하기 때문에 wss 사용 해도 되지만 ws도 가능
                 : "ws://localhost:8081";
 
         System.out.println("Core URI: " + coreUri);
@@ -61,7 +61,7 @@ public class RouteConfig {
                         .uri(fastapiUri))
                 // 웹소켓 라우팅 개선
                 .route("coreSockJsWebSocket", r -> r
-                        .path("/ws/**", "/ws", "/sockjs/**", "/sockjs", "/topic/**")
+                        .path("/ws/**", "/ws", "/topic/**")
                         .filters(f -> f
                                 // 웹소켓 헤더 보존 및 추가
                                 .preserveHostHeader()
@@ -71,7 +71,7 @@ public class RouteConfig {
                                 .addRequestHeader("Sec-WebSocket-Version", "13")
                                 // 인증 필터 제외 (JWT 인증은 STOMP 단에서 처리)
                         )
-                        .uri(coreUri))
+                        .uri(webSocketUri))
                 .build();
                 
     }
