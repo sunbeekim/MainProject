@@ -7,10 +7,11 @@ import Login from './pages/account/Login';
 import Signup from './pages/account/Signup';
 import MainLayout from './components/layout/MainLayout';
 import { useCategories } from './hooks/useCategories';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AUTH_PATHS, FULLSCREEN_PATHS, FOOTER_HIDDEN_PATHS, isInitialLocationPage } from './components/layout/MainLayout';
 import { WebSocketProvider } from './contexts/WebSocketContext';
+import { useNotification } from './services/real-time/useNotification';
 
 const App = () => {
   
@@ -19,6 +20,7 @@ const App = () => {
   
   // 토큰 및 위치 설정 여부 확인
   const token = localStorage.getItem('token') || undefined;
+  const userEmail = localStorage.getItem('userEmail'); // 사용자 이메일 가져오기
   const locationSet = localStorage.getItem('locationSet');
   
   // 헤더/푸터를 표시할지 여부 결정
@@ -72,10 +74,39 @@ const App = () => {
     }
   }, [navigate, location.pathname, token, locationSet]);
 
+  // 사용자가 로그인했을 때만 알림 구독
+  const NotificationHandler = () => {
+    // 알림 상태 가져오기
+    const { notifications } = useNotification({
+      userEmail: userEmail || '',
+      token: token
+    });
+    
+    // 새로운 알림이 오면 토스트 메시지 표시
+    useEffect(() => {
+      if (notifications.length > 0) {
+        const latestNotification = notifications[notifications.length - 1];
+        toast.info(latestNotification.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    }, [notifications]);
+    
+    // 이 컴포넌트는 UI를 렌더링하지 않고 알림 처리만 담당
+    return null;
+  };
+
   return (
     <WebSocketProvider token={token} autoConnect={!!token}>
       <div className="flex flex-col min-h-screen">
         {shouldShowHeader && <Header />}
+        {/* 알림 핸들러 컴포넌트 - 로그인한 경우에만 마운트 */}
+        {token && userEmail && <NotificationHandler />}
         <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />

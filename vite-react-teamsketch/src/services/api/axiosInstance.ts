@@ -47,16 +47,6 @@ export const uploadInstance = axios.create({
   withCredentials: true
 });
 
-// WebSocket 연결용 인스턴스
-export const websocketInstance = axios.create({
-  baseURL: apiConfig.baseURL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  withCredentials: true
-});
-
 // URL이 이미지 관련 패턴과 일치하는지 확인하는 함수
 const isImageRequest = (url: string): boolean => {
   return imageUrlPatterns.some(pattern => pattern.test(url));
@@ -147,20 +137,3 @@ const setupInterceptors = (instance: AxiosInstance) => {
 setupInterceptors(axiosInstance);
 setupInterceptors(uploadInstance);
 
-// WebSocket 인터셉터 설정
-websocketInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    console.error('WebSocket Request Error:', error);
-    return Promise.reject(error);
-  }
-);
-
-// WebSocket 인터셉터 적용
-setupInterceptors(websocketInstance);

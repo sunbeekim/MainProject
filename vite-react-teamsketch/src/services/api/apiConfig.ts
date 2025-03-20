@@ -1,6 +1,6 @@
 const isDev = process.env.NODE_ENV === 'development';
 const BASE_URL = isDev ? 'http://localhost:8080/api' : 'https://sunbee.world/api';
-const REALTIME_URL = isDev ? 'http://localhost:8080/ws' : 'https://sunbee.world/ws';
+
 // 2번
 export const apiConfig = {
   baseURL: BASE_URL,
@@ -55,7 +55,7 @@ export const apiConfig = {
 
       requestProduct: `${BASE_URL}/core/market/products/requests/with-chat`,
 
-      realtimeRedis: `${REALTIME_URL}`,
+
     },
     ai: {
       base: `${BASE_URL}/ai`,
