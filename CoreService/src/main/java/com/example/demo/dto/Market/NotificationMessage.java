@@ -10,4 +10,12 @@ import lombok.NoArgsConstructor;
 public class NotificationMessage {
     private String receiverEmail;
     private String message;
+    
+    @Override
+    public String toString() {
+        return "NotificationMessage{" +
+                "receiverEmail='" + receiverEmail + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

@@ -64,13 +64,17 @@ public class SecurityConfig {
                                 "/ws/**",
                                 "/ws/redis/**",                                                         
                                 "/topic/**",
+                                "/topic/user/**",
                                 "/app/**",                           
                                 // 채팅 관련 API
                                 "/api/core/chat/**",
                                 "/api/core/chat/rooms/**",
                                 "/api/core/chat/rooms/{chatroomId}/read",
                                 "/api/core/chat/rooms/{chatroomId}/approve",
-                                "/api/core/chat/messages/**"
+                                "/api/core/chat/messages/**",
+                                // 테스트
+                                "/api/core/test/**",
+                                "/api/core/test/v2/**"
                         ).permitAll()
                         // 관리자 전용 API
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN")
