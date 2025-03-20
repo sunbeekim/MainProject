@@ -1,6 +1,7 @@
 const isDev = process.env.NODE_ENV === 'development';
 const BASE_URL = isDev ? 'http://localhost:8080/api' : 'https://sunbee.world/api';
-// 2번
+const REALTIME_URL = isDev ? 'ws://localhost:8080/ws' : 'wss://sunbee.world/ws';
+
 export const apiConfig = {
   baseURL: BASE_URL,
   endpoints: {
@@ -21,8 +22,14 @@ export const apiConfig = {
       login: `${BASE_URL}/core/auth/login`,
       logout: `${BASE_URL}/core/auth/logout`,
       user: `${BASE_URL}/core/user`,
-      // 여기에 추가해보실래요? 이건 아실테니 쉽게 하는 방법 알려드릴게요 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요
+      // 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요
       // 이름정한걸 복사
+      myprodregibuy: `${BASE_URL}/core/market/products/users/registers/buy`,
+      myprodregisell: `${BASE_URL}/core/market/products/users/registers/sell`,
+      myprodreqbuy: `${BASE_URL}/core/market/products/users/requests/buy`,
+      myprodreqsell: `${BASE_URL}/core/market/products/users/requests/sell`,
+      userprod: `${BASE_URL}/core/market/products/users`,
+      mylocation:`${BASE_URL}/core/market/users/location`,
       deleteUser: `${BASE_URL}/core/auth/me/withdrawal`,
       passwordChange:`${BASE_URL}/core/auth/me/password
 `,
@@ -42,6 +49,17 @@ export const apiConfig = {
       getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
+
+      getChatRooms: `${BASE_URL}/core/chat/rooms`,
+      createChatRoom: `${BASE_URL}/core/chat/rooms`,
+      getChatRoomDetail: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}`,
+      approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
+      updateMessagesRead: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/read`,
+      sendMessage: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/messages`,
+
+      requestProduct: `${BASE_URL}/core/market/products/requests/with-chat`,
+
+      websocket: `${REALTIME_URL}`,
     },
     ai: {
       base: `${BASE_URL}/ai`,

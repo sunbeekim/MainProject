@@ -21,6 +21,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenBlacklistService blacklistService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // WebSocket 요청인지 확인하고 필터링 제외
+        String upgradeHeader = request.getHeader("Upgrade");
+        if (upgradeHeader != null && "websocket".equalsIgnoreCase(upgradeHeader)) {
+            return true; // WebSocket 요청은 필터링 제외
+        }
+        return false;
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,

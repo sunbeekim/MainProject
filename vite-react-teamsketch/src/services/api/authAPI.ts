@@ -103,6 +103,7 @@ export const passwordChangeNoneToken = async (passwordRequestData: IPasswordChan
     return response.data; // ✅ `response.data`를 반환
 };
 
+//회원 탈퇴
 export interface IwithdrawRsponse{
   status: string,
   data: {
@@ -122,7 +123,7 @@ export const withdrawUserApi = async (password: string): Promise<IwithdrawRspons
 // 미리 헤더를 포함하는 인스턴스를 만들어서 그걸 사용하기에
 // 여기서는 따로 추가안해도 됩니다
 // 요청기대값에 있는 isToken은 비밀번호 변경이
-// 토큰이 있는 경우와 없는경우를 구분하기 위한 문자열비교를 통해서 분기를 만들어 주는 것입니다다
+// 토큰이 있는 경우와 없는경우를 구분하기 위한 문자열비교를 통해서 분기를 만들어 주는 것입니다
 export const passwordApi = async ({ isToken, currentPassword, newPassword, confirmPassword }: { isToken: string, currentPassword: string, newPassword: string, confirmPassword: string }):
   // 인스턴스에서 설정하지 않은 것을 이제 여기에 추가해서
   // 만드는데 아까 적은것들이 아닌 put, post 같은것을 명시해주고()안에 기본이 아닌 apiConfig에 설정한
@@ -133,22 +134,60 @@ export const passwordApi = async ({ isToken, currentPassword, newPassword, confi
   return response.data;
 };
 
+//사용자 위치 등록 mylocation
+export interface LocationResponse {
+  status: string;
+  message: string;
+  data: null;
+}
 
+export const saveLocationApi = async ({latitude, longitude, locationName}: {  latitude: number, longitude: number, locationName: string}): Promise<LocationResponse> => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.mylocation, { latitude, longitude, locationName });
+  return response.data;
+};
+  
+//사용자가 등록한 목록 조회
+interface Product {
+  id: number;
+  productCode: string;
+  title: string;
+  description: string;
+  price: number;
+  email: string;
+  categoryId: number;
+  hobbyId: number;
+  transactionType: string;
+  registrationType: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  days: string[];
+  startDate: string;
+  endDate: string;
+  latitude: number | null;
+  longitude: number | null;
+  meetingPlace: string | null;
+  address: string | null;
+  createdAt: string;
+  imagePaths: string[];
+  thumbnailPath: string;
+  nickname: string;
+  bio: string;
+  dopamine: number;
+  visible: boolean;
+}
+interface ProductListResponse{
+  status: string;
+  message: string;
+  data: Product[];
+}
+export type ProductType = "registers/buy" | "registers/sell" | "requests/buy" | "requests/sell";
 
-//이메일 전송 API
-// const sendEmailApi = async (email: string): Promise<EmailResponse> => {
-//   const response = await axiosInstance.post(apiConfig.endpoints.assist.sendEmail, { email });
-//   return response.data;
-// }
+export const myProdListApi = async (type: ProductType): Promise<ProductListResponse> => {
+  const url = `/core/market/products/users/${type}`;
+  const response = await axiosInstance.get(url);
+  return response.data;
+};
 
-// //이메일 인증 API
-// const verifyOtpEmailApi = async ({ email, otp }: VerifyOtpRequest): Promise<VerifyOtpResponse> => {
-//   const response = await axiosInstance.post(apiConfig.endpoints.assist.verifyOtpEmail, {
-//     email,
-//     otp
-//   });
-//   return response.data;
-// }
 
 // 프로필 수정 API
 const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
@@ -163,7 +202,7 @@ export const useLogin = () => {
   });
 };
 
-// 비토큰 비번 변경 훅훅
+// 비토큰 비번 변경 훅
 export const usePasswordChangeNT = () => {
   return useMutation({
     mutationFn: passwordChangeNoneToken
@@ -230,34 +269,18 @@ export const useDeleteAccount = () => {
     mutationFn: withdrawUserApi// 회원 탈퇴 API 호출 함수
   });
 }
-//비밀번호변경
+//비밀번호 변경
 export const useChangePassword = () => {
   return useMutation({
     mutationFn: passwordApi
   });
 }
 
-// //이메일 전송 Hook 
-// export const useSendEmail = () => {
-//   return useMutation({
-//     mutationFn: sendEmailApi,
-//     onError: (error: any) => {
-//       console.error('Email 전송 실패:', error);
-//       throw new Error(error.response?.data?.message || 'Email 전송에 실패했습니다.');
-//     }
-//   });
-// };
-
-// //이메일 인증 Hook
-// export const userVerifyOtpEmail = () => {
-//   return useMutation({
-//     mutationFn: verifyOtpEmailApi,
-//     onError: (error: any) => {
-//       console.error('OTP 검증 실패:', error);
-//       throw new Error(error.response?.data?.message || '인증번호 확인에 실패했습니다.');
-//     }
-//   });
-// };
+export const useMyProdList = () => {
+  return useMutation({
+    mutationFn: myProdListApi
+  });
+}
 
 // 프로필 수정 Hook
 export const useUpdateProfile = () => {

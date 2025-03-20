@@ -220,11 +220,11 @@ const MarketList = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="w-full mt-4">
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
 
       {/* 상품 목록 */}
-      <div className="mt-4">
+      <div className="mt-4 px-4">
         <h2 className="text-lg font-semibold mb-3">{categoryName} 상품</h2>
         <div className="no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
           {products.length === 0 ? (

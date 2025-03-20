@@ -210,6 +210,11 @@ export const useRegisterProduct = () => {
   });
 };
 
+export const requestProduct = async (productId: number) => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.requestProduct, { productId });
+  return response.data;
+};
+
 // =================================================================================
 
 // 좌표로 주소 정보 가져오기

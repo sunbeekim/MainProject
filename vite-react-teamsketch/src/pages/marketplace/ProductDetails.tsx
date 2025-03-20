@@ -9,6 +9,8 @@ import { useAppSelector } from '../../store/hooks';
 import { useEffect, useState } from 'react';
 import BaseButton from '../../components/common/BaseButton';
 import { useNavigate } from 'react-router-dom';
+import { requestProduct } from '../../services/api/productAPI';
+import { toast } from 'react-toastify';
 
 const ProductDetails = () => {
   const navigate = useNavigate();
@@ -130,10 +132,15 @@ const ProductDetails = () => {
     return types[type as keyof typeof types] || type;
   };
 
-  const handleApply = () => {
-    // 상품요청 api호출
-    // 채팅방 생성 api호출
-    console.log('신청하기');
+  const handleApply = async () => {
+    const response = await requestProduct(productId);
+    if (response.status === 'success') {
+      toast.success('상품 신청이 완료되었습니다.');
+      navigate(`/`);
+    } else {
+      toast.error('상품 신청에 실패했습니다.');
+    }
+    console.log('신청하기', response);
   };
 
   return (
