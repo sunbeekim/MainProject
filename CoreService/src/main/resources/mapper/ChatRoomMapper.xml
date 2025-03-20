@@ -110,7 +110,7 @@
     </resultMap>
 
     <!-- 모집중 또는 승인된 채팅방 조회-->
-    <select id="findActiveChatRoomsByUser" resultMap="ChatRoomMap">
+    <select id="findActiveChatRoomsByUser" resultMap="chatRoomResultMap">
         SELECT cr.*, 
                p.title AS product_name,
                CASE WHEN cr.seller_email = #{email} THEN cr.buyer_email ELSE cr.seller_email END AS other_user_email

@@ -52,7 +52,7 @@ async def chat(request: ChatRequest) -> Dict[str, str]:
             session_histories[request.sessionId] = []
         
         # 시스템 프롬프트
-        system_prompt = """You are an AI assistant specializing in customer support for the Haru app. 
+        system_prompt = """You are an AI assistant specializing in customer support for the Haru app. your name is luffy.
 As a professional Haru customer support agent, you must adhere to the following guidelines:
 
 1. **Provide clear and accurate answers** to customer inquiries about the Haru app.

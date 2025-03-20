@@ -78,8 +78,8 @@ public class LlamaServiceImpl {
 
     private String translateChunk(String text, String sourceLang, String targetLang) throws Exception {
         String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
-        String apiKey = "f3bddd536ff4fe3b5e96";
-        String email = "rlatjsql11@gmail.com";
+        String apiKey = "94dea587aaa15e058ead";
+        String email = "rlatjsql12@gmail.com";
         // rlatjsql11@gmail.com f3bddd536ff4fe3b5e96
         // rlatjsql12@gmail.com 94dea587aaa15e058ead
         String urlStr = String.format(
