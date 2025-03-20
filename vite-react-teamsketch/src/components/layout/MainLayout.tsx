@@ -32,6 +32,8 @@ import InquiryHistory from '../../pages/CScenter/InquiryHistory';
 import DeleteAccount from '../../pages/account/DeleteAccount';
 import OCRUpload from '../../pages/payment/OCRUpload';
 import MyLocation from '../../pages/map/MyLocation';
+import RegistersList from '../features/list/RegistersList';
+import RequestsList from '../features/list/RequestsList';
 //================== Test =========================
 import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
@@ -61,7 +63,7 @@ export const isInitialLocationPage = () => {
   const token = localStorage.getItem('token');
   const locationSet = localStorage.getItem('locationSet');
   const path = window.location.pathname;
-  
+
   return token && !locationSet && path === '/my-location';
 };
 
@@ -72,27 +74,27 @@ const MainLayout = () => {
 
   // 스크롤 및 패딩 제외할 경로 목록 (전체 화면 컴포넌트)
   const fullscreenPaths = useMemo(() => FULLSCREEN_PATHS, []);
-  
+
   // 푸터를 숨기는 경로 목록
   const footerHiddenPaths = useMemo(() => FOOTER_HIDDEN_PATHS, []);
 
   // 현재 경로가 전체 화면 경로인지 확인
-  const isFullscreenPage = useMemo(() => 
-    fullscreenPaths.some(path => location.pathname.includes(path)), 
+  const isFullscreenPage = useMemo(() =>
+    fullscreenPaths.some(path => location.pathname.includes(path)),
     [location.pathname, fullscreenPaths]
   );
-  
+
   // 현재 경로가 푸터만 숨기는 경로인지 확인
-  const isFooterHiddenPage = useMemo(() => 
+  const isFooterHiddenPage = useMemo(() =>
     footerHiddenPaths.some(path => location.pathname.startsWith(path)),
     [location.pathname, footerHiddenPaths]
   );
-  
+
   // 첫 로그인 시 위치 설정 페이지 여부 확인
   const isInitialLocation = useMemo(() => {
     return (
-      localStorage.getItem('token') && 
-      !localStorage.getItem('locationSet') && 
+      localStorage.getItem('token') &&
+      !localStorage.getItem('locationSet') &&
       location.pathname === '/my-location'
     );
   }, [location.pathname]);
@@ -121,17 +123,17 @@ const MainLayout = () => {
   useEffect(() => {
     // 초기 높이 계산
     updateHeights();
-    
+
     // DOM이 완전히 렌더링된 후 다시 계산 (타이밍 문제 해결)
     const timer1 = setTimeout(() => {
       updateHeights();
     }, 100);
-    
+
     // 약간 더 지연된 추가 계산 (애니메이션 완료 후)
     const timer2 = setTimeout(() => {
       updateHeights();
     }, 300);
-    
+
     // resize 이벤트 리스너 등록
     window.addEventListener('resize', updateHeights);
 
@@ -152,7 +154,7 @@ const MainLayout = () => {
         paddingTop: '0'
       };
     }
-    
+
     // 푸터만 숨기는 페이지
     if (isFooterHiddenPage) {
       return {
@@ -162,7 +164,7 @@ const MainLayout = () => {
         transition: 'padding 0.2s ease-in-out'
       };
     }
-    
+
     // 일반 페이지
     return {
       height: `calc(100vh - env(safe-area-inset-bottom))`,
@@ -211,6 +213,9 @@ const MainLayout = () => {
           <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/ocr-upload" element={<OCRUpload />} />
           <Route path="/my-location" element={<MyLocation />} />
+          <Route path="/registers-list" element={<RegistersList />} />
+          <Route path="/requests-list" element={<RequestsList />} />
+
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />
