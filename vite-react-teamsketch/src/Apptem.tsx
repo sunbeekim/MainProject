@@ -1,5 +1,5 @@
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState, memo } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import PrivateRoute from './routes/PrivateRoute';
@@ -76,8 +76,8 @@ const App = () => {
     }
   }, [navigate, location.pathname, token, locationSet]);
 
-  // 사용자가 로그인했을 때만 알림 구독
-  const NotificationHandler = () => {
+  // 사용자가 로그인했을 때만 알림 구독 (메모이제이션 적용)
+  const NotificationHandler = memo(() => {
     // 로그인 정보 확인 로그 추가
     console.log('[알림 디버그] ==== NotificationHandler 시작 ====');
     console.log('[알림 디버그] 토큰 존재 여부:', !!token);
@@ -89,7 +89,7 @@ const App = () => {
       token: token
     });
     
-    // 컴포넌트 마운트 시 연결 시도
+    // 컴포넌트 마운트 시 연결 시도 (의존성 배열 최적화)
     useEffect(() => {
       console.log('[알림 디버그] NotificationHandler 마운트됨, 연결 시도...');
       if (userEmail && token) {
@@ -98,61 +98,74 @@ const App = () => {
       } else {
         console.error('[알림 디버그] 연결 불가: 인증 정보 누락');
       }
-    }, [userEmail, token, connect]);
+      
+      // 컴포넌트 언마운트 시 자원 정리
+      return () => {
+        console.log('[알림 디버그] NotificationHandler 언마운트됨');
+      };
+    }, [connect]); // connect 함수 의존성 배열에 추가
+    
+    // 마지막으로 처리한 알림의 ID를 저장
+    const [lastProcessedId, setLastProcessedId] = useState<string>('');
     
     // 새로운 알림이 오면 토스트 메시지 표시
     useEffect(() => {
-      console.log('[알림 디버그] 알림 상태 변경:', notifications.length, '개 / 연결됨:', isConnected);
+      if (notifications.length === 0 || !isConnected) return;
       
-      if (notifications.length > 0) {
-        const latestNotification = notifications[notifications.length - 1];
-        console.log('[알림 디버그] 토스트 메시지 표시 시도:', latestNotification);
-        
-        // 토스트 메시지 표시
-        try {
-          toast.info(latestNotification.message, {
-            position: "top-center",
-            autoClose: 5000, // 알림 지속 시간 증가
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "dark",
-            className: "relative flex items-center rounded-lg shadow-lg bg-primary-500 text-white text-sm p-4 mb-4 mt-12"
-          });
-          console.log('[알림 디버그] 토스트 메시지 표시 완료');
-        } catch (error) {
-          console.error('[알림 디버그] 토스트 메시지 표시 오류:', error);
-        }
+      // 최신 알림 가져오기
+      const latestNotification = notifications[notifications.length - 1];
+      
+      // 고유 ID 생성
+      const notificationId = `${latestNotification.receiverEmail}-${latestNotification.message}-${latestNotification.timestamp || Date.now()}`;
+      
+      // 마지막으로 처리한 알림과 같은지 확인
+      if (notificationId === lastProcessedId) {
+        console.log('[알림 디버그] 이미 처리된 알림, 무시:', notificationId);
+        return;
       }
-    }, [notifications, isConnected]);
+      
+      console.log('[알림 디버그] 새 알림 처리:', latestNotification);
+      
+      // 토스트 메시지 표시
+      try {
+        toast.info(latestNotification.message, {
+          toastId: notificationId, // 중복 방지를 위한 고유 ID 설정
+          position: "top-center",
+          autoClose: 2000, // 2초 후 자동으로 닫힘 (기존 설정 유지)
+          theme: "dark"
+        });
+        
+        // 처리한 알림 ID 저장
+        setLastProcessedId(notificationId);
+        
+        console.log('[알림 디버그] 토스트 메시지 표시 완료');
+      } catch (error) {
+        console.error('[알림 디버그] 토스트 메시지 표시 오류:', error);
+      }
+    }, [notifications, isConnected, lastProcessedId]);
     
     // WebSocket 연결 상태 모니터링
     useEffect(() => {
       console.log('[알림 디버그] WebSocket 연결 상태:', isConnected ? '연결됨' : '연결 안됨');
     }, [isConnected]);
     
-    // 컴포넌트 언마운트 시 로그 추가
-    useEffect(() => {
-      return () => {
-        console.log('[알림 디버그] NotificationHandler 언마운트됨');
-      };
-    }, []);
-    
     // 이 컴포넌트는 UI를 렌더링하지 않고 알림 처리만 담당
     return null;
-  };
+  });
+
+  // 사용자 정보 기반으로 NotificationHandler 마운트 여부 결정
+  const showNotificationHandler = useMemo(() => {
+    return !!(token && userEmail);
+  }, [token, userEmail]);
 
   return (
     <WebSocketProvider token={token} autoConnect={!!token}>
       <div className="flex flex-col min-h-screen">
         {shouldShowHeader && <Header />}
         
-        {/* 알림 핸들러 컴포넌트 - 로그인한 경우에만 마운트 */}
-        {token && userEmail ? <NotificationHandler /> : (() => {
-          console.log('[알림 디버그] NotificationHandler 마운트되지 않음 - token:', !!token, 'email:', !!userEmail);
-          return null;
-        })()}
+        {/* 알림 핸들러 컴포넌트 - 메모이제이션 사용 */}
+        {showNotificationHandler ? <NotificationHandler /> : null}
+        
         <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
@@ -180,6 +193,7 @@ const App = () => {
         draggable
         pauseOnHover
         theme="dark"
+        limit={3}
         toastClassName={() =>
           'relative flex items-center rounded-lg shadow-lg bg-primary-500 text-white text-sm p-4 mb-4 mt-12'
         }

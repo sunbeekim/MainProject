@@ -57,17 +57,8 @@ const TestComponent = () => {
       const token = localStorage.getItem('token');
       const myEmail = localStorage.getItem('userEmail') || 'test@test.com';
       
-      // 직접 토스트 메시지 테스트 (백엔드 요청과 별개로)
-      toast.info('직접 테스트 토스트 메시지입니다!', {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-        className: "relative flex items-center rounded-lg shadow-lg bg-primary-500 text-white text-sm p-4 mb-4 mt-12"
-      });
+      // 직접 테스트 토스트 메시지 제거 (중복 알림 방지)
+      // toast.info('직접 테스트 토스트 메시지입니다!', { ... });
       
       // 수신자 이메일 확인
       const targetEmail = recipientEmail.trim() || myEmail;
@@ -85,7 +76,12 @@ const TestComponent = () => {
       });
       
       console.log('알림 전송 요청 완료');
-      toast.success(`${targetEmail}님에게 알림을 전송했습니다!`);
+      
+      // 메시지 전송 성공 알림은 유지
+      toast.success(`${targetEmail}님에게 알림을 전송했습니다!`, {
+        position: "top-right", // 위치 변경하여 구분
+        autoClose: 2000
+      });
     } catch (error) {
       console.error('알림 전송 요청 실패:', error);
       toast.error('알림 전송 실패: ' + (error as any).message);

@@ -26,6 +26,7 @@ export const useNotification = ({
 }: NotificationHookProps): NotificationHookReturn => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [lastMessageId, setLastMessageId] = useState<string>('');
 
   // 웹소켓 연결
   const connect = useCallback(() => {
@@ -72,6 +73,18 @@ export const useNotification = ({
       userEmail,
       (notification) => {
         console.log('[알림] 새 알림 수신:', notification);
+
+        // 고유 메시지 ID 생성
+        const messageId = `${notification.receiverEmail}-${notification.message}-${notification.timestamp || new Date().toISOString()}`;
+        
+        // 마지막으로 받은 메시지와 동일한지 확인하여 중복 방지
+        if (messageId === lastMessageId) {
+          console.log('[알림] 중복 알림 무시:', messageId);
+          return;
+        }
+        
+        // 새 알림을 추가하고 마지막 메시지 ID 업데이트
+        setLastMessageId(messageId);
         setNotifications((prevNotifications) => [
           ...prevNotifications,
           {
@@ -88,7 +101,7 @@ export const useNotification = ({
         websocketService.unsubscribe(subscriptionId);
       }
     };
-  }, [userEmail, isConnected]);
+  }, [userEmail, isConnected, lastMessageId]);
 
   // 웹소켓 연결 상태 모니터링
   useEffect(() => {
