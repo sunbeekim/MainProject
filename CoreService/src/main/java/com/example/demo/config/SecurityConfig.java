@@ -62,12 +62,9 @@ public class SecurityConfig {
                                 // WebSocket 관련 허용
                                 "/ws",
                                 "/ws/**",
-                                "/ws/redis/**",
-                                "/ws/redis/topic/**",
-                                "/ws/info/**",
+                                "/ws/redis/**",                                                         
                                 "/topic/**",
-                                "/app/**",
-                                "/sockjs/**",
+                                "/app/**",                           
                                 // 채팅 관련 API
                                 "/api/core/chat/**",
                                 "/api/core/chat/rooms/**",
