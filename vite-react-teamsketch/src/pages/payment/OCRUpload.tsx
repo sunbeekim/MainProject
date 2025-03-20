@@ -30,7 +30,7 @@ const OCRUpload = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">OCR 이미지 업로드</h2>
+      <h2 className="text-xl font-semibold mb-4">사진으로 카드 추가</h2>
 
       {/* OCR 촬영 이미지 업로드 */}
       <ImageUpload
