@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import com.example.demo.filter.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.http.HttpHeaders;
 
 @Configuration
@@ -14,8 +14,8 @@ public class RouteConfig {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
 
-    @Value("${SPRING_PROFILES_ACTIVE:local}")
-    private String activeProfile;
+  
+    private String activeProfile = "prod";
 
 
     @Bean
