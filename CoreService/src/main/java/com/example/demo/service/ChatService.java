@@ -123,6 +123,8 @@ public class ChatService {
 
     /**
      * 사용자의 채팅방 목록 조회
+     * - productrequests 테이블에서 대기 또는 승인 상태인 요청과 연결된 채팅방만 조회
+     * - 사용자가 구매자이거나 상품 등록자인 경우에만 조회됨
      */
     public ChatRoomResponse getChatRoomsByUser(String userEmail) {
         List<ChatRoom> chatRooms = chatRoomMapper.findChatRoomsByUser(userEmail);
@@ -134,7 +136,8 @@ public class ChatService {
                 room.setProductName(product.getTitle());
                 
                 // 대화 상대 정보 설정
-                String otherEmail = room.getSellerEmail().equals(userEmail) ? room.getBuyerEmail() : room.getSellerEmail();
+                String otherEmail = room.getSellerEmail().equals(userEmail) ? 
+                        room.getBuyerEmail() : room.getSellerEmail();
                 User otherUser = userMapper.findByEmail(otherEmail);
                 if (otherUser != null) {
                     room.setOtherUserName(otherUser.getNickname());
@@ -144,13 +147,17 @@ public class ChatService {
                 String thumbnailPath = getProductThumbnailImage(room.getProductId());
                 room.setProductImageUrl(thumbnailPath);
                 
+                // 읽지 않은 메시지 수 설정
+                int unreadCount = chatMessageMapper.countUnreadMessages(room.getChatroomId(), userEmail);
+                room.setUnreadCount(unreadCount);
+                
                 enhancedChatRooms.add(room);
             }
         }
         
         return ChatRoomResponse.builder()
                 .success(true)
-                .message("채팅방 목록 조회 성공")
+                .message("대기 또는 승인된 요청의 채팅방 목록 조회 성공")
                 .chatRooms(enhancedChatRooms)
                 .build();
     }
@@ -268,6 +275,7 @@ public class ChatService {
 
     /**
      * 모집 중이거나 승인된 채팅방 목록 조회
+     * 상품 등록자는 모든 채팅방을, 신청자는 모집중이거나 승인된 채팅방만 볼 수 있음
      */
     public ChatRoomResponse getActiveChatRoomsByUser(String userEmail) {
         List<ChatRoom> chatRooms = chatRoomMapper.findActiveChatRoomsByUser(userEmail);
@@ -279,8 +287,16 @@ public class ChatService {
                 room.setProductName(product.getTitle());
                 
                 // 대화 상대 정보 설정
-                String otherEmail = room.getSellerEmail().equals(userEmail) ? 
-                        room.getBuyerEmail() : room.getSellerEmail();
+                String otherEmail;
+                
+                if (product.getEmail().equals(userEmail)) {
+                    // 상품 등록자인 경우, 상대방은 구매자
+                    otherEmail = room.getBuyerEmail();
+                } else {
+                    // 구매자/요청자인 경우, 상대방은 판매자
+                    otherEmail = product.getEmail();
+                }
+                
                 User otherUser = userMapper.findByEmail(otherEmail);
                 if (otherUser != null) {
                     room.setOtherUserName(otherUser.getNickname());
@@ -300,7 +316,7 @@ public class ChatService {
         
         return ChatRoomResponse.builder()
                 .success(true)
-                .message("모집 중이거나 승인된 채팅방 목록 조회 성공")
+                .message("채팅방 목록 조회 성공")
                 .chatRooms(enhancedChatRooms)
                 .build();
     }
