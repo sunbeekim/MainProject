@@ -136,3 +136,4 @@ const setupInterceptors = (instance: AxiosInstance) => {
 // 일반 인터셉터 적용
 setupInterceptors(axiosInstance);
 setupInterceptors(uploadInstance);
+

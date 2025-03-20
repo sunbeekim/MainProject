@@ -37,6 +37,7 @@ import TestComponent from '../../testpages/TestComponent';
 import TestPages from '../../testpages/TestPages';
 import TestFunc from '../../testpages/TestFunc';
 import TestGrid from '../../testpages/TestGrid';
+import SimpleChatExample from '../../components/features/chat/SimpleChatExample';
 
 // 전체 화면 (헤더/푸터 제외) 경로 목록
 export const FULLSCREEN_PATHS = [
@@ -216,6 +217,7 @@ const MainLayout = () => {
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
           <Route path="/test/grid" element={<TestGrid />} />
+          <Route path="/test/chat" element={<SimpleChatExample chatroomId={1} userEmail="test@test.com" token="testToken" />} />
         </Routes>
       </div>
     </main>

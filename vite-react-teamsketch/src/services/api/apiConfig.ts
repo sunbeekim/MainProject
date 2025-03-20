@@ -1,5 +1,6 @@
 const isDev = process.env.NODE_ENV === 'development';
 const BASE_URL = isDev ? 'http://localhost:8080/api' : 'https://sunbee.world/api';
+
 // 2번
 export const apiConfig = {
   baseURL: BASE_URL,
@@ -21,8 +22,10 @@ export const apiConfig = {
       login: `${BASE_URL}/core/auth/login`,
       logout: `${BASE_URL}/core/auth/logout`,
       user: `${BASE_URL}/core/user`,
-      // 여기에 추가해보실래요? 이건 아실테니 쉽게 하는 방법 알려드릴게요 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요
+      // 일단 복붙 아까 복사한거 여기 붙여넣기 그다음 이름 정해주세요
       // 이름정한걸 복사
+      prodlocation:`${BASE_URL}/core/market/products/nearby`,
+      mylocation:`${BASE_URL}/core/market/users/location`,
       deleteUser: `${BASE_URL}/core/auth/me/withdrawal`,
       passwordChange:`${BASE_URL}/core/auth/me/password
 `,
@@ -49,6 +52,10 @@ export const apiConfig = {
       approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
       updateMessagesRead: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/read`,
       sendMessage: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/messages`,
+
+      requestProduct: `${BASE_URL}/core/market/products/requests/with-chat`,
+
+
     },
     ai: {
       base: `${BASE_URL}/ai`,

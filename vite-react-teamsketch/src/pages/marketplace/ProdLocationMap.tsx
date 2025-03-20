@@ -13,6 +13,7 @@ const ProdLocationMap = () => {
   const dispatch = useAppDispatch();
   const endLocation = useAppSelector((state) => state.map.endLocation);
 
+
   // 검색을 통한 위치 선택 처리
   const handleEndLocationSelect = (location: {
     lat: number;
@@ -57,17 +58,17 @@ const ProdLocationMap = () => {
   };
 
   // 위치 선택 완료 처리
-  const handleLocationConfirm = () => {
-    if (endLocation) {
-      dispatch(
-        updateProductForm({
-          latitude: endLocation.lat,
-          longitude: endLocation.lng,
-          address: endLocation.address,
-          meetingPlace: endLocation.meetingPlace
-        })
-      );
-      navigate(-1);
+  const handleLocationConfirm = async () => {
+    if (endLocation) {   
+        dispatch(
+          updateProductForm({
+            latitude: endLocation.lat,
+            longitude: endLocation.lng,
+            address: endLocation.address,
+            meetingPlace: endLocation.meetingPlace
+          })
+        );
+        navigate(-1);     
     }
   };
 
