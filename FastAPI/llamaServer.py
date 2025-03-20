@@ -7,18 +7,43 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 import re
 import asyncio
+import logging
+from datetime import datetime
+
+# 로깅 설정
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[
+        logging.FileHandler('llama_server.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
 # CORS 설정
+origins = [
+    "http://localhost:8080",
+    "http://localhost:3000",
+    "http://gateway-container:8080",
+    "http://core-container:8081",
+    "http://assist-container:8082",
+    "https://sunbee.world",
+    "*"  # 개발 중에는 모든 origin 허용
+]
+
+logger.info("CORS 설정 초기화...")
+logger.info(f"허용된 Origins: {origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "*"
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 print("모델 로딩 중...")
@@ -43,8 +68,20 @@ session_histories = {}
 @app.post("/api/fastapi/chat")
 async def chat(request: ChatRequest) -> Dict[str, str]:
     try:
+        # 요청 로깅 강화
+        logger.info(f"""
+=== 새로운 채팅 요청 ===
+시간: {datetime.now()}
+세션 ID: {request.sessionId}
+메시지: {request.message}
+히스토리 길이: {len(request.history)}
+요청 헤더: {request.headers if hasattr(request, 'headers') else 'No headers'}
+======================
+""")
+        
         # 세션별 히스토리 관리
         if request.sessionId not in session_histories:
+            logger.info(f"새로운 세션 시작: {request.sessionId}")
             session_histories[request.sessionId] = []
         
         # 시스템 프롬프트
@@ -56,7 +93,7 @@ As a professional Haru customer support agent, you must adhere to the following 
 3. **Always ensure consistency in responses**, considering the context of the conversation.
 4. **For Haru app-related issues, offer step-by-step solutions** to help customers resolve their problems.
 5. **For billing, security, or personal information-related inquiries**, follow security guidelines and recommend the appropriate support channels.
-6. **If you don’t know the answer, say "I don't know" instead of making assumptions**.
+6. **If you don't know the answer, say "I don't know" instead of making assumptions**.
 7. **For feature requests or feedback, acknowledge and thank the user while guiding them to official feedback channels.**
 8. **If a user expresses frustration, respond with empathy before offering a solution.**
 9. **Do not provide answers unrelated to the Haru app.**
@@ -203,12 +240,30 @@ This guide will help you easily find and use all the main functions and screens 
         # \n은 유지하고 다른 태그만 제거
         clean_response = re.sub(r"</?(?!br\b)[a-zA-Z0-9]+>", "", response).strip()
         print(clean_response)
+
+        # 응답 로깅
+        logger.info(f"""
+=== 응답 생성 완료 ===
+세션 ID: {request.sessionId}
+응답 길이: {len(clean_response)}
+======================
+""")
         return {"response": clean_response}
 
     except Exception as e:
-        print(f"에러 발생: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        error_msg = f"에러 발생 - 세션 ID: {request.sessionId}, 에러: {str(e)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    logger.info("=== LLaMA 서버 시작 ===")
+    logger.info(f"모델: {model_name}")
+    # 호스트를 0.0.0.0으로 설정하여 외부 접근 허용
+    logger.info("서버 시작: host=0.0.0.0, port=8001")
+    uvicorn.run(
+        app, 
+        host="0.0.0.0",  # 모든 IP에서 접근 가능하도록 설정
+        port=8001,
+        log_level="info"
+    )
