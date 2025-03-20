@@ -40,4 +40,9 @@ public interface ChatRoomMapper {
         @Param("lastMessage") String lastMessage, 
         @Param("lastMessageTime") LocalDateTime lastMessageTime
     );
+
+    /**
+     * 사용자와 관련된 모집 중이거나 승인된 채팅방 목록 조회
+     */
+    List<ChatRoom> findActiveChatRoomsByUser(@Param("email") String email);
 }

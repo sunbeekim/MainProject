@@ -68,6 +68,24 @@ public class ChatController {
     }
 
     /**
+     * 모집 중이거나 승인된 채팅방 목록 조회
+     */
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponse<?>> getActiveChatRoomsByUser(
+            @RequestHeader("Authorization") String token) {
+        
+        String email = tokenUtils.getEmailFromAuthHeader(token);
+        
+        if (email == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("인증되지 않은 요청입니다.", "401"));
+        }
+        
+        ChatRoomResponse response = chatService.getActiveChatRoomsByUser(email);
+        
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    /**
      * 특정 채팅방 상세 정보 조회
      */
     @GetMapping("/{chatroomId}")

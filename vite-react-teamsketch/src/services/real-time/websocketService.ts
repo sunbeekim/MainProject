@@ -1,12 +1,13 @@
 import { Client, IMessage, StompSubscription, IFrame } from '@stomp/stompjs';
 import { WebSocketConfig, IChatMessage, INotification } from './types';
+import { apiConfig } from '../api/apiConfig';
 
 // 싱글톤 인스턴스
 let stompClient: Client | null = null;
 const subscriptions: Map<string, StompSubscription> = new Map();
 
 // 환경 변수에서 백엔드 URL 가져오기 (기본값은 localhost:8080)
-const BACKEND_URL = 'ws://localhost:8081/ws';
+const BACKEND_URL = apiConfig.endpoints.core.websocket;
 
 /**
  * WebSocket 연결 설정 및 관리를 위한 서비스

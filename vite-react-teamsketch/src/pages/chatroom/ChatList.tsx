@@ -7,7 +7,7 @@ import Loading from "../../components/common/Loading";
 const ChatList: React.FC = () => {
   const { data: chatRooms, isLoading, isError, error } = useChatRooms();
   const [mockChats, setMockChats] = useState<ChatRoom[]>([]);
-
+  console.log(chatRooms);
   // 날짜를 "3시간 전", "방금 전" 등의 형식으로 변환하는 간단한 함수
   const formatTime = (dateString: string) => {
     try {
