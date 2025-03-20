@@ -146,24 +146,48 @@ export const saveLocationApi = async ({latitude, longitude, locationName}: {  la
   return response.data;
 };
   
-//사용자 위치 기반 인근 위치 파악
-export interface Product{
+//사용자가 등록한 목록 조회
+interface Product {
   id: number;
-  name: string;
+  productCode: string;
+  title: string;
+  description: string;
   price: number;
+  email: string;
+  categoryId: number;
+  hobbyId: number;
+  transactionType: string;
+  registrationType: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  days: string[];
+  startDate: string;
+  endDate: string;
+  latitude: number | null;
+  longitude: number | null;
+  meetingPlace: string | null;
+  address: string | null;
+  createdAt: string;
   imagePaths: string[];
   thumbnailPath: string;
+  nickname: string;
+  bio: string;
+  dopamine: number;
+  visible: boolean;
 }
-export interface NearbyLocationResponse{
+interface ProductListResponse{
   status: string;
   message: string;
-  data:Product[];
+  data: Product[];
 }
+export type ProductType = "registers/buy" | "registers/sell" | "requests/buy" | "requests/sell";
 
-export const nearbyProdApi = async ({ latitude, longitude, distance }: { latitude: number, longitude: number, distance: number }): Promise<NearbyLocationResponse> => { 
-  const response = await axiosInstance.post(apiConfig.endpoints.core.prodlocation, { latitude, longitude, distance });
+export const myProdListApi = async (type: ProductType): Promise<ProductListResponse> => {
+  const url = `/core/market/products/users/${type}`;
+  const response = await axiosInstance.get(url);
   return response.data;
 };
+
 
 // 프로필 수정 API
 const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
@@ -252,16 +276,9 @@ export const useChangePassword = () => {
   });
 }
 
-//사용자 위치 저장
-export const useMyLocation = () => {
+export const useMyProdList = () => {
   return useMutation({
-    mutationFn: saveLocationApi
-  });
-}
-
-export const useNearLocation = () => { 
-  return useMutation({
-    mutationFn: nearbyProdApi
+    mutationFn: myProdListApi
   });
 }
 

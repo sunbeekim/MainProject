@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface ListItemProps {
   nickname: string;
@@ -11,23 +11,13 @@ interface ListItemProps {
 
 const ListItem: React.FC<ListItemProps> = ({ nickname, title, description, points, imageUrl }) => {
   const navigate = useNavigate();
-  const location = useLocation();
+
 
   const handleClick = () => {
-    const transaction = {
-      nickname,
-      title,
-      description,
-      points
-    };
-    if (location.pathname === '/my-products') {
-      //상품관리일때
-      navigate('/product-details', { state: transaction });
-    } else {
-      //거래내역일때
-      navigate('/transaction-detail/:transactionId', { state: transaction });
-    }
-  };
+
+    navigate('/transaction-detail/:transactionId')
+  }
+
 
   return (
     <div className="w-[600px] h-[150px] bg-white rounded-2xl border-2 flex items-center p-4 gap-3">

@@ -58,20 +58,19 @@ const ProdLocationMap = () => {
   };
 
   // 위치 선택 완료 처리
-  const handleLocationConfirm = async () => {
-    if (endLocation) {   
-        dispatch(
-          updateProductForm({
-            latitude: endLocation.lat,
-            longitude: endLocation.lng,
-            address: endLocation.address,
-            meetingPlace: endLocation.meetingPlace
-          })
-        );
-        navigate(-1);     
+  const handleLocationConfirm = () => {
+    if (endLocation) {
+      dispatch(
+        updateProductForm({
+          latitude: endLocation.lat,
+          longitude: endLocation.lng,
+          address: endLocation.address,
+          meetingPlace: endLocation.meetingPlace
+        })
+      );
+      navigate(-1);
     }
   };
-
   return (
     <div className="h-full w-full">
       <LocationLayout
