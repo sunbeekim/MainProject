@@ -13,7 +13,7 @@ import java.util.*;
 
 import com.example.demo.dao.ChatMessageDAO;
 import com.example.demo.model.ChatMessage;
-import org.springframework.beans.factory.annotation.Value;
+
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +22,8 @@ public class LlamaServiceImpl {
     private final ChatMessageDAO chatMessageDAO;
     private final ObjectMapper objectMapper = new ObjectMapper();
     
-    @Value("${SPRING_PROFILES_ACTIVE:local}") 
-    private String activeProfile;
+    
+    private String activeProfile = "prod";
 
     final String gatewayUri = "prod".equals(activeProfile)
             ? "http://gateway-container:8080"
