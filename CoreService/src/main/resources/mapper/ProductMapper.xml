@@ -323,10 +323,7 @@
         ORDER BY distance ASC;
     </select>
 
-    <!-- 요청 승인 시 거래 테이블로 이동 , 요청 승인한 상품은 삭제 -->
-    <delete id="deleteRequest" parameterType="long">
-        DELETE FROM ProductRequests WHERE id = #{requestId}
-    </delete>
+
 
 
     <!-- 결과 매핑: 이미지 리스트와 대표 이미지 포함 -->
