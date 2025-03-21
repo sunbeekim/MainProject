@@ -20,29 +20,32 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose 
 
     if (!canvas || !video) return;
 
-    // 캔버스 크기 설정
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // 캔버스 크기를 비디오 크기와 동일하게 설정
+    const updateCanvasSize = () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+    };
 
     // 카드 감지 프레임 분석
     const detectFrame = () => {
-      if (detectCard(video, canvas)) {
-        console.log('카드 감지됨 - 자동 캡처');
-        onCapture();
-        return;
-      }
-      detectionRef.current = requestAnimationFrame(detectFrame);
+        if (detectCard(video, canvas)) {
+            console.log('카드 감지됨 - 자동 캡처');
+            onCapture();
+            return;
+        }
+        detectionRef.current = requestAnimationFrame(detectFrame);
     };
 
     // 비디오 메타데이터 로드 완료 시 감지 시작
     video.addEventListener('loadedmetadata', () => {
-      detectionRef.current = requestAnimationFrame(detectFrame);
+        updateCanvasSize();
+        detectionRef.current = requestAnimationFrame(detectFrame);
     });
 
     return () => {
-      if (detectionRef.current) {
-        cancelAnimationFrame(detectionRef.current);
-      }
+        if (detectionRef.current) {
+            cancelAnimationFrame(detectionRef.current);
+        }
     };
   }, [videoRef, onCapture]);
 
