@@ -25,58 +25,64 @@ const TransactionList = () => {
 
 
   return (
-    <div className="flex flex-col">
-      <ul>
-        <li className="mt-3 flex justify-between items-center font-bold text-lg ml-4 mr-4">
-          구매 List
-          <button onClick={handlePurchaseClick} className="bg-secondary text-white p-2 rounded-full hover:bg-secondary-dark m-2">
+    <div className="flex flex-col p-4">
+      {/* 구매 리스트 섹션 */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center font-bold text-lg text-gray-800 mb-3">
+          <span>구매 List</span>
+          <button
+            onClick={handlePurchaseClick}
+            className="bg-secondary text-white p-2 rounded-full hover:bg-secondary-dark"
+          >
             View All
           </button>
-        </li>
-        <li className="my-2 border-t border-gray-300"></li>
+        </div>
+        <div className="border-t border-gray-300 my-2" />
 
-        {/* 구매 내역에서 최신 2개만 전달 */}
-        <div className="flex flex-col gap-2 items-center">
+        {/* 구매 내역에서 최신 2개만 표시 */}
+        <div className="flex flex-col gap-4">
           {purchaseList.slice(0, 2).map((item, index) => (
-            <li key={index}>
-              <ListItem
-                nickname={item.nickname}
-                title={item.title}
-                description={item.description}
-                points={item.points}
-                imageUrl={item.imageUrl}
-              />
-            </li>
-          ))}</div>
-
-
-        <li className="my-2 border-t border-gray-300"></li>
-
-        <li className="mt-2 flex justify-between items-center font-bold text-lg ml-4 mr-4">
-          판매 List
-          <button onClick={handleSalesClick} className="bg-secondary text-white p-2 rounded-full hover:bg-secondary-dark m-2">
+            <ListItem
+              key={index}
+              nickname={item.nickname}
+              title={item.title}
+              description={item.description}
+              points={item.points}
+              imageUrl={item.imageUrl}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="border-t border-gray-300 my-2" />
+      {/* 판매 리스트 섹션 */}
+      <div>
+        <div className="flex justify-between items-center font-bold text-lg text-gray-800 mb-3 mt-2">
+          <span>판매 List</span>
+          <button
+            onClick={handleSalesClick}
+            className="bg-secondary text-white p-2 rounded-full hover:bg-secondary-dark"
+          >
             View All
           </button>
-        </li>
-        <li className="my-3 border-t border-gray-300"></li>
+        </div>
+        <div className="border-t border-gray-300 my-2" />
 
-        {/* 판매 내역에서 최신 2개만 전달 */}
-        <div className="flex flex-col gap-2 items-center">
+        {/* 판매 내역에서 최신 2개만 표시 */}
+        <div className="flex flex-col gap-4 mb-20">
           {salesList.slice(0, 2).map((item, index) => (
-            <li key={index}>
-              <ListItem
-                nickname={item.nickname}
-                title={item.title}
-                description={item.description}
-                points={item.points}
-                imageUrl={item.imageUrl}
-              />
-            </li>
-
-          ))}</div>
-      </ul>
-
+            <ListItem
+              key={index}
+              nickname={item.nickname}
+              title={item.title}
+              description={item.description}
+              points={item.points}
+              imageUrl={item.imageUrl}
+            />
+          ))}
+        </div>
+      </div>
     </div>
+
   );
 };
 
