@@ -72,7 +72,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ ocrResult }) => {
       <p className="text-gray-600 mb-4">카드 ID: {cardId}</p>
 
       {/* 카드 모양 UI */}
-      <div className="w-96 h-56 relative bg-gradient-to-r from-purple-400 to-violet-500 text-white p-6 rounded-xl shadow-md mb-4 ">
+      <div className="w-full max-w-sm h-56 relative bg-gradient-to-r from-purple-400 to-violet-500 text-white p-6 rounded-xl shadow-md mb-4 ">
         <div className="text-lg font-semibold">{cardInfo.name || '카드 이름'}</div>
         <img src={creditCardImg} alt="Card Chip" className="w-12 h-10 absolute top-14 left-5" />
         <div className="mt-12 text-2xl font-bold tracking-widest text-gray-100">
