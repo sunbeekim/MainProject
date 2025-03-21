@@ -29,8 +29,8 @@ export const websocketService = {
     const defaultConfig: WebSocketConfig = {
       brokerURL: BACKEND_URL,
       reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+      heartbeatIncoming: 20000,
+      heartbeatOutgoing: 20000,
       debug: true // 디버깅 활성화
     };
 

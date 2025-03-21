@@ -65,7 +65,7 @@ const TestComponent = () => {
       console.log('알림 테스트: 보내는 사람 -', myEmail, '받는 사람 -', targetEmail);
       
       // GET 요청으로 변경하고 파라미터를 올바르게 전달
-      await axios.get('http://localhost:8080/api/core/test/v2/notify', {
+      await axios.get('http://sunbee.world:8080/api/core/test/v2/notify', {
         params: {
           email: targetEmail, // 입력한 이메일 또는 기본값
           message: notificationMessage
