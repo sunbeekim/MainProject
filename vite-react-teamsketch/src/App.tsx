@@ -12,6 +12,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AUTH_PATHS, FULLSCREEN_PATHS, FOOTER_HIDDEN_PATHS, isInitialLocationPage } from './components/layout/MainLayout';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import { useNotification } from './services/real-time/useNotification';
+import ChangePassword from './pages/account/ChangePassword';
+import ForgotPassword from './pages/account/ForgotPassword';
+import VerificationCode from './pages/account/VerificationCode';
+import VerifyMethod from './pages/account/VerifyMethod';
+import ResetPassword from './pages/account/ResetPassword';
+import DeleteAccount from './pages/account/DeleteAccount';
 
 const App = () => {
   
@@ -61,7 +67,7 @@ const App = () => {
 
   // 인증 라우팅 로직
   useEffect(() => {
-    const publicPaths = ['/login', '/signup'];
+    const publicPaths = ['/login', '/signup', "/change-password", "/forgotpassword", "/verfication-code", "/verify-method", "/reset-password", "/delete-account"];
 
     // 토큰이 없고 공개 경로가 아닌 경우 로그인 페이지로 이동
     if (!token && !publicPaths.includes(location.pathname)) {
@@ -170,6 +176,12 @@ const App = () => {
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/verfication-code" element={<VerificationCode />} />
+        <Route path="/verify-method" element={<VerifyMethod />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/delete-account" element={<DeleteAccount />} />
 
         {/* Protected Routes */}
         <Route
