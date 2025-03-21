@@ -50,7 +50,7 @@ export const apiConfig = {
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
 
-      getChatRooms: `${BASE_URL}/core/chat/rooms`,
+      getChatRooms: `${BASE_URL}/core/chat/rooms/active`,
       createChatRoom: `${BASE_URL}/core/chat/rooms`,
       getChatRoomDetail: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}`,
       approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
