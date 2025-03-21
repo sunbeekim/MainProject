@@ -5,6 +5,7 @@ import BackButton from '../forms/button/BackButton';
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
 import { useAppSelector } from '../../store/hooks';
+import FilterButton from '../common/FilterButton';
 
 const Header = () => {
   const location = useLocation();
@@ -56,12 +57,14 @@ const Header = () => {
           title: 'MarketPlace',
           actions: (
             <div className="flex gap-2">
+
               <button
                 onClick={() => navigate('/test/pages')}
                 className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
               >
                 testpage
               </button>
+              <FilterButton />
               <Iconalarm hasNotification={hasUnreadNotifications} className="w-6 h-6" />
             </div>
           )
@@ -97,7 +100,7 @@ const Header = () => {
       case '/my-location':
         return {
           title: '내 위치 설정'
-        };  
+        };
       default:
         return {
           title: getFormattedTitle(location.pathname)

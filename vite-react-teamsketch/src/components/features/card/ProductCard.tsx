@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 
 interface Product {
     id: number;
@@ -31,37 +30,37 @@ interface Product {
 
 interface ProductCardProps {
     product: Product;
+    onClick: () => void;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
-    const navigate = useNavigate();
+const ProductCard = ({ product, onClick }: ProductCardProps) => {
 
-    const handleClick = () => {
-        navigate(`/product-details/${product.id}`); // 상세보기 페이지로 이동
-    };
+
 
     return (
-        <div className="w-[600px] h-[150px] bg-white rounded-2xl border-2 flex items-center p-4 gap-3 ml-4">
-            <div className="w-[100px] h-[100px] bg-gray-200 rounded-lg">
-                <img src={product.imagePaths[0]} alt="상품 이미지" className="item-image" />
-            </div>
-
-            <div className="flex flex-col flex-1 w-full">
-                <span className="text-gray-400 text-xs">{product.nickname}</span>
-                <h3 className="text-lg font-semibold">{product.title}</h3>
-                <p className="text-gray-500 text-sm">{product.transactionType}, {product.registrationType}</p>
-
-                <div className="flex flex-col items-start">
-                    <span>{product.dopamine} point</span>
+        <div className="flex justify-center items-center">
+            <div className="w-full max-w-[600px] h-[150px] bg-white rounded-2xl border-2 flex items-center p-4 gap-3 ml-4">
+                <div className="w-[100px] h-[100px] bg-gray-200 rounded-lg">
+                    <img src={product.imagePaths[0]} className="item-image" />
                 </div>
-            </div>
 
-            <button
-                className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-600"
-                onClick={handleClick}
-            >
-                상세보기
-            </button>
+                <div className="flex flex-col flex-1 w-full">
+                    <span className="text-gray-400 text-xs">{product.nickname}</span>
+                    <h3 className="text-lg font-semibold">{product.title}</h3>
+                    <p className="text-gray-500 text-sm">{product.transactionType}, {product.registrationType}</p>
+
+                    <div className="flex flex-col items-start">
+                        <span>{product.dopamine} point</span>
+                    </div>
+                </div>
+
+                <button
+                    className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-600"
+                    onClick={onClick}
+                >
+                    상세보기
+                </button>
+            </div>
         </div>
     );
 };
