@@ -28,10 +28,14 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose 
 
     // 카드 감지 프레임 분석
     const detectFrame = () => {
-        if (detectCard(video, canvas)) {
-            console.log('카드 감지됨 - 자동 캡처');
-            onCapture();
-            return;
+        try {
+            if (detectCard(video, canvas)) {
+                console.log('카드 감지됨 - 자동 캡처');
+                onCapture();
+                return;
+            }
+        } catch (error) {
+            console.error('카드 감지 중 오류:', error);
         }
         detectionRef.current = requestAnimationFrame(detectFrame);
     };
