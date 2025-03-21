@@ -23,7 +23,7 @@ export const getProfileImage = async (): Promise<FileResponse | null> => {
 
     console.log('이미지 정보 응답:', infoResponse.data.data.imageUrl);
 
-    if (infoResponse.data?.imageUrl) {
+    if (infoResponse.data?.data?.imageUrl) {
       const imageUrl = infoResponse.data.data.imageUrl;
       const filename = getImageFilename(imageUrl);
       console.log('imageUrl', imageUrl);
