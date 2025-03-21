@@ -5,86 +5,92 @@ export const detectCard = (video: HTMLVideoElement, canvas: HTMLCanvasElement): 
     // 비디오 프레임을 캔버스에 그립니다
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    // 정확한 신용카드 비율 적용 (85.6mm x 53.98mm)
+    const cardRatio = 53.98 / 85.6;
+    const frameWidth = Math.floor(canvas.width * 0.85);
+    const frameHeight = Math.floor(frameWidth * cardRatio);
+    const frameX = Math.floor((canvas.width - frameWidth) / 2);
+    const frameY = Math.floor((canvas.height - frameHeight) / 2);
+
+    // 프레임 영역의 엣지 검출
+    const edgePoints = detectEdges(data, canvas.width, canvas.height);
     
-    // 카드의 엣지를 감지하기 위한 임계값
-    const threshold = 30;
-    const requiredMatches = 0.85; // 85% 일치율
+    // 프레임 영역 내의 엣지 포인트 수 계산
+    const pointsInFrame = countPointsInFrame(edgePoints, frameX, frameY, frameWidth, frameHeight);
+    
+    // 프레임과의 일치도 계산 (25% 이상이면 카드로 인식 - 임계값 낮춤)
+    const totalPixels = frameWidth * frameHeight;
+    const matchPercentage = (pointsInFrame / totalPixels) * 100;
+    
+    // 더 자세한 디버깅 정보 출력
+    console.log('카드 감지 상태:', {
+        캔버스크기: `${canvas.width} x ${canvas.height}`,
+        프레임크기: `${frameWidth} x ${frameHeight}`,
+        프레임위치: `X: ${frameX}, Y: ${frameY}`,
+        감지된엣지수: pointsInFrame,
+        전체픽셀수: totalPixels,
+        일치율: `${matchPercentage.toFixed(2)}%`,
+        촬영가능성: matchPercentage >= 25 ? '촬영 가능' : '정렬 필요',
+        임계값: '25%'
+    });
 
-    // 프레임 영역 계산
-    const frameWidth = canvas.width * 0.85;  // CardFrame에서 설정한 85vw와 동일
-    const frameHeight = frameWidth * (53/85); // 카드 비율
-    const frameX = (canvas.width - frameWidth) / 2;
-    const frameY = (canvas.height - frameHeight) / 2;
-
-    // 엣지 감지 및 프레임과의 일치도 계산
-    const edges = detectEdges(imageData.data, canvas.width, canvas.height, threshold);
-    const frameMatch = calculateFrameMatch(edges, frameX, frameY, frameWidth, frameHeight);
-
-    return frameMatch >= requiredMatches;
+    // 임계값을 25%로 낮춤
+    return matchPercentage >= 25;
 };
 
-// 엣지 감지 함수
-function detectEdges(pixels: Uint8ClampedArray, width: number, height: number, threshold: number): boolean[][] {
-    const edges: boolean[][] = Array(height).fill(false).map(() => Array(width).fill(false));
-    
+// 엣지 검출 함수의 임계값도 조정
+function detectEdges(imageData: Uint8ClampedArray, width: number, height: number): boolean[][] {
+    const edges: boolean[][] = Array(height).fill(null).map(() => Array(width).fill(false));
+    const threshold = 35; // 엣지 감지 임계값 낮춤 (50 -> 35)
+
     for (let y = 1; y < height - 1; y++) {
         for (let x = 1; x < width - 1; x++) {
             const idx = (y * width + x) * 4;
             
-            // 소벨 엣지 감지 적용
-            const gx = 
-                -1 * pixels[idx - 4 - width * 4] +
-                1 * pixels[idx + 4 - width * 4] +
-                -2 * pixels[idx - 4] +
-                2 * pixels[idx + 4] +
-                -1 * pixels[idx - 4 + width * 4] +
-                1 * pixels[idx + 4 + width * 4];
+            // 그레이스케일 값 계산
+            const gray = (imageData[idx] + imageData[idx + 1] + imageData[idx + 2]) / 3;
+            
+            // 주변 픽셀과의 차이 계산
+            const diff = Math.abs(gray - ((
+                imageData[idx - 4] + 
+                imageData[idx + 4] + 
+                imageData[idx - width * 4] + 
+                imageData[idx + width * 4]
+            ) / 4));
 
-            const gy = 
-                -1 * pixels[idx - 4 - width * 4] +
-                -2 * pixels[idx - width * 4] +
-                -1 * pixels[idx + 4 - width * 4] +
-                1 * pixels[idx - 4 + width * 4] +
-                2 * pixels[idx + width * 4] +
-                1 * pixels[idx + 4 + width * 4];
-
-            const magnitude = Math.sqrt(gx * gx + gy * gy);
-            edges[y][x] = magnitude > threshold;
+            edges[y][x] = diff > threshold;
         }
     }
     
     return edges;
 }
 
-// 프레임 일치도 계산
-function calculateFrameMatch(edges: boolean[][], frameX: number, frameY: number, frameWidth: number, frameHeight: number): number {
-    let matches = 0;
-    let total = 0;
-    
-    // 프레임 경계선 주변의 엣지 검사
-    for (let y = frameY; y < frameY + frameHeight; y++) {
-        for (let x = frameX; x < frameX + frameWidth; x++) {
-            if (isOnFrameBorder(x, y, frameX, frameY, frameWidth, frameHeight, 5)) {
-                total++;
-                if (edges[Math.floor(y)][Math.floor(x)]) {
-                    matches++;
-                }
+// 프레임 영역 내의 엣지 포인트 수 계산
+function countPointsInFrame(
+    edges: boolean[][],
+    frameX: number,
+    frameY: number,
+    frameWidth: number,
+    frameHeight: number
+): number {
+    let count = 0;
+    const tolerance = 10; // 프레임 경계 허용 오차 증가
+
+    // 범위 확인 및 조정
+    const startY = Math.max(0, Math.floor(frameY - tolerance));
+    const endY = Math.min(edges.length, Math.floor(frameY + frameHeight + tolerance));
+    const startX = Math.max(0, Math.floor(frameX - tolerance));
+    const endX = Math.min(edges[0].length, Math.floor(frameX + frameWidth + tolerance));
+
+    for (let y = startY; y < endY; y++) {
+        for (let x = startX; x < endX; x++) {
+            if (edges[y][x]) {
+                count++;
             }
         }
     }
-    
-    return matches / total;
-}
 
-// 프레임 경계선 주변 여부 확인
-function isOnFrameBorder(x: number, y: number, frameX: number, frameY: number, frameWidth: number, frameHeight: number, tolerance: number): boolean {
-    const distToLeft = Math.abs(x - frameX);
-    const distToRight = Math.abs(x - (frameX + frameWidth));
-    const distToTop = Math.abs(y - frameY);
-    const distToBottom = Math.abs(y - (frameY + frameHeight));
-    
-    return (
-        (distToLeft <= tolerance || distToRight <= tolerance) ||
-        (distToTop <= tolerance || distToBottom <= tolerance)
-    );
+    return count;
 }
