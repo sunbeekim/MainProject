@@ -27,22 +27,24 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
         throw new Error('비디오 요소를 찾을 수 없습니다.');
       }
 
-      let stream: MediaStream | null = null;
-
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.error('미디어 디바이스 미지원:', navigator.mediaDevices);
         throw new Error('이 브라우저는 카메라를 지원하지 않습니다.');
       }
 
+      // 모바일 환경에 맞는 제약 조건 설정
       const constraints = {
         video: {
           facingMode: isMobile ? { ideal: 'environment' } : 'user',
-          width: { ideal: 1080 },
-          height: { ideal: 1920 }
+          // 가로세로 비율을 16:9로 설정하고 크기 제한
+          aspectRatio: { ideal: 16/9 },
+          width: { min: 320, ideal: isMobile ? 720 : 1280, max: 1920 },
+          height: { min: 240, ideal: isMobile ? 1280 : 720, max: 1080 }
         }
       };
 
       console.log('카메라 권한 요청:', constraints);
+
+      let stream: MediaStream | null = null;
 
       try {
         stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -54,8 +56,9 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
           stream = await navigator.mediaDevices.getUserMedia({
             video: {
               facingMode: 'user',
-              width: { ideal: 1080 },
-              height: { ideal: 1920 }
+              aspectRatio: { ideal: 16/9 },
+              width: { min: 320, ideal: 720, max: 1920 },
+              height: { min: 240, ideal: 1280, max: 1080 }
             }
           });
           console.log('전면 카메라 스트림 획득 성공:', stream.getVideoTracks()[0].label);

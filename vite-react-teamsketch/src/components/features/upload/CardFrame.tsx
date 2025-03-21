@@ -9,11 +9,17 @@ const CardFrame: React.FC<CardFrameProps> = ({
   guideText = '카드를 프레임 안에 맞춰주세요',
   className = ''
 }) => {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
   return (
     <div
       className={`absolute inset-0 flex items-center justify-center pointer-events-none ${className}`}
     >
-      <div className="relative w-[115.56mm] h-[72.9mm]">
+      <div className={`relative ${
+        isMobile 
+        ? 'w-[85vw] h-[53vw]'  // 모바일에서는 화면 너비의 85%
+        : 'w-[115.56mm] h-[72.9mm]'  // 데스크톱에서는 실제 카드 크기
+      }`}>
         {/* 외부 반투명 오버레이 */}
         <div className="absolute inset-0 -m-[100vh] bg-black/50" />
 
