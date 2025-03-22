@@ -30,7 +30,7 @@ const OCRUpload = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">사진으로 카드 추가</h2>
+      <h2 className="text-xl font-semibold mb-4 p-10">사진으로 카드 추가</h2>
 
       {/* OCR 촬영 이미지 업로드 */}
       <ImageUpload
@@ -43,7 +43,7 @@ const OCRUpload = () => {
       {/* OCR 선택 이미지 업로드 */}
       <ImageUpload
         onUpload={handleOCRUpload}
-        className="max-w-md mx-auto mt-4"
+        className="max-w-md mx-auto mt-2 "
         type="image"
         borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500"
       />
