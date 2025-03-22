@@ -325,6 +325,7 @@
 
 
 
+
     <!-- 결과 매핑: 이미지 리스트와 대표 이미지 포함 -->
     <resultMap id="ProductWithImagesMap" type="com.example.demo.model.Market.Product">
         <id property="id" column="id"/>

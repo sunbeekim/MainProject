@@ -75,5 +75,9 @@ public interface ProductMapper {
     List<ProductResponse> findNearbyProducts(@Param("latitude") double latitude,
                                              @Param("longitude") double longitude,
                                              @Param("distance") double distance);
+
+    // 상품 승인 시 요청한 상품 ID 삭제 == 거래 테이블에서 진행 ==
+    void deleteRequest(@Param("requestId") Long requestId);
+
 }
 
