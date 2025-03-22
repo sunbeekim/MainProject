@@ -18,5 +18,3 @@ const SalesList = () => {
 }
 
 export default SalesList;
-
-//등록 요청으로 바꿔야하나?

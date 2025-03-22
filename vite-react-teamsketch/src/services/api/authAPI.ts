@@ -188,6 +188,28 @@ export const myProdListApi = async (type: ProductType): Promise<ProductListRespo
   return response.data;
 };
 
+//사용자 거래 내역 조회
+export interface Transactions{
+  id: number;
+  productId: number;
+  buyerEmail: string;
+  sellerEmail: string;
+  transactionStatus: '진행중' | '완료';
+  paymentStatus:  '미완료' | '완료';
+  price: number;
+  description: string;
+  createdAt: number[];
+}
+
+export interface TransactionsResponse{
+  status: 'success' | 'error';
+  message: string;
+  data: Transactions[] | null;
+}
+export const transactionsListApi = async (): Promise<TransactionsResponse> => {
+  const response = await axiosInstance.get(apiConfig.endpoints.core.transactionslist);
+  return response.data;
+};
 
 // 프로필 수정 API
 const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
@@ -275,13 +297,19 @@ export const useChangePassword = () => {
     mutationFn: passwordApi
   });
 }
-
+//사용자 등록,요청 상품 조회
 export const useMyProdList = () => {
   return useMutation({
     mutationFn: myProdListApi
   });
 }
 
+//사용자 거래 내역 조회
+export const useTrasactionsList = () => {
+  return useMutation({
+    mutationFn: transactionsListApi
+  });
+}
 // 프로필 수정 Hook
 export const useUpdateProfile = () => {
   return useMutation({
