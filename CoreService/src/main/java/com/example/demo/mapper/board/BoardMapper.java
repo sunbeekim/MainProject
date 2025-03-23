@@ -10,7 +10,6 @@ import java.util.List;
 @Mapper
 @Repository
 public interface BoardMapper {
-    
     // 게시판 생성
     void createBoard(Board board);
     
