@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/profile-images/**",
                                 "/chat-images/**",
                                 "/uploads/**",
+                                "/board-files/**", // 게시판 이미지 접근 허용
                                 "/api/core/auth/signup",
                                 "/api/core/auth/login",
                                 "/api/core/auth/logout",
@@ -69,7 +70,9 @@ public class SecurityConfig {
                                 "/api/core/chat/rooms/**",
                                 "/api/core/chat/rooms/{chatroomId}/read",
                                 "/api/core/chat/rooms/{chatroomId}/approve",
-                                "/api/core/chat/messages/**")
+                                "/api/core/chat/messages/**",
+                                "/api/core/boards/{boardId}/members" // 게시판 멤버 조회 API 추가
+                        )
                         .permitAll()
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
                         .requestMatchers(
