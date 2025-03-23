@@ -2,7 +2,7 @@ import MessageInput from '../../components/features/chat/MessageInput';
 import { useState, useEffect, useMemo } from 'react';
 import { useRef } from 'react';
 import { useChat } from '../../services/real-time/useChat';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useParams, useNavigate } from 'react-router-dom';
 import { MessageType } from '../../services/real-time/types';
 import { ChatRoom as ChatRoomType, getChatRoomDetail } from '../../services/api/userChatAPI';
 import { axiosInstance } from '../../services/api/axiosInstance';
@@ -42,6 +42,7 @@ const ChatRoom: React.FC = () => {
   const [connectionAttempts, setConnectionAttempts] = useState(0);
   const maxRetries = 3;
   const { constantCategories, constantHobbies } = useAppSelector((state) => state.category);
+  const navigate = useNavigate();
  
  
     
@@ -384,6 +385,11 @@ const ChatRoom: React.FC = () => {
     }
   };
 
+  // 위치보기 버튼 클릭 핸들러 추가
+  const handleLocationClick = () => {
+    navigate('/sharelocation');
+  };
+
   // 메시지 전송 핸들러
   const handleSendMessage = async (
     message: string,
@@ -481,14 +487,14 @@ const ChatRoom: React.FC = () => {
               {chatInfo?.otherUserName || '상대방'}
             </span>
             <span className="text-sm text-white/70">
-              {mainCategory && `${mainCategory}`}
-              {subCategory && ` | ${subCategory}`}
+              {mainCategory}
+              {subCategory}
             </span>
           </div>
         </div>
 
-        {/* 함께하기 버튼 - 상품 등록자일 경우에만 표시 */}
-        {show && chatInfo?.registrantEmail === userEmail && (
+        {/* 함께하기 버튼 또는 위치보기 버튼 */}
+        {show && chatInfo?.registrantEmail === userEmail ? (
           <button
             onClick={handleJoinClick}
             disabled={isDisabled}
@@ -500,6 +506,18 @@ const ChatRoom: React.FC = () => {
             "
           >
             함께하기
+          </button>
+        ) : !show && (
+          <button
+            onClick={handleLocationClick}
+            className="
+              bg-white text-primary-600 dark:bg-gray-700 dark:text-white
+              px-4 py-2 rounded-full shadow-md hover:shadow-lg
+              transition-all duration-300 hover:bg-primary-100 dark:hover:bg-gray-600
+              text-sm font-medium
+            "
+          >
+            위치보기
           </button>
         )}
       </div>

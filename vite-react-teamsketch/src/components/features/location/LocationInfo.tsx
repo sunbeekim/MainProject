@@ -210,7 +210,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
             <GridItem className="bg-primary-500 p-2 border-b border-white dark:border-primary-500">
               <button
                 onClick={onCopyLocation}
-                className="w-full bg-primary-500 rounded-none text-sm font-medium py-2.5 hover:bg-primary-600 transition-all duration-300"
+                className="w-full rounded-none pb-10"
               >
                 현재 위치 공유하기
               </button>

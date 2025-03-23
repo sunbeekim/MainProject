@@ -49,7 +49,8 @@ export const FULLSCREEN_PATHS = [
 // 푸터만 숨기는 경로 목록
 export const FOOTER_HIDDEN_PATHS = [
   '/servicechat',
-  '/chat/'
+  '/chat/',
+  '/sharelocation'
 ];
 
 // 로그인/회원가입 관련 인증 경로
