@@ -1,5 +1,5 @@
 import MessageInput from '../../components/features/chat/MessageInput';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRef } from 'react';
 import { useChat } from '../../services/real-time/useChat';
 import { Navigate, useParams, useLocation } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { axiosInstance } from '../../services/api/axiosInstance';
 import { apiConfig } from '../../services/api/apiConfig';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
+import { useUserProfileImage } from '../../services/api/profileImageAPI';
 
 interface LocationState {
   email: string;
@@ -57,6 +58,26 @@ const ChatRoom: React.FC = () => {
     useGlobalConnection: false,
     token: token || ''
   });
+
+  // 상대방 프로필 이미지 조회
+  const { data: profileImage, isLoading: isLoadingProfile } = useUserProfileImage(chatInfo?.otherUserName || '');
+
+  // 프로필 이미지 URL 생성
+  const profileImageUrl = useMemo(() => {
+    if (profileImage?.status === 'success' && profileImage.data.response) {
+      return URL.createObjectURL(profileImage.data.response);
+    }
+    return 'https://picsum.photos/600/400'; // 기본 이미지
+  }, [profileImage]);
+
+  // 컴포넌트 언마운트 시 URL 정리
+  useEffect(() => {
+    return () => {
+      if (profileImageUrl && profileImageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(profileImageUrl);
+      }
+    };
+  }, [profileImageUrl]);
 
   // 컴포넌트 마운트 시 연결 시도 (한 번만)
   useEffect(() => {
@@ -206,8 +227,41 @@ const ChatRoom: React.FC = () => {
     }
   }, [messages, previousMessages]);
 
-  // 연결 상태 및 로딩 상태 표시
-  if (isLoading || isConnecting || isLoadingMessages) {
+  // 메시지 시간 포맷팅 함수 수정
+  const formatMessageTime = (dateStr: string | number[]) => {
+    try {
+      let date: Date;
+      
+      if (Array.isArray(dateStr)) {
+        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분]
+        const [year, month, day, hour, minute] = dateStr;
+        // 초는 기본값 0으로 설정
+        date = new Date(year, month - 1, day, hour, minute, 0);
+      } else {
+        // 문자열 형식의 날짜 처리
+        date = new Date(dateStr);
+      }
+
+      // 날짜가 유효한지 확인
+      if (isNaN(date.getTime())) {
+        console.error('유효하지 않은 날짜:', dateStr);
+        return '시간 정보 없음';
+      }
+
+      // 한국 시간으로 표시
+      return new Intl.DateTimeFormat('ko-KR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }).format(date);
+    } catch (error) {
+      console.error('날짜 변환 오류:', error);
+      return '시간 정보 없음';
+    }
+  };
+
+  // 로딩 상태 표시 부분 수정
+  if (isLoading || isConnecting || isLoadingMessages || isLoadingProfile) {
     return (
       <div className="flex flex-col h-full">
         {/* 채팅방 헤더는 항상 표시 */}
@@ -216,9 +270,13 @@ const ChatRoom: React.FC = () => {
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/30 shrink-0">
               <img
-                src={chatInfo?.productImageUrl || 'https://picsum.photos/600/400'}
+                src={profileImageUrl}
                 alt="프로필"
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = 'https://picsum.photos/600/400';
+                }}
               />
             </div>
             <div className="flex flex-col">
@@ -361,9 +419,13 @@ const ChatRoom: React.FC = () => {
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/30 shrink-0">
             <img
-              src={chatInfo?.productImageUrl || 'https://picsum.photos/600/400'}
+              src={profileImageUrl}
               alt="프로필"
               className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = 'https://picsum.photos/600/400';
+              }}
             />
           </div>
           <div className="flex flex-col">
@@ -397,44 +459,71 @@ const ChatRoom: React.FC = () => {
         {/* 채팅 메시지 영역 */}
         <div
           ref={chatContainerRef}
-          className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 pb-20"
+          className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 pb-24"
         >
-          {[...previousMessages, ...messages].map((msg, index) => (
+          {[...previousMessages, ...messages].sort((a, b) => {
+            // 날짜 비교를 위한 함수
+            const getTime = (date: string | number[]) => {
+              if (Array.isArray(date)) {
+                const [year, month, day, hour, minute] = date;
+                return new Date(year, month - 1, day, hour, minute).getTime();
+              }
+              return new Date(date).getTime();
+            };
+
+            // sentAt 기준으로 오름차순 정렬
+            return getTime(a.sentAt || '') - getTime(b.sentAt || '');
+          }).map((msg, index) => (
             <div key={msg.messageId || index} className="group relative">
               <div className={`flex flex-col ${msg.senderEmail === userEmail ? 'items-end' : 'items-start'}`}>
-                <div className={`max-w-[80%] rounded-2xl p-3 shadow-md ${
-                  msg.senderEmail === userEmail 
-                    ? 'bg-primary-500 text-white rounded-tr-sm' 
-                    : 'bg-white rounded-tl-sm'
-                }`}>
-                  {msg.messageType === MessageType.IMAGE ? (
-                    <img
-                      src={msg.content}
-                      alt="전송된 이미지"
-                      className="w-full max-w-xs rounded-xl"
-                    />
-                  ) : msg.messageType === MessageType.FILE ? (
-                    <a
-                      href={msg.content}
-                      download
-                      className="block p-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
-                    >
-                      📄 첨부파일
-                    </a>
-                  ) : (
-                    <p className={msg.senderEmail === userEmail ? 'text-white' : 'text-gray-800'}>
-                      {msg.content}
-                    </p>
+                {/* 닉네임 표시 */}
+                {msg.senderEmail !== userEmail && (
+                  <span className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-1">
+                    {msg.senderEmail === chatInfo?.sellerEmail 
+                      ? chatInfo?.otherUserName 
+                      : user?.nickname || '알 수 없음'}
+                  </span>
+                )}
+                {/* 메시지와 시간을 감싸는 컨테이너 */}
+                <div className="flex items-end gap-2">
+                  {/* 시간을 왼쪽에 표시 (내가 보낸 메시지일 경우) */}
+                  {msg.senderEmail === userEmail && (
+                    <span className="text-xs text-gray-500 flex-shrink-0">
+                      {formatMessageTime(msg.sentAt || '')}
+                    </span>
                   )}
-                </div>
-
-                {/* 메시지 전송 시간 표시 */}
-                <div className="text-xs text-gray-500 mt-1">
-                  {msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString('ko-KR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                  }) : '시간 정보 없음'}
+                  {/* 메시지 내용 */}
+                  <div className={`max-w-[80%] rounded-2xl p-3 shadow-md ${
+                    msg.senderEmail === userEmail 
+                      ? 'bg-primary-500 text-white rounded-tr-sm' 
+                      : 'bg-white rounded-tl-sm'
+                  }`}>
+                    {msg.messageType === MessageType.IMAGE ? (
+                      <img
+                        src={msg.content}
+                        alt="전송된 이미지"
+                        className="w-full max-w-xs rounded-xl"
+                      />
+                    ) : msg.messageType === MessageType.FILE ? (
+                      <a
+                        href={msg.content}
+                        download
+                        className="block p-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
+                      >
+                        📄 첨부파일
+                      </a>
+                    ) : (
+                      <p className={msg.senderEmail === userEmail ? 'text-white' : 'text-gray-800'}>
+                        {msg.content}
+                      </p>
+                    )}
+                  </div>
+                  {/* 시간을 오른쪽에 표시 (상대방이 보낸 메시지일 경우) */}
+                  {msg.senderEmail !== userEmail && (
+                    <span className="text-xs text-gray-500 flex-shrink-0">
+                      {formatMessageTime(msg.sentAt || '')}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -442,8 +531,8 @@ const ChatRoom: React.FC = () => {
         </div>
 
         {/* 하단 입력 영역 */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 mb-safe">
-          <div className="mx-auto max-w-screen-md mb-4">
+        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 mb-safe p-4">
+          <div className="mx-auto max-w-screen-md">
             <MessageInput onSendMessage={handleSendMessage} />
           </div>
         </div>

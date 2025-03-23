@@ -1,6 +1,7 @@
 import { axiosInstance, uploadInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { FileResponse } from '../../types/fileResponse';
+import { useQuery } from '@tanstack/react-query';
 
 const getImageFilename = (imageUrl: string): string | null => {
   if (!imageUrl) return null; // URL이 없을 경우 예외 처리
@@ -102,4 +103,72 @@ export const coreProfile = async (formData: FormData): Promise<FileResponse> => 
       code: '500'
     };
   }
+};
+
+/**
+ * 닉네임으로 사용자의 프로필 이미지 조회
+ */
+export const getUserProfileImageByNickname = async (nickname: string): Promise<FileResponse | null> => {
+  try {
+    // 1. 먼저 닉네임으로 프로필 정보 조회
+    const profileResponse = await axiosInstance.get(
+      `${apiConfig.endpoints.core.getUserProfileImage(nickname)}`
+    );
+
+    if (profileResponse.data?.status === 'success' && profileResponse.data?.data?.imageUrl) {
+      const imageUrl = profileResponse.data.data.imageUrl;
+      const filename = getImageFilename(imageUrl);
+      
+      if (!filename) {
+        console.error('유효한 이미지 파일명을 추출할 수 없습니다.');
+        return null;
+      }
+
+      // 2. 이미지 파일 조회
+      try {
+        const imageResponse = await axiosInstance.get(
+          `${apiConfig.endpoints.core.getProfileImage}/${filename}`,
+          {
+            responseType: 'arraybuffer'
+          }
+        );
+
+        const contentType = imageResponse.headers['content-type'] || 'image/jpeg';
+        const blob = new Blob([imageResponse.data], { type: contentType });
+        const imageFile = new File([blob], filename, { type: contentType });
+
+        return {
+          status: 'success',
+          data: {
+            message: filename,
+            response: imageFile
+          },
+          code: '200'
+        };
+      } catch (error) {
+        console.error('프로필 이미지 파일 조회 실패:', error);
+        return null;
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('사용자 프로필 조회 에러:', error);
+    console.error('에러 상세:', {
+      message: error instanceof Error ? error.message : '알 수 없는 에러',
+      status: (error as any).response?.status,
+      data: (error as any).response?.data
+    });
+    return null;
+  }
+};
+
+// React Query Hook 추가
+export const useUserProfileImage = (nickname: string) => {
+  return useQuery({
+    queryKey: ['userProfileImage', nickname],
+    queryFn: () => getUserProfileImageByNickname(nickname),
+    enabled: !!nickname,
+    staleTime: 1000 * 60 * 5, // 5분 동안 캐시 유지
+  });
 };

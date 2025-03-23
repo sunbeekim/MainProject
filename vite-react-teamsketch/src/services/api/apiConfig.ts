@@ -38,6 +38,7 @@ export const apiConfig = {
       uploadProfile: `${BASE_URL}/core/profiles/me/image`,
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,
       getProfileImage: `${BASE_URL}/core/profiles/image`,
+      getUserProfileImage: (nickname: string) => `${BASE_URL}/core/profiles/user/${nickname}`,
       getCategory: `${BASE_URL}/core/hobbies/categories`,
       getHobbies: `${BASE_URL}/core/hobbies`,
       getHobbiesByCategory: (categoryId: number) =>
