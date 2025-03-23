@@ -197,7 +197,7 @@ const MainLayout = () => {
           <Route path="/verfication-code" element={<VerficationCode />} />
           <Route path="/chat-list" element={<ChatList />} />
           <Route path="/product/location" element={<ProdLocationMap />} />
-          <Route path="/chat/:chatroomId" element={<ChatRoom />} />
+          <Route path="/chat/:chatroomId/:chatname" element={<ChatRoom />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/profile-manage" element={<ProfileManage />} />
           <Route path="/product-details" element={<ProductDetails />} />

@@ -247,9 +247,9 @@ export const websocketService = {
    */
   sendChatMessage: (message: Omit<IChatMessage, 'messageId' | 'sentAt' | 'senderName' | 'senderProfileUrl'>): void => {
     const messageToSend = {
-        chatroomId: message.chatroomId,
-        content: message.content,
-        messageType: message.messageType
+      chatroomId: message.chatroomId,
+      content: message.content,
+      messageType: message.messageType
     };
     websocketService.send('/app/chat/send', messageToSend);
   },

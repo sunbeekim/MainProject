@@ -3,8 +3,14 @@ package com.example.demo.controller;
 import com.example.demo.dto.chat.ChatMessageRequest;
 import com.example.demo.dto.chat.ChatMessagesResponse;
 import com.example.demo.dto.response.ApiResponse;
+import com.example.demo.mapper.ChatRoomMapper;
 import com.example.demo.model.chat.ChatMessage;
+import com.example.demo.model.chat.ChatRoom;
+import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.User;
 import com.example.demo.service.ChatMessageService;
+import com.example.demo.service.Market.NotificationService;
+import com.example.demo.service.UserService;
 import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +34,9 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
     private final TokenUtils tokenUtils;
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationService notificationService;
+    private final ChatRoomMapper chatRoomMapper;
+    private final UserMapper userMapper;
 
     /**
      * WebSocket을 통한 메시지 전송
@@ -56,6 +65,39 @@ public class ChatMessageController {
             messagingTemplate.convertAndSend(
                 "/topic/room." + messageRequest.getChatroomId(), 
                 chatMessage
+            );
+
+            // UserMapper를 직접 사용하여 사용자 정보 조회
+            User sender = userMapper.findByEmail(senderEmail);
+            String senderNickname = sender != null ? sender.getNickname() : "알 수 없음";
+
+            // 알림 메시지 구성
+            String notificationChatMessage = String.format("%s: %s", 
+                senderNickname, 
+                messageRequest.getContent().length() > 30 
+                    ? messageRequest.getContent().substring(0, 27) + "..." 
+                    : messageRequest.getContent()
+            );
+
+            // ChatRoomMapper를 직접 사용하여 채팅방 정보 조회
+            ChatRoom chatRoom = chatRoomMapper.findChatRoomById(messageRequest.getChatroomId(), senderEmail);
+            if (chatRoom == null) {
+                log.error("채팅방을 찾을 수 없음: chatroomId={}", messageRequest.getChatroomId());
+                return;
+            }
+
+            // 수신자 이메일 결정 (발신자가 구매자면 판매자에게, 발신자가 판매자면 구매자에게)
+            String receiverEmail;
+            if (senderEmail.equals(chatRoom.getBuyerEmail())) {
+                receiverEmail = chatRoom.getSellerEmail();
+            } else {
+                receiverEmail = chatRoom.getBuyerEmail();
+            }
+
+            // 수신자에게 알림 전송
+            notificationService.sendNotification(
+                receiverEmail,
+                notificationChatMessage
             );
             
             log.info("메시지 발행 완료: messageId={}", chatMessage.getMessageId());

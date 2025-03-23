@@ -72,7 +72,7 @@ const MyLocation = () => {
         childrenButton={
           <BaseButton
             variant="primary"
-            className="w-full rounded-none"
+            className="w-full rounded-none pb-10"
             onClick={handleLocationConfirm}
             disabled={isLoading}
           >

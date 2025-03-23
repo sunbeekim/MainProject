@@ -34,7 +34,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
       return;
     }
 
-    navigate(`/chat/${chatroomId}`, {
+    navigate(`/chat/${chatroomId}/${chatname}`, {
       state: {
         email: userEmail,
         otherUserEmail: email,

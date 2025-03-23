@@ -81,7 +81,7 @@ public class ChatService {
         if (existingChatRoom == null) {
             // 새로운 채팅방 생성
             chatRoom = ChatRoom.builder()
-                    .chatname(request.getChatname() != null ? request.getChatname() : product.getTitle() + " 거래 채팅")
+                    .chatname(request.getChatname() != null ? request.getChatname() : product.getTitle())
                     .productId(request.getProductId())
                     .buyerEmail(buyerEmail)
                     .lastMessage("채팅이 시작되었습니다.")
@@ -206,6 +206,8 @@ public class ChatService {
                         .build();
             }
         }
+
+        String registrantEmail = product.getEmail();
         
         String thumbnailPath = getProductThumbnailImage(product.getId());
         
@@ -229,6 +231,7 @@ public class ChatService {
                 .chatroomId(chatRoom.getChatroomId())
                 .chatname(chatRoom.getChatname())
                 .productId(chatRoom.getProductId())
+                .registrantEmail(registrantEmail)
                 .productName(product.getTitle())
                 .productImageUrl(thumbnailPath)
                 .sellerEmail(sellerEmail)

@@ -145,25 +145,8 @@ export const useChat = ({
       }
 
       try {
-        // 임시 메시지 ID 생성
-        const tempMessageId = Date.now();
-        
-        // 로컬 상태 즉시 업데이트
-        const newMessage: IChatMessage = {
-          messageId: tempMessageId,
-          chatroomId,
-          content,
-          senderEmail: userEmail,
-          messageType,
-          sentAt: new Date().toISOString(),
-          isRead: false,
-          senderName: '',
-          senderProfileUrl: ''
-        };
-
-        setMessages(prev => [...prev, newMessage]);
-
-        // 서버로 메시지 전송
+        // 서버로 메시지 전송만 하고 로컬 상태 업데이트는 제거
+        // 웹소켓 구독을 통해 메시지를 받으면 자동으로 상태가 업데이트됨
         websocketService.sendChatMessage({
           chatroomId,
           content,

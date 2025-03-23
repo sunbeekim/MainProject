@@ -9,6 +9,7 @@ export interface ChatRoom {
   productId: number;
   productName: string;
   productImageUrl: string;
+  registrantEmail: string;
   sellerEmail: string;
   buyerEmail: string;
   otherUserEmail: string;
@@ -51,6 +52,29 @@ export interface ChatRoomResponse {
   code: string;
 }
 
+export interface ChatRoomDetailResponse {
+  status: string;
+  code: string;
+  data: {
+    buyerEmail: string;
+    chatRooms: null;
+    chatname: string;
+    chatroomId: number;
+    createdAt: [number, number, number, number, number, number];
+    lastMessage: string;
+    lastMessageTime: [number, number, number, number, number, number];
+    message: string;
+    otherUserEmail: string;
+    otherUserName: string;
+    productId: number;
+    productImageUrl: string;
+    productName: string;
+    registrantEmail: string;
+    sellerEmail: string;
+    success: boolean;
+  };
+}
+
 export interface ChatRoomRequest {
   productId: number;
   sellerEmail?: string;
@@ -76,37 +100,16 @@ export const fetchChatRooms = async (): Promise<ChatRoom[]> => {
   }
 };
 
-// 채팅방 생성 또는 조회 함수
-export const createChatRoom = async (request: ChatRoomRequest): Promise<ChatRoom> => {
-  try {
-    const response = await axiosInstance.post<ChatRoomResponse>(
-      apiConfig.endpoints.core.createChatRoom,
-      request
-    );
-    
-    if (response.data.status === 'success' && response.data.data.success) {
-      console.log('채팅방 생성/조회 성공:', response.data.data.chatRoom);
-      return response.data.data.chatRoom;
-    } else {
-      console.error('채팅방 생성/조회 실패:', response.data);
-      throw new Error(response.data.data.message || '채팅방을 생성하거나 조회하는데 실패했습니다.');
-    }
-  } catch (error) {
-    console.error('채팅방 생성/조회 오류:', error);
-    throw error;
-  }
-};
-
 // 특정 채팅방 상세 정보 조회 함수
-export const getChatRoomDetail = async (chatroomId: number): Promise<ChatRoom> => {
+export const getChatRoomDetail = async (chatroomId: number): Promise<ChatRoomDetailResponse> => {
   try {
-    const response = await axiosInstance.get<ChatRoomResponse>(
+    const response = await axiosInstance.get<ChatRoomDetailResponse>(
       apiConfig.endpoints.core.getChatRoomDetail(chatroomId)
     );
+    console.log('채팅방 상세 조회 응답:', response.data);
     
     if (response.data.status === 'success' && response.data.data.success) {
-      console.log('채팅방 상세 조회 성공:', response.data.data.chatRoom);
-      return response.data.data.chatRoom;
+      return response.data;
     } else {
       console.error('채팅방 상세 조회 실패:', response.data);
       throw new Error(response.data.data.message || '채팅방 상세 정보를 가져오는데 실패했습니다.');
@@ -196,20 +199,13 @@ export const useChatRooms = () => {
 
 // 채팅방 상세 정보 조회 Hook
 export const useChatRoomDetail = (chatroomId: number) => {
-  return useQuery<ChatRoom, Error>({
+  return useQuery<ChatRoomDetailResponse, Error>({
     queryKey: ['chatRoom', chatroomId],
     queryFn: () => getChatRoomDetail(chatroomId),
     staleTime: 1000 * 60 * 5,
     retry: 1,
     refetchOnWindowFocus: false,
     enabled: !!chatroomId // chatroomId가 존재할 때만 쿼리 실행
-  });
-};
-
-// 채팅방 생성 Hook
-export const useCreateChatRoom = () => {
-  return useMutation({
-    mutationFn: createChatRoom
   });
 };
 

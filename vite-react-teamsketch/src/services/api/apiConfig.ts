@@ -52,7 +52,7 @@ export const apiConfig = {
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
 
       getChatRooms: `${BASE_URL}/core/chat/rooms/active`,
-      createChatRoom: `${BASE_URL}/core/chat/rooms`,
+  
       getChatRoomDetail: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}`,
       approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
       updateMessagesRead: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/read`,

@@ -2,7 +2,7 @@ import MessageInput from '../../components/features/chat/MessageInput';
 import { useState, useEffect, useMemo } from 'react';
 import { useRef } from 'react';
 import { useChat } from '../../services/real-time/useChat';
-import { Navigate, useParams, useLocation } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { MessageType } from '../../services/real-time/types';
 import { ChatRoom as ChatRoomType, getChatRoomDetail } from '../../services/api/userChatAPI';
 import { axiosInstance } from '../../services/api/axiosInstance';
@@ -10,15 +10,6 @@ import { apiConfig } from '../../services/api/apiConfig';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { useUserProfileImage } from '../../services/api/profileImageAPI';
-
-interface LocationState {
-  email: string;
-  otherUserEmail: string;
-  chatroomId: number;
-  nickname: string;
-  chatname: string;
-  imageUrl: string;
-}
 
 interface ChatMessage {
   messageId: number;
@@ -32,12 +23,10 @@ interface ChatMessage {
 
 const ChatRoom: React.FC = () => {
   const { chatroomId } = useParams();
-  const location = useLocation();
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
   const userEmail = user?.email || '';
-  const state = location.state as LocationState;
-  
+
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [show, setShow] = useState(true);
@@ -86,7 +75,7 @@ const ChatRoom: React.FC = () => {
       return;
     }
 
-    if (!isConnected && !isConnecting && userEmail && chatroomId && connectionAttempts < maxRetries) {
+    if (!isConnected && !isConnecting && chatroomId && connectionAttempts < maxRetries) {
       setIsConnecting(true);
       try {
         connect();
@@ -109,47 +98,63 @@ const ChatRoom: React.FC = () => {
   // 채팅방 정보 로드
   useEffect(() => {
     const loadChatRoomInfo = async () => {
-      if (!chatroomId) {
-        setError('채팅방 ID가 없습니다.');
-        setIsLoading(false);
-        return;
-      }
-
-      if (!userEmail) {
-        setError('로그인이 필요합니다.');
-        setIsLoading(false);
+      if (!chatroomId || !userEmail) {
+        setError('채팅방 정보가 올바르지 않습니다.');
         return;
       }
 
       try {
-        setIsLoading(true);
-        // state에서 정보를 가져오거나 API를 호출
-        if (state) {
+        const response = await getChatRoomDetail(Number(chatroomId));
+        const chatRoomData = response.data;
+
+        if (chatRoomData.success) {
+          // API 응답 데이터를 ChatRoom 타입에 맞게 변환
           setChatInfo({
             chatroomId: Number(chatroomId),
-            chatname: state.chatname,
-            otherUserName: state.nickname,
-            productImageUrl: state.imageUrl,
-            sellerEmail: state.otherUserEmail,
-            buyerEmail: userEmail,
-            otherUserEmail: state.otherUserEmail,
+            chatname: chatRoomData.chatname,
+            productId: chatRoomData.productId,
+            productName: chatRoomData.productName,
+            productImageUrl: chatRoomData.productImageUrl,
+            registrantEmail: chatRoomData.registrantEmail,
+            sellerEmail: chatRoomData.sellerEmail,
+            buyerEmail: chatRoomData.buyerEmail,
+            otherUserEmail: chatRoomData.otherUserEmail,
+            otherUserName: chatRoomData.otherUserName,
+            lastMessage: chatRoomData.lastMessage || '',
+            lastMessageTime: Array.isArray(chatRoomData.lastMessageTime) 
+              ? new Date(
+                  chatRoomData.lastMessageTime[0], 
+                  chatRoomData.lastMessageTime[1] - 1, 
+                  chatRoomData.lastMessageTime[2], 
+                  chatRoomData.lastMessageTime[3], 
+                  chatRoomData.lastMessageTime[4], 
+                  chatRoomData.lastMessageTime[5]
+                ).toISOString()
+              : new Date().toISOString(),
             status: 'ACTIVE',
-            lastMessage: '',
-            lastMessageTime: new Date().toISOString(),
-            unreadCount: 0,
-            productId: 0,
-            productName: '',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            createdAt: Array.isArray(chatRoomData.createdAt)
+              ? new Date(
+                  chatRoomData.createdAt[0],
+                  chatRoomData.createdAt[1] - 1,
+                  chatRoomData.createdAt[2],
+                  chatRoomData.createdAt[3],
+                  chatRoomData.createdAt[4],
+                  chatRoomData.createdAt[5]
+                ).toISOString()
+              : new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            unreadCount: 0
           });
-          setIsLoading(false);
+
+          // 상품 등록자가 아닌 경우 함께하기 버튼 숨기기
+          if (userEmail !== chatRoomData.registrantEmail) {
+            setShow(false);
+          }
         } else {
-          const chatRoomInfo = await getChatRoomDetail(Number(chatroomId));
-          setChatInfo(chatRoomInfo);
+          setError('채팅방 정보를 불러오는데 실패했습니다.');
         }
-        
       } catch (error) {
-        console.error('채팅방 정보 로드 실패:', error);
+        console.error('채팅방 정보 로딩 오류:', error);
         setError('채팅방 정보를 불러오는데 실패했습니다.');
       } finally {
         setIsLoading(false);
@@ -157,7 +162,7 @@ const ChatRoom: React.FC = () => {
     };
 
     loadChatRoomInfo();
-  }, [chatroomId, userEmail, state]);
+  }, [chatroomId, userEmail]);
 
   // 이전 메시지 로드
   useEffect(() => {
@@ -316,7 +321,8 @@ const ChatRoom: React.FC = () => {
   }
 
   // 에러가 있거나 필수 정보가 없을 때
-  if (error || !chatroomId || !userEmail) {
+  if (!chatroomId || !userEmail) {
+    console.log('채팅방 정보 로드 실패:', error);
     return <Navigate to="/chat-list" replace />;
   }
 
@@ -389,6 +395,7 @@ const ChatRoom: React.FC = () => {
           );
           
           if (response.data?.status === 'success') {
+            // 웹소켓을 통해 메시지가 전달될 것이므로 로컬 상태 업데이트는 제거
             sendImage(file.url);
           }
         } else {
@@ -401,6 +408,7 @@ const ChatRoom: React.FC = () => {
         }
       } else {
         // 텍스트 메시지 전송
+        // 웹소켓을 통해 메시지가 전달될 것이므로 로컬 상태 업데이트는 제거
         sendMessage(message.trim(), MessageType.TEXT);
       }
     } catch (error) {
@@ -438,7 +446,8 @@ const ChatRoom: React.FC = () => {
           </div>
         </div>
 
-        {show && (
+        {/* 함께하기 버튼 - 상품 등록자일 경우에만 표시 */}
+        {show && chatInfo?.registrantEmail === userEmail && (
           <button
             onClick={handleJoinClick}
             disabled={isDisabled}
@@ -459,7 +468,7 @@ const ChatRoom: React.FC = () => {
         {/* 채팅 메시지 영역 */}
         <div
           ref={chatContainerRef}
-          className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 pb-24"
+          className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 pb-32"
         >
           {[...previousMessages, ...messages].sort((a, b) => {
             // 날짜 비교를 위한 함수
@@ -479,9 +488,7 @@ const ChatRoom: React.FC = () => {
                 {/* 닉네임 표시 */}
                 {msg.senderEmail !== userEmail && (
                   <span className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-1">
-                    {msg.senderEmail === chatInfo?.sellerEmail 
-                      ? chatInfo?.otherUserName 
-                      : user?.nickname || '알 수 없음'}
+                    {chatInfo?.otherUserName || '알 수 없음'}
                   </span>
                 )}
                 {/* 메시지와 시간을 감싸는 컨테이너 */}
