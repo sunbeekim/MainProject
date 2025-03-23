@@ -18,6 +18,6 @@
     <select id="findById" parameterType="long" resultType="com.example.demo.model.Market.ProductImage">
         SELECT * FROM ProductImages WHERE id = #{imageId}
     </select>
-
+    
 </mapper>
 

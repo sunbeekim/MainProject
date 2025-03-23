@@ -245,6 +245,12 @@ export const requestProduct = async (productId: number) => {
   return response.data;
 };
 
+// 상품 승인 상태 조회
+export const getApprovalStatus = async (productId: number) => {
+  const response = await axiosInstance.get(apiConfig.endpoints.core.getApprovalStatus(productId));
+  return response.data;
+};
+
 // =================================================================================
 
 // 좌표로 주소 정보 가져오기

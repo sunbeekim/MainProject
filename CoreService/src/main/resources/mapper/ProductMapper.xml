@@ -323,7 +323,15 @@
         ORDER BY distance ASC;
     </select>
 
-
+    <!-- 특정 상품에 대한 사용자의 승인 상태 조회 -->
+    <select id="findApprovalStatus" resultType="string">
+        SELECT approval_status
+        FROM ProductRequests
+        WHERE requester_email = #{email}
+          AND product_id = #{productId}
+        ORDER BY created_at DESC
+        LIMIT 1;
+    </select>
 
     <!-- 결과 매핑: 이미지 리스트와 대표 이미지 포함 -->
     <resultMap id="ProductWithImagesMap" type="com.example.demo.model.Market.Product">

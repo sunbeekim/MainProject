@@ -75,5 +75,8 @@ public interface ProductMapper {
     List<ProductResponse> findNearbyProducts(@Param("latitude") double latitude,
                                              @Param("longitude") double longitude,
                                              @Param("distance") double distance);
+
+    // 특정 상품에 대한 사용자의 승인 상태 조회
+    String findApprovalStatus(@Param("email") String email, @Param("productId") Long productId);
 }
 

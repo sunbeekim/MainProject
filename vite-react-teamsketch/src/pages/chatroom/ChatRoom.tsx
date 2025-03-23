@@ -11,7 +11,8 @@ import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { useUserProfileImage } from '../../services/api/profileImageAPI';
 import { useAppSelector } from '../../store/hooks';
-import { useProductByProductId } from '../../services/api/productAPI';
+import { useProductByProductId, getApprovalStatus } from '../../services/api/productAPI';
+import { IconMap } from '../../components/common/Icons';
 
 interface ChatMessage {
   messageId: number;
@@ -31,7 +32,6 @@ const ChatRoom: React.FC = () => {
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [show, setShow] = useState(true);
   const [chatInfo, setChatInfo] = useState<ChatRoomType | null>(null);
   const [previousMessages, setPreviousMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,9 +43,8 @@ const ChatRoom: React.FC = () => {
   const maxRetries = 3;
   const { constantCategories, constantHobbies } = useAppSelector((state) => state.category);
   const navigate = useNavigate();
- 
- 
-    
+  const [isApproved, setIsApproved] = useState<boolean>(false);
+
   // useChat 훅 사용
   const { messages, sendMessage, sendImage, isConnected, connect } = useChat({
     chatroomId: Number(chatroomId),
@@ -187,7 +186,7 @@ const ChatRoom: React.FC = () => {
 
           // 상품 등록자가 아닌 경우 함께하기 버튼 숨기기
           if (userEmail !== chatRoomData.registrantEmail) {
-            setShow(false);
+            setIsDisabled(true);
           }
         } else {
           setError('채팅방 정보를 불러오는데 실패했습니다.');
@@ -305,6 +304,57 @@ const ChatRoom: React.FC = () => {
     }
   };
 
+  // 승인 상태 확인
+  const checkApprovalStatus = async () => {
+    if (!chatInfo?.productId) {
+      console.log('상품 ID가 없어 승인 상태를 확인할 수 없습니다.');
+      setIsApproved(false);
+      return;
+    }
+
+    try {
+      console.log('승인 상태 확인 시도: productId=', chatInfo.productId);
+      const response = await getApprovalStatus(chatInfo.productId);
+      console.log('승인 상태 확인 응답:', response);
+      
+      if (response.status === 'success' && response.data) {
+        const isApprovedStatus = response.data.status === '승인';
+        console.log('승인 상태 확인 결과:', isApprovedStatus);
+        setIsApproved(isApprovedStatus);
+      } else {
+        console.log('승인되지 않은 상태:', response);
+        setIsApproved(false);
+      }
+    } catch (error) {
+      console.error('승인 상태 확인 중 오류 발생:', error);
+      setIsApproved(false);
+    }
+  };
+
+  // chatInfo가 변경될 때마다 승인 상태 확인
+  useEffect(() => {
+    if (chatInfo?.productId) {
+      checkApprovalStatus();
+    }
+  }, [chatInfo]);
+
+  // 위치보기 버튼 클릭 핸들러
+  const handleLocationClick = () => {
+    if (!isApproved) {
+      toast.warning('승인된 사용자만 위치 정보를 볼 수 있습니다.');
+      return;
+    }
+    navigate(`/sharelocation`, { 
+      state: { 
+        email: userEmail,
+        otherUserEmail: chatInfo?.otherUserEmail,
+        chatroomId,
+        nickname: chatInfo?.otherUserName,
+        chatname: chatInfo?.chatname
+      } 
+    });
+  };
+
   // 로딩 상태 표시 부분 수정
   if (isLoading || isConnecting || isLoadingMessages || isLoadingProfile) {
     return (
@@ -377,17 +427,11 @@ const ChatRoom: React.FC = () => {
       );
       
       if (response.data?.status === 'success') {
-        setShow(false);
         setIsDisabled(true);
       }
     } catch (error) {
       console.error('함께하기 요청 실패:', error);
     }
-  };
-
-  // 위치보기 버튼 클릭 핸들러 추가
-  const handleLocationClick = () => {
-    navigate('/sharelocation');
   };
 
   // 메시지 전송 핸들러
@@ -494,7 +538,7 @@ const ChatRoom: React.FC = () => {
         </div>
 
         {/* 함께하기 버튼 또는 위치보기 버튼 */}
-        {show && chatInfo?.registrantEmail === userEmail ? (
+        {isDisabled && chatInfo?.registrantEmail === userEmail && !isApproved ? (
           <button
             onClick={handleJoinClick}
             disabled={isDisabled}
@@ -507,7 +551,7 @@ const ChatRoom: React.FC = () => {
           >
             함께하기
           </button>
-        ) : !show && (
+        ) : isApproved && (
           <button
             onClick={handleLocationClick}
             className="
@@ -517,7 +561,10 @@ const ChatRoom: React.FC = () => {
               text-sm font-medium
             "
           >
-            위치보기
+            <span className="flex items-center">              
+                <IconMap className="w-4 h-4 mr-2" onClick={handleLocationClick}/>
+                위치보기              
+            </span>
           </button>
         )}
       </div>

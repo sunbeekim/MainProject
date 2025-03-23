@@ -25,6 +25,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/core/market/products")
@@ -33,6 +36,7 @@ public class ProductController {
     private final ProductService productService;
     private final JwtTokenProvider jwtTokenProvider;
     private final ProductImageMapper productImageMapper;
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     /** 상품 등록 (구매/판매) - 이미지 업로드 포함 **/
     @PostMapping(value = "/registers", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -213,6 +217,42 @@ public class ProductController {
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getNearbyProducts(
             @RequestBody NearbyProductRequest request) {
         return productService.getNearbyProducts(request.getLatitude(), request.getLongitude(), request.getDistance());
+    }
+
+    /**
+     * 특정 상품에 대한 사용자의 승인 상태 조회
+     */
+    @GetMapping("/requests/approval-status")
+    public ResponseEntity<BaseResponse<Map<String, String>>> getApprovalStatus(
+            @RequestHeader("Authorization") String token,
+            @RequestParam Long productId) {
+        try {
+            log.info("승인 상태 조회 요청: productId={}", productId);
+            String email = jwtTokenProvider.getUsername(token);
+            
+            if (email == null) {
+                log.warn("인증되지 않은 사용자의 승인 상태 조회 시도");
+                return ResponseEntity.status(401)
+                    .body(new BaseResponse<>(null, "인증되지 않은 요청입니다."));
+            }
+
+            String approvalStatus = productService.getApprovalStatus(email, productId);
+            log.info("승인 상태 조회 결과: productId={}, status={}", productId, approvalStatus);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("status", approvalStatus != null ? approvalStatus : "미신청");
+            
+            return ResponseEntity.ok(new BaseResponse<>(response));
+            
+        } catch (IllegalArgumentException e) {
+            log.warn("승인 상태 조회 중 검증 오류: productId={}, error={}", productId, e.getMessage());
+            return ResponseEntity.badRequest()
+                .body(new BaseResponse<>(null, e.getMessage()));
+        } catch (Exception e) {
+            log.error("승인 상태 조회 중 오류 발생: productId={}, error={}", productId, e.getMessage(), e);
+            return ResponseEntity.status(500)
+                .body(new BaseResponse<>(null, "승인 상태 조회 중 오류가 발생했습니다."));
+        }
     }
 }
 
