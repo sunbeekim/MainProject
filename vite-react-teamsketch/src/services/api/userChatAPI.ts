@@ -21,6 +21,10 @@ export interface ChatRoom {
   updatedAt: string;
   unreadCount: number;
   messages?: IMessage[];
+  productInfo?: {
+    categoryId: number;
+    hobbyId: number;
+  };
 }
 
 export interface IMessage {

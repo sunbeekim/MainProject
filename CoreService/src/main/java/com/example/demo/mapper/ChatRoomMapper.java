@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import com.example.demo.model.chat.ChatRoom;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -45,4 +46,16 @@ public interface ChatRoomMapper {
      * 사용자와 관련된 모집 중이거나 승인된 채팅방 목록 조회
      */
     List<ChatRoom> findActiveChatRoomsByUser(@Param("email") String email);
+
+    /**
+     * 상품 ID와 사용자 이메일로 채팅방 조회
+     */
+    @Select("SELECT * FROM chat_rooms " +
+            "WHERE product_id = #{productId} " +
+            "AND (buyer_email = #{email} OR EXISTS (" +
+            "    SELECT 1 FROM products p " +
+            "    WHERE p.id = chat_rooms.product_id " +
+            "    AND p.email = #{email}" +
+            "))")
+    ChatRoom findChatRoomByProductIdAndEmail(@Param("productId") Long productId, @Param("email") String email);
 }

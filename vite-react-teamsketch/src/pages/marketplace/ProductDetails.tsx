@@ -9,7 +9,7 @@ import { useAppSelector } from '../../store/hooks';
 import { useEffect, useState } from 'react';
 import BaseButton from '../../components/common/BaseButton';
 import { useNavigate } from 'react-router-dom';
-import { requestProduct } from '../../services/api/productAPI';
+import { getChatRoomIdByProductId, requestProduct } from '../../services/api/productAPI';
 import { toast } from 'react-toastify';
 
 const ProductDetails = () => {
@@ -136,7 +136,8 @@ const ProductDetails = () => {
     const response = await requestProduct(productId);
     if (response.status === 'success') {
       toast.success('상품 신청이 완료되었습니다.');
-      navigate(`/`);
+      const chatroomId = await getChatRoomIdByProductId(productId);
+      navigate(`/chatroom/${chatroomId}/${productData.title}`);
     } else {
       toast.error('상품 신청에 실패했습니다.');
     }

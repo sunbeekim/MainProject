@@ -162,6 +162,28 @@ export const extractImageIdFromPath = (thumbnailPath: string): number | null => 
   }
 };
 
+// 상품 ID를 통해 채팅방 ID 조회
+export const getChatRoomIdByProductId = async (productId: number): Promise<number> => {
+  try {
+    const response = await axiosInstance.get(apiConfig.endpoints.core.getChatRoomIdByProductId(productId));
+    return response.data.data;
+  } catch (error) { 
+    console.error('채팅방 ID 조회 에러:', error);
+    throw new Error('채팅방 ID 조회에 실패했습니다.');
+  }
+};
+
+// 상품 ID를 통해 상품 조회
+export const getProductByProductId = async (productId: number): Promise<IProduct> => {
+  try {
+    const response = await axiosInstance.get(apiConfig.endpoints.core.getProductByProductId(productId));
+    return response.data.data;
+  } catch (error) {
+    console.error('상품 조회 에러:', error);
+    throw new Error('상품 조회에 실패했습니다.');
+  }
+};
+
 // React Query Hooks
 export const useProducts = () => {
   return useQuery({
@@ -186,6 +208,14 @@ export const useProductImage = (imageId: number) => {
     retry: false, // 실패 시 재시도하지 않음
     staleTime: 1000 * 60 * 5, // 5분 동안 캐시 유지
     gcTime: 1000 * 60 * 10 // 10분 동안 가비지 컬렉션 방지
+  });
+};
+
+export const useProductByProductId = (productId: number) => {
+  return useQuery({
+    queryKey: ['product', productId],
+    queryFn: () => getProductByProductId(productId),
+    enabled: !!productId
   });
 };
 

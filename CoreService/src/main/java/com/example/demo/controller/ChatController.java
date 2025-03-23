@@ -163,4 +163,33 @@ public class ChatController {
             return ResponseEntity.status(500).body(ApiResponse.error("요청 처리 중 오류가 발생했습니다.", "500"));
         }
     }
+
+    /**
+     * 상품 ID를 통해 채팅방 ID 조회
+     */
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<ApiResponse<?>> getChatRoomIdByProductId(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long productId) {
+        
+        String email = tokenUtils.getEmailFromAuthHeader(token);
+        
+        if (email == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("인증되지 않은 요청입니다.", "401"));
+        }
+        
+        try {
+            // 상품 ID와 사용자 이메일로 채팅방 조회
+            ChatRoom chatRoom = chatRoomMapper.findChatRoomByProductIdAndEmail(productId, email);
+            
+            if (chatRoom == null) {
+                return ResponseEntity.status(404).body(ApiResponse.error("채팅방을 찾을 수 없습니다.", "404"));
+            }
+            
+            return ResponseEntity.ok(ApiResponse.success(chatRoom.getChatroomId()));
+        } catch (Exception e) {
+            log.error("채팅방 조회 중 오류: {}", e.getMessage());
+            return ResponseEntity.status(500).body(ApiResponse.error("채팅방 조회 중 오류가 발생했습니다.", "500"));
+        }
+    }
 }

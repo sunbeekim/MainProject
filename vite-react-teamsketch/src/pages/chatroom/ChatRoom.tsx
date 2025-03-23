@@ -10,6 +10,8 @@ import { apiConfig } from '../../services/api/apiConfig';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { useUserProfileImage } from '../../services/api/profileImageAPI';
+import { useAppSelector } from '../../store/hooks';
+import { useProductByProductId } from '../../services/api/productAPI';
 
 interface ChatMessage {
   messageId: number;
@@ -39,7 +41,10 @@ const ChatRoom: React.FC = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
   const maxRetries = 3;
-
+  const { constantCategories, constantHobbies } = useAppSelector((state) => state.category);
+ 
+ 
+    
   // useChat 훅 사용
   const { messages, sendMessage, sendImage, isConnected, connect } = useChat({
     chatroomId: Number(chatroomId),
@@ -47,6 +52,39 @@ const ChatRoom: React.FC = () => {
     useGlobalConnection: false,
     token: token || ''
   });
+
+  // useProductById 훅 사용
+  const { data: productData } = useProductByProductId(chatInfo?.productId || 0);
+
+  // productData가 변경될 때마다 chatInfo 업데이트
+  useEffect(() => {
+    if (productData && chatInfo) {
+      setChatInfo(prev => ({
+        ...prev!,
+        productInfo: {
+          categoryId: productData.categoryId,
+          hobbyId: productData.hobbyId
+        }
+      }));
+    }
+  }, [productData]);
+
+  // 카테고리와 취미 이름 찾기
+  const mainCategory = useMemo(() => {
+    const categoryId = chatInfo?.productInfo?.categoryId;
+    if (!categoryId) return '';
+    return constantCategories.find(
+      (category) => category.categoryId === categoryId
+    )?.categoryName || '';
+  }, [constantCategories, chatInfo?.productInfo?.categoryId]);
+
+  const subCategory = useMemo(() => {
+    const hobbyId = chatInfo?.productInfo?.hobbyId;
+    if (!hobbyId) return '';
+    return constantHobbies.find(
+      (hobby) => hobby.hobbyId === hobbyId
+    )?.hobbyName || '';
+  }, [constantHobbies, chatInfo?.productInfo?.hobbyId]);
 
   // 상대방 프로필 이미지 조회
   const { data: profileImage, isLoading: isLoadingProfile } = useUserProfileImage(chatInfo?.otherUserName || '');
@@ -153,6 +191,7 @@ const ChatRoom: React.FC = () => {
         } else {
           setError('채팅방 정보를 불러오는데 실패했습니다.');
         }
+
       } catch (error) {
         console.error('채팅방 정보 로딩 오류:', error);
         setError('채팅방 정보를 불러오는데 실패했습니다.');
@@ -289,7 +328,8 @@ const ChatRoom: React.FC = () => {
                 {chatInfo?.otherUserName || '상대방'}
               </span>
               <span className="text-sm text-white/70">
-                {chatInfo?.chatname || '채팅'}
+                {mainCategory}
+                {subCategory}
               </span>
             </div>
           </div>
@@ -441,7 +481,8 @@ const ChatRoom: React.FC = () => {
               {chatInfo?.otherUserName || '상대방'}
             </span>
             <span className="text-sm text-white/70">
-              {chatInfo?.chatname || '채팅'}
+              {mainCategory && `${mainCategory}`}
+              {subCategory && ` | ${subCategory}`}
             </span>
           </div>
         </div>
