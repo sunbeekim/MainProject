@@ -20,9 +20,20 @@ export const websocketService = {
    * @returns WebSocket 클라이언트 인스턴스
    */
   connect: (token?: string, config?: Partial<WebSocketConfig>): Client => {
-    if (stompClient && stompClient.connected) {
-      console.log('WebSocket 이미 연결됨');
+    if (stompClient?.connected) {
+      console.log('이미 WebSocket이 연결되어 있습니다.');
       return stompClient;
+    }
+
+    if (stompClient?.active) {
+      console.log('WebSocket이 연결 중입니다.');
+      return stompClient;
+    }
+
+    // 기존 클라이언트가 있다면 정리
+    if (stompClient) {
+      stompClient.deactivate();
+      stompClient = null;
     }
 
     // 기본 설정
@@ -89,10 +100,10 @@ export const websocketService = {
       console.error('WebSocket이 연결되지 않았습니다. 연결 시도 중...');
       websocketService.connect();
       
-      // 나중에 구독을 위해 콜백 함수를 저장
-      const destination = `/topic/chat.${chatroomId}`;
+      const destination = `/topic/room.${chatroomId}`;
       websocketService.saveSubscriptionCallback(destination, (message: IMessage) => {
         try {
+          console.log('채팅 메시지 수신:', message.body); // 디버깅용 로그 추가
           const chatMessage: IChatMessage = JSON.parse(message.body);
           callback(chatMessage);
         } catch (error) {
@@ -103,17 +114,17 @@ export const websocketService = {
       return destination;
     }
 
-    const destination = `/topic/chat.${chatroomId}`;
+    const destination = `/topic/room.${chatroomId}`;
     
-    // 이미 구독 중인지 확인
     if (subscriptions.has(destination)) {
       console.log(`이미 채팅방 ${chatroomId}를 구독 중입니다.`);
       return destination;
     }
 
-    // 새 구독 생성
+    console.log(`채팅방 ${chatroomId} 구독 시작`);
     const subscription = stompClient.subscribe(destination, (message: IMessage) => {
       try {
+        console.log('채팅 메시지 수신:', message.body); // 디버깅용 로그 추가
         const chatMessage: IChatMessage = JSON.parse(message.body);
         callback(chatMessage);
       } catch (error) {
@@ -121,9 +132,7 @@ export const websocketService = {
       }
     });
 
-    // 구독 정보 저장
     subscriptions.set(destination, subscription);
-    console.log(`채팅방 ${chatroomId} 구독 시작`);
     return destination;
   },
 
@@ -237,7 +246,12 @@ export const websocketService = {
    * @param message 전송할 채팅 메시지
    */
   sendChatMessage: (message: Omit<IChatMessage, 'messageId' | 'sentAt' | 'senderName' | 'senderProfileUrl'>): void => {
-    websocketService.send('/app/chat.message', message);
+    const messageToSend = {
+        chatroomId: message.chatroomId,
+        content: message.content,
+        messageType: message.messageType
+    };
+    websocketService.send('/app/chat/send', messageToSend);
   },
 
   /**

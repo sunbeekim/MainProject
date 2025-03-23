@@ -17,7 +17,7 @@ const SimpleChatExample: React.FC<SimpleChatExampleProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // 채팅 훅 사용
-  const { messages, sendMessage, isConnected, connect, disconnect } = useChat({
+  const { messages, sendMessage, isConnected, connect } = useChat({
     chatroomId,
     userEmail,
     token
@@ -62,7 +62,7 @@ const SimpleChatExample: React.FC<SimpleChatExampleProps> = ({
           <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
           <span className="text-sm">{isConnected ? '연결됨' : '연결 끊김'}</span>
           <button
-            onClick={isConnected ? disconnect : connect}
+            onClick={connect}
             className={`px-2 py-1 text-xs text-white rounded ${
               isConnected ? 'bg-red-500' : 'bg-green-500'
             }`}

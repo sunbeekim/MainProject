@@ -197,7 +197,7 @@ const MainLayout = () => {
           <Route path="/verfication-code" element={<VerficationCode />} />
           <Route path="/chat-list" element={<ChatList />} />
           <Route path="/product/location" element={<ProdLocationMap />} />
-          <Route path="/chat/:email" element={<ChatRoom />} />
+          <Route path="/chat/:chatroomId" element={<ChatRoom />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/profile-manage" element={<ProfileManage />} />
           <Route path="/product-details" element={<ProductDetails />} />
@@ -215,7 +215,6 @@ const MainLayout = () => {
           <Route path="/my-location" element={<MyLocation />} />
           <Route path="/registers-list" element={<RegistersList />} />
           <Route path="/requests-list" element={<RequestsList />} />
-
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />

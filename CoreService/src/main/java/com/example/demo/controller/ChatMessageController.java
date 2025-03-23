@@ -33,35 +33,34 @@ public class ChatMessageController {
      * WebSocket을 통한 메시지 전송
      * 인증된 사용자의 WebSocket 세션을 통해 메시지를 처리합니다.
      */
-    @MessageMapping("/chat.message")
+    @MessageMapping("/chat/send")
     public void processMessage(
             @Payload ChatMessageRequest messageRequest,
             SimpMessageHeaderAccessor headerAccessor,
             Principal principal) {
         
-        // Principal을 통해 인증된 사용자 정보 가져오기
         if (principal == null) {
             log.error("WebSocket 메시지 처리 오류: 인증되지 않은 사용자");
             return;
         }
         
-        // 사용자 이메일 추출 (Principal은 인증 단계에서 사용자 이메일로 설정됨)
         String senderEmail = principal.getName();
         log.info("WebSocket 메시지 수신: chatroomId={}, senderEmail={}", 
                 messageRequest.getChatroomId(), senderEmail);
         
         try {
-            // 메시지 저장 및 발행 (Redis)
+            // 메시지 저장 및 발행
             ChatMessage chatMessage = chatMessageService.sendMessage(senderEmail, messageRequest);
-            log.info("메시지 저장 완료: messageId={}", chatMessage.getMessageId());
+            
+            // 메시지를 채팅방의 모든 구독자에게 브로드캐스트
+            messagingTemplate.convertAndSend(
+                "/topic/room." + messageRequest.getChatroomId(), 
+                chatMessage
+            );
+            
+            log.info("메시지 발행 완료: messageId={}", chatMessage.getMessageId());
         } catch (Exception e) {
             log.error("메시지 처리 중 오류 발생: {}", e.getMessage());
-            // 오류 메시지를 클라이언트에게 전달할 수도 있음
-            messagingTemplate.convertAndSendToUser(
-                principal.getName(),
-                "/queue/errors",
-                "메시지 전송 중 오류가 발생했습니다: " + e.getMessage()
-            );
         }
     }
 

@@ -3,15 +3,30 @@ import { useState, useEffect } from "react";
 import ChatListItem from "./ChatListItem"; 
 import { useChatRooms, ChatRoom } from "../../services/api/userChatAPI";
 import Loading from "../../components/common/Loading";
+import ProductImage from "../../components/features/image/ProductImage";
 
 const ChatList: React.FC = () => {
   const { data: chatRooms, isLoading, isError, error } = useChatRooms();
   const [mockChats, setMockChats] = useState<ChatRoom[]>([]);
   console.log(chatRooms);
-  // 날짜를 "3시간 전", "방금 전" 등의 형식으로 변환하는 간단한 함수
-  const formatTime = (dateString: string) => {
+
+  // 날짜를 "3시간 전", "방금 전" 등의 형식으로 변환하는 함수
+  const formatTime = (dateValue: string | number[]) => {
     try {
-      const date = new Date(dateString);
+      let date: Date;
+      
+      if (Array.isArray(dateValue)) {
+        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분]
+        const [year, month, day, hour, minute] = dateValue;
+        date = new Date(year, month - 1, day, hour, minute); // 월은 0부터 시작하므로 -1
+      } else {
+        date = new Date(dateValue);
+      }
+
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date');
+      }
+
       const now = new Date();
       const diffInMs = now.getTime() - date.getTime();
       
@@ -21,17 +36,25 @@ const ChatList: React.FC = () => {
       const diffInHours = Math.floor(diffInMin / 60);
       const diffInDays = Math.floor(diffInHours / 24);
 
-      // 적절한 형식으로 반환
+      // 1분 미만
       if (diffInSec < 60) return '방금 전';
+      // 1시간 미만
       if (diffInMin < 60) return `${diffInMin}분 전`;
+      // 24시간 미만
       if (diffInHours < 24) return `${diffInHours}시간 전`;
+      // 7일 미만
       if (diffInDays < 7) return `${diffInDays}일 전`;
       
-      // 그 외에는 날짜를 간단히 표시
-      return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+      // 1년 미만인 경우 월/일 표시
+      if (date.getFullYear() === now.getFullYear()) {
+        return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+      }
+      
+      // 그 외의 경우 년/월/일 표시
+      return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
     } catch (error) {
       console.error('날짜 변환 오류:', error);
-      return dateString;
+      return '날짜 오류';
     }
   };
 
@@ -128,9 +151,11 @@ const ChatList: React.FC = () => {
             nickname={chat.otherUserName}
             lastMessage={chat.lastMessage}
             time={formatTime(chat.lastMessageTime)}
-            imageUrl={chat.productImageUrl}
             unreadCount={chat.unreadCount}
             email={chat.otherUserEmail}
+            productImage={<ProductImage imagePath={chat.productImageUrl} />}
+            chatname={chat.chatname}
+            chatroomId={chat.chatroomId}
           />
         ))}
       </div>
