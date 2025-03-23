@@ -19,4 +19,6 @@ public class BoardCreateRequest {
     
     @Size(max = 500, message = "게시판 설명은 최대 500자까지 입력 가능합니다")
     private String description;
+    
+    private String imagePath;
 }
