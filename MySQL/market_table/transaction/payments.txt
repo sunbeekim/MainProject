@@ -1,7 +1,8 @@
-Payments 테이블
-
 CREATE TABLE Payments (
-    payment_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    payment_method VARCHAR(50) NOT NULL UNIQUE -- ENUM 대신 VARCHAR로 관리하여 확장 가능하게 설계
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    transaction_id BIGINT NOT NULL, -- 해당 거래 ID
+    amount INT NOT NULL, -- 결제 금액 (포인트)
+    payment_method ENUM('포인트', '카드', '계좌이체') NOT NULL, -- 결제 수단
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-

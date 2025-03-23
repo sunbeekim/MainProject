@@ -90,7 +90,7 @@ public class HobbyService {
                 .build();
         
         hobbyMapper.insertUserHobby(userHobby);
-        log.info("사용자 취미 등록 완료 - 이메일: {}, 취미ID: {}, 카테고리ID: {}", email, hobbyId, categoryId);
+       
     }
 
     /**
@@ -100,7 +100,7 @@ public class HobbyService {
     @Transactional
     public void registerUserHobbies(String email, List<HobbyRequest> hobbies) {
         if (hobbies == null || hobbies.isEmpty()) {
-            log.info("등록할 취미가 없습니다 - 이메일: {}", email);
+    
             return;
         }
 
@@ -112,16 +112,15 @@ public class HobbyService {
             try {
                 // categoryId를 기반으로 해당 카테고리에 속하는 취미인지 검증
                 if (hobby.getCategoryId() == null) {
-                    log.warn("카테고리 ID가 누락되었습니다 - 이메일: {}, 취미ID: {}", 
-                             email, hobby.getHobbyId());
+                 
+                        
                     continue;
                 }
                 
                 registerUserHobby(email, hobby.getHobbyId(), hobby.getCategoryId());
                 
             } catch (Exception e) {
-                log.error("취미 등록 실패 - 이메일: {}, 취미ID: {}, 카테고리ID: {}, 오류: {}", 
-                          email, hobby.getHobbyId(), hobby.getCategoryId(), e.getMessage());
+           
             }
         }
     }

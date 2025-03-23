@@ -119,10 +119,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
         {/* 다중 이미지 미리보기 */}
         {multiple && images.length > 0 && (
-          <div>
+          <div className="w-full max-w-full">
             <div className="relative">
-              <div className="overflow-x-auto pb-4">
-                <div className="flex gap-4 min-w-0">
+              <div className="overflow-x-auto scrollbar-hide" style={{ maxWidth: '100%' }}>
+                <div className="flex gap-4 pb-4 pt-4">
                   {images.map((image, index) => (
                     <div
                       key={index}

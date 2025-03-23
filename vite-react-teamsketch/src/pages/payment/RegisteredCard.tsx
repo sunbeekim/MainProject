@@ -22,24 +22,24 @@ const RegisteredCardList = () => {
     setSelectedCardId(null);
   };
 
-  const handleConfirmDelete = () => {
-    if (selectedCardId !== null) {
-      setCardList((prevList) =>
-        prevList.filter((card) => card.id !== selectedCardId)
-      );
-    }
+  const handleConfirmDelete = (id: number) => {
+    setCardList((prevList) =>
+      prevList.filter((card) => card.id !== id));
     setShowModal(false);
     setSelectedCardId(null);
   };
 
+
+
   const [cardList, setCardList] = useState([
     { id: 1, type: "체크카드" },
     { id: 2, type: "신용카드" },
+    { id: 3, type: "신용카드" },
   ]);
 
   return (
-    <div className="mt-5 space-y-4">
-      <h2 className="text-xl font-bold mb-2">등록된 카드</h2>
+    <div className="mt-5 space-y-4 p-4">
+      <h2 className="text-xl font-bold mb-2 ml-4">등록된 카드</h2>
 
       {cardList.map((card) => (
         <CardItem
@@ -50,17 +50,18 @@ const RegisteredCardList = () => {
       ))}
 
       <div
-        className="flex items-center justify-center gap-4 bg-white p-3 rounded-lg border-2 border-primary-light hover:bg-secondary-light cursor-pointer"
+        className="flex items-center justify-center gap-4 bg-white p-3 rounded-lg border-2 border-primary-light hover:bg-secondary-light cursor-pointer mb-24"
         onClick={handleAddCard}
       >
-        <span className="text-lg font-semibold">➕ 카드 등록하기</span>
+        <span className="text-lg font-semibold ">➕ 카드 등록하기</span>
       </div>
 
       {/* 모달 */}
-      {showModal && (
+      {showModal && selectedCardId !== null && (
         <DeleteModal
-          onClose={handleCloseModal} // 취소 버튼
-          onConfirmDelete={handleConfirmDelete} // 삭제 버튼
+          cardId={selectedCardId}
+          onClose={handleCloseModal}
+          onConfirmDelete={() => handleConfirmDelete(selectedCardId)}
         />
       )}
     </div>

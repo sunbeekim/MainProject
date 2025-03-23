@@ -13,6 +13,7 @@ const ProdLocationMap = () => {
   const dispatch = useAppDispatch();
   const endLocation = useAppSelector((state) => state.map.endLocation);
 
+
   // 검색을 통한 위치 선택 처리
   const handleEndLocationSelect = (location: {
     lat: number;
@@ -70,7 +71,6 @@ const ProdLocationMap = () => {
       navigate(-1);
     }
   };
-
   return (
     <div className="h-full w-full">
       <LocationLayout
@@ -80,7 +80,7 @@ const ProdLocationMap = () => {
         childrenButton={
           <BaseButton
             variant="primary"
-            className="w-full rounded-none"
+            className="w-full rounded-none pb-8"
             onClick={handleLocationConfirm}
           >
             위치 선택 완료

@@ -89,7 +89,7 @@ public class ProfileImageService {
                     .build();
             
         } catch (Exception e) {
-            log.error("프로필 이미지 업로드 중 오류 발생: {}", e.getMessage());
+       
             return ProfileImageResponse.builder()
                     .success(false)
                     .message("프로필 이미지 업로드 중 오류가 발생했습니다: " + e.getMessage())
@@ -129,7 +129,7 @@ public class ProfileImageService {
             }
             
         } catch (Exception e) {
-            log.error("프로필 이미지 삭제 중 오류 발생: {}", e.getMessage());
+        
             return ProfileImageResponse.builder()
                     .success(false)
                     .message("프로필 이미지 삭제 중 오류가 발생했습니다: " + e.getMessage())

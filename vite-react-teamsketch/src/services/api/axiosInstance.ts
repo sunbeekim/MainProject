@@ -29,7 +29,7 @@ const imageUrlPatterns = [
 // 이 인스턴스(객체)는 기본url과 타임아웃, 헤더설정, 토큰전송여부를 가지고 있는 인스턴스입니다다
 export const axiosInstance = axios.create({
   baseURL: apiConfig.baseURL,
-  timeout: 30000,
+  timeout: 180000,
   headers: {
     'Content-Type': 'application/json'
   },
@@ -136,3 +136,4 @@ const setupInterceptors = (instance: AxiosInstance) => {
 // 일반 인터셉터 적용
 setupInterceptors(axiosInstance);
 setupInterceptors(uploadInstance);
+

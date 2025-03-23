@@ -1,10 +1,11 @@
 
 interface DeleteModalProp {
+  cardId: number;
   onClose: () => void;
-  onConfirmDelete: () => void;
+  onConfirmDelete: (cardId: number) => void;
 }
 
-const DeleteModal = ({ onClose, onConfirmDelete }: DeleteModalProp) => {
+const DeleteModal = ({ cardId, onClose, onConfirmDelete }: DeleteModalProp) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="w-[300px] h-[167px] p-4 bg-white rounded-2xl flex-col justify-start items-center gap-5 inline-flex">
@@ -25,7 +26,7 @@ const DeleteModal = ({ onClose, onConfirmDelete }: DeleteModalProp) => {
           </button>
 
           <button
-            onClick={onConfirmDelete}
+            onClick={() => onConfirmDelete(cardId)}
             className="grow shrink basis-0 h-10 px-4 py-3 bg-purple-400 rounded-xl justify-center items-center gap-2 flex overflow-hidden hover:bg-purple-500"
           >
             <div className="text-white text-xs font-semibold font-['Inter']">카드 삭제</div>

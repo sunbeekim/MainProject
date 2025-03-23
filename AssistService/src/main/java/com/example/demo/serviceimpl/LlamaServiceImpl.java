@@ -13,7 +13,7 @@ import java.util.*;
 
 import com.example.demo.dao.ChatMessageDAO;
 import com.example.demo.model.ChatMessage;
-import org.springframework.beans.factory.annotation.Value;
+
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +22,8 @@ public class LlamaServiceImpl {
     private final ChatMessageDAO chatMessageDAO;
     private final ObjectMapper objectMapper = new ObjectMapper();
     
-    @Value("${SPRING_PROFILES_ACTIVE:local}") 
-    private String activeProfile;
+    
+    private String activeProfile = "local";
 
     final String gatewayUri = "prod".equals(activeProfile)
             ? "http://gateway-container:8080"
@@ -78,8 +78,8 @@ public class LlamaServiceImpl {
 
     private String translateChunk(String text, String sourceLang, String targetLang) throws Exception {
         String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
-        String apiKey = "f3bddd536ff4fe3b5e96";
-        String email = "rlatjsql11@gmail.com";
+        String apiKey = "94dea587aaa15e058ead";
+        String email = "rlatjsql12@gmail.com";
         // rlatjsql11@gmail.com f3bddd536ff4fe3b5e96
         // rlatjsql12@gmail.com 94dea587aaa15e058ead
         String urlStr = String.format(

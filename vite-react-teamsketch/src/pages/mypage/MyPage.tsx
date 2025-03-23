@@ -13,7 +13,7 @@ const MyPage = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: RootState) => state.user.user);
   const queryClient = useQueryClient();
-  
+
   const navigate = useNavigate();
 
   const {
@@ -92,8 +92,8 @@ const MyPage = () => {
   ];
 
   return (
-    <div className="h-full w-full bg-white dark:bg-gray-800 flex flex-col">
-      <MyPageLayout        
+    <div className="h-full w-full bg-white dark:bg-gray-800 flex flex-col mb-16">
+      <MyPageLayout
         email={user.email || ''}
         name={user.name || ''}
         nickname={user.nickname || ''}

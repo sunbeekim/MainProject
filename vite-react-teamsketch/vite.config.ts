@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import path from 'path'
 
 export default defineConfig({
   base: './', 
@@ -10,9 +11,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'TeamSketch App',
-        short_name: 'TeamSketch',
-        description: 'TeamSketch Progressive Web App',
+        name: 'Haru',
+        short_name: 'Haru',
+        description: 'Haru Progressive Web App',
         theme_color: '#ffffff',
         icons: [
           {
@@ -35,9 +36,12 @@ export default defineConfig({
       }
     })
   ],
+  define: {
+    global: 'globalThis'
+  },
   resolve: {
     alias: {
-      '@': '/src',
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {   
