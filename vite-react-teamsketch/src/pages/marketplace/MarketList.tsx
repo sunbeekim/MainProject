@@ -16,7 +16,9 @@ import {
 import Loading from '../../components/common/Loading';
 import { toast } from 'react-toastify';
 
-import FilterButton from '../../components/common/FilterButton';
+
+import { nearbyProdListApi } from '../../services/api/authAPI';
+// import { setProducts } from '../../store/slices/productSlice';
 
 // mock 데이터를 실제 API 응답 타입으로 변환하는 함수
 const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
@@ -57,7 +59,7 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
   if (!thumbnailPath) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-100">
-        
+        <span className="text-gray-400">이미지 없음</span>
       </div>
     );
   }
@@ -97,11 +99,19 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
   );
 });
 
+export interface NProductResponse {
+  status: string;
+  message: string;
+  data:
+  IProduct[];
+}
+
 const MarketList = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [categoryName, setCategoryName] = useState<string>('전체');
   const [isPageLoading, setIsPageLoading] = useState(true);
+
 
 
   // 상품 Query - 카테고리 선택에 따라 다른 API 호출
@@ -225,14 +235,38 @@ const MarketList = () => {
     );
   }
 
-  const handleDistanceChange = (newDistance: number) => {
+  const fetchNearbyProducts = async () => {
+    const latitude = 37.7749;
+    const longitude = -122.4194;
+    const distance = 10;
 
-    console.log('새로운 거리:', newDistance);
+    try {
+      const result = await nearbyProdListApi({ latitude, longitude, distance });
+      console.log(result);
+    } catch (error) {
+      console.error('Error fetching nearby products:', error);
+    }
   };
+
+  fetchNearbyProducts();
+
+  // const fetchNearbyProducts = async (distance: number) => {
+  //   try {
+  //     const response: NProductResponse = await nearbyProdListApi({ latitude: myLocation.lat, longitude: myLocation.lng, distance });
+  //     if (response.status === 'success') {
+  //       setProducts(response.data);
+  //     } else {
+  //       toast.error("주변 상품을 가져오는 데 실패했습니다.");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error("상품 목록을 가져오는 중 오류가 발생했습니다.");
+  //   }
+  // };
 
   return (
     <div className="w-full mt-4">
-      <FilterButton onDistanceChange={handleDistanceChange} />
+
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
 
       {/* 상품 목록 */}

@@ -5,7 +5,7 @@ interface FilterButtonProps {
 }
 const FilterButton = ({ onDistanceChange }: FilterButtonProps) => {
     const [open, setOpen] = useState(false);
-    const [distance, setDistance] = useState(10); // 초기 거리값
+    const [distance, setDistance] = useState(5); // 초기 거리값
 
     return (
         <div className="relative inline-block">

@@ -7,7 +7,11 @@ import GridItem from '../common/GridItem';
 import { useAppSelector } from '../../store/hooks';
 import FilterButton from '../common/FilterButton';
 
-const Header = () => {
+
+interface HeaderProps {
+  onDistanceChange: (distance: number) => void;
+}
+const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
@@ -55,14 +59,14 @@ const Header = () => {
           title: 'MarketPlace',
           actions: (
             <div className="flex gap-2">
-
+              {/* 
               <button
                 onClick={() => navigate('/test/pages')}
                 className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
               >
                 testpage
-              </button>
-              <FilterButton />
+              </button> */}
+              <FilterButton onDistanceChange={onDistanceChange} />
               <Iconalarm hasNotification={hasUnreadNotifications} className="w-6 h-6" />
             </div>
           )
