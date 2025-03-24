@@ -15,7 +15,7 @@ interface LocationInfoProps {
   endLocation?: ILocation;
   onGetMyLocation?: () => void;
   onGetYourLocation?: () => void;
-  onShareLocation?: () => void;
+  onShareLocation?: (location: ILocation) => void;
   showMyLocation?: boolean;
   showYourLocation?: boolean;
   showEndLocation?: boolean;
@@ -223,7 +223,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
           {onShareLocation && (
             <GridItem className="bg-primary-500 p-2 border-b border-white dark:border-primary-500">
               <button
-                onClick={onShareLocation}
+                onClick={() => onShareLocation(myLocation || yourLocation || endLocation)}
               className="w-full py-2 px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
               disabled={!isConnected}
             >

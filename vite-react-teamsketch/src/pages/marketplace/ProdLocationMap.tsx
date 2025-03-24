@@ -32,7 +32,6 @@ const ProdLocationMap = () => {
     // mapSlice의 endLocation 상태 업데이트
     dispatch(
       setEndLocation({
-        id: '',
         meetingPlace: location.meetingPlace,
         lat: location.lat,
         lng: location.lng,
