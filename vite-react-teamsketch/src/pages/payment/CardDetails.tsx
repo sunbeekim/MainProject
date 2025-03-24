@@ -67,7 +67,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ ocrResult }) => {
 
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div className="max-w-md mx-auto  bg-white shadow-md rounded-lg p-8">
       <h2 className="text-xl font-bold mb-4">카드 상세 정보</h2>
       <p className="text-gray-600 mb-4">카드 ID: {cardId}</p>
 

@@ -28,6 +28,7 @@ export const apiConfig = {
       myprodregisell: `${BASE_URL}/core/market/products/users/registers/sell`,
       myprodreqbuy: `${BASE_URL}/core/market/products/users/requests/buy`,
       myprodreqsell: `${BASE_URL}/core/market/products/users/requests/sell`,
+      transactionslist:`${BASE_URL}/core/market/transactions/user`,
       userprod: `${BASE_URL}/core/market/products/users`,
       mylocation:`${BASE_URL}/core/market/users/location`,
       deleteUser: `${BASE_URL}/core/auth/me/withdrawal`,

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class PaymentsRequest {
+    private Long id;
     private Long transactionId;
     private int amount;
     private String paymentMethod;

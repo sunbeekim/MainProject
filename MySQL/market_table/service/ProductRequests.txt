@@ -6,6 +6,10 @@ CREATE TABLE ProductRequests (
     approval_status ENUM('승인', '미승인') DEFAULT '미승인', -- 승인 여부 (승인 / 미승인)
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- 중복 방지를 위한 유니크 제약조건
+    UNIQUE KEY uq_request_unique (requester_email, product_id),
+    
     FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE RESTRICT,
     FOREIGN KEY (requester_email) REFERENCES Users(email) ON DELETE CASCADE  -- 요청자 이메일 FK
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

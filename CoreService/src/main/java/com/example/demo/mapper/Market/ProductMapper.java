@@ -78,5 +78,6 @@ public interface ProductMapper {
 
     // 특정 상품에 대한 사용자의 승인 상태 조회
     String findApprovalStatus(@Param("email") String email, @Param("productId") Long productId);
+
 }
 

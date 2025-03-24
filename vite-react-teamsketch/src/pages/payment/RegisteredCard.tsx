@@ -38,7 +38,7 @@ const RegisteredCardList = () => {
   ]);
 
   return (
-    <div className="mt-5 space-y-4">
+    <div className="mt-5 space-y-4 p-4">
       <h2 className="text-xl font-bold mb-2 ml-4">등록된 카드</h2>
 
       {cardList.map((card) => (
@@ -50,10 +50,10 @@ const RegisteredCardList = () => {
       ))}
 
       <div
-        className="flex items-center justify-center gap-4 bg-white p-3 rounded-lg border-2 border-primary-light hover:bg-secondary-light cursor-pointer"
+        className="flex items-center justify-center gap-4 bg-white p-3 rounded-lg border-2 border-primary-light hover:bg-secondary-light cursor-pointer mb-24"
         onClick={handleAddCard}
       >
-        <span className="text-lg font-semibold">➕ 카드 등록하기</span>
+        <span className="text-lg font-semibold ">➕ 카드 등록하기</span>
       </div>
 
       {/* 모달 */}

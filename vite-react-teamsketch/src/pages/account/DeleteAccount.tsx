@@ -42,9 +42,9 @@ const DeleteAccount = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center ">
 
-            <h2 className="text-2xl font-bold text-center mb-4 mt-6">회원 탈퇴 안내</h2>
+            <h2 className="text-2xl font-bold text-center mb-4 mt-20">회원 탈퇴 안내</h2>
             <p className="text-center text-gray-600 mb-5">
                 회원 탈퇴를 진행하시기 전에 아래 내용을 반드시 확인해주세요:
             </p>
@@ -89,7 +89,7 @@ const DeleteAccount = () => {
             {/* 계정 삭제 버튼 */}
             <BaseButton
                 onClick={handleDeleteAccount}
-                className="bg-primary-500 w-[80%] flex justify-center items-center relative"
+                className="bg-primary-500 w-[80%] flex justify-center items-center relative mb-8"
                 disabled={isLoading} // 로딩 중에는 버튼 비활성화
             >
                 {isLoading ? (
