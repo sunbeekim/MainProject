@@ -66,12 +66,12 @@ const MyLocation = () => {
         childrenTop={<SearchLocation onLocationSelect={() => { }} />}
         childrenCenter={<OpenMap nonClickable={false} mode="myLocation" />}
         childrenBottom={
-          <LocationInfo showEndLocation={false} showMyLocation={true} showYourLocation={false} mode="myLocation" />
+          <LocationInfo showEndLocation={false} showMyLocation={true} showYourLocation={false}/>
         }
         childrenButton={
           <BaseButton
             variant="primary"
-            className="w-full rounded-none"
+            className="w-full rounded-none pb-10"
             onClick={handleLocationConfirm}
             disabled={isLoading}
           >

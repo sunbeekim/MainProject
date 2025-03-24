@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class TransactionsResponse {
     private Long id;
     private Long productId;
-    private String buyerEmail;
+    private String request_email;
     private String sellerEmail;
     private String transactionStatus;
     private String paymentStatus;

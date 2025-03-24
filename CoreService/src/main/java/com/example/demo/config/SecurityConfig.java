@@ -74,7 +74,8 @@ public class SecurityConfig {
                                 "/api/core/chat/messages/**",
                                 // 테스트
                                 "/api/core/test/**",
-                                "/api/core/test/v2/**"
+                                "/api/core/test/v2/**",
+                                "/api/core/market/products/requests/approval-status"
                         ).permitAll()
                         // 관리자 전용 API
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN")

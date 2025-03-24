@@ -76,8 +76,8 @@ public interface ProductMapper {
                                              @Param("longitude") double longitude,
                                              @Param("distance") double distance);
 
-    // 상품 승인 시 요청한 상품 ID 삭제 == 거래 테이블에서 진행 ==
-    void deleteRequest(@Param("requestId") Long requestId);
+    // 특정 상품에 대한 사용자의 승인 상태 조회
+    String findApprovalStatus(@Param("email") String email, @Param("productId") Long productId);
 
 }
 

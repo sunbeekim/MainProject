@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChatMessageRequest {
     private Integer chatroomId;
+    private Long productId;
+    private String senderEmail;
     private String content;
     private String messageType; // TEXT, IMAGE, FILE, OFFER
 }

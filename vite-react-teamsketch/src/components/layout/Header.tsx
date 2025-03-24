@@ -43,11 +43,9 @@ const Header = () => {
   const getHeaderContent = () => {
     // 채팅방 경로 확인
     if (location.pathname.startsWith('/chat/')) {
-      const email = location.pathname.split('/chat/')[1];
-      // 이메일에서 사용자명 추출 (@ 앞부분)
-      const username = email.split('@')[0];
+      const state = location.state as { chatname?: string };
       return {
-        title: `${username}님과의 대화`
+        title: state?.chatname ? `${state.chatname}` : '채팅'
       };
     }
 

@@ -7,6 +7,7 @@ import { useEffect, useState, useRef } from 'react';
 import { RootState } from '../../../store/store';
 import { getAddressFromCoords } from '../../../services/third-party/myLocation';
 import { LuArrowDownToLine, LuArrowUpToLine } from 'react-icons/lu';
+import { toast } from 'react-toastify';
 
 interface LocationInfoProps {
   myLocation?: ILocation;
@@ -14,20 +15,22 @@ interface LocationInfoProps {
   endLocation?: ILocation;
   onGetMyLocation?: () => void;
   onGetYourLocation?: () => void;
-  onCopyLocation?: () => void;
+  onShareLocation?: () => void;
   showMyLocation?: boolean;
   showYourLocation?: boolean;
   showEndLocation?: boolean;
   mode?: 'myLocation' | 'yourLocation' | 'endLocation';
+  isConnected?: boolean;
 }
 
 const LocationInfo: React.FC<LocationInfoProps> = ({
   onGetYourLocation,
-  onCopyLocation,
+  onShareLocation,
   showMyLocation = false,
   showYourLocation = false,
   showEndLocation = false,
-  mode = 'endLocation'
+  mode = 'myLocation',
+  isConnected = false,
 }) => {
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -42,6 +45,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
     endLocation: false
   });
 
+ 
   // 선택된 위치의 주소 업데이트 함수
   const updateLocationAddress = async (location: ILocation) => {
     if (!location?.lat || !location?.lng) {
@@ -83,25 +87,9 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
     }
   };
 
-  // 모드가 변경될 때마다 해당 위치의 주소를 업데이트
+  // 내 위치 자동 가져오기 (컴포넌트 마운트 시)
   useEffect(() => {
-    const locationMap = {
-      myLocation,
-      yourLocation,
-      endLocation
-    };
-
-    const currentLocation = locationMap[mode];
-    
-    // 위치가 있고 아직 처리되지 않은 경우에만 업데이트
-    if (currentLocation?.lat && currentLocation?.lng && !locationProcessed.current[mode]) {
-      updateLocationAddress(currentLocation);
-    }
-  }, [mode, myLocation.lat, myLocation.lng, yourLocation?.lat, yourLocation?.lng, endLocation.lat, endLocation.lng]);
-
-  // 내 위치 자동 가져오기 (최초 1회)
-  useEffect(() => {
-    if (mode === 'myLocation' && !locationProcessed.current.myLocation) {
+    if (!locationProcessed.current.myLocation) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
@@ -116,11 +104,36 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
           },
           (error) => {
             console.error('위치 정보를 가져오지 못함:', error);
+            toast.error('위치 정보를 가져오는데 실패했습니다. 브라우저 설정에서 위치 권한을 허용해주세요.');
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
           }
         );
+      } else {
+        toast.error('이 브라우저에서는 위치 정보를 지원하지 않습니다.');
       }
     }
-  }, [mode]);
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
+
+  // 모드별 위치 업데이트 (기존 useEffect 유지)
+  useEffect(() => {
+    const locationMap = {
+      myLocation,
+      yourLocation,
+      endLocation
+    };
+
+    const currentLocation = locationMap[mode];
+    
+    if (currentLocation?.lat && currentLocation?.lng && !locationProcessed.current[mode]) {
+      updateLocationAddress(currentLocation);
+    }
+  }, [mode, myLocation.lat, myLocation.lng, yourLocation?.lat, yourLocation?.lng, endLocation.lat, endLocation.lng]);
+
+  
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-t-3xl shadow-lg max-h-[18rem]">
@@ -205,14 +218,18 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
             </GridItem>
           )}
 
+
           {/* 위치 공유 버튼 */}
-          {onCopyLocation && (
+          {onShareLocation && (
             <GridItem className="bg-primary-500 p-2 border-b border-white dark:border-primary-500">
               <button
-                onClick={onCopyLocation}
-                className="w-full bg-primary-500 rounded-none text-sm font-medium py-2.5 hover:bg-primary-600 transition-all duration-300"
-              >
-                현재 위치 공유하기
+                onClick={onShareLocation}
+              className="w-full py-2 px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
+              disabled={!isConnected}
+            >
+              <span className="text-sm font-medium">
+                {isConnected ? '현재 위치 공유하기' : '연결 중...'}
+              </span>
               </button>
             </GridItem>
           )}

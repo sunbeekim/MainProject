@@ -23,8 +23,9 @@ public class ChatRoomResponse {
     private Long productId;
     private String productName;
     private String productImageUrl;
+    private String registrantEmail;
     private String sellerEmail;
-    private String buyerEmail;
+    private String requestEmail;
     private String otherUserEmail; // 상대방 이메일
     private String otherUserName;  // 상대방 닉네임
     private String lastMessage;
