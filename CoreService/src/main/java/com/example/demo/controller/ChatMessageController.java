@@ -72,7 +72,8 @@ public class ChatMessageController {
             String senderNickname = sender != null ? sender.getNickname() : "알 수 없음";
 
             // 알림 메시지 구성
-            String notificationChatMessage = String.format("%s: %s", 
+            String notificationChatMessage = String.format("[%s] %s: %s",
+                messageRequest.getProductId(),
                 senderNickname, 
                 messageRequest.getContent().length() > 30 
                     ? messageRequest.getContent().substring(0, 27) + "..." 

@@ -32,7 +32,7 @@ const SimpleChatExample: React.FC<SimpleChatExampleProps> = ({
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputMessage.trim()) {
-      sendMessage(inputMessage);
+      sendMessage(chatroomId, inputMessage, MessageType.TEXT);
       setInputMessage('');
     }
   };
@@ -44,7 +44,7 @@ const SimpleChatExample: React.FC<SimpleChatExampleProps> = ({
       // 여기서는 이미지 URL을 직접 전송하는 예제
       // 실제 구현에서는 이미지를 서버에 업로드한 후 URL을 받아 전송해야 함
       const imageUrl = URL.createObjectURL(file);
-      sendMessage(imageUrl, MessageType.IMAGE);
+      sendMessage(chatroomId, imageUrl, MessageType.IMAGE);
     }
   };
 

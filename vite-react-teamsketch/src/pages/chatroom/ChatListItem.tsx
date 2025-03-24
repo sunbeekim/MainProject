@@ -1,15 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MessageType } from '../../services/real-time/types';
 
 interface ChatListItemProps {
   nickname: string;
-  lastMessage: string;
-  time: string;
+  lastMessage?: string;
+  time?: string;
   unreadCount: number;
   email: string;
   productImage: React.ReactNode;
   chatname: string;
   chatroomId: number;
+  messageType?: MessageType;
 }
 
 const ChatListItem: React.FC<ChatListItemProps> = ({
@@ -20,7 +22,8 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
   email,
   productImage,
   chatname,
-  chatroomId
+  chatroomId,
+  messageType = MessageType.TEXT
 }) => {
   const navigate = useNavigate();
   const userStr = localStorage.getItem('user');
@@ -44,6 +47,22 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
         imageUrl: (productImage as any)?.props?.imagePath || 'https://picsum.photos/600/400'
       }
     });
+  };
+
+  // 메시지 타입에 따른 표시 내용 결정
+  const getMessagePreview = () => {
+    switch (messageType) {
+      case MessageType.IMAGE:
+        return '📷 이미지를 보냈습니다.';
+      case MessageType.LOCATION:
+        return '📍 위치를 공유했습니다.';
+      case MessageType.FILE:
+        return '📎 파일을 보냈습니다.';
+      case MessageType.SYSTEM:
+        return '🔔 ' + lastMessage;
+      default:
+        return lastMessage;
+    }
   };
 
   return (
@@ -93,7 +112,9 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
             {time}
           </span>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300 truncate">{lastMessage}</p>
+        <p className={`text-sm truncate ${unreadCount > 0 ? 'text-primary-600 font-medium' : 'text-gray-600 dark:text-gray-300'}`}>
+          {getMessagePreview()}
+        </p>
       </div>
     </div>
   );

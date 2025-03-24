@@ -6,13 +6,14 @@ import { useWebSocket } from '../../contexts/WebSocketContext';
 export interface ChatHookProps {
   chatroomId?: number;
   userEmail?: string;
+  productId?: number;
   useGlobalConnection?: boolean; // 전역 웹소켓 연결 사용 여부
   token?: string; // 독립 연결시 사용할 토큰
 }
 
 export interface ChatHookReturn {
   messages: IChatMessage[];
-  sendMessage: (content: string, messageType?: MessageType) => void;
+  sendMessage: (productId: number, content: string, messageType?: MessageType) => void;
   sendImage: (imageUrl: string) => void;
   isConnected: boolean;
   connect: () => void;
@@ -26,6 +27,7 @@ export interface ChatHookReturn {
  */
 export const useChat = ({ 
   chatroomId, 
+  productId,
   userEmail, 
   useGlobalConnection = true, 
   token 
@@ -34,7 +36,7 @@ export const useChat = ({
   const [localConnected, setLocalConnected] = useState<boolean>(false);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const globalWebSocket = useWebSocket();
-  
+  console.log("useChat productId",productId);
   // 전역 연결 또는 로컬 연결 상태 확인
   const isConnected = useGlobalConnection 
     ? globalWebSocket.isConnected
@@ -134,11 +136,11 @@ export const useChat = ({
         websocketService.unsubscribe(subscriptionId);
       }
     };
-  }, [chatroomId, userEmail, isConnected]);
+  }, [chatroomId, productId, userEmail, isConnected]);
 
   // 메시지 전송
   const sendMessage = useCallback(
-    (content: string, messageType: MessageType = MessageType.TEXT) => {
+    (productId: number, content: string, messageType: MessageType = MessageType.TEXT) => {
       if (!chatroomId || !userEmail || !isConnected) {
         console.error('메시지를 보낼 수 없습니다. 연결 상태와 필수 정보를 확인하세요.');
         return;
@@ -149,6 +151,7 @@ export const useChat = ({
         // 웹소켓 구독을 통해 메시지를 받으면 자동으로 상태가 업데이트됨
         websocketService.sendChatMessage({
           chatroomId,
+          productId,
           content,
           messageType,
           senderEmail: userEmail
@@ -157,15 +160,19 @@ export const useChat = ({
         console.error('메시지 전송 오류:', error);
       }
     },
-    [chatroomId, userEmail, isConnected]
+    [chatroomId, userEmail, isConnected, productId]
   );
 
   // 이미지 전송
   const sendImage = useCallback(
     (imageUrl: string) => {
-      sendMessage(imageUrl, MessageType.IMAGE);
+      if (!productId) {
+        console.error('상품 ID가 없습니다.');
+        return;
+      }
+      sendMessage(productId, imageUrl, MessageType.IMAGE);
     },
-    [sendMessage]
+    [sendMessage, productId]
   );
 
   return {

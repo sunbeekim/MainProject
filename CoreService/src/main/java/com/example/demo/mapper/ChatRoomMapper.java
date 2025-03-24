@@ -50,11 +50,11 @@ public interface ChatRoomMapper {
     /**
      * 상품 ID와 사용자 이메일로 채팅방 조회
      */
-    @Select("SELECT * FROM chat_rooms " +
+    @Select("SELECT * FROM chatrooms " +
             "WHERE product_id = #{productId} " +
             "AND (buyer_email = #{email} OR EXISTS (" +
             "    SELECT 1 FROM products p " +
-            "    WHERE p.id = chat_rooms.product_id " +
+            "    WHERE p.id = chatrooms.product_id " +
             "    AND p.email = #{email}" +
             "))")
     ChatRoom findChatRoomByProductIdAndEmail(@Param("productId") Long productId, @Param("email") String email);

@@ -4,6 +4,7 @@ import ChatListItem from "./ChatListItem";
 import { useChatRooms, ChatRoom } from "../../services/api/userChatAPI";
 import Loading from "../../components/common/Loading";
 import ProductImage from "../../components/features/image/ProductImage";
+import { MessageType } from "../../services/real-time/types";
 
 const ChatList: React.FC = () => {
   const { data: chatRooms, isLoading, isError, error } = useChatRooms();
@@ -80,7 +81,8 @@ const ChatList: React.FC = () => {
           status: "ACTIVE",
           createdAt: "2023-11-01T12:00:00",
           updatedAt: "2023-11-01T12:05:00",
-          unreadCount: 2
+          unreadCount: 2,
+          messageType: MessageType.TEXT
         },
         {
           chatroomId: 2,
@@ -98,7 +100,8 @@ const ChatList: React.FC = () => {
           status: "ACTIVE",
           createdAt: "2023-11-01T10:00:00",
           updatedAt: "2023-11-01T10:30:00",
-          unreadCount: 0
+          unreadCount: 0,
+          messageType: MessageType.TEXT
         },
         {
           chatroomId: 3,
@@ -116,7 +119,8 @@ const ChatList: React.FC = () => {
           status: "ACTIVE",
           createdAt: "2023-11-01T08:00:00",
           updatedAt: "2023-11-01T09:00:00",
-          unreadCount: 3
+          unreadCount: 3,
+          messageType: MessageType.TEXT
         }
       ]);
     }
@@ -153,12 +157,13 @@ const ChatList: React.FC = () => {
             key={chat.chatroomId}
             nickname={chat.otherUserName}
             lastMessage={chat.lastMessage}
-            time={formatTime(chat.lastMessageTime)}
+            time={formatTime(chat.lastMessageTime ?? new Date().toISOString())}
             unreadCount={chat.unreadCount}
             email={chat.otherUserEmail}
             productImage={<ProductImage imagePath={chat.productImageUrl} />}
             chatname={chat.chatname}
             chatroomId={chat.chatroomId}
+            messageType={chat.messageType}
           />
         ))}
       </div>

@@ -77,6 +77,7 @@ public class ChatMessageService {
         ChatMessage message = ChatMessage.builder()
                 .chatroomId(request.getChatroomId())
                 .senderEmail(senderEmail)
+                .productId(request.getProductId())
                 .content(request.getContent())
                 .messageType(request.getMessageType())
                 .sentAt(LocalDateTime.now())

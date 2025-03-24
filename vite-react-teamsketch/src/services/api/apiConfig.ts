@@ -52,7 +52,7 @@ export const apiConfig = {
       getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
-      getChatRoomIdByProductId: (productId: number) => `${BASE_URL}/core/chat/product/${productId}`,
+      getChatRoomIdByProductId: (productId: number) => `${BASE_URL}/core/chat/rooms/product/${productId}`,
       getChatRooms: `${BASE_URL}/core/chat/rooms/active`,
       getApprovalStatus: (productId: number) => `${BASE_URL}/core/market/products/requests/approval-status?productId=${productId}`,
   

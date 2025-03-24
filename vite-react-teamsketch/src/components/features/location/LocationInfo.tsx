@@ -7,7 +7,6 @@ import { useEffect, useState, useRef } from 'react';
 import { RootState } from '../../../store/store';
 import { getAddressFromCoords } from '../../../services/third-party/myLocation';
 import { LuArrowDownToLine, LuArrowUpToLine } from 'react-icons/lu';
-import { useLocation } from '../../../services/real-time/useLocation';
 import { toast } from 'react-toastify';
 
 interface LocationInfoProps {
@@ -21,9 +20,7 @@ interface LocationInfoProps {
   showYourLocation?: boolean;
   showEndLocation?: boolean;
   mode?: 'myLocation' | 'yourLocation' | 'endLocation';
-  chatroomId?: number;
-  userEmail?: string;
-  token?: string;
+  isConnected?: boolean;
 }
 
 const LocationInfo: React.FC<LocationInfoProps> = ({
@@ -33,9 +30,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
   showYourLocation = false,
   showEndLocation = false,
   mode = 'myLocation',
-  chatroomId,
-  userEmail,
-  token
+  isConnected = false,
 }) => {
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -50,13 +45,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
     endLocation: false
   });
 
-  // useLocation 훅 사용
-  const { isConnected, shareLocation } = useLocation({
-    chatroomId,
-    userEmail,
-    token
-  });
-
+ 
   // 선택된 위치의 주소 업데이트 함수
   const updateLocationAddress = async (location: ILocation) => {
     if (!location?.lat || !location?.lng) {
@@ -144,48 +133,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
     }
   }, [mode, myLocation.lat, myLocation.lng, yourLocation?.lat, yourLocation?.lng, endLocation.lat, endLocation.lng]);
 
-  // 위치 공유 핸들러
-  const handleShareLocation = async () => {
-    if (!isConnected) {
-      console.error('웹소켓이 연결되어 있지 않습니다.');
-      return;
-    }
-
-    try {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude: lat, longitude: lng } = position.coords;
-            
-            try {
-              const address = await getAddressFromCoords(lat, lng);
-              const meetingPlace = address?.split(' ')[0] || '';
-              
-              // 내 위치 상태 업데이트
-              dispatch(setMyLocation({
-                lat,
-                lng,
-                address,
-                meetingPlace
-              }));
-              
-              // 위치 공유
-              shareLocation();
-            } catch (error) {
-              console.error('위치 공유 중 오류 발생:', error);
-            }
-          },
-          (error) => {
-            console.error('위치 정보를 가져오지 못했습니다:', error);
-          }
-        );
-      } else {
-        console.error('이 브라우저에서는 위치 정보를 사용할 수 없습니다.');
-      }
-    } catch (error) {
-      console.error('위치 공유 중 오류 발생:', error);
-    }
-  };
+  
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-t-3xl shadow-lg max-h-[18rem]">
@@ -275,7 +223,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({
           {onShareLocation && (
             <GridItem className="bg-primary-500 p-2 border-b border-white dark:border-primary-500">
               <button
-                onClick={handleShareLocation}
+                onClick={onShareLocation}
               className="w-full py-2 px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
               disabled={!isConnected}
             >

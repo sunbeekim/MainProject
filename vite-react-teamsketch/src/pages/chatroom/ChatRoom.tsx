@@ -45,16 +45,17 @@ const ChatRoom: React.FC = () => {
   const navigate = useNavigate();
   const [isApproved, setIsApproved] = useState<boolean>(false);
 
+  // useProductById 훅 사용
+  const { data: productData } = useProductByProductId(chatInfo?.productId || 0);
+  console.log(chatInfo?.productId);
   // useChat 훅 사용
   const { messages, sendMessage, sendImage, isConnected, connect } = useChat({
     chatroomId: Number(chatroomId),
     userEmail,
+    productId: Number(chatInfo?.productId) || 0,
     useGlobalConnection: false,
     token: token || ''
-  });
-
-  // useProductById 훅 사용
-  const { data: productData } = useProductByProductId(chatInfo?.productId || 0);
+  });  
 
   // productData가 변경될 때마다 chatInfo 업데이트
   useEffect(() => {
@@ -344,13 +345,11 @@ const ChatRoom: React.FC = () => {
       toast.warning('승인된 사용자만 위치 정보를 볼 수 있습니다.');
       return;
     }
-    navigate(`/sharelocation`, { 
+    navigate(`/sharelocation/${chatroomId}/${chatInfo?.chatname}`, { 
       state: { 
         email: userEmail,
         otherUserEmail: chatInfo?.otherUserEmail,
-        chatroomId,
         nickname: chatInfo?.otherUserName,
-        chatname: chatInfo?.chatname
       } 
     });
   };
@@ -490,7 +489,7 @@ const ChatRoom: React.FC = () => {
           }
         } else {
           // 파일 메시지 전송
-          sendMessage(JSON.stringify({
+          sendMessage(chatInfo?.productId || 0, JSON.stringify({
             type: file.type,
             url: file.url,
             name: file.name
@@ -499,7 +498,7 @@ const ChatRoom: React.FC = () => {
       } else {
         // 텍스트 메시지 전송
         // 웹소켓을 통해 메시지가 전달될 것이므로 로컬 상태 업데이트는 제거
-        sendMessage(message.trim(), MessageType.TEXT);
+        sendMessage(chatInfo?.productId || 0, message.trim(), MessageType.TEXT);
       }
     } catch (error) {
       console.error('메시지 전송 실패:', error);
@@ -574,7 +573,7 @@ const ChatRoom: React.FC = () => {
         {/* 채팅 메시지 영역 */}
         <div
           ref={chatContainerRef}
-          className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 pb-32"
+          className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 mb-20"
         >
           {[...previousMessages, ...messages].sort((a, b) => {
             // 날짜 비교를 위한 함수

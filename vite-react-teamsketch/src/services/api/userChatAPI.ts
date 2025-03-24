@@ -1,6 +1,7 @@
 import { axiosInstance } from './axiosInstance';
 import { apiConfig } from './apiConfig';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { MessageType } from '../real-time/types';
 
 // 채팅방 목록 조회 응답 타입 정의
 export interface ChatRoom {
@@ -14,17 +15,19 @@ export interface ChatRoom {
   buyerEmail: string;
   otherUserEmail: string;
   otherUserName: string;
-  lastMessage: string;
-  lastMessageTime: string;
+  lastMessage?: string;
+  lastMessageTime?: string | number[];
   status: string;
   createdAt: string;
   updatedAt: string;
   unreadCount: number;
+  messageType?: MessageType;
   messages?: IMessage[];
   productInfo?: {
     categoryId: number;
     hobbyId: number;
   };
+  
 }
 
 export interface IMessage {

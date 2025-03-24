@@ -4,7 +4,9 @@ export enum MessageType {
   FILE = 'FILE',
   ENTER = 'ENTER',
   LEAVE = 'LEAVE',
-  OFFER = 'OFFER'
+  OFFER = 'OFFER',
+  LOCATION = 'LOCATION',
+  SYSTEM = 'SYSTEM'
 }
 
 export interface IChatMessage {
@@ -44,9 +46,12 @@ export interface IChatRoom {
 }
 
 export interface INotification {
+  id?: string;
   receiverEmail: string;
   message: string;
   timestamp?: string;
+  type?: string;
+  data?: any;
 }
 
 export interface WebSocketConfig {
@@ -55,4 +60,13 @@ export interface WebSocketConfig {
   heartbeatIncoming: number;
   heartbeatOutgoing: number;
   debug?: boolean;
+}
+
+export interface ILocation {
+  chatroomId: number;
+  email?: string;
+  latitude: number;
+  longitude: number;
+  address?: string;
+  timestamp?: string;
 } 
