@@ -1,14 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { websocketService } from './websocketService';
-
-export interface ILocation {
-  chatroomId: number;
-  email: string;
-  latitude: number;
-  longitude: number;
-  timestamp?: string;
-  address?: string;
-}
+import { ILocation } from './types';  // types.ts에서 ILocation 타입을 가져옵니다.
 
 export interface LocationHookProps {
   chatroomId?: number;
@@ -84,11 +76,13 @@ export const useLocation = ({
     console.log(`[위치] ${chatroomId} 채팅방의 위치 정보 구독 시작...`);
     const subscriptionId = websocketService.subscribeToLocation(
       chatroomId,
-      (location: ILocation) => {
+      (location) => {  // 타입 어노테이션 제거
         console.log('[위치] 새 위치 정보 수신:', location);
         setLocations(prev => {
           const newLocations = new Map(prev);
-          newLocations.set(location.email, location);
+          if (location.email) {  // email이 undefined일 수 있으므로 체크
+            newLocations.set(location.email, location);
+          }
           return newLocations;
         });
       }
