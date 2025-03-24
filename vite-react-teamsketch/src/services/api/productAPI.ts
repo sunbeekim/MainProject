@@ -246,8 +246,8 @@ export const requestProduct = async (productId: number) => {
 };
 
 // 상품 승인 상태 조회
-export const getApprovalStatus = async (productId: number) => {
-  const response = await axiosInstance.get(apiConfig.endpoints.core.getApprovalStatus(productId));
+export const getApprovalStatus = async (productId: number, requestEmail: string) => {
+  const response = await axiosInstance.get(apiConfig.endpoints.core.getApprovalStatus(productId, requestEmail));
   return response.data;
 };
 

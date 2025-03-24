@@ -465,7 +465,7 @@ public class ProductService {
     /**
      * 특정 상품에 대한 사용자의 승인 상태를 조회합니다.
      */
-    public String getApprovalStatus(String email, Long productId) {
+    public String getApprovalStatus(String email, Long productId, String requestEmail) {
         log.info("승인 상태 조회 요청: email={}, productId={}", email, productId);
         
         // 상품 정보 조회
@@ -475,10 +475,10 @@ public class ProductService {
             return "미신청";
         }
         
-        // 상품 등록자인 경우 승인 상태 반환
+        // 상품 등록자인 경우 승인 상태 반환 수정 챗룸 id에 해당하는 buyer_email 
         if (product.getEmail().equals(email)) {
-            log.info("상품 등록자 확인: productId={}, email={}", productId, email);
-            return "승인";
+            String approvalStatus = productMapper.findApprovalStatus(requestEmail, productId);
+            return approvalStatus != null ? approvalStatus : "미승인";
         }
         
         // 요청자의 승인 상태 조회

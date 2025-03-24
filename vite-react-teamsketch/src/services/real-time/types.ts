@@ -32,7 +32,7 @@ export interface IChatRoom {
   chatroomId: number;
   chatname: string;
   productId: number;
-  buyerEmail: string;
+  requestEmail: string;
   sellerEmail: string;
   lastMessage: string;
   lastMessageTime: string;

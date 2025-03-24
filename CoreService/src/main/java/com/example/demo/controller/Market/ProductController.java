@@ -225,7 +225,8 @@ public class ProductController {
     @GetMapping("/requests/approval-status")
     public ResponseEntity<BaseResponse<Map<String, String>>> getApprovalStatus(
             @RequestHeader("Authorization") String token,
-            @RequestParam Long productId) {
+            @RequestParam Long productId,
+            @RequestParam String requestEmail) {
         try {
             log.info("승인 상태 조회 요청: productId={}", productId);
             String email = jwtTokenProvider.getUsername(token);
@@ -236,7 +237,7 @@ public class ProductController {
                     .body(new BaseResponse<>(null, "인증되지 않은 요청입니다."));
             }
 
-            String approvalStatus = productService.getApprovalStatus(email, productId);
+            String approvalStatus = productService.getApprovalStatus(email, productId, requestEmail);
             log.info("승인 상태 조회 결과: productId={}, status={}", productId, approvalStatus);
 
             Map<String, String> response = new HashMap<>();

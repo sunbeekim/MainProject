@@ -66,10 +66,10 @@ public class ChatMessageService {
         
         // 판매자 이메일 설정 - product에서 가져옴
         String sellerEmail = product.getEmail();
-        String buyerEmail = chatRoom.getBuyerEmail();
+        String requestEmail = chatRoom.getRequestEmail();
         
         // 사용자가 해당 채팅방의 멤버인지 확인 (판매자 또는 구매자)
-        if (!senderEmail.equals(sellerEmail) && !senderEmail.equals(buyerEmail)) {
+        if (!senderEmail.equals(sellerEmail) && !senderEmail.equals(requestEmail)) {
             throw new IllegalArgumentException("해당 채팅방에 접근 권한이 없습니다.");
         }
         
@@ -155,10 +155,10 @@ public class ChatMessageService {
         
         // 판매자 이메일 설정
         String sellerEmail = product.getEmail();
-        String buyerEmail = chatRoom.getBuyerEmail();
+        String requestEmail = chatRoom.getRequestEmail();
         
         // 사용자가 해당 채팅방의 멤버인지 확인
-        if (!userEmail.equals(sellerEmail) && !userEmail.equals(buyerEmail)) {
+        if (!userEmail.equals(sellerEmail) && !userEmail.equals(requestEmail)) {
             return ChatMessagesResponse.builder()
                     .success(false)
                     .message("해당 채팅방에 접근 권한이 없습니다.")
@@ -207,10 +207,10 @@ public class ChatMessageService {
         }
         
         String sellerEmail = product.getEmail();
-        String buyerEmail = chatRoom.getBuyerEmail();
+        String requestEmail = chatRoom.getRequestEmail();
         
         // 사용자가 해당 채팅방의 멤버인지 확인
-        if (!receiverEmail.equals(sellerEmail) && !receiverEmail.equals(buyerEmail)) {
+        if (!receiverEmail.equals(sellerEmail) && !receiverEmail.equals(requestEmail)) {
             throw new IllegalArgumentException("해당 채팅방에 접근 권한이 없습니다.");
         }
         

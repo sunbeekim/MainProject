@@ -139,7 +139,7 @@ public class ChatController {
             
             // ProductRequests 테이블에서 해당 요청 찾기
             Long productId = chatRoom.getProductId();
-            String requesterEmail = chatRoom.getBuyerEmail();
+            String requesterEmail = chatRoom.getRequestEmail();
             
             // 요청 정보 조회
             Long requestId = productRequestMapper.findRequestId(productId, requesterEmail);

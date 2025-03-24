@@ -22,7 +22,7 @@ public interface ChatRoomMapper {
     // 상품 ID와 구매자 이메일로 채팅방 조회
     ChatRoom findChatRoomByProductAndBuyer(
             @Param("productId") Long productId, 
-            @Param("buyerEmail") String buyerEmail);
+            @Param("requestEmail") String requestEmail);
     
     // 사용자와 관련된 채팅방 목록 조회
     List<ChatRoom> findChatRoomsByUser(@Param("email") String email);
@@ -52,7 +52,7 @@ public interface ChatRoomMapper {
      */
     @Select("SELECT * FROM chatrooms " +
             "WHERE product_id = #{productId} " +
-            "AND (buyer_email = #{email} OR EXISTS (" +
+            "AND (request_email = #{email} OR EXISTS (" +
             "    SELECT 1 FROM products p " +
             "    WHERE p.id = chatrooms.product_id " +
             "    AND p.email = #{email}" +

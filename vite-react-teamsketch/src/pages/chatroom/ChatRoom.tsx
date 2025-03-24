@@ -156,7 +156,7 @@ const ChatRoom: React.FC = () => {
             productImageUrl: chatRoomData.productImageUrl,
             registrantEmail: chatRoomData.registrantEmail,
             sellerEmail: chatRoomData.sellerEmail,
-            buyerEmail: chatRoomData.buyerEmail,
+            requestEmail: chatRoomData.requestEmail,
             otherUserEmail: chatRoomData.otherUserEmail,
             otherUserName: chatRoomData.otherUserName,
             lastMessage: chatRoomData.lastMessage || '',
@@ -315,7 +315,7 @@ const ChatRoom: React.FC = () => {
 
     try {
       console.log('승인 상태 확인 시도: productId=', chatInfo.productId);
-      const response = await getApprovalStatus(chatInfo.productId);
+      const response = await getApprovalStatus(chatInfo.productId, chatInfo.requestEmail);
       console.log('승인 상태 확인 응답:', response);
       
       if (response.status === 'success' && response.data) {
@@ -508,6 +508,8 @@ const ChatRoom: React.FC = () => {
     }
   };
 
+  console.log("chatInfo",chatInfo);
+  console.log("userEmail",userEmail);
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* 채팅 상대방 정보 */}
@@ -537,7 +539,7 @@ const ChatRoom: React.FC = () => {
         </div>
 
         {/* 함께하기 버튼 또는 위치보기 버튼 */}
-        {isDisabled && chatInfo?.registrantEmail === userEmail && !isApproved ? (
+        { chatInfo?.registrantEmail === userEmail && !isApproved ? (
           <button
             onClick={handleJoinClick}
             disabled={isDisabled}

@@ -54,7 +54,7 @@ export const apiConfig = {
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
       getChatRoomIdByProductId: (productId: number) => `${BASE_URL}/core/chat/rooms/product/${productId}`,
       getChatRooms: `${BASE_URL}/core/chat/rooms/active`,
-      getApprovalStatus: (productId: number) => `${BASE_URL}/core/market/products/requests/approval-status?productId=${productId}`,
+      getApprovalStatus: (productId: number, requestEmail: string) => `${BASE_URL}/core/market/products/requests/approval-status?productId=${productId}&requestEmail=${requestEmail}`,
   
       getChatRoomDetail: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}`,
       approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,

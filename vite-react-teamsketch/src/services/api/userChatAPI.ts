@@ -12,7 +12,7 @@ export interface ChatRoom {
   productImageUrl: string;
   registrantEmail: string;
   sellerEmail: string;
-  buyerEmail: string;
+  requestEmail: string;
   otherUserEmail: string;
   otherUserName: string;
   lastMessage?: string;
@@ -63,7 +63,7 @@ export interface ChatRoomDetailResponse {
   status: string;
   code: string;
   data: {
-    buyerEmail: string;
+    requestEmail: string;
     chatRooms: null;
     chatname: string;
     chatroomId: number;
@@ -85,7 +85,7 @@ export interface ChatRoomDetailResponse {
 export interface ChatRoomRequest {
   productId: number;
   sellerEmail?: string;
-  buyerEmail?: string;
+  requestEmail?: string;
 }
 
 // 채팅방 목록 조회 API 함수

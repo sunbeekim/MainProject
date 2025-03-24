@@ -89,10 +89,10 @@ public class ChatMessageController {
 
             // 수신자 이메일 결정 (발신자가 구매자면 판매자에게, 발신자가 판매자면 구매자에게)
             String receiverEmail;
-            if (senderEmail.equals(chatRoom.getBuyerEmail())) {
+            if (senderEmail.equals(chatRoom.getRequestEmail())) {
                 receiverEmail = chatRoom.getSellerEmail();
             } else {
-                receiverEmail = chatRoom.getBuyerEmail();
+                receiverEmail = chatRoom.getRequestEmail();
             }
 
             // 수신자에게 알림 전송
