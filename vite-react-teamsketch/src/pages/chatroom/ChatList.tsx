@@ -5,11 +5,59 @@ import { useChatRooms, ChatRoom } from "../../services/api/userChatAPI";
 import Loading from "../../components/common/Loading";
 import ProductImage from "../../components/features/image/ProductImage";
 import { MessageType } from "../../services/real-time/types";
+import { useWebSocket } from "../../contexts/WebSocketContext";
+import { useAppSelector } from "../../store/hooks";
+import { useChat } from "../../services/real-time/useChat";
 
 const ChatList: React.FC = () => {
-  const { data: chatRooms, isLoading, isError, error } = useChatRooms();
+  const { data: chatRooms, isLoading, isError, error, refetch } = useChatRooms();
   const [mockChats, setMockChats] = useState<ChatRoom[]>([]);
-  console.log(chatRooms);
+  const { token, user } = useAppSelector((state) => state.auth);
+  const { isConnected } = useWebSocket();
+
+  // 웹소켓 연결 설정
+  const { connect } = useChat({
+    userEmail: user?.email || undefined,
+    token: token || undefined,
+    useGlobalConnection: true
+  });
+
+  // 웹소켓 연결 및 메시지 구독
+  useEffect(() => {
+    if (user?.email && token && !isConnected) {
+      connect();
+    }
+  }, [user?.email, token, isConnected, connect]);
+
+  // 채팅방 데이터 주기적 갱신
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refetch();
+    }, 5000); // 5초마다 갱신
+
+    return () => clearInterval(intervalId);
+  }, [refetch]);
+
+  // 채팅방 데이터 유효성 검사
+  useEffect(() => {
+    if (chatRooms) {
+      // 유효하지 않은 productId를 가진 채팅방 필터링
+      const validChatRooms = chatRooms.filter(chat => {
+        if (!chat.productId) {
+          console.warn(`유효하지 않은 productId를 가진 채팅방 발견: ${chat.chatroomId}`);
+          return false;
+        }
+        return true;
+      });
+
+      if (validChatRooms.length !== chatRooms.length) {
+        console.warn(`${chatRooms.length - validChatRooms.length}개의 유효하지 않은 채팅방이 필터링됨`);
+      }
+
+      // 필터링된 채팅방 목록 사용
+      setMockChats(validChatRooms);
+    }
+  }, [chatRooms]);
 
   // 날짜를 "3시간 전", "방금 전" 등의 형식으로 변환하는 함수
   const formatTime = (dateValue: string | number[]) => {
@@ -61,7 +109,6 @@ const ChatList: React.FC = () => {
 
   // API 호출이 실패한 경우 대체할 목업 데이터
   useEffect(() => {
-    // API에서 데이터를 가져오지 못한 경우 목업 데이터 사용
     if (isError) {
       console.error('채팅방 목록 조회 실패:', error);
       setMockChats([

@@ -47,7 +47,12 @@ const Header = () => {
       return {
         title: state?.chatname ? `${state.chatname}` : '채팅'
       };
+    } else if (location.pathname.startsWith('/share')) {
+      return {
+        title: '위치 공유하기'
+      };
     }
+
 
     switch (location.pathname) {
       case '/':
