@@ -1,27 +1,47 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { ILocationState } from '../../types/map';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ILocation } from '../../types/map';
 
-const initialState: ILocationState = {
-  myLocation: { meetingPlace: '', address: '', lat: 0, lng: 0 },
-  yourLocation: { meetingPlace: '', address: '', lat: 0, lng: 0 },
-  endLocation: { meetingPlace: '', address: '', lat: 0, lng: 0 }
+interface MapState {
+  myLocation: ILocation;
+  yourLocation: ILocation;
+  endLocation: ILocation;
+}
+
+const initialState: MapState = {
+  myLocation: {
+    lat: 0,
+    lng: 0,
+    address: '',
+    meetingPlace: ''
+  },
+  yourLocation: {
+    lat: 0,
+    lng: 0,
+    address: '',
+    meetingPlace: ''
+  },
+  endLocation: {
+    lat: 0,
+    lng: 0,
+    address: '',
+    meetingPlace: ''
+  }
 };
 
 const mapSlice = createSlice({
   name: 'map',
   initialState,
   reducers: {
-    setMyLocation: (state, action) => {
+    setMyLocation: (state, action: PayloadAction<ILocation>) => {
       state.myLocation = action.payload;
     },
-    setYourLocation: (state, action) => {
+    setYourLocation: (state, action: PayloadAction<ILocation>) => {
       state.yourLocation = action.payload;
     },
-    setEndLocation: (state, action) => {
+    setEndLocation: (state, action: PayloadAction<ILocation>) => {
       state.endLocation = action.payload;
     },
-
-    clearLocations: (state) => {
+    resetLocations: (state) => {
       state.myLocation = initialState.myLocation;
       state.yourLocation = initialState.yourLocation;
       state.endLocation = initialState.endLocation;
@@ -29,5 +49,5 @@ const mapSlice = createSlice({
   }
 });
 
-export const { setMyLocation, setYourLocation, setEndLocation, clearLocations } = mapSlice.actions;
+export const { setMyLocation, setYourLocation, setEndLocation, resetLocations } = mapSlice.actions;
 export default mapSlice.reducer;
