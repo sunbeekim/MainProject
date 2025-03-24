@@ -20,7 +20,7 @@ const ShareLocationMap = () => {
     <div className="h-full w-full">
       <LocationLayout
         childrenTop={<SearchLocation onLocationSelect={() => {}} />}
-        childrenCenter={<OpenMap nonClickable={true}/>}
+        childrenCenter={<OpenMap nonClickable={true} mode="all" />}
         childrenBottom={
           <LocationInfo
             showEndLocation={true}

@@ -75,7 +75,7 @@ const ProdLocationMap = () => {
     <div className="h-full w-full">
       <LocationLayout
         childrenTop={<SearchLocation onLocationSelect={handleEndLocationSelect} />}
-        childrenCenter={<OpenMap />}
+        childrenCenter={<OpenMap mode="myAndEnd" />}
         childrenBottom={<LocationInfo showEndLocation={true} showMyLocation={true}/>}
         childrenButton={
           <BaseButton
