@@ -59,25 +59,24 @@ const MyLocation = () => {
 
   return (
     <div
-      className={`w-full bg-white dark:bg-gray-800 flex flex-col h-screen ${
-        !isFirstLogin ? 'pb-12' : ''
-      }`}
+      className={`w-full bg-white dark:bg-gray-800 flex flex-col h-screen ${!isFirstLogin ? 'pb-12' : ''
+        }`}
     >
       <LocationLayout
-        childrenTop={<SearchLocation onLocationSelect={() => {}} />}
+        childrenTop={<SearchLocation onLocationSelect={() => { }} />}
         childrenCenter={<OpenMap nonClickable={false} mode="myLocation" />}
         childrenBottom={
-          <LocationInfo showEndLocation={false} showMyLocation={true} showYourLocation={false} mode="myLocation" />
+          <LocationInfo showEndLocation={false} showMyLocation={true} showYourLocation={false}/>
         }
         childrenButton={
           <BaseButton
             variant="primary"
-            className="w-full rounded-none"
+            className="w-full rounded-none pb-10"
             onClick={handleLocationConfirm}
             disabled={isLoading}
           >
             {isLoading ? (
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center mb-16">
                 <Loading />
               </div>
             ) : (

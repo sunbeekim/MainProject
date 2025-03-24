@@ -4,6 +4,7 @@ import { apiConfig } from './apiConfig';
 import { SignupForm, ProfileUpdateRequest } from '../../types/auth';
 import { IPasswordChange } from '../../types/passwordChange'
 
+
 interface LoginCredentials {
   email: string;
   password: string;
@@ -188,6 +189,49 @@ export const myProdListApi = async (type: ProductType): Promise<ProductListRespo
   return response.data;
 };
 
+//사용자 거래 내역 조회
+export interface Transactions{
+  id: number;
+  productId: number;
+  buyerEmail: string;
+  sellerEmail: string;
+  transactionStatus: '진행중' | '완료';
+  paymentStatus:  '미완료' | '완료';
+  price: number;
+  description: string;
+  createdAt: number[];
+}
+
+export interface TransactionsResponse{
+  status: 'success' | 'error';
+  message: string;
+  data: Transactions[] | null;
+}
+
+export const transactionsListApi = async (): Promise<TransactionsResponse> => {
+  const response = await axiosInstance.get(apiConfig.endpoints.core.transactionslist);
+  return response.data;
+};
+
+//사용자의 위치 기반 특정 반경 내의 상품 조회
+export interface NProductResponse{
+  status: string;
+  message: string;
+  data: {
+    id: number; 
+    name: string;
+    price: number;
+    imagePath: string[];
+    thumbnailPath: string;
+  }[];
+}
+
+export const nearbyProdListApi = async ({latitude, longitude, distance}: {  latitude: number, longitude: number, distance: number}): Promise<NProductResponse> => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.nearbyprod, { latitude, longitude, distance });
+  return response.data;
+};
+  
+
 
 // 프로필 수정 API
 const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
@@ -275,13 +319,25 @@ export const useChangePassword = () => {
     mutationFn: passwordApi
   });
 }
-
+//사용자 등록,요청 상품 조회
 export const useMyProdList = () => {
   return useMutation({
     mutationFn: myProdListApi
   });
 }
 
+//사용자 거래 내역 조회
+export const useTrasactionsList = () => {
+  return useMutation({
+    mutationFn: transactionsListApi
+  });
+}
+
+export const useNearbyProdList = () => {
+  return useMutation({
+    mutationFn: nearbyProdListApi
+  });
+}
 // 프로필 수정 Hook
 export const useUpdateProfile = () => {
   return useMutation({

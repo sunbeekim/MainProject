@@ -19,6 +19,7 @@ import {
   resetProductForm,
   setError
 } from '../../store/slices/productSlice';
+import { resetLocations } from '../../store/slices/mapSlice';
 import { registerProduct } from '../../services/api/productAPI';
 
 const ProductRegister = () => {
@@ -153,6 +154,7 @@ const ProductRegister = () => {
       if (response.status === 'success') {
         toast.success('상품이 성공적으로 등록되었습니다.');
         dispatch(resetProductForm());
+        dispatch(resetLocations());
         navigate('/');
       } else {
         toast.error(response.message || '상품 등록에 실패했습니다.');

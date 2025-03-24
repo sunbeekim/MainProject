@@ -16,6 +16,8 @@ import {
 import Loading from '../../components/common/Loading';
 import { toast } from 'react-toastify';
 
+import FilterButton from '../../components/common/FilterButton';
+
 // mock 데이터를 실제 API 응답 타입으로 변환하는 함수
 const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
   id: mockProduct.id,
@@ -55,7 +57,7 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
   if (!thumbnailPath) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-100">
-        <span className="text-gray-400">이미지 없음</span>
+        
       </div>
     );
   }
@@ -72,13 +74,12 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
   // 에러가 발생했거나 이미지 로드에 실패한 경우 대체 이미지 표시
   if (error || !imageBlob || imgError) {
     // 이미지 ID를 사용하여 고유한 랜덤 이미지 생성
-    const mockImageUrl = `https://picsum.photos/600/400?random=${
-      imageId || Math.floor(Math.random() * 1000)
-    }`;
+    const mockImageUrl = `https://picsum.photos/600/400?random=${imageId || Math.floor(Math.random() * 1000)
+      }`;
     return (
-      <img 
-        src={mockImageUrl} 
-        alt="상품 이미지" 
+      <img
+        src={mockImageUrl}
+        alt="상품 이미지"
         className="w-full h-full object-cover"
         onError={() => setImgError(true)}
       />
@@ -102,13 +103,14 @@ const MarketList = () => {
   const [categoryName, setCategoryName] = useState<string>('전체');
   const [isPageLoading, setIsPageLoading] = useState(true);
 
+
   // 상품 Query - 카테고리 선택에 따라 다른 API 호출
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products', selectedCategory],
     queryFn: async () => {
       try {
         let response;
-        
+
         // 카테고리가 선택되었으면 카테고리별 조회, 아니면 전체 조회
         if (selectedCategory) {
           response = await getProductsByCategory(selectedCategory);
@@ -127,13 +129,13 @@ const MarketList = () => {
             return mockResponse.data.products.map(convertMockToProduct);
           }
         }
-        
+
         return response.data || [];
       } catch (error) {
         console.error('API 요청 실패:', error);
         // 에러 발생 시 한 번만 토스트 메시지 표시
         toast.error('상품 목록을 불러오는 중 오류가 발생했습니다.');
-        
+
         // 에러 발생 시 목 데이터 사용
         if (selectedCategory) {
           const mockResponse = await mockAPI.market.getProductsByCategory(categoryName);
@@ -155,10 +157,14 @@ const MarketList = () => {
       const timer = setTimeout(() => {
         setIsPageLoading(false);
       }, 500); // 500ms 지연으로 모든 요소가 렌더링될 시간을 줍니다
-      
+
       return () => clearTimeout(timer);
     }
   }, [isLoading]);
+
+
+
+
 
   // 에러 처리
   useEffect(() => {
@@ -219,8 +225,14 @@ const MarketList = () => {
     );
   }
 
+  const handleDistanceChange = (newDistance: number) => {
+
+    console.log('새로운 거리:', newDistance);
+  };
+
   return (
     <div className="w-full mt-4">
+      <FilterButton onDistanceChange={handleDistanceChange} />
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
 
       {/* 상품 목록 */}
@@ -232,9 +244,9 @@ const MarketList = () => {
               해당 카테고리에 상품이 없습니다.
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10 mb-8">
               {products.map((product: IProduct) => (
-                <div key={product.id} className="w-full flex-shrink-0 ">
+                <div key={product.id} className="w-full flex-shrink-0">
                   <Card
                     title={product.title}
                     description={product.description}

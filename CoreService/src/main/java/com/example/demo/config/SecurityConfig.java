@@ -31,16 +31,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안함
-                .exceptionHandling(exceptionHandling -> 
-                    exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용
+                                                                                                              // 안함
+                .exceptionHandling(
+                        exceptionHandling -> exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 // 정적 리소스 허용
                                 "/profile-images/**",
                                 "/chat-images/**",
                                 "/uploads/**",
+                                "/board-files/**", // 게시판 이미지 접근 허용
                                 // 인증 없이 접근 가능한 엔드포인트
                                 "/api/core/auth/signup",
                                 "/api/core/auth/login",
@@ -48,11 +49,11 @@ public class SecurityConfig {
                                 "/api/core/auth/me/password/notoken",
                                 "/api/core/auth/me/password",
                                 "/api/core/hobbies",
-                                "/api/core/hobbies/simple", 
+                                "/api/core/hobbies/simple",
                                 "/api/core/hobbies/categories",
                                 "/api/core/hobbies/*/categories",
                                 "/api/core/hobbies/categories/*",
-                                "/api/core/profiles/user/*", 
+                                "/api/core/profiles/user/*",
                                 "/api/core/market/*",
                                 "/api/core/market/products/requests/approved",
                                 "/api/core/market/products/all",
@@ -62,19 +63,21 @@ public class SecurityConfig {
                                 // WebSocket 관련 허용
                                 "/ws",
                                 "/ws/**",
-                                "/ws/redis/**",                                                         
+                                "/ws/redis/**",
                                 "/topic/**",
                                 "/topic/user/**",
-                                "/app/**",                           
+                                "/app/**",
                                 // 채팅 관련 API
                                 "/api/core/chat/**",
                                 "/api/core/chat/rooms/**",
                                 "/api/core/chat/rooms/{chatroomId}/read",
                                 "/api/core/chat/rooms/{chatroomId}/approve",
                                 "/api/core/chat/messages/**",
+                                "/api/core/boards/{boardId}/members", // 게시판 멤버 조회 API 추가
                                 // 테스트
                                 "/api/core/test/**",
-                                "/api/core/test/v2/**"
+                                "/api/core/test/v2/**",
+                                "/api/core/market/products/requests/approval-status"
                         ).permitAll()
                         // 관리자 전용 API
                         .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN")
@@ -88,15 +91,13 @@ public class SecurityConfig {
                                 "/api/core/market/transactions",
                                 "/api/core/market/transactions/**",
                                 "/api/core/market/payments",
-                                "/api/core/market/payments/**"
-                        ).authenticated()
-                        .anyRequest().authenticated()
-                )
+                                "/api/core/market/payments/**")
+                        .authenticated()
+                        .anyRequest().authenticated())
                 // JWT 필터 추가
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider, jwtTokenBlacklistService),
-                        UsernamePasswordAuthenticationFilter.class
-                )
+                        UsernamePasswordAuthenticationFilter.class)
                 // 로그아웃 비활성화
                 .logout(logout -> logout.disable());
 

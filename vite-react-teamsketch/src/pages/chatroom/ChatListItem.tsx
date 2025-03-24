@@ -1,27 +1,68 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MessageType } from '../../services/real-time/types';
 
 interface ChatListItemProps {
   nickname: string;
-  lastMessage: string;
-  time: string;
-  imageUrl: string;
+  lastMessage?: string;
+  time?: string;
   unreadCount: number;
   email: string;
+  productImage: React.ReactNode;
+  chatname: string;
+  chatroomId: number;
+  messageType?: MessageType;
 }
 
 const ChatListItem: React.FC<ChatListItemProps> = ({
   nickname,
   lastMessage,
   time,
-  imageUrl,
   unreadCount,
-  email
+  email,
+  productImage,
+  chatname,
+  chatroomId,
+  messageType = MessageType.TEXT
 }) => {
   const navigate = useNavigate();
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const userEmail = user?.email;
 
   const handleClick = () => {
-    navigate(`/chat/${email}`);
+    if (!userEmail) {
+      console.error('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+
+    navigate(`/chat/${chatroomId}/${chatname}`, {
+      state: {
+        email: userEmail,
+        otherUserEmail: email,
+        chatroomId,
+        nickname,
+        chatname,
+        imageUrl: (productImage as any)?.props?.imagePath || 'https://picsum.photos/600/400'
+      }
+    });
+  };
+
+  // 메시지 타입에 따른 표시 내용 결정
+  const getMessagePreview = () => {
+    switch (messageType) {
+      case MessageType.IMAGE:
+        return '📷 이미지를 보냈습니다.';
+      case MessageType.LOCATION:
+        return '📍 위치를 공유했습니다.';
+      case MessageType.FILE:
+        return '📎 파일을 보냈습니다.';
+      case MessageType.SYSTEM:
+        return '🔔 ' + lastMessage;
+      default:
+        return lastMessage;
+    }
   };
 
   return (
@@ -42,11 +83,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
       {/* 프로필 이미지 */}
       <div className="relative">
         <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary-100 dark:ring-primary-900">
-          <img
-            src={imageUrl || 'https://picsum.photos/600/400'}
-            alt="프로필"
-            className="w-full h-full object-cover"
-          />
+          {productImage}
         </div>
         {unreadCount > 0 && (
           <div
@@ -67,40 +104,18 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
       {/* 채팅 정보 */}
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-start mb-1">
-          <span className="font-medium text-gray-900 dark:text-white truncate">{nickname}</span>
+          <div className="flex flex-col">
+            <span className="font-medium text-gray-900 dark:text-white truncate">{nickname}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{chatname}</span>
+          </div>
           <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
             {time}
           </span>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300 truncate">{lastMessage}</p>
+        <p className={`text-sm truncate ${unreadCount > 0 ? 'text-primary-600 font-medium' : 'text-gray-600 dark:text-gray-300'}`}>
+          {getMessagePreview()}
+        </p>
       </div>
-
-      {/* 채팅방 입장 버튼 */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handleClick();
-        }}
-        className="
-          shrink-0
-          bg-gradient-to-r from-primary-500 to-primary-600
-          dark:from-primary-600 dark:to-primary-700
-          text-white 
-          px-4 py-2 
-          rounded-full
-          text-sm 
-          font-medium
-          hover:from-primary-600 hover:to-primary-700
-          dark:hover:from-primary-500 dark:hover:to-primary-600
-          transition-all 
-          duration-300
-          shadow-sm 
-          hover:shadow
-          flex items-center gap-1
-        "
-      >
-        <span>채팅</span>
-      </button>
     </div>
   );
 };

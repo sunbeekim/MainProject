@@ -48,7 +48,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, sendType='ap
         <div className="flex flex-col border-t p-2 bottom-1 ">
           {/* 파일 미리보기 */}
           {file && (
-            <div className="relative w-40 mb-2">
+            <div className="relative w-40 mb-2 pb-20">
               {/* 이미지 파일 미리보기 */}
               {file.type === "image" && (
                 <img
@@ -83,7 +83,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, sendType='ap
           
           {/* 메시지 입력 및 전송 영역 */}
           <div className="sticky bottom-0 left-0 right-0 w-full border-t"></div>
-          <div className="flex items-center fixed bottom-0 left-0 right-0 bg-white shadow-md p-7 border-t border-primary-200 dark:border-border-dark">
+          <div className="flex items-center fixed bottom-0 left-0 right-0 bg-white shadow-md pb-5 pt-3 border-t border-primary-200 dark:border-border-dark">
             {/* 파일 선택 버튼 */}
             <label
               htmlFor="file-upload"

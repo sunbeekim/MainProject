@@ -162,6 +162,28 @@ export const extractImageIdFromPath = (thumbnailPath: string): number | null => 
   }
 };
 
+// 상품 ID를 통해 채팅방 ID 조회
+export const getChatRoomIdByProductId = async (productId: number): Promise<number> => {
+  try {
+    const response = await axiosInstance.get(apiConfig.endpoints.core.getChatRoomIdByProductId(productId));
+    return response.data.data;
+  } catch (error) { 
+    console.error('채팅방 ID 조회 에러:', error);
+    throw new Error('채팅방 ID 조회에 실패했습니다.');
+  }
+};
+
+// 상품 ID를 통해 상품 조회
+export const getProductByProductId = async (productId: number): Promise<IProduct> => {
+  try {
+    const response = await axiosInstance.get(apiConfig.endpoints.core.getProductByProductId(productId));
+    return response.data.data;
+  } catch (error) {
+    console.error('상품 조회 에러:', error);
+    throw new Error('상품 조회에 실패했습니다.');
+  }
+};
+
 // React Query Hooks
 export const useProducts = () => {
   return useQuery({
@@ -189,6 +211,14 @@ export const useProductImage = (imageId: number) => {
   });
 };
 
+export const useProductByProductId = (productId: number) => {
+  return useQuery({
+    queryKey: ['product', productId],
+    queryFn: () => getProductByProductId(productId),
+    enabled: !!productId
+  });
+};
+
 interface RegisterProductParams {
   productData: Omit<IProductRegisterRequest, 'images'>;
   images: File[];
@@ -212,6 +242,12 @@ export const useRegisterProduct = () => {
 
 export const requestProduct = async (productId: number) => {
   const response = await axiosInstance.post(apiConfig.endpoints.core.requestProduct, { productId });
+  return response.data;
+};
+
+// 상품 승인 상태 조회
+export const getApprovalStatus = async (productId: number, requestEmail: string) => {
+  const response = await axiosInstance.get(apiConfig.endpoints.core.getApprovalStatus(productId, requestEmail));
   return response.data;
 };
 

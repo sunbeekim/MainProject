@@ -5,14 +5,29 @@ interface Message {
   content: string;
 }
 
+interface LastMessage {
+  messageId: number;
+  chatroomId: number;
+  senderEmail: string;
+  content: string;
+  messageType: string;
+  sentAt: string;
+  read: boolean;
+  senderName: string;
+  senderProfileUrl: string;
+  productId: number;
+}
+
 interface ChatState {
   messages: Message[];
+  lastMessage: LastMessage[];
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: ChatState = {
   messages: [],
+  lastMessage: [],
   isLoading: false,
   error: null
 };
@@ -39,6 +54,9 @@ const chatSlice = createSlice({
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
       state.isLoading = false;
+    },
+    setLastMessage: (state, action: PayloadAction<LastMessage>) => {
+      state.lastMessage.push(action.payload);
     }
   }
 });

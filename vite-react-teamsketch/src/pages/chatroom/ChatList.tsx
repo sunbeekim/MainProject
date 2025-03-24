@@ -3,15 +3,79 @@ import { useState, useEffect } from "react";
 import ChatListItem from "./ChatListItem"; 
 import { useChatRooms, ChatRoom } from "../../services/api/userChatAPI";
 import Loading from "../../components/common/Loading";
+import ProductImage from "../../components/features/image/ProductImage";
+import { MessageType } from "../../services/real-time/types";
+import { useWebSocket } from "../../contexts/WebSocketContext";
+import { useAppSelector } from "../../store/hooks";
+import { useChat } from "../../services/real-time/useChat";
 
 const ChatList: React.FC = () => {
-  const { data: chatRooms, isLoading, isError, error } = useChatRooms();
+  const { data: chatRooms, isLoading, isError, error, refetch } = useChatRooms();
   const [mockChats, setMockChats] = useState<ChatRoom[]>([]);
-  console.log(chatRooms);
-  // 날짜를 "3시간 전", "방금 전" 등의 형식으로 변환하는 간단한 함수
-  const formatTime = (dateString: string) => {
+  const { token, user } = useAppSelector((state) => state.auth);
+  const { isConnected } = useWebSocket();
+
+  // 웹소켓 연결 설정
+  const { connect } = useChat({
+    userEmail: user?.email || undefined,
+    token: token || undefined,
+    useGlobalConnection: true
+  });
+
+  // 웹소켓 연결 및 메시지 구독
+  useEffect(() => {
+    if (user?.email && token && !isConnected) {
+      connect();
+    }
+  }, [user?.email, token, isConnected, connect]);
+
+  // 채팅방 데이터 주기적 갱신
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refetch();
+    }, 5000); // 5초마다 갱신
+
+    return () => clearInterval(intervalId);
+  }, [refetch]);
+
+  // 채팅방 데이터 유효성 검사
+  useEffect(() => {
+    if (chatRooms) {
+      // 유효하지 않은 productId를 가진 채팅방 필터링
+      const validChatRooms = chatRooms.filter(chat => {
+        if (!chat.productId) {
+          console.warn(`유효하지 않은 productId를 가진 채팅방 발견: ${chat.chatroomId}`);
+          return false;
+        }
+        return true;
+      });
+
+      if (validChatRooms.length !== chatRooms.length) {
+        console.warn(`${chatRooms.length - validChatRooms.length}개의 유효하지 않은 채팅방이 필터링됨`);
+      }
+
+      // 필터링된 채팅방 목록 사용
+      setMockChats(validChatRooms);
+    }
+  }, [chatRooms]);
+
+  // 날짜를 "3시간 전", "방금 전" 등의 형식으로 변환하는 함수
+  const formatTime = (dateValue: string | number[]) => {
     try {
-      const date = new Date(dateString);
+      let date: Date;
+      
+      if (Array.isArray(dateValue)) {
+        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분]
+        const [year, month, day, hour, minute] = dateValue;
+        date = new Date(year, month - 1, day, hour, minute); // 월은 0부터 시작하므로 -1
+      } else {
+        date = new Date(dateValue);
+      }
+
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date');
+      }
+
       const now = new Date();
       const diffInMs = now.getTime() - date.getTime();
       
@@ -21,23 +85,30 @@ const ChatList: React.FC = () => {
       const diffInHours = Math.floor(diffInMin / 60);
       const diffInDays = Math.floor(diffInHours / 24);
 
-      // 적절한 형식으로 반환
+      // 1분 미만
       if (diffInSec < 60) return '방금 전';
+      // 1시간 미만
       if (diffInMin < 60) return `${diffInMin}분 전`;
+      // 24시간 미만
       if (diffInHours < 24) return `${diffInHours}시간 전`;
+      // 7일 미만
       if (diffInDays < 7) return `${diffInDays}일 전`;
       
-      // 그 외에는 날짜를 간단히 표시
-      return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+      // 1년 미만인 경우 월/일 표시
+      if (date.getFullYear() === now.getFullYear()) {
+        return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+      }
+      
+      // 그 외의 경우 년/월/일 표시
+      return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
     } catch (error) {
       console.error('날짜 변환 오류:', error);
-      return dateString;
+      return '날짜 오류';
     }
   };
 
   // API 호출이 실패한 경우 대체할 목업 데이터
   useEffect(() => {
-    // API에서 데이터를 가져오지 못한 경우 목업 데이터 사용
     if (isError) {
       console.error('채팅방 목록 조회 실패:', error);
       setMockChats([
@@ -45,10 +116,11 @@ const ChatList: React.FC = () => {
           chatroomId: 1,
           chatname: "상품명 거래 채팅",
           productId: 1,
+          registrantEmail: "seller@example.com",
           productName: "전자제품 거래",
           productImageUrl: "https://picsum.photos/600/400",
           sellerEmail: "seller@example.com",
-          buyerEmail: "buyer@example.com",
+          requestEmail: "buyer@example.com",
           otherUserEmail: "seller@example.com",
           otherUserName: "곰탱이",
           lastMessage: "안녕하세요",
@@ -56,16 +128,18 @@ const ChatList: React.FC = () => {
           status: "ACTIVE",
           createdAt: "2023-11-01T12:00:00",
           updatedAt: "2023-11-01T12:05:00",
-          unreadCount: 2
+          unreadCount: 2,
+          messageType: MessageType.TEXT
         },
         {
           chatroomId: 2,
           chatname: "옷 거래 채팅",
           productId: 2,
+          registrantEmail: "seller2@example.com",
           productName: "의류 거래",
           productImageUrl: "https://picsum.photos/600/400",
           sellerEmail: "seller2@example.com",
-          buyerEmail: "buyer@example.com",
+          requestEmail: "buyer@example.com",
           otherUserEmail: "seller2@example.com",
           otherUserName: "집순이",
           lastMessage: "반가워요",
@@ -73,16 +147,18 @@ const ChatList: React.FC = () => {
           status: "ACTIVE",
           createdAt: "2023-11-01T10:00:00",
           updatedAt: "2023-11-01T10:30:00",
-          unreadCount: 0
+          unreadCount: 0,
+          messageType: MessageType.TEXT
         },
         {
           chatroomId: 3,
           chatname: "도서 거래 채팅",
           productId: 3,
+          registrantEmail: "seller3@example.com",
           productName: "책 거래",
           productImageUrl: "https://picsum.photos/600/400",
           sellerEmail: "seller3@example.com",
-          buyerEmail: "buyer@example.com",
+          requestEmail: "buyer@example.com",
           otherUserEmail: "seller3@example.com",
           otherUserName: "알라딘딘",
           lastMessage: "어디세요?",
@@ -90,7 +166,8 @@ const ChatList: React.FC = () => {
           status: "ACTIVE",
           createdAt: "2023-11-01T08:00:00",
           updatedAt: "2023-11-01T09:00:00",
-          unreadCount: 3
+          unreadCount: 3,
+          messageType: MessageType.TEXT
         }
       ]);
     }
@@ -127,10 +204,13 @@ const ChatList: React.FC = () => {
             key={chat.chatroomId}
             nickname={chat.otherUserName}
             lastMessage={chat.lastMessage}
-            time={formatTime(chat.lastMessageTime)}
-            imageUrl={chat.productImageUrl}
+            time={formatTime(chat.lastMessageTime ?? new Date().toISOString())}
             unreadCount={chat.unreadCount}
             email={chat.otherUserEmail}
+            productImage={<ProductImage imagePath={chat.productImageUrl} />}
+            chatname={chat.chatname}
+            chatroomId={chat.chatroomId}
+            messageType={chat.messageType}
           />
         ))}
       </div>

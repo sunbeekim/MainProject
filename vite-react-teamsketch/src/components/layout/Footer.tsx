@@ -9,10 +9,15 @@ import {
 import { HiOutlineMapPin, HiMapPin } from 'react-icons/hi2';
 import { CgUser } from 'react-icons/cg';
 import { RiUserFill } from 'react-icons/ri';
+import { useChatRooms } from '../../services/api/userChatAPI';
 
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: chatRooms } = useChatRooms();
+
+  // 전체 안 읽은 메시지 수 계산
+  const totalUnreadCount = chatRooms?.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0) || 0;
  
   const getPathForLabel = (label: string) => {
     switch (label) {
@@ -41,7 +46,8 @@ const Footer = () => {
       icon:
         location.pathname === '/chat-list' ? <IoChatbubbleEllipses /> : <IoChatbubbleEllipsesOutline />,
       label: '채팅',
-      onClick: () => navigate('/chat-list')
+      onClick: () => navigate('/chat-list'),
+      badge: totalUnreadCount > 0 ? totalUnreadCount : undefined
     },
     {
       icon:
@@ -71,7 +77,7 @@ const Footer = () => {
           <button
             key={index}
             onClick={item.onClick}
-            className="flex flex-col items-center pb-5 gap-1 bg-transparent hover:bg-transparent focus:outline-none"
+            className="flex flex-col items-center pb-5 gap-1 bg-transparent hover:bg-transparent focus:outline-none relative"
           >
             <div
               className={`text-3xl ${
@@ -81,6 +87,11 @@ const Footer = () => {
               } group-hover:scale-110 transition-transform duration-300`}
             >
               {item.icon}
+              {item.badge && item.badge > 0 && (
+                <div className="absolute -top-0 -right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {item.badge > 99 ? '99+' : item.badge}
+                </div>
+              )}
             </div>
           </button>
         ))}

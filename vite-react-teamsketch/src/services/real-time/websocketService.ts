@@ -1,5 +1,5 @@
 import { Client, IMessage, StompSubscription, IFrame } from '@stomp/stompjs';
-import { WebSocketConfig, IChatMessage, INotification } from './types';
+import { WebSocketConfig, IChatMessage, INotification, ILocation } from './types';
 import { apiConfig } from '../api/apiConfig';
 
 // 싱글톤 인스턴스
@@ -20,9 +20,20 @@ export const websocketService = {
    * @returns WebSocket 클라이언트 인스턴스
    */
   connect: (token?: string, config?: Partial<WebSocketConfig>): Client => {
-    if (stompClient && stompClient.connected) {
-      console.log('WebSocket 이미 연결됨');
+    if (stompClient?.connected) {
+      console.log('이미 WebSocket이 연결되어 있습니다.');
       return stompClient;
+    }
+
+    if (stompClient?.active) {
+      console.log('WebSocket이 연결 중입니다.');
+      return stompClient;
+    }
+
+    // 기존 클라이언트가 있다면 정리
+    if (stompClient) {
+      stompClient.deactivate();
+      stompClient = null;
     }
 
     // 기본 설정
@@ -89,10 +100,10 @@ export const websocketService = {
       console.error('WebSocket이 연결되지 않았습니다. 연결 시도 중...');
       websocketService.connect();
       
-      // 나중에 구독을 위해 콜백 함수를 저장
-      const destination = `/topic/chat.${chatroomId}`;
+      const destination = `/topic/room.${chatroomId}`;
       websocketService.saveSubscriptionCallback(destination, (message: IMessage) => {
         try {
+          console.log('채팅 메시지 수신:', message.body); // 디버깅용 로그 추가
           const chatMessage: IChatMessage = JSON.parse(message.body);
           callback(chatMessage);
         } catch (error) {
@@ -103,17 +114,17 @@ export const websocketService = {
       return destination;
     }
 
-    const destination = `/topic/chat.${chatroomId}`;
+    const destination = `/topic/room.${chatroomId}`;
     
-    // 이미 구독 중인지 확인
     if (subscriptions.has(destination)) {
       console.log(`이미 채팅방 ${chatroomId}를 구독 중입니다.`);
       return destination;
     }
 
-    // 새 구독 생성
+    console.log(`채팅방 ${chatroomId} 구독 시작`);
     const subscription = stompClient.subscribe(destination, (message: IMessage) => {
       try {
+        console.log('채팅 메시지 수신:', message.body); // 디버깅용 로그 추가
         const chatMessage: IChatMessage = JSON.parse(message.body);
         callback(chatMessage);
       } catch (error) {
@@ -121,9 +132,7 @@ export const websocketService = {
       }
     });
 
-    // 구독 정보 저장
     subscriptions.set(destination, subscription);
-    console.log(`채팅방 ${chatroomId} 구독 시작`);
     return destination;
   },
 
@@ -237,7 +246,14 @@ export const websocketService = {
    * @param message 전송할 채팅 메시지
    */
   sendChatMessage: (message: Omit<IChatMessage, 'messageId' | 'sentAt' | 'senderName' | 'senderProfileUrl'>): void => {
-    websocketService.send('/app/chat.message', message);
+    const messageToSend = {
+      chatroomId: message.chatroomId,
+      productId: message.productId,
+      content: message.content,
+      messageType: message.messageType,
+      senderEmail: message.senderEmail
+    };
+    websocketService.send('/app/chat/send', messageToSend);
   },
 
   /**
@@ -270,5 +286,45 @@ export const websocketService = {
    */
   isConnected: (): boolean => {
     return !!(stompClient && stompClient.connected);
+  },
+
+  /**
+   * 위치 정보 구독
+   * @param chatroomId 채팅방 ID
+   * @param callback 위치 정보 수신 시 호출될 콜백 함수
+   */
+  subscribeToLocation: (chatroomId: number, callback: (location: ILocation) => void): string => {
+    const destination = `/topic/location.${chatroomId}`;
+    
+    if (!stompClient || !stompClient.connected) {
+      console.log(`[위치] WebSocket 연결 안됨. 구독 대기 목록에 추가: ${destination}`);
+      websocketService.pendingSubscriptions.set(destination, (message) => {
+        const locationData = JSON.parse(message.body);
+        callback(locationData);
+      });
+      return destination;
+    }
+
+    console.log(`[위치] 구독 시작: ${destination}`);
+    const subscription = stompClient.subscribe(destination, (message) => {
+      const locationData = JSON.parse(message.body);
+      callback(locationData);
+    });
+
+    subscriptions.set(destination, subscription);
+    return destination;
+  },
+
+  /**
+   * 위치 정보 전송
+   * @param location 전송할 위치 정보
+   */
+  sendLocation: (location: ILocation): void => {
+    if (!stompClient || !stompClient.connected) {
+      console.error('WebSocket이 연결되지 않았습니다.');
+      return;
+    }
+
+    websocketService.send(`/app/location/${location.chatroomId}`, location);
   }
 }; 
