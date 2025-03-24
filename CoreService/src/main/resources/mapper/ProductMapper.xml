@@ -20,7 +20,7 @@
 
     <!-- 상품 요청 등록 (ProductRequests 테이블에 저장) -->
     <insert id="insertProductRequest" parameterType="map">
-        INSERT INTO ProductRequests (product_id, requester_email, created_at, updated_at, status, approval_status)
+        INSERT INTO productrequests (product_id, requester_email, created_at, updated_at, status, approval_status)
         VALUES (#{productId}, #{requesterEmail}, NOW(), NOW(), '대기', '미승인');
     </insert>
 
@@ -29,7 +29,7 @@
         UPDATE Products
         SET current_participants = (
             SELECT COUNT(*)
-            FROM ProductRequests
+            FROM productrequests
             WHERE product_id = #{productId} AND approval_status = '승인'
         )
         WHERE id = #{productId};
@@ -44,7 +44,7 @@
 
     <!-- 상품 요청 승인 여부 업데이트 -->
     <update id="updateRequestApprovalStatus">
-        UPDATE ProductRequests
+        UPDATE productrequests
         SET approval_status = #{approvalStatus}, status = '완료', updated_at = NOW()
         WHERE id = #{requestId};
     </update>
@@ -55,7 +55,7 @@
         SET is_visible = FALSE
         WHERE id = #{productId}
           AND (
-                  SELECT COUNT(*) FROM ProductRequests
+                  SELECT COUNT(*) FROM productrequests
                   WHERE product_id = #{productId}
                     AND approval_status = '승인'
               ) >= max_participants;
@@ -64,7 +64,7 @@
 
     <!-- 상품 요청 상태를 '완료'로 변경 (승인된 요청만) -->
     <update id="updateRequestStatusToComplete">
-        UPDATE ProductRequests
+        UPDATE productrequests
         SET status = '완료', updated_at = NOW()
         WHERE product_id = #{productId}
           AND approval_status = '승인';
@@ -82,7 +82,7 @@
             u.nickname AS nickname,
             u.email AS email,
             pr.approval_status AS approvalStatus
-        FROM ProductRequests pr
+        FROM productrequests pr
                  JOIN Users u ON pr.requester_email = u.email
         WHERE pr.product_id = #{productId}
           AND pr.approval_status = '승인'
@@ -93,7 +93,7 @@
     <!-- 요청자의 이메일을 요청 ID(requestId) 가져오기 -->
     <select id="findRequesterEmailByRequestId" parameterType="long" resultType="string">
         SELECT requester_email
-        FROM ProductRequests
+        FROM productrequests
         WHERE id = #{requestId}
     </select>
 
@@ -115,7 +115,7 @@
         p.is_visible = TRUE
         OR p.email = #{email}  <!-- 등록자는 조회 가능 -->
         OR EXISTS (
-        SELECT 1 FROM ProductRequests pr
+        SELECT 1 FROM productrequests pr
         WHERE pr.product_id = p.id
         AND pr.requester_email = #{email}
         AND pr.approval_status = '승인'  <!-- 승인된 사용자만 조회 가능 -->
@@ -125,7 +125,7 @@
 
     <!-- 승인된 요청만 카운트하는 쿼리 -->
     <select id="getCurrentParticipants" parameterType="long" resultType="int">
-        SELECT COUNT(*) FROM ProductRequests
+        SELECT COUNT(*) FROM productrequests
         WHERE product_id = #{productId} AND approval_status = '승인';
     </select>
     <!-- 특정 카테고리 상품 조회 + 정렬 -->
@@ -214,7 +214,7 @@
             COALESCE(pd.dopamine, 50) AS dopamine,
             pi.image_path
         FROM products p
-                 JOIN ProductRequests pr ON p.id = pr.product_id
+                 JOIN productrequests pr ON p.id = pr.product_id
                  JOIN users u ON p.email = u.email
                  LEFT JOIN productimages pi ON p.id = pi.product_id
                  LEFT JOIN (
@@ -236,7 +236,7 @@
             COALESCE(pd.dopamine, 50) AS dopamine,
             pi.image_path
         FROM products p
-                 JOIN ProductRequests pr ON p.id = pr.product_id
+                 JOIN productrequests pr ON p.id = pr.product_id
                  JOIN users u ON p.email = u.email
                  LEFT JOIN productimages pi ON p.id = pi.product_id
                  LEFT JOIN (
@@ -326,7 +326,7 @@
     <!-- 특정 상품에 대한 사용자의 승인 상태 조회 -->
     <select id="findApprovalStatus" resultType="string">
         SELECT approval_status
-        FROM ProductRequests
+        FROM productrequests
         WHERE requester_email = #{email}
           AND product_id = #{productId}
         ORDER BY created_at DESC

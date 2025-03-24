@@ -9,7 +9,7 @@
             created_at as createdAt, updated_at as updatedAt, 
             status, approval_status as approvalStatus
         FROM 
-            ProductRequests
+            productrequests
         WHERE 
             product_id = #{productId} AND requester_email = #{requesterEmail}
     </select>
@@ -19,7 +19,7 @@
         SELECT 
             id
         FROM 
-            ProductRequests
+            productrequests
         WHERE 
             product_id = #{productId} AND requester_email = #{requesterEmail}
     </select>
@@ -31,7 +31,7 @@
             created_at as createdAt, updated_at as updatedAt, 
             status, approval_status as approvalStatus
         FROM 
-            ProductRequests
+            productrequests
         WHERE 
             product_id = #{productId}
         ORDER BY
@@ -43,7 +43,7 @@
         SELECT 
             id
         FROM 
-            ProductRequests
+            productrequests
         WHERE 
             product_id = #{productId}
         ORDER BY

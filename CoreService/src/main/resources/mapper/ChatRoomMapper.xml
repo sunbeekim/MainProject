@@ -46,12 +46,12 @@
         FROM 
             chatrooms cr
             JOIN products p ON cr.product_id = p.id
-            LEFT JOIN ProductRequests pr ON cr.product_id = pr.product_id 
+            LEFT JOIN productrequests pr ON cr.product_id = pr.product_id 
         WHERE 
             (
                 -- 1. 채팅방에서 구매자로 참여하고 있는 경우 (request_email이 현재 사용자)
                 (cr.request_email = #{email} AND EXISTS (
-                    SELECT 1 FROM ProductRequests 
+                    SELECT 1 FROM productrequests 
                     WHERE product_id = cr.product_id 
                     AND requester_email = #{email}
                     AND (approval_status = '승인' OR approval_status = '대기')
@@ -59,7 +59,7 @@
                 OR
                 -- 2. 상품 등록자로 참여하고 있는 경우 (상품의 email이 현재 사용자)
                 (p.email = #{email} AND EXISTS (
-                    SELECT 1 FROM ProductRequests 
+                    SELECT 1 FROM productrequests 
                     WHERE product_id = cr.product_id
                     AND (approval_status = '승인' OR approval_status = '대기')
                 ))
@@ -129,7 +129,7 @@
         FROM 
             chatrooms cr
             JOIN products p ON cr.product_id = p.id
-            LEFT JOIN ProductRequests pr ON cr.product_id = pr.product_id 
+            LEFT JOIN productrequests pr ON cr.product_id = pr.product_id 
                                         AND (cr.request_email = pr.requester_email 
                                              OR pr.requester_email = #{email})
         WHERE 
@@ -145,7 +145,7 @@
                 -- 조건 3: 모집 완료 상품의 승인된 신청자인 경우
                 (p.is_visible = false AND 
                     ((cr.request_email = #{email} AND EXISTS (
-                        SELECT 1 FROM ProductRequests 
+                        SELECT 1 FROM productrequests 
                         WHERE product_id = p.id AND requester_email = #{email} AND approval_status = '승인'
                     )) 
                     OR 

@@ -186,7 +186,7 @@ const MainLayout = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/servicechat" element={<ServiceChat />} />
-          <Route path="/sharelocation/:chatroomId" element={<ShareLocationMap />} />
+          <Route path="/sharelocation/:chatroomId/:chatname" element={<ShareLocationMap />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notification" element={<NotificationList />} />
           <Route path="/notification-setting" element={<NotificationSetting />} />
