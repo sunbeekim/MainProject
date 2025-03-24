@@ -1,66 +1,92 @@
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { transactionsListApi } from "../../services/api/authAPI";
+import { toast } from "react-toastify";
+import TransactionCard from "../../components/features/card/TransactionCard";
 
-interface TransactionState {
-  imageUrl: string;
-  title: string;
-  status: string;
-  method: string;
-  date: string;
-  paymentStatus: string;
+interface Transactions {
+  id: number;
+  productId: number;
+  buyerEmail: string;
+  sellerEmail: string;
+  transactionStatus: '진행중' | '완료';
+  paymentStatus: '미완료' | '완료';
   price: number;
   description: string;
-  opponentProfile: string;
-  opponentNickname: string;
+  createdAt: number[];
 }
 
 const TransactionDetail = () => {
-  const location = useLocation();
+  const [transactions, setTransactions] = useState<Transactions[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transactions | null>(null);
 
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await transactionsListApi();
+        console.log(response.data);
+        if (response.status === "success") {
 
-  const {
-    imageUrl = "https://picsum.photos/600/400",
-    title = "상품명",
-    status = "거래 상태 미제공",
-    method = "거래 방식 미제공",
-    date = "일정 미제공",
-    paymentStatus = "결제 상태 미제공",
-    price = "결제 금액",
-    description = "설명 미제공",
-    opponentProfile = "https://picsum.photos/100/100",
-    opponentNickname = "상대방 닉네임 미제공",
-  } = location.state as TransactionState || {};
+          setTransactions(response.data || []);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error("결제 내역을 불러오는데 실패했습니다.");
+        console.log(error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+  const handleTransactionClick = (transaction: Transactions) => {
+    setSelectedTransaction(transaction);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedTransaction(null);
+  };
 
   return (
     <div className="p-4">
-      <div className="w-full h-[200px] bg-gray-200 rounded-lg">
-        <img src={imageUrl} alt="상품 이미지" className="w-full h-full object-cover rounded-lg" />
-      </div>
-
-      {/* 거래명 */}
-      <h2 className="text-2xl font-semibold mt-6 ml-4">{title}</h2>
-
       {/* 거래 세부 사항 */}
       <div className="mt-6">
-        <ul className="space-y-2 m-4 mb-28">
-          <li><strong>거래 상태:</strong> {status}</li>
-          <li><strong>거래 방식:</strong> {method}</li>
-          <li><strong>일정:</strong> {date}</li>
-          <li><strong>결제 상태:</strong> {paymentStatus}</li>
-          <li><strong>거래 금액:</strong> {price}</li>
-          <li><strong>설명:</strong> {description}</li>
-        </ul>
+        {transactions.length > 0 ? (
+          transactions.map((transaction) => (
+            <TransactionCard
+              key={transaction.id}
+              transaction={transaction}
+              onClick={() => handleTransactionClick(transaction)}
+            />
+          ))
+        ) : (
+          <p>거래 내역이 없습니다.</p>
+        )}
       </div>
-
-      {/* 거래 상대 */}
-      <h2 className="text-2xl font-semibold mt-6 ml-4">거래상대</h2>
-      <div className="my-5 border-t border-gray-300"></div>
-
-      <div className="flex items-center m-4">
-        <div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-200 mr-4">
-          <img src={opponentProfile} alt="상대방 프로필" className="w-full h-full object-cover" />
+      {/* 상세보기 모달 */}
+      {isModalOpen && selectedTransaction && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-[90%] max-w-3xl relative shadow-md">
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-lg flex justify-center items-center"
+            >
+              x
+            </button>
+            <h2 className="text-lg font-bold mb-2">{selectedTransaction.productId}</h2>
+            <hr className="my-3 border-gray-300" />
+            <p>구매자 이메일: {selectedTransaction.buyerEmail}</p>
+            <p>판매자 이메일: {selectedTransaction.sellerEmail}</p>
+            <p>거래 상태: {selectedTransaction.transactionStatus}</p>
+            <p>결제 상태: {selectedTransaction.paymentStatus}</p>
+            <p>가격: {selectedTransaction.price} 원</p>
+            <p>설명: {selectedTransaction.description}</p>
+          </div>
         </div>
-        <span className="text-lg font-semibold">{opponentNickname}</span>
-      </div>
+      )}
     </div>
   );
 };

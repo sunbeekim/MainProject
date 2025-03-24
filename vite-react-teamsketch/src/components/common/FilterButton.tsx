@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
-const FilterButton = () => {
+interface FilterButtonProps {
+    onDistanceChange: (distance: number) => void;
+}
+const FilterButton = ({ onDistanceChange }: FilterButtonProps) => {
     const [open, setOpen] = useState(false);
     const [distance, setDistance] = useState(10); // 초기 거리값
 
@@ -26,13 +29,20 @@ const FilterButton = () => {
                             min="1"
                             max="200"
                             value={distance}
-                            onChange={(e) => setDistance(Number(e.target.value))}
+                            onChange={(e) => {
+                                const newDistance = Number(e.target.value);
+                                setDistance(newDistance);
+                                onDistanceChange(newDistance);
+                            }}
                             className="w-full slider"
                         />
                     </div>
                     <div className="mt-2 flex justify-end">
                         <button
-                            onClick={() => setOpen(false)}
+                            onClick={() => {
+                                setOpen(false);
+                                onDistanceChange(distance);
+                            }}
                             className="px-3 py-2 bg-primary-400 rounded hover:bg-primary-500 text-sm"
                         >
                             선택
