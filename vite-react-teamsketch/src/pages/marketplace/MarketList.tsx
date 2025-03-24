@@ -57,7 +57,7 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
   if (!thumbnailPath) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-100">
-        <span className="text-gray-400">이미지 없음</span>
+        
       </div>
     );
   }

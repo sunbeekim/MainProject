@@ -55,13 +55,13 @@ public class ChatService {
                     .build();
         }
         
-        String buyerEmail = userEmail;
+        String requestEmail = userEmail;
         
         // 모집 완료된 상품의 경우 승인된 사용자만 채팅방 접근 허용
         if (!product.isVisible() && !sellerEmail.equals(userEmail)) {
             // 상품 요청 정보 확인
             ProductRequest productRequest = productRequestMapper.findByProductIdAndRequesterEmail(
-                request.getProductId(), buyerEmail);
+                request.getProductId(), requestEmail);
             
             // 모집 완료된 상품인데 승인되지 않은 사용자인 경우
             if (productRequest == null || !"승인".equals(productRequest.getApprovalStatus())) {
@@ -73,7 +73,7 @@ public class ChatService {
         }
         
         ChatRoom existingChatRoom = chatRoomMapper.findChatRoomByProductAndBuyer(
-                request.getProductId(), buyerEmail);
+                request.getProductId(), requestEmail);
         
         ChatRoom chatRoom;
         boolean isNewChatRoom = false;
@@ -81,9 +81,9 @@ public class ChatService {
         if (existingChatRoom == null) {
             // 새로운 채팅방 생성
             chatRoom = ChatRoom.builder()
-                    .chatname(request.getChatname() != null ? request.getChatname() : product.getTitle() + " 거래 채팅")
+                    .chatname(request.getChatname() != null ? request.getChatname() : product.getTitle())
                     .productId(request.getProductId())
-                    .buyerEmail(buyerEmail)
+                    .requestEmail(requestEmail)
                     .lastMessage("채팅이 시작되었습니다.")
                     .lastMessageTime(LocalDateTime.now())
                     .status("ACTIVE")
@@ -96,11 +96,11 @@ public class ChatService {
         }
         
         User seller = userMapper.findByEmail(sellerEmail);
-        User buyer = userMapper.findByEmail(buyerEmail);
+        User buyer = userMapper.findByEmail(requestEmail);
         
         String thumbnailPath = getProductThumbnailImage(product.getId());
         
-        String otherUserEmail = sellerEmail.equals(userEmail) ? buyerEmail : sellerEmail;
+        String otherUserEmail = sellerEmail.equals(userEmail) ? requestEmail : sellerEmail;
         String otherUserName = sellerEmail.equals(userEmail) ? buyer.getNickname() : seller.getNickname();
         
         return ChatRoomResponse.builder()
@@ -112,7 +112,7 @@ public class ChatService {
                 .productName(product.getTitle())
                 .productImageUrl(thumbnailPath)
                 .sellerEmail(sellerEmail)
-                .buyerEmail(chatRoom.getBuyerEmail())
+                .requestEmail(chatRoom.getRequestEmail())
                 .otherUserEmail(otherUserEmail)
                 .otherUserName(otherUserName)
                 .lastMessage(chatRoom.getLastMessage())
@@ -137,7 +137,7 @@ public class ChatService {
                 
                 // 대화 상대 정보 설정
                 String otherEmail = room.getSellerEmail().equals(userEmail) ? 
-                        room.getBuyerEmail() : room.getSellerEmail();
+                        room.getRequestEmail() : room.getSellerEmail();
                 User otherUser = userMapper.findByEmail(otherEmail);
                 if (otherUser != null) {
                     room.setOtherUserName(otherUser.getNickname());
@@ -183,9 +183,9 @@ public class ChatService {
         }
         
         String sellerEmail = product.getEmail();
-        String buyerEmail = chatRoom.getBuyerEmail();
+        String requestEmail = chatRoom.getRequestEmail();
         
-        if (!sellerEmail.equals(userEmail) && !buyerEmail.equals(userEmail)) {
+        if (!sellerEmail.equals(userEmail) && !requestEmail.equals(userEmail)) {
             return ChatRoomResponse.builder()
                     .success(false)
                     .message("해당 채팅방에 접근 권한이 없습니다.")
@@ -193,10 +193,10 @@ public class ChatService {
         }
         
         // 모집 완료된 상품의 경우 승인된 사용자만 채팅방 접근 허용
-        if (!product.isVisible() && buyerEmail.equals(userEmail)) {
+        if (!product.isVisible() && requestEmail.equals(userEmail)) {
             // 상품 요청 정보 확인
             ProductRequest productRequest = productRequestMapper.findByProductIdAndRequesterEmail(
-                    product.getId(), buyerEmail);
+                    product.getId(), requestEmail);
             
             // 모집 완료된 상품인데 승인되지 않은 사용자인 경우
             if (productRequest == null || !"승인".equals(productRequest.getApprovalStatus())) {
@@ -206,11 +206,13 @@ public class ChatService {
                         .build();
             }
         }
+
+        String registrantEmail = product.getEmail();
         
         String thumbnailPath = getProductThumbnailImage(product.getId());
         
         String otherUserEmail = sellerEmail.equals(userEmail) ? 
-                buyerEmail : sellerEmail;
+                requestEmail : sellerEmail;
         
         User otherUser = userMapper.findByEmail(otherUserEmail);
         if (otherUser == null) {
@@ -229,10 +231,11 @@ public class ChatService {
                 .chatroomId(chatRoom.getChatroomId())
                 .chatname(chatRoom.getChatname())
                 .productId(chatRoom.getProductId())
+                .registrantEmail(registrantEmail)
                 .productName(product.getTitle())
                 .productImageUrl(thumbnailPath)
                 .sellerEmail(sellerEmail)
-                .buyerEmail(buyerEmail)
+                .requestEmail(requestEmail)
                 .otherUserEmail(otherUserEmail)
                 .otherUserName(otherUser.getNickname())
                 .lastMessage(chatRoom.getLastMessage())
@@ -291,7 +294,7 @@ public class ChatService {
                 
                 if (product.getEmail().equals(userEmail)) {
                     // 상품 등록자인 경우, 상대방은 구매자
-                    otherEmail = room.getBuyerEmail();
+                    otherEmail = room.getRequestEmail();
                 } else {
                     // 구매자/요청자인 경우, 상대방은 판매자
                     otherEmail = product.getEmail();

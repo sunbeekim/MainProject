@@ -73,7 +73,7 @@ export const {
   setLoading,
   setError,
   setConstantCategories,
-  setConstantHobbies
+  setConstantHobbies,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

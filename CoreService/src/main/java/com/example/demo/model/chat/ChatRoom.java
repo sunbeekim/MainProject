@@ -13,7 +13,7 @@ public class ChatRoom {
     private Integer chatroomId;
     private String chatname;
     private Long productId;
-    private String buyerEmail;
+    private String requestEmail;
     private String sellerEmail; // JOIN으로 조회됨
     private String lastMessage;
     private LocalDateTime lastMessageTime;

@@ -17,6 +17,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/chat-images/**")
                 .addResourceLocations("classpath:/static/chat-images/");
         
+        // 게시판 파일을 접근할 수 있도록 리소스 핸들러 설정
+        registry.addResourceHandler("/board-files/**")
+                .addResourceLocations("classpath:/static/board-files/");
+        
         // 기존 업로드 디렉토리 설정 유지
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + System.getProperty("user.dir") + "/src/main/resources/static/uploads/");

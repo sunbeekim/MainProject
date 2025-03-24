@@ -6,13 +6,14 @@ import { useWebSocket } from '../../contexts/WebSocketContext';
 export interface ChatHookProps {
   chatroomId?: number;
   userEmail?: string;
+  productId?: number;
   useGlobalConnection?: boolean; // 전역 웹소켓 연결 사용 여부
   token?: string; // 독립 연결시 사용할 토큰
 }
 
 export interface ChatHookReturn {
   messages: IChatMessage[];
-  sendMessage: (content: string, messageType?: MessageType) => void;
+  sendMessage: (productId: number, content: string, messageType?: MessageType) => void;
   sendImage: (imageUrl: string) => void;
   isConnected: boolean;
   connect: () => void;
@@ -26,65 +27,106 @@ export interface ChatHookReturn {
  */
 export const useChat = ({ 
   chatroomId, 
+  productId,
   userEmail, 
   useGlobalConnection = true, 
   token 
 }: ChatHookProps): ChatHookReturn => {
   const [messages, setMessages] = useState<IChatMessage[]>([]);
-  
-  // 전역 웹소켓 연결 항상 가져오기 (React Hook 규칙)
-  const globalWebSocket = useWebSocket();
   const [localConnected, setLocalConnected] = useState<boolean>(false);
-  
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
+  const globalWebSocket = useWebSocket();
+  console.log("useChat productId",productId);
   // 전역 연결 또는 로컬 연결 상태 확인
   const isConnected = useGlobalConnection 
     ? globalWebSocket.isConnected
     : localConnected;
 
   // 웹소켓 연결
-  const connect = useCallback(() => {
-    if (!userEmail) {
-      console.error('사용자 이메일이 제공되지 않았습니다.');
+  const connect = useCallback(async () => {
+    if (!userEmail || !token) {
+      console.error('연결에 필요한 정보가 없습니다.');
+      return;
+    }
+
+    if (isConnected || isConnecting) {
+      console.log('이미 연결되어 있거나 연결 시도 중입니다.');
       return;
     }
 
     try {
+      setIsConnecting(true);
       if (useGlobalConnection) {
-        // 전역 웹소켓 연결 사용
         globalWebSocket.connect(token);
       } else {
-        // 독립 웹소켓 연결 사용
         websocketService.connect(token);
-        setLocalConnected(websocketService.isConnected());
+        // 연결 상태 확인을 위해 잠시 대기
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const connected = websocketService.isConnected();
+        setLocalConnected(connected);
+        console.log('웹소켓 연결 상태:', connected);
       }
     } catch (error) {
       console.error('웹소켓 연결 오류:', error);
+      setLocalConnected(false);
+    } finally {
+      setIsConnecting(false);
     }
-  }, [userEmail, token, useGlobalConnection, globalWebSocket]);
+  }, [userEmail, token, useGlobalConnection, globalWebSocket, isConnected, isConnecting]);
 
   // 웹소켓 연결 해제
   const disconnect = useCallback(() => {
     if (useGlobalConnection) {
       // 전역 웹소켓은 필요할 때만 연결 해제
-      // 대부분의 경우 앱 종료 시까지 연결 유지
     } else {
-      // 독립 웹소켓 연결 해제
       websocketService.disconnect();
       setLocalConnected(false);
     }
-  }, [useGlobalConnection, globalWebSocket]);
+  }, [useGlobalConnection]);
+
+  // 컴포넌트 마운트 시 한 번만 연결 시도
+  useEffect(() => {
+    if (!useGlobalConnection && userEmail && token && !isConnected && !isConnecting) {
+      connect();
+    }
+
+    return () => {
+      if (!useGlobalConnection) {
+        disconnect();
+      }
+    };
+  }, []);  // 빈 의존성 배열로 마운트 시에만 실행
+
+  // 연결 상태 모니터링 (5초마다)
+  useEffect(() => {
+    if (!useGlobalConnection) {
+      const checkConnection = () => {
+        const connected = websocketService.isConnected();
+        if (localConnected !== connected) {
+          setLocalConnected(connected);
+        }
+      };
+
+      const intervalId = setInterval(checkConnection, 5000);
+      return () => clearInterval(intervalId);
+    }
+  }, [useGlobalConnection, localConnected]);
 
   // 채팅방 구독
   useEffect(() => {
     if (!chatroomId || !userEmail || !isConnected) return;
 
     const subscriptionId = websocketService.subscribeToChatRoom(chatroomId, (message) => {
+      console.log('새 메시지 수신:', message);
       setMessages((prevMessages) => {
-        // 중복 메시지 방지
         const isDuplicate = prevMessages.some(
           (m) => m.messageId === message.messageId
         );
-        if (isDuplicate) return prevMessages;
+        if (isDuplicate) {
+          console.log('중복 메시지 무시:', message);
+          return prevMessages;
+        }
+        console.log('새 메시지 추가:', message);
         return [...prevMessages, message];
       });
     });
@@ -94,50 +136,44 @@ export const useChat = ({
         websocketService.unsubscribe(subscriptionId);
       }
     };
-  }, [chatroomId, userEmail, isConnected]);
+  }, [chatroomId, productId, userEmail, isConnected]);
 
   // 메시지 전송
   const sendMessage = useCallback(
-    (content: string, messageType: MessageType = MessageType.TEXT) => {
+    (productId: number, content: string, messageType: MessageType = MessageType.TEXT) => {
       if (!chatroomId || !userEmail || !isConnected) {
         console.error('메시지를 보낼 수 없습니다. 연결 상태와 필수 정보를 확인하세요.');
         return;
       }
 
       try {
+        // 서버로 메시지 전송만 하고 로컬 상태 업데이트는 제거
+        // 웹소켓 구독을 통해 메시지를 받으면 자동으로 상태가 업데이트됨
         websocketService.sendChatMessage({
           chatroomId,
-          senderEmail: userEmail,
+          productId,
           content,
-          messageType
+          messageType,
+          senderEmail: userEmail
         });
       } catch (error) {
         console.error('메시지 전송 오류:', error);
       }
     },
-    [chatroomId, userEmail, isConnected]
+    [chatroomId, userEmail, isConnected, productId]
   );
 
   // 이미지 전송
   const sendImage = useCallback(
     (imageUrl: string) => {
-      sendMessage(imageUrl, MessageType.IMAGE);
-    },
-    [sendMessage]
-  );
-
-  // 컴포넌트 마운트 시 한 번 연결 (독립 연결 모드일 때만)
-  useEffect(() => {
-    if (!useGlobalConnection && userEmail && token) {
-      connect();
-    }
-
-    return () => {
-      if (!useGlobalConnection) {
-        disconnect();
+      if (!productId) {
+        console.error('상품 ID가 없습니다.');
+        return;
       }
-    };
-  }, [connect, disconnect, userEmail, token, useGlobalConnection]);
+      sendMessage(productId, imageUrl, MessageType.IMAGE);
+    },
+    [sendMessage, productId]
+  );
 
   return {
     messages,

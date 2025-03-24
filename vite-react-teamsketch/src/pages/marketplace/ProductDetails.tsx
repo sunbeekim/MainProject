@@ -9,7 +9,7 @@ import { useAppSelector } from '../../store/hooks';
 import { useEffect, useState } from 'react';
 import BaseButton from '../../components/common/BaseButton';
 import { useNavigate } from 'react-router-dom';
-import { requestProduct } from '../../services/api/productAPI';
+import { getChatRoomIdByProductId, requestProduct } from '../../services/api/productAPI';
 import { toast } from 'react-toastify';
 
 const ProductDetails = () => {
@@ -132,15 +132,26 @@ const ProductDetails = () => {
     return types[type as keyof typeof types] || type;
   };
 
-  const handleApply = async () => {
-    const response = await requestProduct(productId);
-    if (response.status === 'success') {
-      toast.success('상품 신청이 완료되었습니다.');
-      navigate(`/`);
-    } else {
-      toast.error('상품 신청에 실패했습니다.');
+  const handleApply = async () => {        
+    try {
+      const response = await requestProduct(productId);
+      if (response.status === 'success') {
+        toast.success('상품 신청이 완료되었습니다.');
+        const chatroomId = await getChatRoomIdByProductId(productId);
+        console.log('chatroomId', chatroomId);
+        
+        navigate(`/chat/${chatroomId}/${productData.title}`);
+      } else {
+        toast.error(response.message || '상품 신청에 실패했습니다.');
+      }
+    } catch (error: any) {
+      if (error.response?.data?.message?.includes('Duplicate')) {
+        toast.warning('이미 신청한 상품입니다.');
+      } else {
+        toast.error(error.response?.data?.message || '상품 신청 중 오류가 발생했습니다.');
+        console.error('신청 오류:', error);
+      }
     }
-    console.log('신청하기', response);
   };
 
   return (

@@ -93,6 +93,136 @@ public class FileStorageService {
     }
     
     /**
+     * 파일을 지정된 디렉토리에 저장하고 저장된 경로를 반환합니다. (일반 파일용)
+     */
+    public String storeFile(MultipartFile file, String directory, String originalFilename) {
+        try {
+            if (file.isEmpty()) {
+                log.warn("저장할 파일이 비어 있습니다.");
+                return null;
+            }
+            
+            // 파일 크기 검증
+            if (file.getSize() > maxFileSize) {
+                log.warn("파일 크기 초과: {} (최대 허용: {})", file.getSize(), maxFileSize);
+                throw new IllegalArgumentException("파일 크기가 제한을 초과합니다. 최대 " + (maxFileSize / 1048576) + "MB까지 허용됩니다.");
+            }
+            
+            // 디렉토리 경로 설정
+            Path directoryPath = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/" + directory);
+            
+            // 디렉토리가 없으면 생성
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
+                log.info("파일 저장 디렉토리 생성: {}", directoryPath);
+            }
+            
+            // 파일명 충돌 방지를 위해 UUID 추가
+            String fileExtension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+            }
+            
+            String newFilename = UUID.randomUUID() + fileExtension;
+            Path targetLocation = directoryPath.resolve(newFilename);
+            
+            // 파일 저장
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            log.info("파일 저장 성공: {}", targetLocation);
+            
+            // 저장된 파일 경로 반환 (웹에서 접근 가능한 경로)
+            return "/" + directory + "/" + newFilename;
+        } catch (IOException ex) {
+            log.error("파일 저장 중 오류 발생: {}", ex.getMessage());
+            throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", ex);
+        }
+    }
+    
+    /**
+     * 게시판 파일을 저장하고 웹 접근 경로를 반환합니다.
+     * 전용 게시판 기능에서 사용됩니다.
+     */
+    public String storeBoardFile(MultipartFile file, Long boardId, String fileType) {
+        try {
+            if (file.isEmpty()) {
+                log.warn("저장할 파일이 비어 있습니다.");
+                return null;
+            }
+            
+            // 파일 크기 검증
+            if (file.getSize() > maxFileSize) {
+                log.warn("파일 크기 초과: {} (최대 허용: {})", file.getSize(), maxFileSize);
+                throw new IllegalArgumentException("파일 크기가 제한을 초과합니다. 최대 " + (maxFileSize / 1048576) + "MB까지 허용됩니다.");
+            }
+            
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+                
+                // 파일 타입에 따른 확장자 검증
+                if ("image".equals(fileType)) {
+                    if (!ALLOWED_EXTENSIONS.contains(fileExtension)) {
+                        log.warn("허용되지 않는 이미지 형식: {}", fileExtension);
+                        throw new IllegalArgumentException("허용되지 않는 이미지 형식입니다. 지원되는 형식: " + ALLOWED_EXTENSIONS);
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException("유효한 파일 이름이 아닙니다.");
+            }
+            
+            // 게시판 ID별 저장 디렉토리 경로 설정
+            String directory = "board-files/board_" + boardId + "/" + fileType;
+            Path directoryPath = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/" + directory);
+            
+            // 디렉토리가 없으면 생성
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
+                log.info("게시판 파일 저장 디렉토리 생성: {}", directoryPath);
+            }
+            
+            // 파일명 생성 (UUID + 원본 파일명)
+            String newFilename = UUID.randomUUID() + "_" + originalFilename;
+            Path targetLocation = directoryPath.resolve(newFilename);
+            
+            // 파일 저장
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            log.info("게시판 파일 저장 성공: {}", targetLocation);
+            
+            // 웹에서 접근 가능한 경로 반환
+            return "/" + directory + "/" + newFilename;
+        } catch (IOException ex) {
+            log.error("게시판 파일 저장 중 오류 발생: {}", ex.getMessage());
+            throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", ex);
+        }
+    }
+
+    /**
+     * 게시판 파일 삭제
+     */
+    public boolean deleteBoardFile(String filePath) {
+        if (filePath == null || !filePath.startsWith("/board-files/")) {
+            log.warn("유효하지 않은 게시판 파일 경로: {}", filePath);
+            return false;
+        }
+        
+        try {
+            // 전체 파일 경로 구성
+            Path fileToDelete = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static" + filePath);
+            boolean deleted = Files.deleteIfExists(fileToDelete);
+            if (deleted) {
+                log.info("게시판 파일 삭제 성공: {}", filePath);
+            } else {
+                log.warn("게시판 파일이 존재하지 않습니다: {}", filePath);
+            }
+            return deleted;
+        } catch (IOException ex) {
+            log.error("게시판 파일 삭제 중 오류 발생: {}", ex.getMessage());
+            return false;
+        }
+    }
+    
+    /**
      * 기존 프로필 이미지를 삭제합니다.
      */
     public void deleteProfileImage(String filename) {

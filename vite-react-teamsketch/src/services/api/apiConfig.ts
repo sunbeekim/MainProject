@@ -40,20 +40,24 @@ export const apiConfig = {
       uploadProfile: `${BASE_URL}/core/profiles/me/image`,
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,
       getProfileImage: `${BASE_URL}/core/profiles/image`,
+      getUserProfileImage: (nickname: string) => `${BASE_URL}/core/profiles/user/${nickname}`,
       getCategory: `${BASE_URL}/core/hobbies/categories`,
       getHobbies: `${BASE_URL}/core/hobbies`,
       getHobbiesByCategory: (categoryId: number) =>
         `${BASE_URL}/core/hobbies/categories/${categoryId}`,
       updateProfile: `${BASE_URL}/core/profiles/me`,
+
       registerProduct: `${BASE_URL}/core/market/products/registers`,
+      getProductByProductId: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       uploadProductImages: `${BASE_URL}/core/market/images/upload`,
       getDefaultProfileImage: `${BASE_URL}/core/profiles/image/default`,
       getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
-
+      getChatRoomIdByProductId: (productId: number) => `${BASE_URL}/core/chat/rooms/product/${productId}`,
       getChatRooms: `${BASE_URL}/core/chat/rooms/active`,
-      createChatRoom: `${BASE_URL}/core/chat/rooms`,
+      getApprovalStatus: (productId: number, requestEmail: string) => `${BASE_URL}/core/market/products/requests/approval-status?productId=${productId}&requestEmail=${requestEmail}`,
+  
       getChatRoomDetail: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}`,
       approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
       updateMessagesRead: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/read`,

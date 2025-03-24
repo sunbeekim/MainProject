@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.LocationMapper">
+
+    <!-- 위치 정보 저장 -->
+    <insert id="insertLocation" parameterType="com.example.demo.model.Location">
+        INSERT INTO locations (
+            chatroom_id,
+            email,
+            lat,
+            lng,
+            address,
+            timestamp
+        ) VALUES (
+            #{chatroomId},
+            #{email},
+            #{lat},
+            #{lng},
+            #{address},
+            #{timestamp}
+        )
+    </insert>
+
+    <!-- 채팅방의 최근 위치 정보 조회 (최근 24시간) -->
+    <select id="findRecentLocationsByChatroomId" resultType="com.example.demo.model.Location">
+        SELECT 
+            chatroom_id as chatroomId,
+            email,
+            lat,
+            lng,
+            address,
+            timestamp
+        FROM locations
+        WHERE chatroom_id = #{chatroomId}
+        AND timestamp >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        ORDER BY timestamp DESC
+    </select>
+
+    <!-- 특정 사용자의 마지막 위치 조회 -->
+    <select id="findLastLocationByEmailAndChatroomId" resultType="com.example.demo.model.Location">
+        SELECT 
+            chatroom_id as chatroomId,
+            email,
+            lat,
+            lng,
+            address,
+            timestamp
+        FROM locations
+        WHERE chatroom_id = #{chatroomId}
+        AND email = #{email}
+        ORDER BY timestamp DESC
+        LIMIT 1
+    </select>
+
+</mapper> 
