@@ -4,6 +4,7 @@ import { apiConfig } from './apiConfig';
 import { SignupForm, ProfileUpdateRequest } from '../../types/auth';
 import { IPasswordChange } from '../../types/passwordChange'
 
+
 interface LoginCredentials {
   email: string;
   password: string;
@@ -206,10 +207,31 @@ export interface TransactionsResponse{
   message: string;
   data: Transactions[] | null;
 }
+
 export const transactionsListApi = async (): Promise<TransactionsResponse> => {
   const response = await axiosInstance.get(apiConfig.endpoints.core.transactionslist);
   return response.data;
 };
+
+//사용자의 위치 기반 특정 반경 내의 상품 조회
+export interface NProductResponse{
+  status: string;
+  message: string;
+  data: {
+    id: number; 
+    name: string;
+    price: number;
+    imagePath: string[];
+    thumbnailPath: string;
+  }[];
+}
+
+export const nearbyProdListApi = async ({latitude, longitude, distance}: {  latitude: number, longitude: number, distance: number}): Promise<NProductResponse> => {
+  const response = await axiosInstance.post(apiConfig.endpoints.core.nearbyprod, { latitude, longitude, distance });
+  return response.data;
+};
+  
+
 
 // 프로필 수정 API
 const updateProfileApi = async (profileData: ProfileUpdateRequest) => {
@@ -308,6 +330,12 @@ export const useMyProdList = () => {
 export const useTrasactionsList = () => {
   return useMutation({
     mutationFn: transactionsListApi
+  });
+}
+
+export const useNearbyProdList = () => {
+  return useMutation({
+    mutationFn: nearbyProdListApi
   });
 }
 // 프로필 수정 Hook

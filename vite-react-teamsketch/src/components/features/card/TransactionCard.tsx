@@ -26,6 +26,12 @@ const TransactionCard = ({ transaction, onClick }: TransactionCardProps) => {
 
           <div className="flex flex-col items-start">
             <span>{transaction.price} point</span>
+            <span className={`text-sm ${transaction.transactionStatus === '완료' ? 'text-green-500' : 'text-yellow-500'}`}>
+              {transaction.transactionStatus}
+            </span>
+            <span className={`text-sm ${transaction.paymentStatus === '완료' ? 'text-green-500' : 'text-red-500'}`}>
+              {transaction.paymentStatus}
+            </span>
           </div>
         </div>
 

@@ -17,12 +17,16 @@ interface Transactions {
 
 const TransactionDetail = () => {
   const [transactions, setTransactions] = useState<Transactions[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transactions | null>(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         const response = await transactionsListApi();
+        console.log(response.data);
         if (response.status === "success") {
+
           setTransactions(response.data || []);
         } else {
           toast.error(response.message);
@@ -37,7 +41,13 @@ const TransactionDetail = () => {
   }, []);
 
   const handleTransactionClick = (transaction: Transactions) => {
-    console.log(transaction);
+    setSelectedTransaction(transaction);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedTransaction(null);
   };
 
   return (
@@ -56,6 +66,27 @@ const TransactionDetail = () => {
           <p>거래 내역이 없습니다.</p>
         )}
       </div>
+      {/* 상세보기 모달 */}
+      {isModalOpen && selectedTransaction && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-[90%] max-w-3xl relative shadow-md">
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-lg flex justify-center items-center"
+            >
+              x
+            </button>
+            <h2 className="text-lg font-bold mb-2">{selectedTransaction.productId}</h2>
+            <hr className="my-3 border-gray-300" />
+            <p>구매자 이메일: {selectedTransaction.buyerEmail}</p>
+            <p>판매자 이메일: {selectedTransaction.sellerEmail}</p>
+            <p>거래 상태: {selectedTransaction.transactionStatus}</p>
+            <p>결제 상태: {selectedTransaction.paymentStatus}</p>
+            <p>가격: {selectedTransaction.price} 원</p>
+            <p>설명: {selectedTransaction.description}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

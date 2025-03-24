@@ -16,6 +16,8 @@ import {
 import Loading from '../../components/common/Loading';
 import { toast } from 'react-toastify';
 
+import FilterButton from '../../components/common/FilterButton';
+
 // mock 데이터를 실제 API 응답 타입으로 변환하는 함수
 const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
   id: mockProduct.id,
@@ -101,6 +103,7 @@ const MarketList = () => {
   const [categoryName, setCategoryName] = useState<string>('전체');
   const [isPageLoading, setIsPageLoading] = useState(true);
 
+
   // 상품 Query - 카테고리 선택에 따라 다른 API 호출
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products', selectedCategory],
@@ -158,6 +161,10 @@ const MarketList = () => {
       return () => clearTimeout(timer);
     }
   }, [isLoading]);
+
+
+
+
 
   // 에러 처리
   useEffect(() => {
@@ -218,8 +225,14 @@ const MarketList = () => {
     );
   }
 
+  const handleDistanceChange = (newDistance: number) => {
+
+    console.log('새로운 거리:', newDistance);
+  };
+
   return (
     <div className="w-full mt-4">
+      <FilterButton onDistanceChange={handleDistanceChange} />
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
 
       {/* 상품 목록 */}
