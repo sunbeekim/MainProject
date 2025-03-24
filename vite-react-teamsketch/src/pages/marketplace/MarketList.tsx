@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 
 
 import { nearbyProdListApi } from '../../services/api/authAPI';
-// import { setProducts } from '../../store/slices/productSlice';
+
 
 // mock 데이터를 실제 API 응답 타입으로 변환하는 함수
 const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
@@ -244,25 +244,14 @@ const MarketList = () => {
       const result = await nearbyProdListApi({ latitude, longitude, distance });
       console.log(result);
     } catch (error) {
-      console.error('Error fetching nearby products:', error);
+      toast.error('주변 상품을 불러오는 데 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      console.error(error);
     }
   };
 
   fetchNearbyProducts();
 
-  // const fetchNearbyProducts = async (distance: number) => {
-  //   try {
-  //     const response: NProductResponse = await nearbyProdListApi({ latitude: myLocation.lat, longitude: myLocation.lng, distance });
-  //     if (response.status === 'success') {
-  //       setProducts(response.data);
-  //     } else {
-  //       toast.error("주변 상품을 가져오는 데 실패했습니다.");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("상품 목록을 가져오는 중 오류가 발생했습니다.");
-  //   }
-  // };
+
 
   return (
     <div className="w-full mt-4">

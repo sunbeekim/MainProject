@@ -63,7 +63,8 @@ const TransactionDetail = () => {
             />
           ))
         ) : (
-          <p>거래 내역이 없습니다.</p>
+          <div className="flex justify-center items-center h-full flex-col">
+            <p className="text-gray-500">거래 내역이 없습니다.</p></div>
         )}
       </div>
       {/* 상세보기 모달 */}

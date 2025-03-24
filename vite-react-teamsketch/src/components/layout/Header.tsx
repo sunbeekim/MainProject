@@ -59,13 +59,13 @@ const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
           title: 'MarketPlace',
           actions: (
             <div className="flex gap-2">
-              {/* 
+
               <button
                 onClick={() => navigate('/test/pages')}
                 className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
               >
                 testpage
-              </button> */}
+              </button>
               <FilterButton onDistanceChange={onDistanceChange} />
               <Iconalarm hasNotification={hasUnreadNotifications} className="w-6 h-6" />
             </div>
