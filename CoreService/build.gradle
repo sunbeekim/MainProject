@@ -61,6 +61,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	
+	// SpringDoc OpenAPI (Swagger) 의존성
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+	
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
