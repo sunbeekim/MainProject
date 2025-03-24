@@ -14,7 +14,6 @@ const ShareLocationMap = () => {
             showEndLocation={true}
             showMyLocation={true}
             showYourLocation={true}
-            onCopyLocation={() => {}}
           />
         }
       ></LocationLayout>

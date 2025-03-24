@@ -49,7 +49,8 @@ export const FULLSCREEN_PATHS = [
 // 푸터만 숨기는 경로 목록
 export const FOOTER_HIDDEN_PATHS = [
   '/servicechat',
-  '/chat/'
+  '/chat/',
+  '/sharelocation'
 ];
 
 // 로그인/회원가입 관련 인증 경로
@@ -185,7 +186,7 @@ const MainLayout = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/servicechat" element={<ServiceChat />} />
-          <Route path="/sharelocation" element={<ShareLocationMap />} />
+          <Route path="/sharelocation/:chatroomId" element={<ShareLocationMap />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notification" element={<NotificationList />} />
           <Route path="/notification-setting" element={<NotificationSetting />} />
@@ -197,7 +198,7 @@ const MainLayout = () => {
           <Route path="/verfication-code" element={<VerficationCode />} />
           <Route path="/chat-list" element={<ChatList />} />
           <Route path="/product/location" element={<ProdLocationMap />} />
-          <Route path="/chat/:email" element={<ChatRoom />} />
+          <Route path="/chat/:chatroomId/:chatname" element={<ChatRoom />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/profile-manage" element={<ProfileManage />} />
           <Route path="/product-details" element={<ProductDetails />} />
@@ -215,7 +216,6 @@ const MainLayout = () => {
           <Route path="/my-location" element={<MyLocation />} />
           <Route path="/registers-list" element={<RegistersList />} />
           <Route path="/requests-list" element={<RequestsList />} />
-
 
           {/* test pages */}
           <Route path="/test/pages" element={<TestPages />} />

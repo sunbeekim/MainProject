@@ -495,4 +495,30 @@ public class ProductService {
                 .build();
     }
 
+    /**
+     * 특정 상품에 대한 사용자의 승인 상태를 조회합니다.
+     */
+    public String getApprovalStatus(String email, Long productId, String requestEmail) {
+        log.info("승인 상태 조회 요청: email={}, productId={}", email, productId);
+        
+        // 상품 정보 조회
+        Product product = productMapper.findById(productId, email);
+        if (product == null) {
+            log.warn("상품을 찾을 수 없음: productId={}", productId);
+            return "미신청";
+        }
+        
+        // 상품 등록자인 경우 승인 상태 반환 수정 챗룸 id에 해당하는 buyer_email 
+        if (product.getEmail().equals(email)) {
+            String approvalStatus = productMapper.findApprovalStatus(requestEmail, productId);
+            return approvalStatus != null ? approvalStatus : "미승인";
+        }
+        
+        // 요청자의 승인 상태 조회
+        String approvalStatus = productMapper.findApprovalStatus(email, productId);
+        log.info("승인 상태 조회 결과: productId={}, email={}, status={}", productId, email, approvalStatus);
+        
+        return approvalStatus != null ? approvalStatus : "미승인";
+    }
+
 }

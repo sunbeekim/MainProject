@@ -76,10 +76,12 @@ public class SecurityConfig {
                                 "/api/core/boards/{boardId}/members", // 게시판 멤버 조회 API 추가
                                 // 테스트
                                 "/api/core/test/**",
-                                "/api/core/test/v2/**"
-                        )
-                        .permitAll()
-                        .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN") // 관리자 전용 API
+                                "/api/core/test/v2/**",
+                                "/api/core/market/products/requests/approval-status"
+                        ).permitAll()
+                        // 관리자 전용 API
+                        .requestMatchers("/api/core/profiles/admin/**").hasRole("ADMIN")
+                        // 인증이 필요한 엔드포인트
                         .requestMatchers(
                                 "/api/core/market/products/registers",
                                 "/api/core/market/products/requests",

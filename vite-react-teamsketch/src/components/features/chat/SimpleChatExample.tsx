@@ -17,7 +17,7 @@ const SimpleChatExample: React.FC<SimpleChatExampleProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // 채팅 훅 사용
-  const { messages, sendMessage, isConnected, connect, disconnect } = useChat({
+  const { messages, sendMessage, isConnected, connect } = useChat({
     chatroomId,
     userEmail,
     token
@@ -32,7 +32,7 @@ const SimpleChatExample: React.FC<SimpleChatExampleProps> = ({
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputMessage.trim()) {
-      sendMessage(inputMessage);
+      sendMessage(chatroomId, inputMessage, MessageType.TEXT);
       setInputMessage('');
     }
   };
@@ -44,7 +44,7 @@ const SimpleChatExample: React.FC<SimpleChatExampleProps> = ({
       // 여기서는 이미지 URL을 직접 전송하는 예제
       // 실제 구현에서는 이미지를 서버에 업로드한 후 URL을 받아 전송해야 함
       const imageUrl = URL.createObjectURL(file);
-      sendMessage(imageUrl, MessageType.IMAGE);
+      sendMessage(chatroomId, imageUrl, MessageType.IMAGE);
     }
   };
 
@@ -62,7 +62,7 @@ const SimpleChatExample: React.FC<SimpleChatExampleProps> = ({
           <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
           <span className="text-sm">{isConnected ? '연결됨' : '연결 끊김'}</span>
           <button
-            onClick={isConnected ? disconnect : connect}
+            onClick={connect}
             className={`px-2 py-1 text-xs text-white rounded ${
               isConnected ? 'bg-red-500' : 'bg-green-500'
             }`}

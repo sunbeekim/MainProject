@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class Transaction {
     private Long id;
     private Long productId;
-    private String buyerEmail;
+    private String requestEmail;
     private String sellerEmail;
     private String transactionStatus;
     private String paymentStatus;
