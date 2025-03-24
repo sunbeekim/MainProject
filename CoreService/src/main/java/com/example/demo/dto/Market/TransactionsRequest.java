@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class TransactionsRequest {
     private Long id;
     private Long productId;
-    private String request_email;
+    private String buyerEmail;
     private String sellerEmail;
     private int price;
     private String description;

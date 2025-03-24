@@ -5,11 +5,38 @@ import { useChatRooms, ChatRoom } from "../../services/api/userChatAPI";
 import Loading from "../../components/common/Loading";
 import ProductImage from "../../components/features/image/ProductImage";
 import { MessageType } from "../../services/real-time/types";
+import { useWebSocket } from "../../contexts/WebSocketContext";
+import { useAppSelector } from "../../store/hooks";
+import { useChat } from "../../services/real-time/useChat";
 
 const ChatList: React.FC = () => {
-  const { data: chatRooms, isLoading, isError, error } = useChatRooms();
+  const { data: chatRooms, isLoading, isError, error, refetch } = useChatRooms();
   const [mockChats, setMockChats] = useState<ChatRoom[]>([]);
-  console.log(chatRooms);
+  const { token, user } = useAppSelector((state) => state.auth);
+  const { isConnected } = useWebSocket();
+
+  // 웹소켓 연결 설정
+  const { connect } = useChat({
+    userEmail: user?.email || undefined,
+    token: token || undefined,
+    useGlobalConnection: true
+  });
+
+  // 웹소켓 연결 및 메시지 구독
+  useEffect(() => {
+    if (user?.email && token && !isConnected) {
+      connect();
+    }
+  }, [user?.email, token, isConnected, connect]);
+
+  // 채팅방 데이터 주기적 갱신
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refetch();
+    }, 5000); // 5초마다 갱신
+
+    return () => clearInterval(intervalId);
+  }, [refetch]);
 
   // 채팅방 데이터 유효성 검사
   useEffect(() => {

@@ -2,10 +2,12 @@ package com.example.demo.service.Market;
 
 import com.example.demo.dto.Market.ProductRequest;
 import com.example.demo.dto.Market.ProductResponse;
+import com.example.demo.dto.Market.TransactionsRequest;
 import com.example.demo.dto.chat.ChatRoomRequest;
 import com.example.demo.dto.chat.ChatRoomResponse;
 import com.example.demo.mapper.Market.ProductMapper;
 import com.example.demo.mapper.Market.ProductImageMapper;
+import com.example.demo.mapper.Market.TransactionsMapper;
 import com.example.demo.model.Market.Product;
 import com.example.demo.model.Market.ProductImage;
 import com.example.demo.service.ChatService;
@@ -31,6 +33,7 @@ public class ProductService {
     private final NotificationService notificationService;
     private final ImageUploadService imageUploadService;
     private final ChatService chatService;
+    private final TransactionsMapper transactionsMapper;
 
     /** 전체 상품 목록 조회 (등록자 상품 조회 항상가능, 비로그인자 모집 중인 상품 조회 가능) **/
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getAllProducts(String email) {
@@ -221,10 +224,11 @@ public class ProductService {
         return convertToProductResponse(product);
     }
 
-    /** 상품 요청 승인 (등록자만 가능) + 실시간 알림 전송 **/
+    /** 승인 완료 시, 모집인원 증가 및 거래 테이블 연결 **/
+    @Transactional
     public ResponseEntity<BaseResponse<String>> approveProductRequest(String ownerEmail, Long productId, Long requestId) {
         try {
-            // 상품 정보 가져오기 (등록자는 is_visible = FALSE 여도 조회 가능)
+            // 상품 정보 가져오기
             Product product = productMapper.findById(productId, ownerEmail);
             if (product == null) {
                 return ResponseEntity.status(404).body(new BaseResponse<>("해당 상품을 찾을 수 없습니다."));
@@ -232,6 +236,9 @@ public class ProductService {
 
             // 요청자의 이메일 가져오기
             String requesterEmail = productMapper.findRequesterEmailByRequestId(requestId);
+            if (requesterEmail == null) {
+                return ResponseEntity.status(404).body(new BaseResponse<>("요청자를 찾을 수 없습니다."));
+            }
 
             // 등록자와 요청자가 같은 경우 승인 불가능
             if (ownerEmail.equals(requesterEmail)) {
@@ -251,9 +258,12 @@ public class ProductService {
                 return ResponseEntity.status(400).body(new BaseResponse<>("승인 불가: 최대 참여 인원을 초과할 수 없습니다."));
             }
 
-            // 상품 요청 승인 처리
+            // 상품 요청 승인 처리 (`ProductRequests` 테이블 업데이트)
             productMapper.updateRequestApprovalStatus(requestId, "승인");
             approvedParticipants++;
+
+            // 승인된 요청이 남아있으므로 `currentParticipants` 증가 가능
+            productMapper.increaseCurrentParticipants(productId);
 
             // 상품명 가져오기
             String productName = product.getTitle();
@@ -262,19 +272,42 @@ public class ProductService {
             // 실시간 알림 전송 (요청한 사용자에게)
             notificationService.sendNotification(requesterEmail, message);
 
+            // 거래 테이블 연동 (buyerEmail, sellerEmail 자동 설정)
+            String buyerEmail;
+            String sellerEmail;
+
+            if (product.getRegistrationType().equals("판매")) {
+                buyerEmail = requesterEmail;  // 요청자가 구매자
+                sellerEmail = ownerEmail;  // 상품 등록자가 판매자
+            } else {
+                buyerEmail = ownerEmail;  // 상품 등록자가 구매자
+                sellerEmail = requesterEmail;  // 요청자가 판매자
+            }
+
+            TransactionsRequest transaction = TransactionsRequest.builder()
+                    .productId(productId)
+                    .buyerEmail(buyerEmail)
+                    .sellerEmail(sellerEmail)
+                    .price(product.getPrice())
+                    .description("상품 요청 승인으로 생성된 거래")
+                    .build();
+
+            transactionsMapper.insertTransaction(transaction); // 거래 테이블에 저장
+
             // 모집이 완료된 경우 자동으로 상태를 '완료'로 변경
-            if (approvedParticipants >= product.getMaxParticipants()) {
+            if (approvedParticipants + 1 >= product.getMaxParticipants()) {
                 productMapper.updateRequestStatusToComplete(productId); // 승인된 요청들의 상태 변경
                 productMapper.updateProductStatusToComplete(productId); // 상품 모집 마감 처리
             }
 
-            return ResponseEntity.ok(new BaseResponse<>("상품 요청이 승인되었습니다."));
+            return ResponseEntity.ok(new BaseResponse<>("상품 요청이 승인되어 거래가 생성되었습니다."));
 
         } catch (Exception ex) {
             return ResponseEntity.internalServerError()
                     .body(new BaseResponse<>("상품 요청 승인 중 오류 발생: " + ex.getMessage()));
         }
     }
+
 
     /** 상품 목록 조회 (is_visible = TRUE인 상품만 조회) **/
     public List<ProductResponse> getProducts(Long categoryId, String sort) {
