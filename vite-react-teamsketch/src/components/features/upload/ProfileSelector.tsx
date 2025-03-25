@@ -92,8 +92,8 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({
           <label
             className={`
               absolute inset-0 flex flex-col items-center justify-center
-              bg-black bg-opacity-50 transition-all duration-300
-              cursor-pointer backdrop-blur-sm
+              bg-black transition-all duration-300
+              cursor-pointer
               ${isHovered ? 'opacity-100' : 'opacity-0'}
             `}
           >

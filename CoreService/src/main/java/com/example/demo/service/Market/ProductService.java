@@ -148,7 +148,8 @@ public class ProductService {
           // 4. 상품명 포함 알림 추가 (병합 전 코드 유지)
           String productName = product.getTitle();
           String message = String.format("\"%s\" 상품에 대한 새로운 신청이 도착했습니다!", productName);
-          notificationService.sendNotification(productOwnerEmail, message);
+          notificationService.sendNotification(
+            productOwnerEmail, message, "PRODUCT_REQUEST", 0, productId);
 
           // 5. 채팅방 생성 (기존과 동일)
           ChatRoomRequest chatRoomRequest = new ChatRoomRequest();
@@ -271,7 +272,13 @@ public class ProductService {
             String message = String.format("\"%s\" 요청이 승인되었습니다!", productName);
 
             // 실시간 알림 전송 (요청한 사용자에게)
-            notificationService.sendNotification(requesterEmail, message);
+            notificationService.sendNotification(
+                requesterEmail, 
+                message, 
+                "PRODUCT_REQUEST",
+                0,
+                productId   
+            );
 
             // 거래 테이블 연동 (buyerEmail, sellerEmail 자동 설정)
             String buyerEmail;

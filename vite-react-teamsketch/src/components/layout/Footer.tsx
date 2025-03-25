@@ -10,11 +10,13 @@ import { HiOutlineMapPin, HiMapPin } from 'react-icons/hi2';
 import { CgUser } from 'react-icons/cg';
 import { RiUserFill } from 'react-icons/ri';
 import { useChatRooms } from '../../services/api/userChatAPI';
+import { useAppSelector } from '../../store/hooks';
 
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: chatRooms } = useChatRooms();
+  const { unreadCount } = useAppSelector((state) => state.noti);
 
   // 전체 안 읽은 메시지 수 계산
   const totalUnreadCount = chatRooms?.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0) || 0;
@@ -53,7 +55,8 @@ const Footer = () => {
       icon:
         location.pathname === '/notification' ? <IoNotifications /> : <IoNotificationsOutline />,
       label: '알림',
-      onClick: () => navigate('/notification')
+      onClick: () => navigate('/notification'),
+      badge: unreadCount > 0 ? unreadCount : undefined
     },
     {
       icon: location.pathname === '/my-location' ? <HiMapPin /> : <HiOutlineMapPin />,

@@ -98,7 +98,10 @@ public class ChatMessageController {
             // 수신자에게 알림 전송
             notificationService.sendNotification(
                 receiverEmail,
-                notificationChatMessage
+                notificationChatMessage,
+                "CHAT_MESSAGE",
+                messageRequest.getChatroomId(),
+                messageRequest.getProductId()
             );
             
             log.info("메시지 발행 완료: messageId={}", chatMessage.getMessageId());

@@ -37,7 +37,10 @@ public class NotificationSubscriber implements MessageListener {
                 // Map에서 NotificationMessage 생성
                 NotificationMessage notification = new NotificationMessage(
                     map.get("receiverEmail"),
-                    map.get("message")
+                    map.get("message"),
+                    map.get("type"),
+                    Integer.parseInt(map.get("chatroomId")),
+                    Long.parseLong(map.get("productId"))
                 );
                 
                 log.info("Redis에서 알림 수신 성공: 수신자={}, 메시지={}", 

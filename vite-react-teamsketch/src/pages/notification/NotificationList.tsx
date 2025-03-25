@@ -28,7 +28,7 @@ const NotificationList = () => {
   // 알림 타입별 스타일
   const getNotificationStyle = (type: string) => {
     switch (type) {
-      case 'CHAT':
+      case 'CHAT_MESSAGE':
         return {
           icon: '💬',
           bgColor: 'bg-blue-50 dark:bg-blue-900/20',
@@ -78,7 +78,7 @@ const NotificationList = () => {
       {/* 알림 유형 필터 */}
       <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-sm">
         <div className="flex space-x-2 overflow-x-auto px-4 py-3 scrollbar-hide">
-          {["전체", "CHAT", "PRODUCT_REQUEST", "JOIN_REQUEST", "LOCATION_SHARE", "PRODUCT_APPROVAL"].map((type) => (
+          {["전체", "CHAT_MESSAGE", "PRODUCT_REQUEST", "JOIN_REQUEST", "LOCATION_SHARE", "PRODUCT_APPROVAL"].map((type) => (
             <button
               key={type}
               onClick={() => setFilter(type)}
