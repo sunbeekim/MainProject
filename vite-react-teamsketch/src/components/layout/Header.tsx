@@ -7,7 +7,11 @@ import GridItem from '../common/GridItem';
 import { useAppSelector } from '../../store/hooks';
 import { useNotification } from '../../services/real-time/useNotification';
 
-const Header = () => {
+
+interface HeaderProps {
+  onDistanceChange: (distance: number) => void;
+}
+const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { token, user } = useAppSelector((state) => state.auth);
@@ -65,7 +69,6 @@ const Header = () => {
                 className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
               >
                 testpage
-              </button>
             </div>
           )
         };
