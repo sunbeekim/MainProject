@@ -23,7 +23,7 @@ public class LlamaServiceImpl {
     private final ObjectMapper objectMapper = new ObjectMapper();
     
     
-    private String activeProfile = "prod";
+    private String activeProfile = "local";
 
     final String gatewayUri = "prod".equals(activeProfile)
             ? "http://gateway-container:8080"
