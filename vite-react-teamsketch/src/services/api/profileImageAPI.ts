@@ -36,6 +36,7 @@ export const getProfileImage = async (): Promise<FileResponse | null> => {
       }
 
       try {
+        console.log('이미지 파일 경로:', `${apiConfig.endpoints.core.getProfileImage}/${filename}`);
         const imageResponse = await axiosInstance.get(
           `${apiConfig.endpoints.core.getProfileImage}/${filename}`,
           {
