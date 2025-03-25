@@ -12,6 +12,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import com.example.demo.service.NotificationService;
+import com.example.demo.service.UserService;
+import com.example.demo.dto.profile.MyPageResponse;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -25,6 +28,9 @@ public class LocationController {
     private final SimpMessagingTemplate messagingTemplate;
     private final TokenUtils tokenUtils;
     private final LocationService locationService;
+    private final NotificationService notificationService;
+    private final UserService userService;
+
 
     /**
      * WebSocket을 통한 위치 업데이트 처리
@@ -55,6 +61,16 @@ public class LocationController {
             messagingTemplate.convertAndSend(
                 "/topic/location." + location.getChatroomId(),
                 location
+            );
+
+            // 알림 추가 (Redis를 통한 알림)
+            String message = String.format("채팅방에 위치 정보가 업데이트되었습니다!");
+            notificationService.sendNotification(
+                senderEmail,
+                message,
+                "LOCATION_SHARE",
+                location.getChatroomId(),
+                0L
             );
 
             log.info("위치 정보 발행 완료: chatroomId={}, email={}", 
@@ -91,7 +107,7 @@ public class LocationController {
     }
 
     /**
-     * 특정 사용자의 마지막 위치 조회
+     * 특정 사용자의 마지막 위치 조회 상대방의 위치 초기값으로 설정하기 좋을듯
      */
     @GetMapping("/rooms/{chatroomId}/users/{email}/last")
     public ResponseEntity<ApiResponse<?>> getLastLocation(

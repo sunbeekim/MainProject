@@ -26,46 +26,65 @@ const OCRUpload = () => {
     }
   };
 
-
-
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4 p-10">사진으로 카드 추가</h2>
+    <div className="max-w-2xl mx-auto p-6 space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold text-gray-900">사진으로 카드 추가</h2>
+        <p className="text-gray-600">카드 사진을 촬영하거나 선택하여 정보를 자동으로 입력하세요</p>
+      </div>
 
-      {/* OCR 촬영 이미지 업로드 */}
-      <ImageUpload
-        onUpload={handleOCRUpload}
-        className="max-w-md mx-auto"
-        type="ocr"
-        borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500"
-      />
+      <div className="grid gap-6">
+        {/* OCR 촬영 이미지 업로드 */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">카드 촬영</h3>
+          <ImageUpload
+            onUpload={handleOCRUpload}
+            type="ocr"
+            borderStyle="border-2 border-dashed border-primary-500 rounded-xl hover:border-primary-600 transition-colors duration-200"
+          />
+        </div>
 
-      {/* OCR 선택 이미지 업로드 */}
-      <ImageUpload
-        onUpload={handleOCRUpload}
-        className="max-w-md mx-auto mt-2 "
-        type="image"
-        borderStyle="border-2 border-dashed border-primary-500 rounded-lg dark:border-primary-500"
-      />
+        {/* OCR 선택 이미지 업로드 */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">이미지 선택</h3>
+          <ImageUpload
+            onUpload={handleOCRUpload}
+            type="image"
+            borderStyle="border-2 border-dashed border-primary-500 rounded-xl hover:border-primary-600 transition-colors duration-200"
+          />
+        </div>
 
-      {/* OCR 결과 표시 */}
-      {ocrResult && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">OCR 결과:</h3>
-          <div className="whitespace-pre-wrap break-words">
-            <p>상태: {ocrResult.status}</p>
-            <p>메시지: {ocrResult.data.message}</p>
-            <p>응답 데이터:</p>
-            <pre className="bg-white p-2 rounded mt-2 overflow-x-auto">
-              {JSON.stringify(ocrResult.data.response, null, 2)}
-            </pre>
+        {/* OCR 결과 표시 */}
+        {ocrResult && (
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">OCR 결과</h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span className={`w-2 h-2 rounded-full ${
+                  ocrResult.status === 'success' ? 'bg-green-500' : 'bg-red-500'
+                }`} />
+                <span className="text-sm font-medium text-gray-700">
+                  {ocrResult.status === 'success' ? '성공' : '실패'}
+                </span>
+              </div>
+              <p className="text-sm text-gray-600">{ocrResult.data.message}</p>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <pre className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                  {JSON.stringify(ocrResult.data.response, null, 2)}
+                </pre>
+              </div>
+            </div>
           </div>
+        )}
+      </div>
+
+      {/* OCR 결과를 CardDetails에 전달 */}
+      {ocrResult && (
+        <div className="mt-8">
+          <CardDetails ocrResult={ocrResult} />
         </div>
       )}
-      {/* OCR 결과를 CardDetails에 전달 */}
-      {ocrResult && <CardDetails ocrResult={ocrResult} />}
     </div>
-
   );
 };
 

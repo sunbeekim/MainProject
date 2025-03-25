@@ -49,7 +49,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onFocus, onB
     <div>
       {/* 파일 미리보기 */}
       {file && (
-        <div className="relative w-40 mb-2 pb-20">
+        <div className="relative w-40">
           {/* 이미지 파일 미리보기 */}
           {file.type === "image" && (
             <img
@@ -94,24 +94,27 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onFocus, onB
         />
 
         {/* 메시지 입력창 */}
-        <input
-          type="text"
-          value={message}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          className="flex-1 ml-2 mr-3 p-2 border rounded-full"
-          placeholder="메시지를 입력하세요..."
-          onFocus={onFocus}
-          onBlur={onBlur}
-        />
-
-        {/* 전송 버튼 */}
-        <button
-          onClick={handleSend}
-          className="bg-primary-light hover:bg-primary-dark text-white px-4 py-2 rounded-lg"
-        >
-          <FaPaperPlane className="w-5 h-5" />
-        </button>
+        <div className="flex-1 ml-2 mr-3 relative">
+          <input
+            type="text"
+            value={message}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            className="w-full p-2 pr-12 border rounded-full"
+            placeholder="메시지를 입력하세요..."
+            onFocus={onFocus}
+            onBlur={onBlur}
+          />
+          {/* 전송 버튼 */}
+          {(message.trim() || file) && (
+            <button
+              onClick={handleSend}
+              className="absolute right-1 top-1/2 -translate-y-1/2 text-white hover:text-primary-600 transition-colors rounded-full p-2"
+            >
+              <FaPaperPlane className="w-5 h-5" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

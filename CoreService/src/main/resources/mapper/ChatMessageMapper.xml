@@ -36,7 +36,7 @@
         WHERE 
             m.chatroom_id = #{chatroomId}
         ORDER BY 
-            m.sent_at DESC
+            m.sent_at ASC
         LIMIT #{limit} OFFSET #{offset}
     </select>
     

@@ -132,7 +132,7 @@ const ProfileManage = () => {
           className="max-w-md mx-auto"
           type="profile"
           isEdit={true}
-          currentImage={user.profileImagePath instanceof File ? user.profileImagePath : null}
+          currentImage={user.profileImagePath instanceof File ? user.profileImagePath : ""}
         />
       }
       email={user.email || 'test@test.com'}
