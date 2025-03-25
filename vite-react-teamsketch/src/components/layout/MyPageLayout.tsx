@@ -41,7 +41,7 @@ const MyPageLayout = ({
           <div className="flex justify-center px-4">
             <ImageUpload
               onFileSelect={onProfileUpdate}
-              currentImage={profileImagePath as File | null}
+              currentImage={profileImagePath as File | string}
               type="profile"
               isEdit={false}
             />
