@@ -429,9 +429,12 @@ const ChatRoom: React.FC = () => {
   // 메시지 정렬 및 상태 업데이트를 위한 useEffect
   useEffect(() => {
     const sortedMessages = [...previousMessages, ...messages].sort((a, b) => {
-      const getTime = (date: string | undefined) => {
+      const getTime = (date: string | number[] | undefined) => {
         if (!date) return 0;
-        return new Date(date).getTime();
+        const kstDate = Array.isArray(date)
+          ? new Date(date[0], date[1] - 1, date[2], date[3], date[4], date[5])
+          : new Date(date);
+        return kstDate.getTime() + (9 * 60 * 60 * 1000); // KST로 변환
       };
       return getTime(a.sentAt) - getTime(b.sentAt);
     });
@@ -515,7 +518,7 @@ const ChatRoom: React.FC = () => {
         
         // 승인 상태 변경을 웹소켓으로 알림
         sendMessage(chatInfo?.productId || 0, JSON.stringify({
-          type: 'APPROVAL_STATUS',
+          type: 'PRODUCT_APPROVAL',
           status: '승인',
           chatroomId: chatroomId,
           requestEmail: chatInfo?.requestEmail
