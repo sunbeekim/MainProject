@@ -16,7 +16,7 @@ const DaySelect = ({ onDaySelect, selectedDays, disabled = false }: DaySelectPro
   };
 
   return (
-    <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 md:gap-3">
+    <div className="flex flex-wrap justify-center gap-1 sm:gap-1.5 md:gap-2">
       {daysOfWeek.map((day) => (
         <button
           key={day}
@@ -24,11 +24,11 @@ const DaySelect = ({ onDaySelect, selectedDays, disabled = false }: DaySelectPro
           disabled={disabled}
           className={`
             relative
-            w-[40px] sm:w-[50px] md:w-[60px]
-            h-[40px] sm:h-[50px] md:h-[60px]
+            w-[32px] sm:w-[40px] md:w-[50px]
+            h-[32px] sm:h-[40px] md:h-[50px]
             rounded-full
             font-semibold
-            text-sm sm:text-base md:text-lg
+            text-xs sm:text-sm md:text-base
             transition-all duration-300 ease-in-out
             ${!disabled && 'transform hover:scale-105'}
             flex items-center justify-center           

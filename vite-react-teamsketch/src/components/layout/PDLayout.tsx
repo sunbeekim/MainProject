@@ -5,7 +5,7 @@ import BaseLabelBox from '../common/BaseLabelBox';
 import { CgArrowLongRightC } from 'react-icons/cg';
 import { useState } from 'react';
 import ProductImage from '../features/image/ProductImage';
-import { FaMapMarkerAlt, FaUsers, FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaUsers, FaCalendarAlt } from 'react-icons/fa';
 
 interface PDLayoutProps {
   title?: string;
@@ -197,14 +197,28 @@ const PDLayout: React.FC<PDLayoutProps> = ({
         <GridItem>
           <BaseLabelBox label="기간">
             <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <FaCalendarAlt className="text-primary-500 text-xl" />
-                  <span className="text-gray-600">{startDate}</span>
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* 시작일 */}
+                <div className="flex-1 flex items-center gap-3">
+                  <FaCalendarAlt className="text-primary-500 text-lg sm:text-sm" />
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-500">시작일</span>
+                    <span className="text-gray-600">{startDate}</span>
+                  </div>
                 </div>
-                <FaClock className="text-gray-400" />
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-600">{endDate}</span>
+                
+                {/* 구분선 */}
+                <div className="hidden sm:flex items-center">
+                  <CgArrowLongRightC className="text-gray-400 text-xl" />
+                </div>
+                
+                {/* 종료일 */}
+                <div className="flex-1 flex items-center gap-3">
+                  <FaCalendarAlt className="text-primary-500 text-lg sm:text-sm" />
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-500">종료일</span>
+                    <span className="text-gray-600">{endDate}</span>
+                  </div>
                 </div>
               </div>
             </div>

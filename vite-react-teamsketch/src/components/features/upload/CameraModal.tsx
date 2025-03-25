@@ -90,7 +90,7 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose 
           {/* 카드 프레임 오버레이 */}
           <div className="absolute inset-0 flex items-center justify-center">
             <CardFrame
-              guideText="카드를 프레임에 맞추면 자동으로 촬영됩니다"
+              guideText=""
             />
           </div>
         </div>
