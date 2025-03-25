@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
 import { apiConfig } from './apiConfig';
-import { toast } from 'react-toastify';
 import { store } from '../../store/store';
 import { logout } from '../../store/slices/authSlice';
 // 1번 이미 있는 인스턴스 사용하면 됨됨
@@ -56,7 +55,7 @@ const isImageRequest = (url: string): boolean => {
 const showErrorToast = (message: string) => {
   if (!isErrorToastShown) {
     isErrorToastShown = true;
-    toast.error(message);
+    console.log(message);
     
     // 일정 시간 후 다시 에러 메시지를 표시할 수 있도록 설정
     setTimeout(() => {
@@ -102,31 +101,31 @@ const setupInterceptors = (instance: AxiosInstance) => {
               showErrorToast('인증이 만료되었습니다. 다시 로그인해주세요.');
             } else {
               // 다른 401 에러의 경우 메시지만 표시
-              showErrorToast(error.response.data?.message || '인증 오류가 발생했습니다.');
+              console.log(error.response.data?.message || '인증 오류가 발생했습니다.');
             }
             break;
           case 403:
-            showErrorToast('접근 권한이 없습니다.');
+            console.log('접근 권한이 없습니다.');
             break;
           case 404:
             // 이미지 관련 요청의 404 에러는 콘솔에만 로그하고 토스트 메시지는 표시하지 않음
             if (isImageRequest(url)) {
               console.log(`이미지 로드 실패 (404): ${url}`);
             } else {
-              showErrorToast('요청하신 리소스를 찾을 수 없습니다.');
+              console.log('요청하신 리소스를 찾을 수 없습니다.');
             }
             break;
           case 429:
-            showErrorToast('요청이 너무 많습니다. 잠시 후 다시 시도해주세요.');
+            console.log('요청이 너무 많습니다. 잠시 후 다시 시도해주세요.');
             break;
           case 500:
-            showErrorToast('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            console.log('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             break;
-          // default:
-          //   toast.error('오류가 발생했습니다.');
+          default:
+            console.log('오류가 발생했습니다.');
         }
       } else if (error.request) {
-        showErrorToast('서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.');
+        console.log('서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.');
       }
       return Promise.reject(error);
     }

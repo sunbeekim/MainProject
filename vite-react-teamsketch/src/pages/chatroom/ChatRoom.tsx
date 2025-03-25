@@ -283,8 +283,11 @@ const ChatRoom: React.FC = () => {
 
   // 메시지 영역 클릭 시 키보드 내리기
   const handleChatAreaClick = () => {
-    if (isKeyboardVisible && document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
+    if (isKeyboardVisible) {
+      const activeElement = document.activeElement as HTMLElement;
+      if (activeElement) {
+        activeElement.blur();
+      }
     }
   };
 
@@ -702,7 +705,7 @@ const ChatRoom: React.FC = () => {
         {/* 하단 입력 영역 */}
         <div 
           ref={messageInputRef}
-          className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 "
+          className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700"
         >
           <div className="mx-auto max-w-screen-md">
             <MessageInput 

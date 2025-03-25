@@ -84,6 +84,9 @@ const App = () => {
 
   // 사용자가 로그인했을 때만 알림 구독 (메모이제이션 적용)
   const NotificationHandler = memo(() => {
+    const location = useLocation();
+    const isChatPage = location.pathname.startsWith('/chat/');
+    
     // 로그인 정보 확인 로그 추가
     console.log('[알림 디버그] ==== NotificationHandler 시작 ====');
     console.log('[알림 디버그] 토큰 존재 여부:', !!token);
@@ -109,14 +112,14 @@ const App = () => {
       return () => {
         console.log('[알림 디버그] NotificationHandler 언마운트됨');
       };
-    }, [connect]); // connect 함수 의존성 배열에 추가
+    }, [connect]);
     
     // 마지막으로 처리한 알림의 ID를 저장
     const [lastProcessedId, setLastProcessedId] = useState<string>('');
     
-    // 새로운 알림이 오면 토스트 메시지 표시
+    // 새로운 알림이 오면 토스트 메시지 표시 (채팅 페이지가 아닐 때만)
     useEffect(() => {
-      if (notifications.length === 0 || !isConnected) return;
+      if (notifications.length === 0 || !isConnected || isChatPage) return;
       
       // 최신 알림 가져오기
       const latestNotification = notifications[notifications.length - 1];
@@ -135,9 +138,9 @@ const App = () => {
       // 토스트 메시지 표시
       try {
         toast.info(latestNotification.message, {
-          toastId: notificationId, // 중복 방지를 위한 고유 ID 설정
+          toastId: notificationId,
           position: "top-center",
-          autoClose: 2000, // 2초 후 자동으로 닫힘 (기존 설정 유지)
+          autoClose: 2000,
           theme: "dark"
         });
         
@@ -148,7 +151,7 @@ const App = () => {
       } catch (error) {
         console.error('[알림 디버그] 토스트 메시지 표시 오류:', error);
       }
-    }, [notifications, isConnected, lastProcessedId]);
+    }, [notifications, isConnected, lastProcessedId, isChatPage]);
     
     // WebSocket 연결 상태 모니터링
     useEffect(() => {
