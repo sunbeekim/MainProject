@@ -82,7 +82,7 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({
         {/* 프로필 이미지 */}
         <img
           src={previewUrl}
-          alt="프로필"
+          alt=""
           className={`w-full h-full object-cover transition-all duration-300
             ${isHovered ? 'opacity-70 scale-105' : 'opacity-100 scale-100'}`}
         />
