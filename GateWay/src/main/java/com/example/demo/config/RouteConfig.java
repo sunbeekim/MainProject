@@ -15,7 +15,7 @@ public class RouteConfig {
     private JwtAuthenticationFilter jwtFilter;
 
   
-    private String activeProfile = "prod";
+    private String activeProfile = "local";
 
 
     @Bean

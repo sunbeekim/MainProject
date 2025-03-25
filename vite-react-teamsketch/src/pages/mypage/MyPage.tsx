@@ -97,7 +97,7 @@ const MyPage = () => {
         email={user.email || ''}
         name={user.name || ''}
         nickname={user.nickname || ''}
-        profileImagePath={user.profileImagePath as File | null}
+        profileImagePath={user.profileImagePath as File | string}
         points={user.points}
         dopamine={user.dopamine}
         onProfileUpdate={handleProfileUpdate}

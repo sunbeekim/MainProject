@@ -33,7 +33,10 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
 
       // 지도 클릭 이벤트 처리
       newMap.on('click', async (e) => {
-        if (nonClickable) return;
+        if (nonClickable) {
+          console.log('클릭방지 모드입니다.');
+          return;
+        }
         const { lat, lng } = e.latlng;
         
         try {
@@ -59,6 +62,9 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
             case 'endLocation':
               dispatch(setEndLocation(locationData));
               break;
+            case 'myAndEnd':            
+              dispatch(setEndLocation(locationData));
+              break;            
           }
         } catch (error) {
           console.error('주소 변환 중 오류 발생:', error);
@@ -77,6 +83,9 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
               dispatch(setYourLocation(locationData));
               break;
             case 'endLocation':
+              dispatch(setEndLocation(locationData));
+              break;
+            case 'myAndEnd':
               dispatch(setEndLocation(locationData));
               break;
           }

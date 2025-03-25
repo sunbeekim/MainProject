@@ -33,7 +33,7 @@ const ChatList: React.FC = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       refetch();
-    }, 5000); // 5초마다 갱신
+    }, 1000); // 1초마다 갱신
 
     return () => clearInterval(intervalId);
   }, [refetch]);
