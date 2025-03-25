@@ -49,7 +49,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onFocus, onB
     <div>
       {/* 파일 미리보기 */}
       {file && (
-        <div className="relative w-40 mb-2 pb-20">
+        <div className="relative w-40">
           {/* 이미지 파일 미리보기 */}
           {file.type === "image" && (
             <img
