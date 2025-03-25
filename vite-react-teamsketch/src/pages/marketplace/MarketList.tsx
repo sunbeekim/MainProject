@@ -242,7 +242,11 @@ const MarketList = () => {
 
     try {
       const result = await nearbyProdListApi({ latitude, longitude, distance });
-      console.log(result);
+      if (result.data.length === 0) {
+        toast.error('주변에 검색된 상품이 없습니다. 거리 반경을 늘리거나, 등록 위치를 확인하세요.');
+      } else {
+        toast.success('주변 상품들이 검색되었습니다!');
+      }
     } catch (error) {
       toast.error('주변 상품을 불러오는 데 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
       console.error(error);

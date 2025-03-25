@@ -6,12 +6,11 @@ import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
 import { useAppSelector } from '../../store/hooks';
 import { useNotification } from '../../services/real-time/useNotification';
+import FilterButton from '../common/FilterButton';
 
 
-interface HeaderProps {
-  onDistanceChange: (distance: number) => void;
-}
-const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
+
+const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { token, user } = useAppSelector((state) => state.auth);
@@ -19,11 +18,16 @@ const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
     userEmail: user?.email || undefined,
     token: token || undefined
   });
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unread, setUnread] = useState(0);
 
-  // 읽지 않은 알림 수 업데이트
+  const handleDistanceChange = (newDistance: number) => {
+    console.log('새로운 거리:', newDistance);
+
+  };
+
+  // 읽지 않은 알림 개수 업데이트
   useEffect(() => {
-    setUnreadCount(notifications.length);
+    setUnread(notifications.length);
   }, [notifications]);
 
   // 웹소켓 연결
@@ -62,13 +66,33 @@ const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
           title: 'MarketPlace',
           actions: (
             <div className="flex gap-2 justify-center items-center">
+
               <button
-                onClick={() => {                  
-                  navigate('/test/pages');                  
+                onClick={() => {
+                  navigate('/test/pages');
                 }}
                 className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
               >
                 testpage
+              </button>
+              <header>
+                <FilterButton onDistanceChange={handleDistanceChange} />
+              </header>
+
+              <div className="relative">
+                <Iconalarm
+                  onClick={() => {
+                    navigate('/notification');
+                    setUnread(0);
+                  }}
+                  className="w-6 h-6 cursor-pointer"
+                />
+                {unread > 0 && (
+                  <div className="absolute -top-0 -right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {unread > 99 ? '99+' : unread}
+                  </div>
+                )}
+              </div>
             </div>
           )
         };
@@ -131,28 +155,15 @@ const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
           </h1>
         </GridItem>
 
+
         {/* 오른쪽: 액션 버튼 */}
         <GridItem className="flex justify-end items-center h-full text-sm">
           {headerContent.actions}
-          {location.pathname === '/' && (
-            <div className="relative ml-2">
-              <Iconalarm 
-                onClick={() => {
-                  navigate('/notification');
-                  setUnreadCount(0);
-                }}
-                className="w-6 h-6 cursor-pointer text-primary-50 dark:text-text-dark" 
-              />
-              {unreadCount > 0 && (
-                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </div>
-              )}
-            </div>
-          )}
         </GridItem>
       </Grid>
     </header>
+
+
   );
 };
 
