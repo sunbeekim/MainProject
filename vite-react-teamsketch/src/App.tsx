@@ -86,6 +86,7 @@ const App = () => {
   const NotificationHandler = memo(() => {
     const location = useLocation();
     const isChatPage = location.pathname.startsWith('/chat/');
+    const isChatListPage = location.pathname.startsWith('/chat-list');
     
     // 로그인 정보 확인 로그 추가
     console.log('[알림 디버그] ==== NotificationHandler 시작 ====');
@@ -119,7 +120,7 @@ const App = () => {
     
     // 새로운 알림이 오면 토스트 메시지 표시 (채팅 페이지가 아닐 때만)
     useEffect(() => {
-      if (notifications.length === 0 || !isConnected || isChatPage) return;
+      if (notifications.length === 0 || !isConnected || isChatPage || isChatListPage  ) return;
       
       // 최신 알림 가져오기
       const latestNotification = notifications[notifications.length - 1];
