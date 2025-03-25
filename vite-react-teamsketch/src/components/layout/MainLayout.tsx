@@ -32,6 +32,7 @@ import InquiryHistory from '../../pages/CScenter/InquiryHistory';
 import DeleteAccount from '../../pages/account/DeleteAccount';
 import OCRUpload from '../../pages/payment/OCRUpload';
 import MyLocation from '../../pages/map/MyLocation';
+
 import RegistersList from '../features/list/RegistersList';
 import RequestsList from '../features/list/RequestsList';
 //================== Test =========================
@@ -208,12 +209,13 @@ const MainLayout = () => {
           <Route path="/sales-list" element={<SalesList />} />
           <Route path="/purchase-list" element={<PurchaseList />} />
           <Route path="/my-products" element={<MyProducts />} />
-          <Route path="/transaction-detail/:transactionId" element={<TransactionDetail />} />
+          <Route path="/transaction-detail" element={<TransactionDetail />} />
           <Route path="/cs-list" element={<CSList />} />
           <Route path="/inquiry-history" element={<InquiryHistory />} />
           <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/ocr-upload" element={<OCRUpload />} />
           <Route path="/my-location" element={<MyLocation />} />
+
           <Route path="/registers-list" element={<RegistersList />} />
           <Route path="/requests-list" element={<RequestsList />} />
 
