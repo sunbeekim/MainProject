@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRef } from 'react';
 import { useChat } from '../../services/real-time/useChat';
 import { Navigate, useParams, useNavigate } from 'react-router-dom';
-import { MessageType } from '../../services/real-time/types';
+import { MessageType, IChatMessage } from '../../services/real-time/types';
 import { ChatRoom as ChatRoomType, getChatRoomDetail } from '../../services/api/userChatAPI';
 import { axiosInstance } from '../../services/api/axiosInstance';
 import { apiConfig } from '../../services/api/apiConfig';
@@ -14,16 +14,6 @@ import { useAppSelector } from '../../store/hooks';
 import { useProductByProductId, getApprovalStatus, getProductByProductId } from '../../services/api/productAPI';
 import { IconMap } from '../../components/common/Icons';
 
-interface ChatMessage {
-  messageId: number;
-  chatroomId: number;
-  content: string;
-  senderEmail: string;
-  messageType: MessageType;
-  sentAt: string;
-  isRead: boolean;
-}
-
 const ChatRoom: React.FC = () => {
   const { chatroomId } = useParams();
   const userStr = localStorage.getItem('user');
@@ -31,9 +21,12 @@ const ChatRoom: React.FC = () => {
   const userEmail = user?.email || '';
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const messageInputRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [chatInfo, setChatInfo] = useState<ChatRoomType | null>(null);
-  const [previousMessages, setPreviousMessages] = useState<ChatMessage[]>([]);
+  const [previousMessages, setPreviousMessages] = useState<IChatMessage[]>([]);
+  const [allMessages, setAllMessages] = useState<IChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +38,7 @@ const ChatRoom: React.FC = () => {
   const navigate = useNavigate();
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [transactionType, setTransactionType] = useState<string>('');
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   
   // useProductById 훅 사용
   const { data: productData } = useProductByProductId(chatInfo?.productId || 0);
@@ -268,12 +262,41 @@ const ChatRoom: React.FC = () => {
     }
   }, [chatroomId, token, isConnected]);
 
-  // 스크롤을 항상 최신 메시지로 이동
+  // 키보드 표시 상태 감지
+  useEffect(() => {
+    const handleResize = () => {
+      const isKeyboard = window.innerHeight < window.outerHeight;
+      setIsKeyboardVisible(isKeyboard);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // 메시지 영역 클릭 시 키보드 내리기
+  const handleChatAreaClick = () => {
+    if (isKeyboardVisible) {
+      const activeElement = document.activeElement as HTMLElement;
+      if (activeElement) {
+        activeElement.blur();
+      }
+    }
+  };
+
+  // 스크롤을 항상 최신 메시지로 이동 (키보드 상태 고려)
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      const scrollToBottom = () => {
+        chatContainerRef.current?.scrollTo({
+          top: chatContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      };
+      
+      // 키보드가 나타나거나 사라질 때 스크롤 조정
+      scrollToBottom();
     }
-  }, [messages, previousMessages]);
+  }, [messages, previousMessages, isKeyboardVisible]);
 
   // 메시지 시간 포맷팅 함수 수정
   const formatMessageTime = (dateStr: string | number[]) => {
@@ -281,10 +304,10 @@ const ChatRoom: React.FC = () => {
       let date: Date;
       
       if (Array.isArray(dateStr)) {
-        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분]
-        const [year, month, day, hour, minute] = dateStr;
-        // 초는 기본값 0으로 설정
-        date = new Date(year, month - 1, day, hour, minute, 0);
+        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분, 초]
+        const [year, month, day, hour, minute, second] = dateStr;
+        // 월은 0부터 시작하므로 1을 빼줌
+        date = new Date(year, month - 1, day, hour, minute, second || 0);
       } else {
         // 문자열 형식의 날짜 처리
         date = new Date(dateStr);
@@ -374,6 +397,47 @@ const ChatRoom: React.FC = () => {
     });
   };
 
+  // 시스템 메시지 처리
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      
+      // 시스템 메시지 처리
+      if (lastMessage.messageType === MessageType.SYSTEM) {
+        try {
+          const systemData = JSON.parse(lastMessage.content);
+          
+          if (systemData.type === 'APPROVAL_STATUS') {
+            // 승인 상태 변경 메시지 처리
+            if (systemData.status === '승인') {
+              setIsDisabled(true);
+              toast.success('함께하기 요청이 승인되었습니다.');
+            }
+          }
+        } catch (error) {
+          console.error('시스템 메시지 파싱 오류:', error);
+        }
+      }
+      
+      // 메시지 목록 스크롤
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [messages]);
+
+  // 메시지 정렬 및 상태 업데이트를 위한 useEffect
+  useEffect(() => {
+    const sortedMessages = [...previousMessages, ...messages].sort((a, b) => {
+      const getTime = (date: string | undefined) => {
+        if (!date) return 0;
+        return new Date(date).getTime();
+      };
+      return getTime(a.sentAt) - getTime(b.sentAt);
+    });
+    setAllMessages(sortedMessages);
+  }, [previousMessages, messages]);
+
   // 로딩 상태 표시 부분 수정
   if (isLoading || isConnecting || isLoadingMessages || isLoadingProfile) {
     return (
@@ -448,10 +512,17 @@ const ChatRoom: React.FC = () => {
       if (response.data?.status === 'success') {
         // 승인 상태 즉시 갱신
         setIsDisabled(true);
-        // 승인 상태 체크하여 UI 갱신
-        await checkApprovalStatus();
         
-        toast.success('함께하기 요청이 승인되었습니다.');
+        // 승인 상태 변경을 웹소켓으로 알림
+        sendMessage(chatInfo?.productId || 0, JSON.stringify({
+          type: 'APPROVAL_STATUS',
+          status: '승인',
+          chatroomId: chatroomId,
+          requestEmail: chatInfo?.requestEmail
+        }), MessageType.SYSTEM);
+        
+        // 승인 상태 체크하여 UI 갱신
+        await checkApprovalStatus();        
       }
     } catch (error) {
       console.error('함께하기 요청 실패:', error);
@@ -601,21 +672,10 @@ const ChatRoom: React.FC = () => {
         {/* 채팅 메시지 영역 */}
         <div
           ref={chatContainerRef}
+          onClick={handleChatAreaClick}
           className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 mb-20"
         >
-          {[...previousMessages, ...messages].sort((a, b) => {
-            // 날짜 비교를 위한 함수
-            const getTime = (date: string | number[]) => {
-              if (Array.isArray(date)) {
-                const [year, month, day, hour, minute] = date;
-                return new Date(year, month - 1, day, hour, minute).getTime();
-              }
-              return new Date(date).getTime();
-            };
-
-            // sentAt 기준으로 오름차순 정렬
-            return getTime(a.sentAt || '') - getTime(b.sentAt || '');
-          }).map((msg, index) => (
+          {allMessages.map((msg, index) => (
             <div key={msg.messageId || index} className="group relative">
               <div className={`flex flex-col ${msg.senderEmail === userEmail ? 'items-end' : 'items-start'}`}>
                 {/* 닉네임 표시 */}
@@ -668,12 +728,20 @@ const ChatRoom: React.FC = () => {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* 하단 입력 영역 */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 mb-safe p-4">
+        <div 
+          ref={messageInputRef}
+          className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700"
+        >
           <div className="mx-auto max-w-screen-md">
-            <MessageInput onSendMessage={handleSendMessage} />
+            <MessageInput 
+              onSendMessage={handleSendMessage}
+              onFocus={() => setIsKeyboardVisible(true)}
+              onBlur={() => setIsKeyboardVisible(false)}
+            />
           </div>
         </div>
       </div>

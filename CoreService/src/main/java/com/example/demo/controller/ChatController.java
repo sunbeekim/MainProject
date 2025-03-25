@@ -8,6 +8,7 @@ import com.example.demo.mapper.Market.ProductMapper;
 import com.example.demo.mapper.Market.ProductRequestMapper;
 import com.example.demo.model.chat.ChatRoom;
 import com.example.demo.service.ChatService;
+import com.example.demo.service.NotificationService;
 import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class ChatController {
     private final ChatRoomMapper chatRoomMapper;
     private final ProductMapper productMapper;
     private final ProductRequestMapper productRequestMapper;
+    private final NotificationService notificationService;
 
     /**
      * 채팅방 생성/조회
@@ -46,6 +48,10 @@ public class ChatController {
             return ResponseEntity.badRequest().body(ApiResponse.error(response.getMessage(), "400"));
         }
         
+        // 알림 추가
+        String message = String.format("\"%s\" 상품에 대한 채팅방이 생성되었습니다!", request.getProductId());
+        notificationService.sendNotification(email, message, "CHAT_MESSAGE", response.getChatroomId(), request.getProductId());
+
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -156,6 +162,10 @@ public class ChatController {
             
             // 모집 인원 충족 시 모집 마감 처리
             productMapper.updateProductVisibility(productId);
+
+            // 알림 추가
+            String message = String.format("\"%s\" 상품에 대한 함께하기 요청이 승인되었습니다!", productId);
+            notificationService.sendNotification(requesterEmail, message, "CHAT_MESSAGE", chatroomId, productId);
             
             return ResponseEntity.ok(ApiResponse.success("요청이 승인되었습니다."));
         } catch (Exception e) {

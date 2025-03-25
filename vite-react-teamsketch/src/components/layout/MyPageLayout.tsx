@@ -7,7 +7,7 @@ interface MyPageLayoutProps {
   email?: string;
   name?: string;
   nickname?: string;
-  profileImagePath?: File | null;
+  profileImagePath?: File | string;
   followerCount?: number;
   points?: number;
   dopamine?: number;
@@ -24,7 +24,7 @@ const MyPageLayout = ({
   email,
   name,
   nickname,
-  profileImagePath = null,
+  profileImagePath,
   followerCount = 126,
   points = 1200,
   dopamine,
@@ -41,7 +41,7 @@ const MyPageLayout = ({
           <div className="flex justify-center px-4">
             <ImageUpload
               onFileSelect={onProfileUpdate}
-              currentImage={profileImagePath}
+              currentImage={profileImagePath as File | string}
               type="profile"
               isEdit={false}
             />

@@ -15,11 +15,11 @@ const Header = () => {
     userEmail: user?.email || undefined,
     token: token || undefined
   });
-  const [unread, setUnread] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  // 읽지 않은 알림 개수 업데이트
+  // 읽지 않은 알림 수 업데이트
   useEffect(() => {
-    setUnread(notifications.length);
+    setUnreadCount(notifications.length);
   }, [notifications]);
 
   // 웹소켓 연결
@@ -66,21 +66,6 @@ const Header = () => {
               >
                 testpage
               </button>
-            
-              <div className="relative">
-                <Iconalarm 
-                  onClick={() => {
-                    navigate('/notification');
-                    setUnread(0);
-                  }}
-                  className="w-6 h-6 cursor-pointer" 
-                />
-                {unread > 0 && (
-                  <div className="absolute -top-0 -right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {unread > 99 ? '99+' : unread}
-                  </div>
-                )}
-              </div>
             </div>
           )
         };
@@ -146,6 +131,22 @@ const Header = () => {
         {/* 오른쪽: 액션 버튼 */}
         <GridItem className="flex justify-end items-center h-full text-sm">
           {headerContent.actions}
+          {location.pathname === '/' && (
+            <div className="relative ml-2">
+              <Iconalarm 
+                onClick={() => {
+                  navigate('/notification');
+                  setUnreadCount(0);
+                }}
+                className="w-6 h-6 cursor-pointer text-primary-50 dark:text-text-dark" 
+              />
+              {unreadCount > 0 && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </div>
+              )}
+            </div>
+          )}
         </GridItem>
       </Grid>
     </header>

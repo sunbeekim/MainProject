@@ -1,4 +1,4 @@
-package com.example.demo.service.Market;
+package com.example.demo.service;
 
 import com.example.demo.dto.Market.NotificationMessage;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +20,11 @@ public class NotificationService {
     // 알림용 Topic을 명확하게 지정
     private final @Qualifier("notificationChannelTopic") ChannelTopic notificationChannelTopic;
 
-    public void sendNotification(String receiverEmail, String message) {
+    public void sendNotification(String receiverEmail, String message, String type, Integer chatroomId, Long productId) {
         try {
-            log.info("알림 전송 시도: 수신자={}, 메시지={}", receiverEmail, message);
+            log.info("알림 전송 시도: 수신자={}, 메시지={}, 타입={}, 채팅방ID={}, 상품ID={}", receiverEmail, message, type, chatroomId, productId);
             
-            NotificationMessage notification = new NotificationMessage(receiverEmail, message);
+            NotificationMessage notification = new NotificationMessage(receiverEmail, message, type, chatroomId, productId);
 
             // WebSocket을 통해 클라이언트에게 즉시 전송 (먼저 처리)
             String destination = "/topic/user/" + receiverEmail;

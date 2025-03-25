@@ -23,6 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 *.sql
-*.txt
 *.md
 /Postman/*
