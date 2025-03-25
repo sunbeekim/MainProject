@@ -14,7 +14,7 @@ interface ImageUploadProps {
   className?: string;
   type?: ImageUploadType;
   isEdit?: boolean;
-  currentImage?: File | null;
+  currentImage?: File | string;
   imageUrl?: string;
   multiple?: boolean;
   images?: File[];
@@ -110,7 +110,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           {type === 'profile' && (
             <ProfileSelector
               onFileSelect={handleFileSelect}
-              file={currentImage || undefined}
+              file={currentImage as File | string}
               isEditable={isEdit}
               imageUrl={previewUrl || undefined}
             />

@@ -38,11 +38,10 @@ const SearchLocation = ({ onLocationSelect }: SearchLocationProps) => {
   const handleSelectLocation = (result: SearchResult) => {
     dispatch(
       setEndLocation({
-        id: '',
-        name: '',
         lat: parseFloat(result.y),
         lng: parseFloat(result.x),
-        address: result.road_address_name + ' ' + result.place_name || result.address_name
+        address: result.road_address_name + ' ' + result.place_name || result.address_name,
+        meetingPlace: result.place_name
       })
     );
     setResults([]);

@@ -6,7 +6,7 @@ interface ProfileSelectorProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   isEditable?: boolean;
-  file?: File | null;
+  file?: File | string;
   imageUrl?: string;
 }
 
@@ -15,25 +15,36 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({
   className = 'relative flex justify-center px-4',
   size = 'md',
   isEditable = true,
-  file = null,
-  imageUrl = 'https://picsum.photos/600/400?random=33'
+  file = '',
+  imageUrl
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string>(imageUrl);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
 
-  // 파일이 변경될 때만 `URL.createObjectURL()` 실행 & 메모리 정리
+  // 기본 이미지 URL (백엔드 연결 실패 시 사용)
+  const defaultImageUrl = 'https://picsum.photos/400/400?random=' + Math.floor(Math.random() * 1000);
+
   useEffect(() => {
-    if (file instanceof File) {
-      const newPreviewUrl = URL.createObjectURL(file);
-      setPreviewUrl(newPreviewUrl);
+    let newPreviewUrl = '';
 
-      // 메모리 누수 방지: 기존 ObjectURL 제거
-      return () => {
-        URL.revokeObjectURL(newPreviewUrl);
-      };
+    if (file instanceof File) {
+      newPreviewUrl = URL.createObjectURL(file);
+    } else if (typeof file === 'string' && file) {
+      newPreviewUrl = file;
+    } else if (imageUrl) {
+      newPreviewUrl = imageUrl;
     } else {
-      setPreviewUrl(imageUrl); // 기본 이미지 유지
+      newPreviewUrl = defaultImageUrl;
     }
+
+    setPreviewUrl(newPreviewUrl);
+
+    // 파일 객체로 생성된 URL만 정리
+    return () => {
+      if (file instanceof File && newPreviewUrl) {
+        URL.revokeObjectURL(newPreviewUrl);
+      }
+    };
   }, [file, imageUrl]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

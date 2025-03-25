@@ -281,10 +281,10 @@ const ChatRoom: React.FC = () => {
       let date: Date;
       
       if (Array.isArray(dateStr)) {
-        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분]
-        const [year, month, day, hour, minute] = dateStr;
+        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분, 초]
+        const [year, month, day, hour, minute, second] = dateStr;
         // 초는 기본값 0으로 설정
-        date = new Date(year, month - 1, day, hour, minute, 0);
+        date = new Date(year, month - 1, day, hour, minute, second);
       } else {
         // 문자열 형식의 날짜 처리
         date = new Date(dateStr);

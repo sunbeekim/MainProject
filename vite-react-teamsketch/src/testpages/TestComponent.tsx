@@ -17,7 +17,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import axios from 'axios';
-import FilterButton from '../components/common/FilterButton';
 interface OCRResult {
   status: string;
   data: {
@@ -264,7 +263,6 @@ const TestComponent = () => {
         <br />
         <br />
       </section>
-      <FilterButton />
     </div>
   );
 };
