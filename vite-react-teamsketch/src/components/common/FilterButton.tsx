@@ -3,7 +3,7 @@ import { useState } from 'react';
 interface FilterButtonProps {
     onDistanceChange: (distance: number) => void;
 }
-const FilterButton = ({ onDistanceChange }: FilterButtonProps) => {
+const FilterButton = ({ onDistanceChange = () => {} }: FilterButtonProps) => {
     const [open, setOpen] = useState(false);
     const [newdistance, setDistance] = useState(5); // 초기 거리값
 

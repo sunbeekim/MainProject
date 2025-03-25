@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { useUserProfileImage } from '../../services/api/profileImageAPI';
 import { useAppSelector } from '../../store/hooks';
-import { useProductByProductId, getApprovalStatus } from '../../services/api/productAPI';
+import { useProductByProductId, getApprovalStatus, getProductByProductId } from '../../services/api/productAPI';
 import { IconMap } from '../../components/common/Icons';
 
 interface ChatMessage {
@@ -44,10 +44,11 @@ const ChatRoom: React.FC = () => {
   const { constantCategories, constantHobbies } = useAppSelector((state) => state.category);
   const navigate = useNavigate();
   const [isApproved, setIsApproved] = useState<boolean>(false);
-
+  const [transactionType, setTransactionType] = useState<string>('');
+  
   // useProductById 훅 사용
   const { data: productData } = useProductByProductId(chatInfo?.productId || 0);
-  console.log(chatInfo?.productId);
+
   // useChat 훅 사용
   const { messages, sendMessage, sendImage, isConnected, connect } = useChat({
     chatroomId: Number(chatroomId),
@@ -69,6 +70,8 @@ const ChatRoom: React.FC = () => {
       }));
     }
   }, [productData]);
+
+  
 
   // 카테고리와 취미 이름 찾기
   const mainCategory = useMemo(() => {
@@ -278,10 +281,10 @@ const ChatRoom: React.FC = () => {
       let date: Date;
       
       if (Array.isArray(dateStr)) {
-        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분]
-        const [year, month, day, hour, minute] = dateStr;
+        // 배열 형식의 날짜 처리 [년, 월, 일, 시, 분, 초]
+        const [year, month, day, hour, minute, second] = dateStr;
         // 초는 기본값 0으로 설정
-        date = new Date(year, month - 1, day, hour, minute, 0);
+        date = new Date(year, month - 1, day, hour, minute, second);
       } else {
         // 문자열 형식의 날짜 처리
         date = new Date(dateStr);
@@ -304,6 +307,22 @@ const ChatRoom: React.FC = () => {
       return '시간 정보 없음';
     }
   };
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      try {
+        if (chatInfo?.productId) {
+          const response = await getProductByProductId(chatInfo.productId);
+          console.log("상품 정보:", response);
+          setTransactionType(response.transactionType);
+        }
+      } catch (error) {
+        console.error("상품 정보 조회 중 오류 발생:", error);
+      }
+    };
+
+    fetchProductData();
+  }, [chatInfo?.productId]); // chatInfo.productId가 변경될 때마다 실행
 
   // 승인 상태 확인
   const checkApprovalStatus = async () => {
@@ -350,6 +369,7 @@ const ChatRoom: React.FC = () => {
         email: userEmail,
         otherUserEmail: chatInfo?.otherUserEmail,
         nickname: chatInfo?.otherUserName,
+        productId: chatInfo?.productId,
       } 
     });
   };
@@ -426,10 +446,16 @@ const ChatRoom: React.FC = () => {
       );
       
       if (response.data?.status === 'success') {
+        // 승인 상태 즉시 갱신
         setIsDisabled(true);
+        // 승인 상태 체크하여 UI 갱신
+        await checkApprovalStatus();
+        
+        toast.success('함께하기 요청이 승인되었습니다.');
       }
     } catch (error) {
       console.error('함께하기 요청 실패:', error);
+      toast.error('함께하기 요청에 실패했습니다.');
     }
   };
 
@@ -552,7 +578,7 @@ const ChatRoom: React.FC = () => {
           >
             함께하기
           </button>
-        ) : isApproved && (
+        ) : isApproved && transactionType === '대면' && (
           <button
             onClick={handleLocationClick}
             className="

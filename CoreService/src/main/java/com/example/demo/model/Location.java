@@ -1,21 +1,19 @@
 package com.example.demo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Location {
+    private Long locationId;
     private Integer chatroomId;
     private String email;
-    private Double lat;
-    private Double lng;
-    private String address;
+    private Double latitude;
+    private Double longitude;
     private LocalDateTime timestamp;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    // 추가 필드
+    private String userNickname; // users 테이블과 JOIN 시 사용
 } 

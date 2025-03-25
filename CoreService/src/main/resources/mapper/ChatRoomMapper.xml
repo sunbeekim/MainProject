@@ -129,32 +129,23 @@
         FROM 
             chatrooms cr
             JOIN products p ON cr.product_id = p.id
-            LEFT JOIN ProductRequests pr ON cr.product_id = pr.product_id 
-                                        AND (cr.request_email = pr.requester_email 
-                                             OR pr.requester_email = #{email})
+            LEFT JOIN productrequests pr ON cr.product_id = pr.product_id 
+                                        AND cr.request_email = pr.requester_email
         WHERE 
-            -- 사용자와 관련된 채팅방 검색
-            (p.email = #{email} OR cr.request_email = #{email} OR pr.requester_email = #{email})
-            AND (
-                -- 조건 1: 상품 등록자인 경우 - 모든 채팅방 볼 수 있음
-                (p.email = #{email})
+            (
+                -- 판매자인 경우: 해당 상품의 채팅방만 조회
+                (p.email = #{email} AND cr.status = 'ACTIVE')
                 OR
-                -- 조건 2: 모집 중인 상품의 신청자인 경우
-                (p.is_visible = true AND (cr.request_email = #{email} OR pr.requester_email = #{email}))
-                OR
-                -- 조건 3: 모집 완료 상품의 승인된 신청자인 경우
-                (p.is_visible = false AND 
-                    ((cr.request_email = #{email} AND EXISTS (
-                        SELECT 1 FROM ProductRequests 
-                        WHERE product_id = p.id AND requester_email = #{email} AND approval_status = '승인'
-                    )) 
-                    OR 
-                    (pr.requester_email = #{email} AND pr.approval_status = '승인'))
-                )
+                -- 구매자인 경우: 자신이 요청한 채팅방만 조회
+                (cr.request_email = #{email} AND EXISTS (
+                    SELECT 1 FROM productrequests 
+                    WHERE product_id = cr.product_id 
+                    AND requester_email = #{email}
+                    AND (approval_status = '승인' OR approval_status = '대기')
+                ))
             )
         ORDER BY 
             cr.last_message_time DESC
     </select>
 
 </mapper>
-

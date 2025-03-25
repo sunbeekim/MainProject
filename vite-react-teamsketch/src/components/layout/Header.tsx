@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { IconSetting, Iconalarm } from '../common/Icons';
 import BackButton from '../forms/button/BackButton';
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
 import { useAppSelector } from '../../store/hooks';
-import FilterButton from '../common/FilterButton';
+import { useNotification } from '../../services/real-time/useNotification';
 
 
 interface HeaderProps {
@@ -14,25 +14,24 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-  const { token } = useAppSelector((state) => state.auth);
+  const { token, user } = useAppSelector((state) => state.auth);
+  const { notifications, isConnected, connect } = useNotification({
+    userEmail: user?.email || undefined,
+    token: token || undefined
+  });
+  const [unread, setUnread] = useState(0);
 
-  // 읽지 않은 알림 체크
+  // 읽지 않은 알림 개수 업데이트
   useEffect(() => {
-    const checkUnreadNotifications = async () => {
-      try {
-        // TODO: API 호출로 대체
-        const mockResponse = { hasUnread: true };
-        setHasUnreadNotifications(mockResponse.hasUnread);
-      } catch (error) {
-        console.error('알림 상태 확인 실패:', error);
-      }
-    };
+    setUnread(notifications.length);
+  }, [notifications]);
 
-    if (token) {
-      checkUnreadNotifications();
+  // 웹소켓 연결
+  useEffect(() => {
+    if (user?.email && token && !isConnected) {
+      connect();
     }
-  }, [token]);
+  }, [user?.email, token, isConnected, connect]);
 
   // URL 경로를 기반으로 제목 추출하는 함수
   const getFormattedTitle = (path: string) => {
@@ -51,6 +50,10 @@ const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
       return {
         title: state?.chatname ? `${state.chatname}` : '채팅'
       };
+    } else if (location.pathname.startsWith('/share')) {
+      return {
+        title: '위치 공유하기'
+      };
     }
 
     switch (location.pathname) {
@@ -58,16 +61,30 @@ const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
         return {
           title: 'MarketPlace',
           actions: (
-            <div className="flex gap-2">
-
+            <div className="flex gap-2 justify-center items-center">
               <button
-                onClick={() => navigate('/test/pages')}
+                onClick={() => {                  
+                  navigate('/test/pages');                  
+                }}
                 className="text-[#59151C] hover:text-primary-dark px-3 py-1 rounded-md bg-[#F3F2FF]"
               >
                 testpage
-              </button>
-              <FilterButton onDistanceChange={onDistanceChange} />
-              <Iconalarm hasNotification={hasUnreadNotifications} className="w-6 h-6" />
+              </button
+            
+              <div className="relative">
+                <Iconalarm 
+                  onClick={() => {
+                    navigate('/notification');
+                    setUnread(0);
+                  }}
+                  className="w-6 h-6 cursor-pointer" 
+                />
+                {unread > 0 && (
+                  <div className="absolute -top-0 -right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {unread > 99 ? '99+' : unread}
+                  </div>
+                )}
+              </div>
             </div>
           )
         };

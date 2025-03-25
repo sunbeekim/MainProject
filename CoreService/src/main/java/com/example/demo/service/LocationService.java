@@ -22,7 +22,7 @@ public class LocationService {
     @Transactional
     public void saveLocation(Location location) {
         try {
-            locationMapper.insertLocation(location);
+            locationMapper.saveLocation(location);
             log.info("위치 정보 저장 완료: chatroomId={}, email={}", 
                     location.getChatroomId(), location.getEmail());
         } catch (Exception e) {
@@ -36,7 +36,7 @@ public class LocationService {
      */
     public List<Location> getRecentLocations(Integer chatroomId) {
         try {
-            return locationMapper.findRecentLocationsByChatroomId(chatroomId);
+            return locationMapper.getRecentLocations(chatroomId);
         } catch (Exception e) {
             log.error("최근 위치 정보 조회 중 오류 발생: chatroomId={}, error={}", 
                     chatroomId, e.getMessage());
@@ -49,7 +49,7 @@ public class LocationService {
      */
     public Location getLastLocation(Integer chatroomId, String email) {
         try {
-            return locationMapper.findLastLocationByEmailAndChatroomId(chatroomId, email);
+            return locationMapper.getLastLocation(chatroomId, email);
         } catch (Exception e) {
             log.error("마지막 위치 정보 조회 중 오류 발생: chatroomId={}, email={}, error={}", 
                     chatroomId, email, e.getMessage());

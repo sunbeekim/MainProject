@@ -11,7 +11,7 @@ interface OpenStreetMapProps {
   children?: React.ReactNode;
   nonClickable?: boolean;
   className?: string;
-  mode?: 'myLocation' | 'yourLocation' | 'endLocation';
+  mode?: 'myLocation' | 'yourLocation' | 'endLocation' | 'all' | 'myAndEnd';
 }
 
 const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className, mode = 'endLocation' }) => {
@@ -33,7 +33,10 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
 
       // 지도 클릭 이벤트 처리
       newMap.on('click', async (e) => {
-        if (nonClickable) return;
+        if (nonClickable) {
+          console.log('클릭방지 모드입니다.');
+          return;
+        }
         const { lat, lng } = e.latlng;
         
         try {
@@ -59,6 +62,9 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
             case 'endLocation':
               dispatch(setEndLocation(locationData));
               break;
+            case 'myAndEnd':            
+              dispatch(setEndLocation(locationData));
+              break;            
           }
         } catch (error) {
           console.error('주소 변환 중 오류 발생:', error);
@@ -77,6 +83,9 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
               dispatch(setYourLocation(locationData));
               break;
             case 'endLocation':
+              dispatch(setEndLocation(locationData));
+              break;
+            case 'myAndEnd':
               dispatch(setEndLocation(locationData));
               break;
           }
@@ -102,19 +111,19 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
     markers.forEach((marker) => marker.remove());
     const newMarkers: L.Marker[] = [];
 
-    const addMarker = (location: { lat: number; lng: number }, type: 'my' | 'your' | 'end') => {
+    const addMarker = (location: { lat: number; lng: number }, type: 'myLocation' | 'yourLocation' | 'endLocation') => {
       if (!location?.lat || !location?.lng) return;
 
       const iconColors = {
-        my: '#3B82F6',
-        your: '#EF4444',
-        end: '#10B981'
+        myLocation: '#3B82F6',
+        yourLocation: '#EF4444',
+        endLocation: '#10B981'
       };
 
       const popupTexts = {
-        my: '내 위치',
-        your: '상대방 위치',
-        end: '목적지'
+        myLocation: '내 위치',
+        yourLocation: '상대방 위치',
+        endLocation: '목적지'
       };
 
       const icon = L.divIcon({
@@ -132,14 +141,14 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
     };
 
     // 각 위치에 대한 마커 추가
-    if (myLocation?.lat && myLocation?.lng) {
-      addMarker(myLocation, 'my');
+    if (myLocation?.lat && myLocation?.lng && (mode === 'myLocation' || mode === 'all' || mode === 'myAndEnd')) {
+      addMarker(myLocation, 'myLocation');
     }
-    if (yourLocation?.lat && yourLocation?.lng) {
-      addMarker(yourLocation, 'your');
+    if (yourLocation?.lat && yourLocation?.lng && (mode === 'yourLocation' || mode === 'all')) {
+      addMarker(yourLocation, 'yourLocation');
     }
-    if (endLocation?.lat && endLocation?.lng) {
-      addMarker(endLocation, 'end');
+    if (endLocation?.lat && endLocation?.lng && (mode === 'endLocation' || mode === 'all' || mode === 'myAndEnd')) {
+      addMarker(endLocation, 'endLocation');
     }
 
     // 마지막으로 추가된 마커의 위치로 지도 중심 이동
@@ -149,7 +158,7 @@ const OpenMap: React.FC<OpenStreetMapProps> = ({ nonClickable = false, className
     }
 
     setMarkers(newMarkers);
-  }, [myLocation?.lat, myLocation?.lng, yourLocation?.lat, yourLocation?.lng, endLocation?.lat, endLocation?.lng]);
+  }, [myLocation?.lat, myLocation?.lng, yourLocation?.lat, yourLocation?.lng, endLocation?.lat, endLocation?.lng, mode]);
 
   return <div ref={mapRef} className={`w-full h-full ${className}`} />;
 };
