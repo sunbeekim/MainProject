@@ -34,10 +34,12 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, onClick }: ProductCardProps) => {
+    console.log('ProductCard 렌더링 데이터:', product);
 
 
 
     return (
+
         <div className="flex justify-center items-center p-4 mr-3">
             <div className="w-full max-w-[600px] h-[150px] bg-white rounded-2xl border-2 flex items-center p-5 gap-3 ml-4">
                 <div className="w-[100px] h-[100px] bg-gray-200 rounded-lg">
