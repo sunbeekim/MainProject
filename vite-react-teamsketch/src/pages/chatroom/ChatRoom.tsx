@@ -31,6 +31,7 @@ const ChatRoom: React.FC = () => {
   const userEmail = user?.email || '';
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const messageInputRef = useRef<HTMLDivElement>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [chatInfo, setChatInfo] = useState<ChatRoomType | null>(null);
   const [previousMessages, setPreviousMessages] = useState<ChatMessage[]>([]);
@@ -45,6 +46,7 @@ const ChatRoom: React.FC = () => {
   const navigate = useNavigate();
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [transactionType, setTransactionType] = useState<string>('');
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   
   // useProductById 훅 사용
   const { data: productData } = useProductByProductId(chatInfo?.productId || 0);
@@ -268,12 +270,38 @@ const ChatRoom: React.FC = () => {
     }
   }, [chatroomId, token, isConnected]);
 
-  // 스크롤을 항상 최신 메시지로 이동
+  // 키보드 표시 상태 감지
+  useEffect(() => {
+    const handleResize = () => {
+      const isKeyboard = window.innerHeight < window.outerHeight;
+      setIsKeyboardVisible(isKeyboard);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // 메시지 영역 클릭 시 키보드 내리기
+  const handleChatAreaClick = () => {
+    if (isKeyboardVisible && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  };
+
+  // 스크롤을 항상 최신 메시지로 이동 (키보드 상태 고려)
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      const scrollToBottom = () => {
+        chatContainerRef.current?.scrollTo({
+          top: chatContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      };
+      
+      // 키보드가 나타나거나 사라질 때 스크롤 조정
+      scrollToBottom();
     }
-  }, [messages, previousMessages]);
+  }, [messages, previousMessages, isKeyboardVisible]);
 
   // 메시지 시간 포맷팅 함수 수정
   const formatMessageTime = (dateStr: string | number[]) => {
@@ -601,6 +629,7 @@ const ChatRoom: React.FC = () => {
         {/* 채팅 메시지 영역 */}
         <div
           ref={chatContainerRef}
+          onClick={handleChatAreaClick}
           className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 mb-20"
         >
           {[...previousMessages, ...messages].sort((a, b) => {
@@ -671,9 +700,16 @@ const ChatRoom: React.FC = () => {
         </div>
 
         {/* 하단 입력 영역 */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 mb-safe p-4">
+        <div 
+          ref={messageInputRef}
+          className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 "
+        >
           <div className="mx-auto max-w-screen-md">
-            <MessageInput onSendMessage={handleSendMessage} />
+            <MessageInput 
+              onSendMessage={handleSendMessage}
+              onFocus={() => setIsKeyboardVisible(true)}
+              onBlur={() => setIsKeyboardVisible(false)}
+            />
           </div>
         </div>
       </div>

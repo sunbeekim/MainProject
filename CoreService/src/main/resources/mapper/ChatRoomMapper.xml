@@ -121,31 +121,39 @@
     <!-- 모집중 또는 승인된 채팅방 조회 쿼리 수정 -->
     <select id="findActiveChatRoomsByUser" resultMap="chatRoomResultMap">
         SELECT 
-            cr.*, p.email as seller_email,
-            (SELECT COUNT(*) FROM messages m 
-             WHERE m.chatroom_id = cr.chatroom_id 
-             AND m.sender_email != #{email} 
-             AND m.is_read = false) as unread_count
-        FROM 
-            chatrooms cr
-            JOIN products p ON cr.product_id = p.id
-            LEFT JOIN productrequests pr ON cr.product_id = pr.product_id 
-                                        AND cr.request_email = pr.requester_email
-        WHERE 
+            cr.*, 
+            p.email AS seller_email,
             (
-                -- 판매자인 경우: 해당 상품의 채팅방만 조회
-                (p.email = #{email} AND cr.status = 'ACTIVE')
-                OR
-                -- 구매자인 경우: 자신이 요청한 채팅방만 조회
-                (cr.request_email = #{email} AND EXISTS (
-                    SELECT 1 FROM productrequests 
-                    WHERE product_id = cr.product_id 
-                    AND requester_email = #{email}
-                    AND (approval_status = '승인' OR approval_status = '대기')
-                ))
+                SELECT COUNT(*) 
+                FROM messages m 
+                WHERE m.chatroom_id = cr.chatroom_id 
+                  AND m.sender_email != #{email} 
+                  AND m.is_read = false
+            ) AS unread_count
+        FROM chatrooms cr
+        JOIN products p ON cr.product_id = p.id
+        LEFT JOIN productrequests pr 
+               ON cr.product_id = pr.product_id 
+              AND pr.requester_email = #{email}
+        WHERE 
+            -- 조건 1: 등록자 or 요청자
+            (
+                p.email = #{email} 
+                OR cr.request_email = #{email}
             )
-        ORDER BY 
-            cr.last_message_time DESC
+            AND (
+                -- 조건 2: 해당 챗룸의 상품이 '모집 중'이거나 '승인된 요청'이 있는 경우
+                (p.is_visible = true) -- 모집 중
+                OR
+                EXISTS (
+                    SELECT 1 
+                    FROM productrequests pr2 
+                    WHERE pr2.product_id = cr.product_id 
+                      AND pr2.requester_email = #{email} 
+                      AND pr2.approval_status = '승인'
+                )
+            )
+        ORDER BY cr.last_message_time DESC
     </select>
 
 </mapper>
