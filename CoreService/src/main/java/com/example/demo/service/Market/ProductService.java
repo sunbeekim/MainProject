@@ -11,6 +11,7 @@ import com.example.demo.mapper.Market.TransactionsMapper;
 import com.example.demo.model.Market.Product;
 import com.example.demo.model.Market.ProductImage;
 import com.example.demo.service.ChatService;
+import com.example.demo.service.NotificationService;
 import com.example.demo.util.BaseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -146,7 +147,7 @@ public class ProductService {
 
           // 4. 상품명 포함 알림 추가 (병합 전 코드 유지)
           String productName = product.getTitle();
-          String message = String.format("\"%s\"에 대한 새로운 요청이 도착했습니다!", productName);
+          String message = String.format("\"%s\" 상품에 대한 새로운 신청이 도착했습니다!", productName);
           notificationService.sendNotification(productOwnerEmail, message);
 
           // 5. 채팅방 생성 (기존과 동일)

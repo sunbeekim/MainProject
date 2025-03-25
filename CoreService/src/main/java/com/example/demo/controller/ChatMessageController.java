@@ -9,7 +9,7 @@ import com.example.demo.model.chat.ChatRoom;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.service.ChatMessageService;
-import com.example.demo.service.Market.NotificationService;
+import com.example.demo.service.NotificationService;
 import com.example.demo.service.UserService;
 import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;

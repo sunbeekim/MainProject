@@ -12,6 +12,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AUTH_PATHS, FULLSCREEN_PATHS, FOOTER_HIDDEN_PATHS, isInitialLocationPage } from './components/layout/MainLayout';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import { useNotification } from './services/real-time/useNotification';
+import { useDispatch } from 'react-redux';
+import { addNotification, updateLastProcessedId, INotification } from './store/slices/notiSlice';
 import ChangePassword from './pages/account/ChangePassword';
 import ForgotPassword from './pages/account/ForgotPassword';
 import VerificationCode from './pages/account/VerificationCode';
@@ -23,6 +25,7 @@ const App = () => {
   
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   
   // 토큰 및 위치 설정 여부 확인
   const token = localStorage.getItem('token') || undefined;
@@ -118,9 +121,9 @@ const App = () => {
     // 마지막으로 처리한 알림의 ID를 저장
     const [lastProcessedId, setLastProcessedId] = useState<string>('');
     
-    // 새로운 알림이 오면 토스트 메시지 표시 (채팅 페이지가 아닐 때만)
+    // 새로운 알림이 오면 Redux store에 저장하고 토스트 메시지 표시
     useEffect(() => {
-      if (notifications.length === 0 || !isConnected || isChatPage || isChatListPage  ) return;
+      if (notifications.length === 0 || !isConnected || isChatPage || isChatListPage) return;
       
       // 최신 알림 가져오기
       const latestNotification = notifications[notifications.length - 1];
@@ -136,6 +139,33 @@ const App = () => {
       
       console.log('[알림 디버그] 새 알림 처리:', latestNotification);
       
+      // Redux store에 알림 저장
+      const notification: INotification = {
+        id: Date.now(), // 임시 ID 생성
+        type: latestNotification.type || 'SYSTEM',
+        message: latestNotification.message,
+        timestamp: latestNotification.timestamp || new Date().toISOString(),
+        status: 'UNREAD',
+        receiverEmail: latestNotification.receiverEmail
+      };
+
+      // 선택적 필드 추가
+      if ('senderEmail' in latestNotification) {
+        notification.senderEmail = latestNotification.senderEmail as string;
+      }
+      if ('productId' in latestNotification) {
+        notification.productId = latestNotification.productId as number;
+      }
+      if ('chatroomId' in latestNotification) {
+        notification.chatroomId = latestNotification.chatroomId as number;
+      }
+      
+      dispatch(addNotification(notification));
+      
+      // 마지막 처리 ID 업데이트
+      dispatch(updateLastProcessedId(notificationId));
+      setLastProcessedId(notificationId);
+      
       // 토스트 메시지 표시
       try {
         toast.info(latestNotification.message, {
@@ -145,14 +175,11 @@ const App = () => {
           theme: "dark"
         });
         
-        // 처리한 알림 ID 저장
-        setLastProcessedId(notificationId);
-        
         console.log('[알림 디버그] 토스트 메시지 표시 완료');
       } catch (error) {
         console.error('[알림 디버그] 토스트 메시지 표시 오류:', error);
       }
-    }, [notifications, isConnected, lastProcessedId, isChatPage]);
+    }, [notifications, isConnected, lastProcessedId, isChatPage, dispatch]);
     
     // WebSocket 연결 상태 모니터링
     useEffect(() => {

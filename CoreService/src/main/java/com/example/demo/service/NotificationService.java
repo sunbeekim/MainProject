@@ -1,4 +1,4 @@
-package com.example.demo.service.Market;
+package com.example.demo.service;
 
 import com.example.demo.dto.Market.NotificationMessage;
 import lombok.RequiredArgsConstructor;

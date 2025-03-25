@@ -14,6 +14,7 @@ import categoryReducer from './slices/categorySlice';
 import productReducer from './slices/productSlice';
 import cardSlice from './slices/cardSlice';
 import passwordChangeSlice from './slices/passwordChangeSlice';
+import notiSlice from './slices/notiSlice';
 
 // `combineReducers`를 사용하여 Redux Reducer 결합
 const rootReducer = combineReducers({
@@ -27,14 +28,15 @@ const rootReducer = combineReducers({
   category: categoryReducer, // category 상태를 persist에 저장
   product: productReducer, // product 상태를 persist에 저장
   cardInfo: cardSlice, // card 상태를 persist에 저장
-  passwordChange: passwordChangeSlice
+  passwordChange: passwordChangeSlice,
+  noti: notiSlice
 });
 
 // Redux Persist 설정
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['user', 'cardInfo'] // user 상태만 저장 (필요하면 다른 reducer도 추가)
+  whitelist: ['user', 'cardInfo', 'noti'] // user 상태만 저장 (필요하면 다른 reducer도 추가)
 };
 // 'cardInfo' 이것만 추가하면 카드정보도 새로고침 시에도 유지
 // 개발자도구 애플리케이션 로컬스토리지 보면 나오는 값들입니다

@@ -411,6 +411,7 @@ const ChatRoom: React.FC = () => {
             // 승인 상태 변경 메시지 처리
             if (systemData.status === '승인') {
               setIsDisabled(true);
+              toast.success('함께하기 요청이 승인되었습니다.');
             }
           }
         } catch (error) {
@@ -521,9 +522,7 @@ const ChatRoom: React.FC = () => {
         }), MessageType.SYSTEM);
         
         // 승인 상태 체크하여 UI 갱신
-        await checkApprovalStatus();
-        
-        toast.success('함께하기 요청이 승인되었습니다.');
+        await checkApprovalStatus();        
       }
     } catch (error) {
       console.error('함께하기 요청 실패:', error);
