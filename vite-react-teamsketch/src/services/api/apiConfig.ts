@@ -49,12 +49,15 @@ export const apiConfig = {
 
       registerProduct: `${BASE_URL}/core/market/products/registers`,
       getProductByProductId: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
-      uploadProductImages: `${BASE_URL}/core/market/images/upload`,
-      getDefaultProfileImage: `${BASE_URL}/core/profiles/image/default`,
       getProducts: `${BASE_URL}/core/market/products/all`,
       getProductById: (productId: number) => `${BASE_URL}/core/market/products/${productId}`,
       getProductImage: (imageId: number) => `${BASE_URL}/core/market/products/images/${imageId}`,
       getChatRoomIdByProductId: (productId: number) => `${BASE_URL}/core/chat/rooms/product/${productId}`,
+      getProductNearBy: (distance: number) => `${BASE_URL}/core/market/products/nearby?distance=${distance}`,
+
+      uploadProductImages: `${BASE_URL}/core/market/images/upload`,
+      getDefaultProfileImage: `${BASE_URL}/core/profiles/image/default`,
+      
       getChatRooms: `${BASE_URL}/core/chat/rooms/active`,
       getApprovalStatus: (productId: number, requestEmail: string) => `${BASE_URL}/core/market/products/requests/approval-status?productId=${productId}&requestEmail=${requestEmail}`,
   

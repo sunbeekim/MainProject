@@ -17,6 +17,7 @@ import Loading from '../../components/common/Loading';
 import { toast } from 'react-toastify';
 
 import FilterButton from '../../components/common/FilterButton';
+import { getProductNearBy } from '../../services/api/productAPI';
 
 // mock 데이터를 실제 API 응답 타입으로 변환하는 함수
 const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
@@ -102,21 +103,27 @@ const MarketList = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [categoryName, setCategoryName] = useState<string>('전체');
   const [isPageLoading, setIsPageLoading] = useState(true);
-
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [selectedDistance, setSelectedDistance] = useState<number>(10);
 
   // 상품 Query - 카테고리 선택에 따라 다른 API 호출
-  const { data: products = [], isLoading, error } = useQuery({
-    queryKey: ['products', selectedCategory],
+  const { data: queryProducts = [], isLoading, error } = useQuery({
+    queryKey: ['products', selectedCategory, selectedDistance],
     queryFn: async () => {
       try {
         let response;
 
+        // 거리 기반 조회가 선택된 경우
+        if (selectedDistance > 0) {
+          response = await getProductNearBy(selectedDistance);
+        }
         // 카테고리가 선택되었으면 카테고리별 조회, 아니면 전체 조회
-        if (selectedCategory) {
+        else if (selectedCategory) {
           response = await getProductsByCategory(selectedCategory);
         } else {
           response = await getProducts();
         }
+
         console.log('response', response);
         // 응답 데이터가 없으면 목 데이터 사용
         if (!response.data || response.data.length === 0) {
@@ -150,6 +157,13 @@ const MarketList = () => {
     staleTime: 30000
   });
 
+  // queryProducts가 변경될 때마다 products 상태 업데이트
+  useEffect(() => {
+    if (queryProducts) {
+      setProducts(queryProducts);
+    }
+  }, [queryProducts?.length]); // queryProducts의 길이만 의존성으로 사용
+
   // 페이지 로딩 상태 관리
   useEffect(() => {
     if (!isLoading) {
@@ -161,10 +175,6 @@ const MarketList = () => {
       return () => clearTimeout(timer);
     }
   }, [isLoading]);
-
-
-
-
 
   // 에러 처리
   useEffect(() => {
@@ -216,6 +226,18 @@ const MarketList = () => {
     });
   };
 
+  const handleDistanceChange = async (newDistance: number) => {
+    try {
+      setIsPageLoading(true);
+      setSelectedDistance(newDistance);
+    } catch (error) {
+      console.error('위치 기반 상품 조회 중 오류 발생:', error);
+      toast.error('상품 목록을 불러오는 중 오류가 발생했습니다.');
+    } finally {
+      setIsPageLoading(false);
+    }
+  };
+
   if (isPageLoading) {
     return (
       <div className="container mx-auto px-4 py-6 flex flex-col items-center justify-center min-h-[60vh]">
@@ -225,19 +247,15 @@ const MarketList = () => {
     );
   }
 
-  const handleDistanceChange = (newDistance: number) => {
-
-    console.log('새로운 거리:', newDistance);
-  };
-
   return (
     <div className="w-full mt-4">
-      <FilterButton onDistanceChange={handleDistanceChange} />
+      
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
-
+      <div className="flex justify-end mt-4 mr-4">
+        <FilterButton onDistanceChange={handleDistanceChange} />
+      </div>
       {/* 상품 목록 */}
-      <div className="mt-4 px-4">
-        <h2 className="text-lg font-semibold mb-3">{categoryName} 상품</h2>
+      <div className="mt-4 px-4 justify-end">      
         <div className="no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
           {products.length === 0 ? (
             <div className="text-center py-10 text-gray-500">

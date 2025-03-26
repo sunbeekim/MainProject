@@ -184,6 +184,16 @@ export const getProductByProductId = async (productId: number): Promise<IProduct
   }
 };
 
+// 숫자로 유저 반경 조회
+export const getProductNearBy = async (distance: number): Promise<IProductListResponse> => {
+  try {
+    const response = await axiosInstance.post(apiConfig.endpoints.core.getProductNearBy(distance));
+    return response.data;
+  } catch (error) {
+    console.error('상품 조회 에러:', error);
+    throw new Error('상품 조회에 실패했습니다.');
+  }
+};
 // React Query Hooks
 export const useProducts = () => {
   return useQuery({

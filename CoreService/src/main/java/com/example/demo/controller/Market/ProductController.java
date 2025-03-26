@@ -119,17 +119,28 @@ public class ProductController {
         return ResponseEntity.ok(new BaseResponse<>(productService.getProducts(categoryId, sort)));
     }
 
+    /** 사용자의 위치 기반으로 특정 반경 내(유동적 거리) 있는 상품을 조회 **/
+    @PostMapping("/nearby")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> getNearbyProducts(
+            @RequestHeader("Authorization") String token,
+            @RequestParam int distance) {
+
+        String email = jwtTokenProvider.getUsername(token);
+        return productService.getNearbyProducts(
+                distance,
+                email
+        );
+    }
+
     /** 개별 상품 조회 (이미지 포함) - 모집이 끝난 상품은 조회되지 않음 **/
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<ProductResponse>> getProductById(
             @RequestHeader(value = "Authorization", required = false) String token,  // 토큰 선택적 처리
             @PathVariable Long id) {
-
-        String email = (token != null) ? jwtTokenProvider.getUsername(token) : null;  // 토큰이 있으면 이메일 추출, 없으면 null
-        ProductResponse product = productService.getProductById(id, email);  // email 추가
-        return ResponseEntity.ok(new BaseResponse<>(product));
+        return ResponseEntity.ok(BaseResponse.success(
+                productService.getProductById(id, token != null ? jwtTokenProvider.getUsername(token) : null)
+        ));
     }
-
 
     /** 특정 사용자가 등록한 상품 목록 조회 (구매, 판매, 구매 요청, 판매 요청) **/
     @PostMapping("/users")
@@ -210,13 +221,6 @@ public class ProductController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }
-
-    /** 사용자의 위치 기반으로 특정 반경 내(유동적 거리) 있는 상품을 조회 **/
-    @PostMapping("/nearby")
-    public ResponseEntity<BaseResponse<List<ProductResponse>>> getNearbyProducts(
-            @RequestBody NearbyProductRequest request) {
-        return productService.getNearbyProducts(request.getLatitude(), request.getLongitude(), request.getDistance());
     }
 
     /**
