@@ -18,7 +18,7 @@ const CardFrame: React.FC<CardFrameProps> = ({
   detectionStatus = ''
 }) => {
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  // const cardRatio = 53.98 / 85.6;  // 실제 신용카드 비율
+  const cardRatio = 85.6 / 53.98;  // 실제 신용카드 비율 (가로/세로)
   
   return (
     <div
@@ -26,9 +26,11 @@ const CardFrame: React.FC<CardFrameProps> = ({
     >
       <div className={`relative ${
         isMobile 
-        ? 'w-[95vw] h-[60vw]'  // 모바일에서는 화면 너비의 95%로 조정
-        : 'w-[450px] h-[280px]'  // 데스크톱에서는 더 큰 크기로 설정
-      }`}>        
+        ? 'w-[85vw]'  // 모바일에서는 화면 너비의 85%로 조정
+        : 'w-[400px]'  // 데스크톱에서는 400px로 설정
+      }`} style={{ 
+        height: isMobile ? `calc(85vw / ${cardRatio})` : `calc(400px / ${cardRatio})` 
+      }}>        
 
         {/* 카드 프레임 영역 */}
         <div className="absolute inset-0 rounded-2xl overflow-hidden">

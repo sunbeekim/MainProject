@@ -12,12 +12,19 @@ interface CameraModalProps {
 
 const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose, onError }) => {
   const [loading, setLoading] = useState(true);
-  const [cardDetected, setCardDetected] = useState(false);
   const [opencvLoaded, setOpencvLoaded] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [cardDetected, setCardDetected] = useState(false);
+  const [detectionStatus, setDetectionStatus] = useState('');
+  const [cardStableTime, setCardStableTime] = useState<number | null>(null); // 카드 감지 시작 시간
+  const [autoCapturing, setAutoCapturing] = useState(false); // 자동 촬영 중인지 여부
+  const AUTO_CAPTURE_DURATION = 2000; // 자동 촬영을 위한 카드 감지 유지 시간 (2초)
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const captureButtonRef = useRef<HTMLButtonElement>(null);
   const captureEnabled = useRef<boolean>(true);
+  const autoCaptureCooldown = useRef<boolean>(false); // 자동 촬영 쿨다운
 
   // OpenCV 로드 및 카메라 초기화
   useEffect(() => {
@@ -36,38 +43,27 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose,
         }
         
         // OpenCV 로드
-        try {
-          console.log('OpenCV 로드 시도...');
-          const opencvLoaded = await loadOpenCV(progress => {
-            // 로딩 진행 상태를 콘솔에 출력
-            console.log(`OpenCV 로딩 진행 상태: ${progress}%`);
-          });
-          
-          if (!isMounted) return;
-          
-          if (opencvLoaded) {
-            console.log('OpenCV 로드 성공');
-            setOpencvLoaded(true);
-          } else {
-            console.error('OpenCV 로드 실패: 알 수 없는 오류');
-            onError('OpenCV 로드 실패: 알 수 없는 오류가 발생했습니다.');
-            setLoading(false);
-            return;
-          }
-        } catch (opencvError) {
-          if (!isMounted) return;
-          console.error('OpenCV 로드 중 오류 발생:', opencvError);
-          onError(`OpenCV 로드 실패: ${opencvError instanceof Error ? opencvError.message : '알 수 없는 오류'}`);
-          setLoading(false);
+        const loaded = await loadOpenCV((progress) => {
+          setLoadingProgress(progress);
+          console.log(`OpenCV 로딩 진행률: ${progress}%`);
+        });
+        
+        if (!loaded) {
+          console.error('OpenCV.js 로드 실패');
+          onError('OpenCV를 로드할 수 없습니다. 잠시 후 다시 시도해주세요.');
           return;
         }
-
+        
+        console.log('OpenCV.js 로드 완료');
+        setOpencvLoaded(true);
+        
         // 카메라 스트림 가져오기
         const constraints = {
           video: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            facingMode: 'environment'
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            facingMode: 'environment',
+            aspectRatio: { ideal: 16/9 }  // 16:9 비율로 요청
           }
         };
 
@@ -149,7 +145,10 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose,
   useEffect(() => {
     let animationFrameId: number;
     let lastDetectionTime = 0;
-    const DETECTION_INTERVAL = 500; // 0.5초마다 감지 실행
+    const DETECTION_INTERVAL = 200; // 0.2초마다 감지 실행(더 빠르게)
+    let lastVibrationTime = 0;
+    const VIBRATION_INTERVAL = 1000; // 진동 간격(1초)
+    let errorCount = 0; // 연속 오류 카운트
     
     const detectCardInFrame = async () => {
       if (!videoRef.current || !canvasRef.current || !opencvLoaded || loading) {
@@ -167,25 +166,118 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose,
             videoRef.current,
             canvasRef.current
           );
+
+          // 오류 발생 후 성공적으로 감지 재개된 경우
+          errorCount = 0;
+
+          // 카드 감지 상태가 변경되었을 때만 상태 업데이트
+          if (result.isDetected !== cardDetected) {
+            setCardDetected(result.isDetected);
+            setDetectionStatus(result.status);
+            
+            // 카드가 감지되었을 때
+            if (result.isDetected) {
+              // 카드 감지 시작 시간 설정 (아직 설정되지 않은 경우)
+              if (cardStableTime === null) {
+                setCardStableTime(now);
+              }
+              
+              // 진동 피드백 (1초에 한 번만)
+              if (now - lastVibrationTime > VIBRATION_INTERVAL && navigator.vibrate) {
+                navigator.vibrate(100);
+                lastVibrationTime = now;
+              }
+            } else {
+              // 카드 감지가 중단되면 시작 시간 초기화
+              setCardStableTime(null);
+            }
+          }
           
-          setCardDetected(result.isDetected);
+          // 자동 촬영 로직: 카드가 감지된 상태가 AUTO_CAPTURE_DURATION 이상 유지되면 자동 촬영
+          if (result.isDetected && cardStableTime !== null && !autoCapturing && !autoCaptureCooldown.current) {
+            const detectionDuration = now - cardStableTime;
+            
+            // 진행 상황 표시 (0%~100%)
+            const captureProgress = Math.min(100, Math.round((detectionDuration / AUTO_CAPTURE_DURATION) * 100));
+            setDetectionStatus(`카드 감지 완료: ${captureProgress}%`);
+            
+            // 설정된 시간 이상 카드가 감지되면 자동 촬영
+            if (detectionDuration >= AUTO_CAPTURE_DURATION) {
+              // 중복 촬영 방지를 위한 플래그 설정
+              setAutoCapturing(true);
+              autoCaptureCooldown.current = true;
+              
+              // 촬영 시작 알림
+              setDetectionStatus('자동 촬영 중...');
+              
+              // 진동으로 촬영 알림
+              if (navigator.vibrate) {
+                navigator.vibrate([100, 100, 200]);
+              }
+              
+              try {
+                // 약간의 지연 후 촬영 (사용자가 인지할 수 있도록)
+                setTimeout(() => {
+                  try {
+                    handleCapture(); // 이 함수가 내부적으로 모달을 닫음
+                  } catch (error) {
+                    console.error('자동 촬영 오류:', error);
+                    setAutoCapturing(false);
+                    autoCaptureCooldown.current = false;
+                    setCardStableTime(null);
+                    onError('카드 촬영 중 오류가 발생했습니다. 다시 시도해주세요.');
+                    // 오류 발생 시에도 모달 닫기
+                    handleClose();
+                  }
+                }, 500);
+              } catch (error) {
+                console.error('자동 촬영 타이머 오류:', error);
+                setAutoCapturing(false);
+                autoCaptureCooldown.current = false;
+                setCardStableTime(null);
+                // 오류 발생 시에도 모달 닫기
+                handleClose();
+              }
+            }
+          }
+          
         } catch (error) {
           console.error('카드 감지 오류:', error);
-          // 감지 오류는 치명적이지 않으므로 계속 시도
+          
+          // 연속 오류 카운트 증가
+          errorCount++;
+          
+          // 'IntVector' 바인딩 오류 즉시 처리
+          if (error instanceof Error && 
+             (error.name === 'BindingError' || 
+              error.message.includes('IntVector') || 
+              error.message.includes('register'))) {
+            
+            // 바인딩 오류는 즉시 모달 닫기
+            setDetectionStatus('OpenCV 오류 발생, 모달을 닫습니다');
+            onError(`OpenCV 오류가 발생했습니다. 촬영된 이미지를 사용하실 수 있습니다.`);
+            handleClose(); // 모달 닫기
+            return;
+          } else if (errorCount >= 5) {
+            // 5번 이상 연속으로 다른 오류가 발생한 경우
+            setDetectionStatus('카메라 처리 오류 발생');
+            onError('카메라 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+          }
         }
       }
       
+      // 다음 프레임 요청
       animationFrameId = requestAnimationFrame(detectCardInFrame);
     };
 
-    if (opencvLoaded && !loading) {
-      animationFrameId = requestAnimationFrame(detectCardInFrame);
-    }
+    // 카드 감지 시작
+    animationFrameId = requestAnimationFrame(detectCardInFrame);
 
+    // 컴포넌트 언마운트 시 정리
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [opencvLoaded, loading]);
+  }, [cardDetected, videoRef, opencvLoaded, loading, cardStableTime, autoCapturing, onError]);
 
   // 키보드 Esc 키 이벤트 처리
   useEffect(() => {
@@ -202,19 +294,18 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose,
   }, []);
 
   const handleCapture = () => {
-    if (!captureEnabled.current) {
-      console.log('캡처 버튼 비활성화 상태');
-      return;
+    if (!videoRef.current) return;
+    
+    try {
+      onCapture();
+      // 촬영 후 항상 모달을 닫음
+      handleClose();
+    } catch (error) {
+      console.error('촬영 오류:', error);
+      onError('이미지 촬영 중 오류가 발생했습니다.');
+      // 오류 발생 시에도 모달 닫기
+      handleClose();
     }
-    
-    // 중복 클릭 방지
-    captureEnabled.current = false;
-    
-    // 캡처 실행
-    onCapture();
-    
-    // 모달 닫기
-    handleClose();
   };
 
   const handleClose = () => {
@@ -241,13 +332,14 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose,
       </div>
       
       {/* 카메라 영역 */}
-      <div className="flex-1 relative overflow-hidden flex items-center justify-center">
+      <div className="flex-1 relative overflow-hidden flex items-center justify-center bg-black">
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute w-full h-full object-cover"
+          style={{ objectFit: 'cover' }}
         />
         <canvas 
           ref={canvasRef} 
@@ -276,10 +368,12 @@ const CameraModal: React.FC<CameraModalProps> = ({ videoRef, onCapture, onClose,
           </div>
         )}       
 
-        <CardFrame 
+        <CardFrame
+          guideText="카드를 프레임에 맞춰주세요"
           isDetected={cardDetected}
           isLoading={loading}
-          detectionStatus={cardDetected ? '카드가 감지되었습니다!' : '카드를 프레임 안에 맞춰주세요'}
+          loadingProgress={loadingProgress}
+          detectionStatus={detectionStatus}
         />
       </div>
       
