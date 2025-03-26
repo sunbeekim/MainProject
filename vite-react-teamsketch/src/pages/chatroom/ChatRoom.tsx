@@ -8,7 +8,6 @@ import { ChatRoom as ChatRoomType, getChatRoomDetail } from '../../services/api/
 import { axiosInstance } from '../../services/api/axiosInstance';
 import { apiConfig } from '../../services/api/apiConfig';
 import { toast } from 'react-toastify';
-import { AxiosError } from 'axios';
 import { useUserProfileImage } from '../../services/api/profileImageAPI';
 import { useAppSelector } from '../../store/hooks';
 import { useProductByProductId, getApprovalStatus, getProductByProductId } from '../../services/api/productAPI';
@@ -431,23 +430,32 @@ const ChatRoom: React.FC = () => {
     const sortedMessages = [...previousMessages, ...messages].sort((a, b) => {
       const getTime = (date: string | number[] | undefined) => {
         if (!date) return 0;
-        const kstDate = Array.isArray(date)
-          ? new Date(date[0], date[1] - 1, date[2], date[3], date[4], date[5])
-          : new Date(date);
-        return kstDate.getTime() + (9 * 60 * 60 * 1000); // KST로 변환
+        let kstDate: Date;
+        
+        if (Array.isArray(date)) {
+          // 배열 형식의 날짜를 KST로 변환
+          kstDate = new Date(date[0], date[1] - 1, date[2], date[3], date[4], date[5]);
+        } else {
+          // 문자열 형식의 날짜를 KST로 변환
+          const utcDate = new Date(date);
+          kstDate = new Date(utcDate.getTime() + (9 * 60 * 60 * 1000));
+        }
+        
+        return kstDate.getTime();
       };
+      
       return getTime(a.sentAt) - getTime(b.sentAt);
     });
 
-    // 테스트용 로그 추가
-    console.log('정렬 전 메시지:', [...previousMessages, ...messages]);
-    console.log('정렬 후 메시지:', sortedMessages);
-    console.log('KST 시간 변환 테스트:', {
-      'UTC 시간': new Date().toISOString(),
-      'KST 시간': new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString()
-    });
+    // 메시지 시간을 KST로 변환하여 저장
+    const messagesWithKST = sortedMessages.map(message => ({
+      ...message,
+      sentAt: Array.isArray(message.sentAt) 
+        ? message.sentAt 
+        : new Date(new Date(message.sentAt || '').getTime() + (9 * 60 * 60 * 1000)).toISOString()
+    }));
 
-    setAllMessages(sortedMessages);
+    setAllMessages(messagesWithKST);
   }, [previousMessages, messages]);
 
   // 로딩 상태 표시 부분 수정
@@ -548,79 +556,34 @@ const ChatRoom: React.FC = () => {
     file?: { type: string; url: string; name?: string }
   ) => {
     if (!message.trim() && !file) return;
-    
-    if (!isConnected) {
-      toast.error('채팅 서버에 연결되어 있지 않습니다. 잠시 후 다시 시도해주세요.');
-      // 연결 재시도
-      if (connectionAttempts < maxRetries) {
-        setIsConnecting(true);
-        try {
-          await connect();
-          // 연결 성공 후 메시지 재전송
-          handleSendMessage(message, file);
-        } catch (error) {
-          console.error('재연결 실패:', error);
-          toast.error('서버 연결에 실패했습니다.');
-        } finally {
-          setIsConnecting(false);
-        }
-      }
-      return;
-    }
-
-    if (!token) {
-      setError('인증 토큰이 만료되었습니다. 다시 로그인해주세요.');
-      return;
-    }
 
     try {
+      const now = new Date();
+      const kstDate = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+      
       if (file) {
         if (file.type === 'image') {
-          // 이미지 메시지 전송
+          // 이미지 메시지 처리
           const formData = new FormData();
-          formData.append('chatroomId', chatroomId);
-          formData.append('image', file.url);
-
-          const response = await axiosInstance.post(
-            `${apiConfig.endpoints.core.base}/chat/messages/image`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${token}`
-              }
-            }
-          );
-          
-          if (response.data?.status === 'success') {
-            // 웹소켓을 통해 메시지가 전달될 것이므로 로컬 상태 업데이트는 제거
-            sendImage(file.url);
-          }
-        } else {
-          // 파일 메시지 전송
-          sendMessage(chatInfo?.productId || 0, JSON.stringify({
-            type: file.type,
-            url: file.url,
-            name: file.name
-          }), MessageType.FILE);
+          formData.append('file', file.url);
+          formData.append('message', message);
+          formData.append('sentAt', kstDate.toISOString());
+          await sendImage(formData.get('file') as string);
         }
       } else {
-        // 텍스트 메시지 전송
-        // 웹소켓을 통해 메시지가 전달될 것이므로 로컬 상태 업데이트는 제거
-        sendMessage(chatInfo?.productId || 0, message.trim(), MessageType.TEXT);
+        // 텍스트 메시지 처리
+        await sendMessage(chatInfo?.productId || 0, message.trim(), MessageType.TEXT);
       }
     } catch (error) {
-      console.error('메시지 전송 실패:', error);
-      if (error instanceof AxiosError && error.response?.status === 401) {
-        toast.error('인증이 만료되었습니다. 다시 로그인해주세요.');
-      }
+      console.error('메시지 전송 중 오류:', error);
+      toast.error('메시지 전송에 실패했습니다.');
     }
   };
 
   console.log("chatInfo",chatInfo);
   console.log("userEmail",userEmail);
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+    <div className="relative flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* 채팅 상대방 정보 */}
       <div className="bg-gradient-to-r from-primary-500 to-primary-600 dark:from-gray-800 dark:to-gray-700 
         p-3 flex items-center justify-between shadow-md z-10 flex-shrink-0">
@@ -679,13 +642,12 @@ const ChatRoom: React.FC = () => {
         )}
       </div>
 
-      {/* 메시지와 입력 영역을 감싸는 컨테이너 */}
-      <div className="flex-1 flex flex-col min-h-0 relative">
+     
         {/* 채팅 메시지 영역 */}
         <div
           ref={chatContainerRef}
           onClick={handleChatAreaClick}
-          className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 mb-20"
+          className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900 pb-20"
         >
           {allMessages.map((msg, index) => (
             <div key={msg.messageId || index} className="group relative">
@@ -757,7 +719,7 @@ const ChatRoom: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+   
   );
 };
 
