@@ -3,17 +3,34 @@ import React from 'react';
 interface ImageSelectorProps {
   onFileSelect: (file: File) => void;
   className?: string;
+  onError?: (message: string) => void;
 }
 
-const ImageSelector: React.FC<ImageSelectorProps> = ({ onFileSelect, className = '' }) => {
+const ImageSelector: React.FC<ImageSelectorProps> = ({ onFileSelect, className = '', onError }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert('파일 크기는 5MB 이하여야 합니다.');
+        const errorMsg = '파일 크기는 5MB 이하여야 합니다.';
+        alert(errorMsg);
+        onError?.(errorMsg);
         return;
       }
-      onFileSelect(file);
+      
+      // 이미지 타입 확인
+      if (!file.type.startsWith('image/')) {
+        const errorMsg = '이미지 파일만 업로드할 수 있습니다.';
+        alert(errorMsg);
+        onError?.(errorMsg);
+        return;
+      }
+      
+      try {
+        onFileSelect(file);
+      } catch (error) {
+        console.error('파일 선택 중 오류:', error);
+        onError?.('파일을 처리하는 중 오류가 발생했습니다.');
+      }
     }
   };
 

@@ -6,7 +6,7 @@ interface ProfileSelectorProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   isEditable?: boolean;
-  file?: File | string;
+  file?: File | string | null;
   imageUrl?: string;
 }
 
@@ -15,7 +15,7 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({
   className = 'relative flex justify-center px-4',
   size = 'md',
   isEditable = true,
-  file = '',
+  file = null,
   imageUrl
 }) => {
   const [isHovered, setIsHovered] = useState(false);

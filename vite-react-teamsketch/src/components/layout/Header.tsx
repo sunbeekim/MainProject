@@ -4,7 +4,7 @@ import BackButton from '../forms/button/BackButton';
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
 
-const Header = () => {
+const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -35,7 +35,6 @@ const Header = () => {
       case '/':
         return {
           title: 'MarketPlace',
-         
         };
       case '/servicechat':
         return {
