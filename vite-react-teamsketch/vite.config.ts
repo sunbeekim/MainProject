@@ -87,8 +87,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: '/index.html',
-      },
-      external: ['fs', 'path'],
+      },      
       output: {
         manualChunks: {
           'opencv': ['opencv.js']
