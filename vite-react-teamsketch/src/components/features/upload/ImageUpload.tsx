@@ -21,6 +21,7 @@ interface ImageUploadProps {
   onRemove?: (index: number) => void;
   maxImages?: number;
   borderStyle?: string;
+  onError?: (message: string) => void;
 }
 
 type ImageUploadType = 'ocr' | 'image' | 'profile' | 'prod';
@@ -36,7 +37,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   images = [],
   onRemove,
   maxImages = 10,
-  borderStyle = ''
+  borderStyle = '',
+  onError
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -85,6 +87,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       setPreviewUrl(null);
     } catch (error) {
       console.error('업로드 실패:', error);
+      onError?.('파일 업로드에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -95,10 +98,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       <div className="flex flex-col items-center gap-4">
         <div className={`flex gap-4 ${borderStyle}`}>
           {type === 'ocr' && (
-            <CameraCapture onCapture={handleFileSelect} className="text-primary-500" />
+            <CameraCapture 
+              onCapture={handleFileSelect} 
+              className="text-primary-500"
+              onError={onError}
+            />
           )}
           {type === 'image' && (
-            <ImageSelector onFileSelect={handleFileSelect} className="text-primary-500" />
+            <ImageSelector 
+              onFileSelect={handleFileSelect} 
+              className="text-primary-500"
+              onError={onError}
+            />
           )}
           {type === 'prod' && (
             <ProdSelector
