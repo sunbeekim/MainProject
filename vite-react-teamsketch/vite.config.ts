@@ -34,6 +34,11 @@ export default defineConfig({
         ],
         icons: [
           {
+            src: '/apple-touch-icon.png',
+            sizes: '180x180',
+            type: 'image/png'
+          },
+          {
             src: '/favicon-16x16.png',
             sizes: '16x16',
             type: 'image/png'
@@ -49,9 +54,19 @@ export default defineConfig({
             type: 'image/png'
           },
           {
+            src: '/favicon-96x96.png',
+            sizes: '96x96',
+            type: 'image/png'
+          },
+          {
             src: '/favicon.ico',
             sizes: '64x64 32x32 24x24 16x16',
             type: 'image/x-icon'
+          },
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml'
           },
           {
             src: '/logo192.png',
