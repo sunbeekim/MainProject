@@ -22,17 +22,14 @@ import NotificationList from '../../pages/notification/NotificationList';
 import NotificationSetting from '../../pages/notification/NotificationSetting';
 import RegisteredCard from '../../pages/payment/RegisteredCard';
 import CardDetails from '../../pages/payment/CardDetails';
-import TransactionList from '../../pages/Transaction history/TrasactionList';
-import SalesList from '../../pages/Transaction history/SalesList';
-import PurchaseList from '../../pages/Transaction history/PurchaseList';
+import TransactionList from '../../pages/Transaction history/TransactionList';
 import MyProducts from '../../pages/mypage/MyProducts';
-import TransactionDetail from '../../pages/Transaction history/TransactionDetail';
+import TransactionHistory from '../../pages/Transaction history/Trasactionhistory';
 import CSList from '../../pages/CScenter/CSList';
 import InquiryHistory from '../../pages/CScenter/InquiryHistory';
 import DeleteAccount from '../../pages/account/DeleteAccount';
 import OCRUpload from '../../pages/payment/OCRUpload';
 import MyLocation from '../../pages/map/MyLocation';
-
 import RegistersList from '../features/list/RegistersList';
 import RequestsList from '../features/list/RequestsList';
 //================== Test =========================
@@ -206,16 +203,13 @@ const MainLayout = () => {
           <Route path="/registered-card" element={<RegisteredCard />} />
           <Route path="/card-details/:cardId" element={<CardDetails />} />
           <Route path="/transaction-list" element={<TransactionList />} />
-          <Route path="/sales-list" element={<SalesList />} />
-          <Route path="/purchase-list" element={<PurchaseList />} />
+          <Route path="/transaction-history" element={<TransactionHistory />} />
           <Route path="/my-products" element={<MyProducts />} />
-          <Route path="/transaction-detail" element={<TransactionDetail />} />
           <Route path="/cs-list" element={<CSList />} />
           <Route path="/inquiry-history" element={<InquiryHistory />} />
           <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/ocr-upload" element={<OCRUpload />} />
           <Route path="/my-location" element={<MyLocation />} />
-
           <Route path="/registers-list" element={<RegistersList />} />
           <Route path="/requests-list" element={<RequestsList />} />
 

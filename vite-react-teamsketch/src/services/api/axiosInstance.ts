@@ -56,7 +56,7 @@ const showErrorToast = (message: string) => {
   if (!isErrorToastShown) {
     isErrorToastShown = true;
     console.log(message);
-    
+
     // 일정 시간 후 다시 에러 메시지를 표시할 수 있도록 설정
     setTimeout(() => {
       isErrorToastShown = false;
@@ -69,6 +69,7 @@ const setupInterceptors = (instance: AxiosInstance) => {
   instance.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem('token');
+      console.log('Token:', token);
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -91,7 +92,7 @@ const setupInterceptors = (instance: AxiosInstance) => {
     (error) => {
       if (error.response) {
         const url = error.config?.url || '';
-        
+
         switch (error.response.status) {
           case 401:
             // 토큰이 완전히 만료된 경우에만 로그아웃 처리

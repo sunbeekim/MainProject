@@ -41,7 +41,7 @@ const ShareLocationMap = () => {
       try {
         // 현재 사용자를 제외한 다른 사용자의 가장 최근 위치 찾기
         const otherUserLocation = Array.from(locations.values()).find(loc => loc.email !== user.email);
-        
+
         if (!otherUserLocation) {
           console.log('다른 사용자의 위치 정보가 없습니다.');
           return;
@@ -136,7 +136,7 @@ const ShareLocationMap = () => {
         longitude: myLocation.lng,
         timestamp: new Date().toISOString()
       };
-      
+
       console.log('위치 정보 전송:', wsLocation);
       sendLocation(wsLocation);
       toast.success('위치를 성공적으로 공유했습니다.');
@@ -147,12 +147,12 @@ const ShareLocationMap = () => {
   };
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full pb-12">
       <LocationLayout
-        childrenTop={<SearchLocation onLocationSelect={() => {}} />}
+        childrenTop={<SearchLocation onLocationSelect={() => { }} />}
         childrenCenter={<OpenMap nonClickable={true} mode="all" />}
         childrenBottom={
-          <LocationInfo            
+          <LocationInfo
             showEndLocation={true}
             showMyLocation={true}
             showYourLocation={true}
@@ -164,6 +164,7 @@ const ShareLocationMap = () => {
           />
         }
       ></LocationLayout>
+
     </div>
   );
 };

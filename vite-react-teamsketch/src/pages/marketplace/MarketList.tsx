@@ -170,7 +170,7 @@ const MarketList = () => {
     if (queryProducts) {
       setProducts(queryProducts);
     }
-  }, [queryProducts?.length]); // queryProducts의 길이만 의존성으로 사용
+  }, [queryProducts]); // queryProducts의 길이만 의존성으로 사용
 
   // 페이지 로딩 상태 관리
   useEffect(() => {
@@ -257,13 +257,13 @@ const MarketList = () => {
 
 
   return (
-    <div className="w-full mt-4">    
+    <div className="w-full mt-4">
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
       <div className="flex justify-end mt-4 mr-4">
         <FilterButton onDistanceChange={handleDistanceChange} />
       </div>
       {/* 상품 목록 */}
-      <div className="mt-4 px-4 justify-end">      
+      <div className="mt-4 px-4 justify-end">
         <div className="no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
           {products.length === 0 ? (
             <div className="text-center py-10 text-gray-500">

@@ -104,8 +104,8 @@ const RegistersList = () => {
             {/* 상세보기 모달 */}
             {isModalOpen && selectedProduct && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-[90%] max-w-3xl relative shadow-md">
-                        <button onClick={closeModal} className="absolute top-2 right-2 text-lg  flex justify-center items-center">x</button>
+                    <div className="bg-white p-6 rounded-lg w-[90%] max-w-3xl relative shadow-md border border-purple-500 shadow-purple-800/70">
+                        <button onClick={closeModal} className="absolute top-2 right-2 text-lg w-10 h-10 flex justify-center items-center rounded-full text-gray-300">✕</button>
                         {selectedProduct.thumbnailPath && (
                             <img
                                 src={selectedProduct.thumbnailPath}

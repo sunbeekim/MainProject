@@ -39,7 +39,7 @@ interface PasswordChangeResponse {
   message: string;
 }
 
-interface PasswordResponse{
+interface PasswordResponse {
   token: string,
   currentPassword: string,
   newPassword: string,
@@ -91,21 +91,21 @@ const verifyOtpApi = async ({ phoneNumber, otp }: VerifyOtpRequest): Promise<Ver
 
 // 비토큰 비밀번호 변경
 export const passwordChangeNoneToken = async (passwordRequestData: IPasswordChange): Promise<PasswordChangeResponse> => {
-    const response = await axiosInstance.put<PasswordChangeResponse>(
-      apiConfig.endpoints.core.passwordChangeNoneToken,
-      passwordRequestData,
-      {
-        withCredentials: false,
-      }
-      
-    );
-    console.log("API response:", response);
-    
-    return response.data; // ✅ `response.data`를 반환
+  const response = await axiosInstance.put<PasswordChangeResponse>(
+    apiConfig.endpoints.core.passwordChangeNoneToken,
+    passwordRequestData,
+    {
+      withCredentials: false,
+    }
+
+  );
+  console.log("API response:", response);
+
+  return response.data; // ✅ `response.data`를 반환
 };
 
 //회원 탈퇴
-export interface IwithdrawRsponse{
+export interface IwithdrawRsponse {
   status: string,
   data: {
     success: boolean,
@@ -117,7 +117,7 @@ export interface IwithdrawRsponse{
 // 3번 요청 그리고 응답 구조 는 만들어서 사용해도 되고 그냥 해도 되고고
 // 엔드포인트 제가 어제 user 컨트롤러 삭제하고 auth로 올겼던거 같은데 옮겼네요 그럼 엔드포인트가 auth/me/~
 export const withdrawUserApi = async (password: string): Promise<IwithdrawRsponse> => {
-  const response = await axiosInstance.post(apiConfig.endpoints.core.deleteUser,{ password });
+  const response = await axiosInstance.post(apiConfig.endpoints.core.deleteUser, { password });
   return response.data;
 };
 // 여기에 토큰 추가하는게 맞지만 저희가 지금 인스턴스 사용중인데,
@@ -142,11 +142,11 @@ export interface LocationResponse {
   data: null;
 }
 
-export const saveLocationApi = async ({latitude, longitude, locationName}: {  latitude: number, longitude: number, locationName: string}): Promise<LocationResponse> => {
+export const saveLocationApi = async ({ latitude, longitude, locationName }: { latitude: number, longitude: number, locationName: string }): Promise<LocationResponse> => {
   const response = await axiosInstance.post(apiConfig.endpoints.core.mylocation, { latitude, longitude, locationName });
   return response.data;
 };
-  
+
 //사용자가 등록한 목록 조회
 interface Product {
   id: number;
@@ -176,7 +176,7 @@ interface Product {
   dopamine: number;
   visible: boolean;
 }
-interface ProductListResponse{
+interface ProductListResponse {
   status: string;
   message: string;
   data: Product[];
@@ -190,19 +190,19 @@ export const myProdListApi = async (type: ProductType): Promise<ProductListRespo
 };
 
 //사용자 거래 내역 조회
-export interface Transactions{
+export interface Transactions {
   id: number;
   productId: number;
   buyerEmail: string;
   sellerEmail: string;
   transactionStatus: '진행중' | '완료';
-  paymentStatus:  '미완료' | '완료';
+  paymentStatus: '미완료' | '완료';
   price: number;
   description: string;
   createdAt: number[];
 }
 
-export interface TransactionsResponse{
+export interface TransactionsResponse {
   status: 'success' | 'error';
   message: string;
   data: Transactions[] | null;
@@ -210,15 +210,19 @@ export interface TransactionsResponse{
 
 export const transactionsListApi = async (): Promise<TransactionsResponse> => {
   const response = await axiosInstance.get(apiConfig.endpoints.core.transactionslist);
+  console.log(apiConfig.endpoints.core.transactionslist);
+
   return response.data;
 };
 
+
+
 //사용자의 위치 기반 특정 반경 내의 상품 조회
-export interface NProductResponse{
+export interface NProductResponse {
   status: string;
   message: string;
   data: {
-    id: number; 
+    id: number;
     name: string;
     price: number;
     imagePath: string[];
@@ -226,11 +230,11 @@ export interface NProductResponse{
   }[];
 }
 
-export const nearbyProdListApi = async ({latitude, longitude, distance}: {  latitude: number, longitude: number, distance: number}): Promise<NProductResponse> => {
+export const nearbyProdListApi = async ({ latitude, longitude, distance }: { latitude: number, longitude: number, distance: number }): Promise<NProductResponse> => {
   const response = await axiosInstance.post(apiConfig.endpoints.core.nearbyprod, { latitude, longitude, distance });
   return response.data;
 };
-  
+
 
 
 // 프로필 수정 API

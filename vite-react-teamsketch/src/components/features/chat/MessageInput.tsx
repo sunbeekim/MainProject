@@ -7,7 +7,7 @@ interface MessageInputProps {
   onBlur?: () => void;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({onSendMessage, onFocus, onBlur }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onFocus, onBlur }) => {
   const [message, setMessage] = useState("");
   const [file, setFile] = useState<{ type: string; url: string; name?: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -74,14 +74,14 @@ const MessageInput: React.FC<MessageInputProps> = ({onSendMessage, onFocus, onBl
           </button>
         </div>
       )}
-      
+
       {/* 메시지 입력 및 전송 영역 */}
       <div className="flex items-center bg-white shadow-md pb-5 pt-3 border-t border-primary-200 dark:border-border-dark">
         {/* 파일 선택 버튼 */}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="p-2 text-gray-500 hover:text-primary-500 transition-colors"
+          className="p-2 ml-2 text-gray-500 hover:text-primary-500 transition-colors"
         >
           <FaPaperclip className="w-5 h-5" />
         </button>
@@ -109,7 +109,7 @@ const MessageInput: React.FC<MessageInputProps> = ({onSendMessage, onFocus, onBl
           {(message.trim() || file) && (
             <button
               onClick={handleSend}
-              className="absolute right-1 top-1/2 -translate-y-1/2 text-white hover:text-primary-600 transition-colors rounded-full p-2"
+              className="absolute right-1 top-1/2 -translate-y-1/2 text-white hover:text-primary-100 transition-colors rounded-full p-2"
             >
               <FaPaperPlane className="w-5 h-5" />
             </button>

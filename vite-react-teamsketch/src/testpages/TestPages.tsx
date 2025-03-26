@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import TransactionDetail from '../pages/Transaction history/TransactionDetail';
+import TransactionDetail from '../pages/Transaction history/TransactionList';
 
 
 

@@ -39,14 +39,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // OAuth2 사용자 정보 추출
         String registrationId = oAuth2UserRequest.getClientRegistration().getRegistrationId();
         OAuth2UserInfo oAuth2UserInfo = getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
-        
+
         if (!StringUtils.hasText(oAuth2UserInfo.getEmail())) {
             throw new RuntimeException("소셜 계정에서 이메일을 찾을 수 없습니다.");
         }
 
         // 기존 사용자인지 확인
         User user = userMapper.findByEmail(oAuth2UserInfo.getEmail());
-        
+
         if (user == null) {
             // 신규 사용자일 경우 회원가입 처리
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
@@ -61,11 +61,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
         String registrationId = oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase();
         LocalDateTime now = LocalDateTime.now();
-        
+
         // 닉네임 생성 (중복 방지를 위해 랜덤 문자열 추가)
         String uniqueSuffix = UUID.randomUUID().toString().substring(0, 8);
         String nickname = oAuth2UserInfo.getName() + "_" + uniqueSuffix;
-        
+
         // 새 사용자 정보 생성
         User user = User.builder()
                 .email(oAuth2UserInfo.getEmail())
@@ -84,12 +84,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .loginFailedAttempts(0)
                 .loginIsLocked(false)
                 .build();
-        
+
         userMapper.insertUser(user);
-        
+
         // 초기 도파민 수치와 활동 포인트 설정
         userMapper.initializeUserActivity(user.getEmail(), 50, 0);
-        
+
         return user;
     }
 
@@ -98,15 +98,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (StringUtils.hasText(oAuth2UserInfo.getName()) && !oAuth2UserInfo.getName().equals(user.getName())) {
             user.setName(oAuth2UserInfo.getName());
         }
-        
-        if (StringUtils.hasText(oAuth2UserInfo.getImageUrl()) && 
-            (user.getProfileImagePath() == null || !oAuth2UserInfo.getImageUrl().equals(user.getProfileImagePath()))) {
+
+        if (StringUtils.hasText(oAuth2UserInfo.getImageUrl()) &&
+                (user.getProfileImagePath() == null
+                        || !oAuth2UserInfo.getImageUrl().equals(user.getProfileImagePath()))) {
             user.setProfileImagePath(oAuth2UserInfo.getImageUrl());
         }
-        
+
         // 소셜 로그인 시간 업데이트
         userMapper.updateLoginTime(user.getEmail());
-        
+
         return user;
     }
 

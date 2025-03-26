@@ -31,7 +31,7 @@ public class AuthService {
     private final PasswordUtils passwordUtils;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenBlacklistService jwtTokenBlacklistService;
-    private final HobbyService hobbyService;  // 추가된 의존성
+    private final HobbyService hobbyService; // 추가된 의존성
 
     private static final int MAX_FAILED_ATTEMPTS = 5;
 
@@ -77,7 +77,7 @@ public class AuthService {
                                 .message("카테고리 정보가 누락되었습니다.")
                                 .build();
                     }
-                    
+
                     // 취미 ID가 누락된 경우
                     if (hobby.getHobbyId() == null) {
                         return SignupResponse.builder()
@@ -85,7 +85,7 @@ public class AuthService {
                                 .message("취미 정보가 누락되었습니다.")
                                 .build();
                     }
-                    
+
                     // 카테고리 유효성 검증
                     if (!hobbyService.isValidCategory(hobby.getCategoryId())) {
                         return SignupResponse.builder()
@@ -93,7 +93,7 @@ public class AuthService {
                                 .message("유효하지 않은 카테고리입니다: " + hobby.getCategoryId())
                                 .build();
                     }
-                    
+
                     // 취미 유효성 검증
                     if (!hobbyService.isValidHobby(hobby.getHobbyId())) {
                         return SignupResponse.builder()
@@ -101,14 +101,16 @@ public class AuthService {
                                 .message("유효하지 않은 취미입니다: " + hobby.getHobbyId())
                                 .build();
                     }
-                    
+
                     // 취미가 해당 카테고리에 속하는지 검증
                     try {
-                        boolean isValid = hobbyService.getHobbyMapper().isHobbyInCategory(hobby.getHobbyId(), hobby.getCategoryId());
+                        boolean isValid = hobbyService.getHobbyMapper().isHobbyInCategory(hobby.getHobbyId(),
+                                hobby.getCategoryId());
                         if (!isValid) {
                             return SignupResponse.builder()
                                     .success(false)
-                                    .message("선택한 취미가 해당 카테고리에 속하지 않습니다. 취미ID: " + hobby.getHobbyId() + ", 카테고리ID: " + hobby.getCategoryId())
+                                    .message("선택한 취미가 해당 카테고리에 속하지 않습니다. 취미ID: " + hobby.getHobbyId() + ", 카테고리ID: "
+                                            + hobby.getCategoryId())
                                     .build();
                         }
                     } catch (Exception e) {
@@ -149,7 +151,7 @@ public class AuthService {
             // 사용자 등록
             int result = userMapper.insertUser(user);
 
-            if (result > 0) {              
+            if (result > 0) {
 
                 // 초기 도파민 수치(50)와 활동 포인트(0) 설정
                 int initialDopamine = 50;
@@ -173,7 +175,7 @@ public class AuthService {
                 UserAccountInfo accountInfo = UserAccountInfo.builder()
                         .email(user.getEmail())
                         .accountStatus("Active")
-                        .authority("1")  // 일반 사용자
+                        .authority("1") // 일반 사용자
                         .authorityName("Regular User")
                         .build();
 
@@ -182,7 +184,7 @@ public class AuthService {
                 // 취미 및 카테고리 등록
                 try {
                     if (request.getHobbies() != null && !request.getHobbies().isEmpty()) {
-                        hobbyService.registerUserHobbies(user.getEmail(), request.getHobbies());                       
+                        hobbyService.registerUserHobbies(user.getEmail(), request.getHobbies());
                     }
                 } catch (Exception e) {
                     log.error("취미 등록 중 오류 발생 - 이메일: {}, 오류: {}", user.getEmail(), e.getMessage());
@@ -243,8 +245,7 @@ public class AuthService {
         boolean isPasswordValid = passwordUtils.verifyPassword(
                 request.getPassword(),
                 user.getPasswordHash(),
-                null
-        );
+                null);
 
         if (!isPasswordValid) {
             // 로그인 실패 횟수 증가
@@ -277,8 +278,7 @@ public class AuthService {
         String token = jwtTokenProvider.createToken(
                 user.getId().intValue(),
                 user.getEmail(),
-                Collections.singletonList(role)
-        );
+                Collections.singletonList(role));
 
         return LoginResponse.builder()
                 .success(true)

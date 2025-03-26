@@ -28,14 +28,14 @@ export const apiConfig = {
       myprodregisell: `${BASE_URL}/core/market/products/users/registers/sell`,
       myprodreqbuy: `${BASE_URL}/core/market/products/users/requests/buy`,
       myprodreqsell: `${BASE_URL}/core/market/products/users/requests/sell`,
-      transactionslist: `${BASE_URL}/core/market/transactions/list`,
-      nearbyprod:`${BASE_URL}/core/market/products/nearby`,
+      transactionslist: `${BASE_URL}/core/market/transactions/user`,
+      nearbyprod: `${BASE_URL}/core/market/products/nearby`,
       userprod: `${BASE_URL}/core/market/products/users`,
-      mylocation:`${BASE_URL}/core/market/users/location`,
+      mylocation: `${BASE_URL}/core/market/users/location`,
       deleteUser: `${BASE_URL}/core/auth/me/withdrawal`,
-      passwordChange:`${BASE_URL}/core/auth/me/password
+      passwordChange: `${BASE_URL}/core/auth/me/password
 `,
-      passwordChangeNoneToken : `${BASE_URL}/core/auth/me/password/notoken`,
+      passwordChangeNoneToken: `${BASE_URL}/core/auth/me/password/notoken`,
       userinfo: `${BASE_URL}/core/profiles/me`,
       uploadProfile: `${BASE_URL}/core/profiles/me/image`,
       getProfileImageInfo: `${BASE_URL}/core/profiles/me/image-info`,
@@ -57,10 +57,10 @@ export const apiConfig = {
 
       uploadProductImages: `${BASE_URL}/core/market/images/upload`,
       getDefaultProfileImage: `${BASE_URL}/core/profiles/image/default`,
-      
+
       getChatRooms: `${BASE_URL}/core/chat/rooms/active`,
       getApprovalStatus: (productId: number, requestEmail: string) => `${BASE_URL}/core/market/products/requests/approval-status?productId=${productId}&requestEmail=${requestEmail}`,
-  
+
       getChatRoomDetail: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}`,
       approveChatMember: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/approve`,
       updateMessagesRead: (chatroomId: number) => `${BASE_URL}/core/chat/rooms/${chatroomId}/read`,

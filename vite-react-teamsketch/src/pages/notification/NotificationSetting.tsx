@@ -5,7 +5,7 @@ const NotificationSetting = () => {
 
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col p-2">
 
             {/* 거래 알림 항목 */}
             <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm transition-all duration-300 p-3 mb-3 flex items-center justify-between border border-gray-100 dark:border-gray-700">

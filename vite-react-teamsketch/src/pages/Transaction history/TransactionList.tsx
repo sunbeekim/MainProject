@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { transactionsListApi } from "../../services/api/authAPI";
 import { toast } from "react-toastify";
-import TransactionCard from "../../components/features/card/TransactionCard";
+import TransactionCard from "./TransactionCard";
 
 interface Transactions {
   id: number;
@@ -15,7 +15,7 @@ interface Transactions {
   createdAt: number[];
 }
 
-const TransactionDetail = () => {
+const TransactionList = () => {
   const [transactions, setTransactions] = useState<Transactions[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transactions | null>(null);
@@ -23,22 +23,30 @@ const TransactionDetail = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await transactionsListApi();
-        console.log(response.data);
-        if (response.status === "success") {
+        const token = localStorage.getItem("authToken"); // 토큰을 저장한 위치에 맞게 수정
 
-          setTransactions(response.data || []);
+        if (!token) {
+          toast.error("로그인 정보가 없습니다.");
+          return;
+        }
+
+        const response = await transactionsListApi();
+        console.log(response);
+
+        if (response.status === "success" && response.data) {
+          setTransactions(response.data);
         } else {
-          toast.error(response.message);
+          toast.error(response.message || "거래 내역을 불러오는 데 실패했습니다.");
         }
       } catch (error) {
         toast.error("결제 내역을 불러오는데 실패했습니다.");
-        console.log(error);
+        console.error("API 호출 에러:", error);
       }
     };
 
     fetchTransactions();
   }, []);
+
 
   const handleTransactionClick = (transaction: Transactions) => {
     setSelectedTransaction(transaction);
@@ -64,7 +72,8 @@ const TransactionDetail = () => {
           ))
         ) : (
           <div className="flex justify-center items-center h-full flex-col">
-            <p className="text-gray-500">거래 내역이 없습니다.</p></div>
+            <p className="text-gray-500">거래 내역이 없습니다.</p>
+          </div>
         )}
       </div>
       {/* 상세보기 모달 */}
@@ -92,4 +101,4 @@ const TransactionDetail = () => {
   );
 };
 
-export default TransactionDetail;
+export default TransactionList;

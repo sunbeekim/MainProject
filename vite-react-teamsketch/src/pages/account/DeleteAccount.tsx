@@ -42,15 +42,15 @@ const DeleteAccount = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center ">
-
-            <h2 className="text-2xl font-bold text-center mb-4 mt-20">회원 탈퇴 안내</h2>
-            <p className="text-center text-gray-600 mb-5">
-                회원 탈퇴를 진행하시기 전에 아래 내용을 반드시 확인해주세요:
+        <div className="flex flex-col justify-center items-center  overflow-y-auto max-h-screen ">
+            <div className="mb-20 "></div>
+            <h2 className="text-2xl font-bold text-center pt-7 p-3">회원 탈퇴 안내</h2>
+            <p className="text-center text-gray-600 mb-2 p-5 pt-0">
+                회원 탈퇴를 진행하시기 전에 <br />아래 내용을 반드시 확인해주세요:
             </p>
 
             {/* 내용 박스 */}
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-full mb-6">
+            <div className="bg-gray-100 p-3 rounded-lg shadow-md w-full ">
                 <ul className="space-y-4 text-gray-700 m-3">
                     <li>
                         <strong>1. 재가입 제한</strong> <br />
@@ -74,7 +74,7 @@ const DeleteAccount = () => {
 
             <p className="m-8 text-red-500 font-semibold text-center">
                 <span>탈퇴 후에는 재가입이 불가능하고, 모든 데이터가 삭제됩니다.</span>
-                <span className="text-black"> 이 점을 충분히 이해하신 후 탈퇴 절차를 진행해 주세요. 탈퇴를 원하시면, 아래 "계정 삭제" 버튼을 클릭해 주세요.</span>
+                <span className="text-black"> 이 점을 충분히 이해하신 후 탈퇴 절차를 진행해 주세요. 탈퇴를 원하시면, 아래에 비밀번호를 입력한 후 '계정 삭제' 버튼을 클릭해 주세요.</span>
             </p>
 
             {/* 비밀번호 입력 (이메일 로그인 사용자 경우에만) */}
@@ -89,7 +89,7 @@ const DeleteAccount = () => {
             {/* 계정 삭제 버튼 */}
             <BaseButton
                 onClick={handleDeleteAccount}
-                className="bg-primary-500 w-[80%] flex justify-center items-center relative mb-8"
+                className="bg-primary-500 w-[80%] flex justify-center items-center relative "
                 disabled={isLoading} // 로딩 중에는 버튼 비활성화
             >
                 {isLoading ? (
@@ -100,6 +100,7 @@ const DeleteAccount = () => {
                     <span>회원탈퇴</span>
                 )}
             </BaseButton>
+            <div className="mb-40"></div>
         </div>
     );
 }

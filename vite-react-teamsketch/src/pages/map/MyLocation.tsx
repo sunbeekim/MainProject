@@ -66,17 +66,17 @@ const MyLocation = () => {
         childrenTop={<SearchLocation onLocationSelect={() => { }} />}
         childrenCenter={<OpenMap nonClickable={false} mode="myLocation" />}
         childrenBottom={
-          <LocationInfo showEndLocation={false} showMyLocation={true} showYourLocation={false}/>
+          <LocationInfo showEndLocation={false} showMyLocation={true} showYourLocation={false} />
         }
         childrenButton={
           <BaseButton
             variant="primary"
-            className="w-full rounded-none pb-10"
+            className="w-full rounded-none pb-16"
             onClick={handleLocationConfirm}
             disabled={isLoading}
           >
             {isLoading ? (
-              <div className="flex justify-center items-center mb-16">
+              <div className="flex justify-center items-center">
                 <Loading />
               </div>
             ) : (

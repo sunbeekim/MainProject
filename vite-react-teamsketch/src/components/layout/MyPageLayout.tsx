@@ -28,7 +28,7 @@ const MyPageLayout = ({
   followerCount = 126,
   points = 1200,
   dopamine,
-  onProfileUpdate = () => {},
+  onProfileUpdate = () => { },
   menuItems = []
 }: MyPageLayoutProps) => {
 
@@ -38,7 +38,7 @@ const MyPageLayout = ({
       <Grid cols={1} className="p-4 gap-6">
         {/* 프로필 이미지 */}
         <GridItem>
-          <div className="flex justify-center px-4">
+          <div className="flex justify-center px-4 ">
             <ImageUpload
               onFileSelect={onProfileUpdate}
               currentImage={profileImagePath as File | string}
@@ -77,7 +77,7 @@ const MyPageLayout = ({
 
         {/* 메뉴 버튼들 */}
         <GridItem>
-          <div className="space-y-2">
+          <div className="space-y-2 mb-16">
             {menuItems.map((item, index) => (
               <BaseButton
                 key={index}
@@ -89,7 +89,7 @@ const MyPageLayout = ({
                   rounded-xl
                   transition-all duration-300
                   border border-primary-200 dark:border-gray-700
-                  bg-primary-50 dark:bg-gray-700
+                  bg-primary-50 dark:bg-gray-700 
                   ${item.color}
                   group
                 `}
@@ -111,7 +111,7 @@ const MyPageLayout = ({
                 </div>
                 <div
                   className="text-black-400 dark:text-gray-500 
-                  group-hover:text-primary dark:group-hover:text-primary-light 
+                  group-hover:text-primary  dark:group-hover:text-primary-light 
                   group-hover:transform group-hover:translate-x-1 
                   transition-all duration-300"
                 >

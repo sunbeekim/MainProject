@@ -79,8 +79,6 @@ public class JwtTokenBlacklistService {
         }
         return LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(expiryMillis),
-                ZoneId.systemDefault()
-        );
+                ZoneId.systemDefault());
     }
 }
-

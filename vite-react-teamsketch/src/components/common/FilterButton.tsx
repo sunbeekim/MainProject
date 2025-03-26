@@ -6,7 +6,7 @@ interface FilterButtonProps {
     className?: string;
 }
 
-const FilterButton = ({ onDistanceChange = () => {}, className = '' }: FilterButtonProps) => {
+const FilterButton = ({ onDistanceChange = () => { }, className = '' }: FilterButtonProps) => {
     const [open, setOpen] = useState(false);
 
     const [distance, setDistance] = useState(10);
@@ -39,8 +39,8 @@ const FilterButton = ({ onDistanceChange = () => {}, className = '' }: FilterBut
                     flex items-center gap-2 px-4 py-2 rounded-full
                     bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300
                     border border-gray-200 dark:border-gray-700
-                    shadow-sm hover:shadow-md transition-all duration-200
-                    ${open ? 'ring-2 ring-primary-500 dark:ring-primary-400' : ''}
+                    shadow-sm hover:shadow-md transition-all duration-200 hover:bg-transparent
+                    ${open ? 'ring-2 hover:ring-primary-500 dark:ring-primary-400' : ''}
                 `}
             >
                 <HiOutlineAdjustmentsHorizontal className="w-5 h-5" />

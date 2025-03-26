@@ -17,11 +17,11 @@ const DeleteModal = ({ cardId, onClose, onConfirmDelete }: DeleteModalProp) => {
               선택한 카드를 정말 삭제하시겠습니까?
             </p>
           </div>
-          
+
           <div className="mt-6 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200 font-medium text-sm"
+              className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 hover:text-gray-700 hover:bg-gray-50 text-white transition-colors duration-200 font-medium text-sm"
             >
               취소
             </button>

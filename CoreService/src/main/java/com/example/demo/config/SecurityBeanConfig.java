@@ -38,12 +38,13 @@ public class SecurityBeanConfig {
     @Bean
     @Primary
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(
-            JwtTokenProvider jwtTokenProvider, 
+            JwtTokenProvider jwtTokenProvider,
             HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository) {
-        
+
         List<String> authorizedUris = Arrays.asList(authorizedRedirectUris);
         log.info("OAuth2AuthenticationSuccessHandler 빈 초기화 - 허용된 리다이렉트 URI: {}", authorizedUris);
-        return new OAuth2AuthenticationSuccessHandler(jwtTokenProvider, authorizedUris, cookieAuthorizationRequestRepository);
+        return new OAuth2AuthenticationSuccessHandler(jwtTokenProvider, authorizedUris,
+                cookieAuthorizationRequestRepository);
     }
 
     /**
@@ -53,7 +54,7 @@ public class SecurityBeanConfig {
     @Primary
     public OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler(
             HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository) {
-        
+
         log.info("OAuth2AuthenticationFailureHandler 빈 초기화");
         return new OAuth2AuthenticationFailureHandler(cookieAuthorizationRequestRepository);
     }

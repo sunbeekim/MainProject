@@ -67,9 +67,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ ocrResult }) => {
 
       {/* 카드 미리보기 */}
       <div className="relative w-full h-56 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl p-6 text-white shadow-xl">
-        <div className="text-lg font-semibold mb-4">{cardInfo.name || '카드 이름'}</div>
-        <img src={creditCardImg} alt="Card Chip" className="w-12 h-10 mb-6" />
-        <div className="text-2xl font-bold tracking-widest mb-6">
+        <div className="text-base font-semibold mb-3">{cardInfo.name || '카드 이름'}</div>
+        <img src={creditCardImg} alt="Card Chip" className="w-12 h-10 mb-4" />
+        <div className="text-xl font-bold tracking-widest mb-5 ">
           {cardInfo.number ? cardInfo.number.replace(/(\d{4})/g, '$1 ') : '**** **** **** ****'}
         </div>
         <div className="flex justify-between items-end">

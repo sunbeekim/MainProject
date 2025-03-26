@@ -2,13 +2,13 @@ import { useNavigate } from "react-router-dom";
 
 
 
-const TransactionList = () => {
+const TransactionHistory = () => {
   const navigate = useNavigate();
 
 
 
   const handleTransactionClick = () => {
-    navigate("/transaction-detail");
+    navigate("/transaction-list");
   };
 
   return (
@@ -31,4 +31,4 @@ const TransactionList = () => {
   );
 };
 
-export default TransactionList;
+export default TransactionHistory;

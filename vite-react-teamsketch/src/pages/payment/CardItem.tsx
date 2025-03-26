@@ -10,8 +10,8 @@ const CardItem = ({ type, onDelete }: CardItemProps) => (
                 {type}
             </div>
             <span className="text-lg font-semibold text-gray-800">{type}</span>
-            <button 
-                onClick={onDelete} 
+            <button
+                onClick={onDelete}
                 className="ml-auto p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-colors duration-200"
                 aria-label="카드 삭제"
             >

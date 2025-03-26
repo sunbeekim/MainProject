@@ -69,7 +69,7 @@ const MyPage = () => {
       icon: <FaBoxOpen className="w-6 h-6" />,
       label: '거래 내역',
       color: 'text-blue-500',
-      onClick: () => navigate('/transaction-list')
+      onClick: () => navigate('/transaction-history')
     },
     {
       icon: <FaCreditCard className="w-6 h-6" />,
@@ -92,7 +92,7 @@ const MyPage = () => {
   ];
 
   return (
-    <div className="h-full w-full bg-white dark:bg-gray-800 flex flex-col mb-16">
+    <div className="h-full w-full bg-white dark:bg-gray-800 flex flex-col ">
       <MyPageLayout
         email={user.email || ''}
         name={user.name || ''}

@@ -36,7 +36,7 @@ const RegisteredCardList = () => {
   ]);
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-6">
+    <div className="max-w-2xl mx-auto p-5 space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">등록된 카드</h2>
         <span className="text-sm text-gray-500">{cardList.length}개의 카드</span>
@@ -56,10 +56,10 @@ const RegisteredCardList = () => {
         onClick={handleAddCard}
         className="w-full py-4 px-6 bg-white border-2 border-dashed border-primary-500 rounded-xl hover:border-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center justify-center gap-2 group"
       >
-        <svg 
-          className="w-5 h-5 text-primary-500 group-hover:scale-110 transition-transform duration-200" 
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          className="w-5 h-5 text-primary-500 group-hover:scale-110 transition-transform duration-200"
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
