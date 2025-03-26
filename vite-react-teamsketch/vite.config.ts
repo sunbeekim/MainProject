@@ -61,8 +61,18 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      crypto: 'crypto-browserify'
+      crypto: 'crypto-browserify',
+      stream: 'stream-browserify',
+      buffer: 'buffer',
+      util: 'util'
     },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      }
+    }
   },
   server: {   
     host: true,
@@ -78,7 +88,7 @@ export default defineConfig({
       input: {
         main: '/index.html',
       },
-      external: ['fs', 'path', 'crypto'],
+      external: ['fs', 'path'],
       output: {
         manualChunks: {
           'opencv': ['opencv.js']
