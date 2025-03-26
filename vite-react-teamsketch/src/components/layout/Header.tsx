@@ -4,11 +4,7 @@ import BackButton from '../forms/button/BackButton';
 import Grid from '../common/Grid';
 import GridItem from '../common/GridItem';
 
-
-interface HeaderProps {
-  onDistanceChange: (distance: number) => void;
-}
-const Header: React.FC<HeaderProps> = ({ onDistanceChange }) => {
+const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
