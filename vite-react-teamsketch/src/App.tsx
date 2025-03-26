@@ -20,6 +20,8 @@ import VerificationCode from './pages/account/VerificationCode';
 import VerifyMethod from './pages/account/VerifyMethod';
 import ResetPassword from './pages/account/ResetPassword';
 import DeleteAccount from './pages/account/DeleteAccount';
+import SplashScreen from './components/common/splash/SplashScreen';
+
 
 const App = () => {
   
@@ -200,55 +202,56 @@ const App = () => {
     return !!(token && userEmail);
   }, [token, userEmail]);
 
-  return (
-    <WebSocketProvider token={token} autoConnect={!!token}>
-      <div className="flex flex-col min-h-screen">
-        {shouldShowHeader && <Header/>}
-        
-        {/* 알림 핸들러 컴포넌트 - 메모이제이션 사용 */}
-        {showNotificationHandler ? <NotificationHandler /> : null}
-        
-        <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/verfication-code" element={<VerificationCode />} />
-        <Route path="/verify-method" element={<VerifyMethod />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/delete-account" element={<DeleteAccount />} />
+  return (      
+      <WebSocketProvider token={token} autoConnect={!!token}>
+        <SplashScreen />
+        <div className="flex flex-col min-h-screen">
+          {shouldShowHeader && <Header/>}
+          
+          {/* 알림 핸들러 컴포넌트 - 메모이제이션 사용 */}
+          {showNotificationHandler ? <NotificationHandler /> : null}
+          
+          <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/verfication-code" element={<VerificationCode />} />
+          <Route path="/verify-method" element={<VerifyMethod />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/*"
-          element={
-            <PrivateRoute>
-              <MainLayout />
-            </PrivateRoute>
+          {/* Protected Routes */}
+          <Route
+            path="/*"
+            element={
+              <PrivateRoute>
+                <MainLayout />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+        {shouldShowFooter && <Footer />}
+        <ToastContainer
+          position="top-center"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          limit={3}
+          toastClassName={() =>
+            'relative flex items-center rounded-lg shadow-lg bg-primary-500 text-white text-sm p-4 mb-4 mt-12'
           }
+          progressClassName="bg-primary-500"
         />
-      </Routes>
-      {shouldShowFooter && <Footer />}
-      <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        limit={3}
-        toastClassName={() =>
-          'relative flex items-center rounded-lg shadow-lg bg-primary-500 text-white text-sm p-4 mb-4 mt-12'
-        }
-        progressClassName="bg-primary-500"
-      />
-      </div>
-    </WebSocketProvider>
+        </div>
+      </WebSocketProvider>
   );
 };
 
