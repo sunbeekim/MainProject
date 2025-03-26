@@ -64,7 +64,8 @@ export default defineConfig({
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       buffer: 'buffer',
-      util: 'util'
+      util: 'util',
+      path: 'path-browserify'
     },
   },
   optimizeDeps: {
