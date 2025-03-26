@@ -68,6 +68,17 @@ const notificationSlice = createSlice({
       state.unreadCount = 0;
     },
     
+    // 특정 채팅방의 모든 메시지 읽음 처리
+    markChatMessagesAsRead: (state, action: PayloadAction<number>) => {
+      const chatroomId = action.payload;
+      state.notifications.forEach(n => {
+        if (n.type === 'CHAT_MESSAGE' && n.chatroomId === chatroomId && n.status === 'UNREAD') {
+          n.status = 'READ';
+          state.unreadCount = Math.max(0, state.unreadCount - 1);
+        }
+      });
+    },
+    
     // 알림 삭제
     removeNotification: (state, action: PayloadAction<number>) => {
       const notification = state.notifications.find(n => n.id === action.payload);
@@ -96,6 +107,7 @@ export const {
   addNotification,
   markAsRead,
   markAllAsRead,
+  markChatMessagesAsRead,
   removeNotification,
   updateLastProcessedId,
   clearNotifications

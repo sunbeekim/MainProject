@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { MessageType } from '../../services/real-time/types';
 
 interface ChatListItemProps {
@@ -7,11 +6,10 @@ interface ChatListItemProps {
   lastMessage?: string;
   time?: string;
   unreadCount: number;
-  email: string;
   productImage: React.ReactNode;
   chatname: string;
-  chatroomId: number;
   messageType?: MessageType;
+  onClick: () => void;
 }
 
 const ChatListItem: React.FC<ChatListItemProps> = ({
@@ -19,36 +17,11 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
   lastMessage,
   time,
   unreadCount,
-  email,
   productImage,
   chatname,
-  chatroomId,
-  messageType = MessageType.TEXT
+  messageType = MessageType.TEXT,
+  onClick
 }) => {
-  const navigate = useNavigate();
-  const userStr = localStorage.getItem('user');
-  const user = userStr ? JSON.parse(userStr) : null;
-  const userEmail = user?.email;
-
-  const handleClick = () => {
-    if (!userEmail) {
-      console.error('로그인이 필요합니다.');
-      navigate('/login');
-      return;
-    }
-
-    navigate(`/chat/${chatroomId}/${chatname}`, {
-      state: {
-        email: userEmail,
-        otherUserEmail: email,
-        chatroomId,
-        nickname,
-        chatname,
-        imageUrl: (productImage as any)?.props?.imagePath || 'https://picsum.photos/600/400'
-      }
-    });
-  };
-
   // 메시지 타입에 따른 표시 내용 결정
   const getMessagePreview = () => {
     switch (messageType) {
@@ -67,7 +40,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
 
   return (
     <div
-      onClick={handleClick}
+      onClick={onClick}
       className="
         w-full bg-white dark:bg-gray-800 
         rounded-xl 

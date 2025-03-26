@@ -123,7 +123,7 @@ const App = () => {
     
     // 새로운 알림이 오면 Redux store에 저장하고 토스트 메시지 표시
     useEffect(() => {
-      if (notifications.length === 0 || !isConnected || isChatPage || isChatListPage) return;
+      if (notifications.length === 0 || !isConnected || isChatPage ) return;
       
       // 최신 알림 가져오기
       const latestNotification = notifications[notifications.length - 1];
@@ -166,14 +166,19 @@ const App = () => {
       dispatch(updateLastProcessedId(notificationId));
       setLastProcessedId(notificationId);
       
+      // 채팅 목록 페이지에서는 토스트 메시지 표시 안함
+      const notShowToast = latestNotification.type === 'CHAT_MESSAGE' && isChatListPage;
+      
       // 토스트 메시지 표시
-      try {
-        toast.info(latestNotification.message, {
-          toastId: notificationId,
-          position: "top-center",
+        try {
+          if (!notShowToast) {
+          toast.info(latestNotification.message, {
+            toastId: notificationId,
+            position: "top-center",
           autoClose: 2000,
           theme: "dark"
         });
+        }
         
         console.log('[알림 디버그] 토스트 메시지 표시 완료');
       } catch (error) {
