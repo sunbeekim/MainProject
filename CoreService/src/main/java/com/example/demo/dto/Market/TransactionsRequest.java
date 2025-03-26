@@ -13,7 +13,6 @@ public class TransactionsRequest {
     private Long productId;
     private String buyerEmail;
     private String sellerEmail;
-    private String buyerEmail;
     private int price;
     private String description;
 }
