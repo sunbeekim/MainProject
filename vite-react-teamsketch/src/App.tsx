@@ -203,7 +203,7 @@ const App = () => {
   return (
     <WebSocketProvider token={token} autoConnect={!!token}>
       <div className="flex flex-col min-h-screen">
-        {shouldShowHeader && <Header />}
+        {shouldShowHeader && <Header/>}
         
         {/* 알림 핸들러 컴포넌트 - 메모이제이션 사용 */}
         {showNotificationHandler ? <NotificationHandler /> : null}
