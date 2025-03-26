@@ -1,15 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
 import { HiOutlineAdjustmentsHorizontal } from 'react-icons/hi2';
+import { useDispatch, useSelector } from 'react-redux';
+import { setDistance } from '../../store/slices/productSlice';
+import { RootState } from '../../store/store';
 
 interface FilterButtonProps {
     onDistanceChange: (distance: number) => void;
     className?: string;
 }
 
+<<<<<<< HEAD
 const FilterButton = ({ onDistanceChange = () => { }, className = '' }: FilterButtonProps) => {
+=======
+const FilterButton = ({ onDistanceChange = () => {}, className = '' }: FilterButtonProps) => {
+    const dispatch = useDispatch();
+    const distance = useSelector((state: RootState) => state.product.distance);
+>>>>>>> ccf50cd17491fccab34bccb4bb908ecd4f47b44a
     const [open, setOpen] = useState(false);
-
-    const [distance, setDistance] = useState(10);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // 드롭다운 외부 클릭 시 닫기
@@ -25,8 +32,8 @@ const FilterButton = ({ onDistanceChange = () => { }, className = '' }: FilterBu
     }, []);
 
     const handleDistanceChange = (newDistance: number) => {
-        setDistance(newDistance);
         onDistanceChange(newDistance);
+        dispatch(setDistance(newDistance));
     };
 
 
@@ -92,7 +99,7 @@ const FilterButton = ({ onDistanceChange = () => { }, className = '' }: FilterBu
 
                         {/* 빠른 선택 버튼들 */}
                         <div className="flex flex-wrap gap-2">
-                            {[5, 10, 500].map((value) => (
+                            {[0, 5, 10, 500].map((value) => (
                                 <button
                                     key={value}
                                     onClick={() => handleDistanceChange(value)}
@@ -105,7 +112,7 @@ const FilterButton = ({ onDistanceChange = () => { }, className = '' }: FilterBu
                                         }
                                     `}
                                 >
-                                    {value}km
+                                    {value === 0 ? '전체' : `${value}km`}
                                 </button>
                             ))}
                         </div>

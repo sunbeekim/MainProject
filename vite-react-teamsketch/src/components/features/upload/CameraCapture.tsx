@@ -1,111 +1,95 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Button from '../../../components/common/Button';
 import CameraModal from './CameraModal';
+import { resetOpenCV } from '../../../utils/cardDetection';
 
 interface CameraCaptureProps {
   onCapture: (file: File) => void;
   className?: string;
+  onError?: (message: string) => void;
 }
 
-const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = '' }) => {
+const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = '', onError }) => {
   const [isActive, setIsActive] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  const startCamera = async () => {
-    try {
-      console.log('카메라 시작 시도');
-
-      // 먼저 모달을 표시하여 비디오 요소가 DOM에 마운트되도록 함
-      setIsActive(true);
-
-      // 비디오 요소가 마운트될 때까지 잠시 대기
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      if (!videoRef.current) {
-        throw new Error('비디오 요소를 찾을 수 없습니다.');
-      }
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('이 브라우저는 카메라를 지원하지 않습니다.');
-      }
-
-      // 모바일 환경에 맞는 제약 조건 설정
-      const constraints = {
-        video: {
-          facingMode: isMobile ? { ideal: 'environment' } : 'user',
-          // 가로세로 비율을 16:9로 설정하고 크기 제한
-          aspectRatio: { ideal: 16/9 },
-          width: { min: 320, ideal: isMobile ? 720 : 1280, max: 1920 },
-          height: { min: 240, ideal: isMobile ? 1280 : 720, max: 1080 }
-        }
-      };
-
-      console.log('카메라 권한 요청:', constraints);
-
-      let stream: MediaStream | null = null;
-
-      try {
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-        console.log('카메라 스트림 획득 성공:', stream.getVideoTracks()[0].label);
-      } catch (err) {
-        console.error('첫 번째 카메라 시도 실패:', err);
-        if (isMobile) {
-          console.log('후면 카메라 접근 실패, 전면 카메라 시도');
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: 'user',
-              aspectRatio: { ideal: 16/9 },
-              width: { min: 320, ideal: 720, max: 1920 },
-              height: { min: 240, ideal: 1280, max: 1080 }
-            }
-          });
-          console.log('전면 카메라 스트림 획득 성공:', stream.getVideoTracks()[0].label);
-        } else {
-          throw err;
-        }
-      }
-
-      if (!stream) {
-        throw new Error('카메라 스트림을 가져올 수 없습니다.');
-      }
-
-      console.log('비디오 요소에 스트림 연결');
-      videoRef.current.srcObject = stream;
-      streamRef.current = stream;
-
-      // 비디오 로딩 완료 대기
-      await new Promise<void>((resolve, reject) => {
-        if (!videoRef.current) return reject(new Error('비디오 요소를 찾을 수 없습니다.'));
-
-        videoRef.current.onloadedmetadata = () => {
-          if (!videoRef.current) return reject(new Error('비디오 요소를 찾을 수 없습니다.'));
-          videoRef.current
-            .play()
-            .then(() => resolve())
-            .catch((error) => {
-              console.error('비디오 재생 실패:', error);
-              reject(new Error('카메라 화면을 표시할 수 없습니다.'));
-            });
-        };
-      });
-    } catch (error) {
-      console.error('카메라 접근 실패:', error);
-      setIsActive(false); // 에러 발생 시 모달 닫기
-      alert(error instanceof Error ? error.message : '카메라를 시작할 수 없습니다.');
-    }
-  };
 
   const stopCamera = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
+      console.log('카메라 스트림 정리 - CameraCapture');
+      streamRef.current.getTracks().forEach((track) => {
+        track.stop();
+        console.log(`트랙 정리: ${track.kind}`);
+      });
       streamRef.current = null;
     }
+    
     if (videoRef.current) {
       videoRef.current.srcObject = null;
+      console.log('비디오 소스 제거됨 - CameraCapture');
     }
+    
     setIsActive(false);
+    setErrorMessage(null);
+  };
+
+  const startCamera = async () => {
+    try {
+      console.log('카메라 시작 시도 - CameraCapture');
+      setErrorMessage(null);
+      
+      // 이미 활성화된 경우 리소스 정리 후 재시작
+      if (isActive || streamRef.current) {
+        stopCamera();
+        // OpenCV 리셋
+        try {
+          console.log('OpenCV 상태 리셋 시도...');
+          resetOpenCV();
+          console.log('기존 리소스 정리 후 재시작');
+        } catch (resetError) {
+          console.warn('OpenCV 리셋 중 오류 발생:', resetError);
+          // 리셋 오류는 무시하고 계속 진행
+        }
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        const msg = '이 브라우저는 카메라를 지원하지 않습니다. 최신 브라우저(Chrome, Firefox, Edge)를 사용해주세요.';
+        setErrorMessage(msg);
+        onError?.(msg);
+        throw new Error(msg);
+      }
+
+      // 모달 활성화
+      setIsActive(true);
+    } catch (error) {
+      console.error('카메라 초기화 실패:', error);
+      setIsActive(false);
+      
+      // 사용자에게 친절한 오류 메시지 표시
+      let errorMsg = '카메라를 시작할 수 없습니다.';
+      
+      if (error instanceof Error) {
+        errorMsg = error.message;
+      } else if (error instanceof DOMException) {
+        // 권한 오류 처리
+        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+          errorMsg = '카메라 접근 권한이 거부되었습니다. 브라우저 설정에서 카메라 권한을 허용해주세요.';
+        } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+          errorMsg = '카메라를 찾을 수 없습니다. 카메라가 연결되어 있는지 확인해주세요.';
+        } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+          errorMsg = '카메라에 접근할 수 없습니다. 다른 앱에서 카메라를 사용 중인지 확인해주세요.';
+        } else if (error.name === 'OverconstrainedError') {
+          errorMsg = '카메라가 요청한 설정을 지원하지 않습니다. 다른 카메라를 사용해보세요.';
+        } else if (error.name === 'TypeError') {
+          errorMsg = '카메라 설정 오류. 브라우저를 새로고침해주세요.';
+        }
+      }
+      
+      setErrorMessage(errorMsg);
+      onError?.(errorMsg);
+      alert(errorMsg);
+    }
   };
 
   const capturePhoto = () => {
@@ -122,15 +106,46 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
             if (blob) {
               const file = new File([blob], 'card-photo.jpg', { type: 'image/jpeg' });
               onCapture(file);
-              stopCamera();
+            } else {
+              const msg = '이미지 캡처에 실패했습니다. 다시 시도해주세요.';
+              setErrorMessage(msg);
+              onError?.(msg);
             }
           },
           'image/jpeg',
           0.95
         );
+      } else {
+        const msg = '캔버스 컨텍스트를 생성할 수 없습니다.';
+        setErrorMessage(msg);
+        onError?.(msg);
       }
     }
   };
+
+  // 모달 닫기 핸들러
+  const handleCloseModal = () => {
+    stopCamera();
+    // 명시적 OpenCV 리셋
+    resetOpenCV();
+    console.log('모달 닫기 - 리소스 정리 완료');
+  };
+
+  // 컴포넌트 언마운트 시 카메라 정리
+  useEffect(() => {
+    return () => {
+      stopCamera();
+      resetOpenCV();
+      console.log('컴포넌트 언마운트 - 모든 리소스 정리');
+    };
+  }, []);
+
+  // 에러 메시지 변경 시 부모 컴포넌트에 알림
+  useEffect(() => {
+    if (errorMessage) {
+      onError?.(errorMessage);
+    }
+  }, [errorMessage, onError]);
 
   return (
     <div>
@@ -156,11 +171,22 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, className = ''
         카드 촬영
       </Button>
 
+      {/* 오류 메시지 표시 */}
+      {errorMessage && (
+        <div className="mt-2 p-2 text-red-500 bg-red-50 border border-red-100 rounded-md text-sm">
+          {errorMessage}
+        </div>
+      )}
+
       {isActive && (
         <CameraModal
           videoRef={videoRef as React.RefObject<HTMLVideoElement>}
           onCapture={capturePhoto}
-          onClose={stopCamera}
+          onClose={handleCloseModal}
+          onError={(msg) => {
+            setErrorMessage(msg);
+            onError?.(msg);
+          }}
         />
       )}
     </div>
