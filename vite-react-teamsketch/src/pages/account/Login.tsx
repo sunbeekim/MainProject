@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../store/hooks';
 import { login } from '../../store/slices/authSlice';
@@ -13,6 +13,7 @@ import EmailInput from '../../components/forms/input/EmailInput';
 import LoginPasswordInput from '../../components/forms/input/LoginPasswordInput';
 import { validateEmail, validatePassword } from '../../utils/validation';
 import { toast } from 'react-toastify';
+import { isIOS } from 'react-device-detect';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -29,6 +30,31 @@ const Login = () => {
     password: ''
   });
 
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true); // 설치 버튼 표시
+    });
+  }, []);
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('✅ 앱 설치 완료!');
+        } else {
+          console.log('❌ 앱 설치 취소됨');
+        }
+        setDeferredPrompt(null);
+        setShowInstallButton(false);
+      });
+    }
+  };
 
   const handleLogin = async (loginData: LoginRequest) => {
     setIsLoading(true);
@@ -137,6 +163,22 @@ const Login = () => {
 
   return (
     <>
+      {isIOS && (
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-800 px-4 py-2 rounded shadow">
+        iPhone 사용자는 Safari 공유 버튼을 눌러 <b>“홈 화면에 추가”</b> 해주세요
+      </div>
+      )}
+
+      {showInstallButton && (
+        <button
+          className="fixed top-4 right-4 bg-purple-600 text-white px-4 py-2 rounded shadow-lg z-50"
+          onClick={handleInstallClick}
+        >
+          앱 설치하기
+        </button>
+      )}
+
+    
       {isLoading && <Loading />}
       <form
         className="h-full w-full bg-white dark:bg-gray-800 flex flex-col"

@@ -13,8 +13,8 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.service.NotificationService;
-import com.example.demo.service.UserService;
-import com.example.demo.dto.profile.MyPageResponse;
+import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.User;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class LocationController {
     private final TokenUtils tokenUtils;
     private final LocationService locationService;
     private final NotificationService notificationService;
-    private final UserService userService;
+    private final UserMapper userMapper;
 
 
     /**
@@ -50,6 +50,7 @@ public class LocationController {
         String senderEmail = principal.getName();
         log.info("위치 업데이트 수신: chatroomId={}, senderEmail={}, location={}", 
                 location.getChatroomId(), senderEmail, location);
+        
 
         try {
             // 위치 정보 저장
@@ -62,9 +63,11 @@ public class LocationController {
                 "/topic/location." + location.getChatroomId(),
                 location
             );
+            User sender = userMapper.findByEmail(senderEmail);
+            String sendNickname = sender.getNickname();
 
             // 알림 추가 (Redis를 통한 알림)
-            String message = String.format("채팅방에 위치 정보가 업데이트되었습니다!");
+            String message = String.format("%s님의 위치 정보가 업데이트되었습니다!", sendNickname);
             notificationService.sendNotification(
                 senderEmail,
                 message,
