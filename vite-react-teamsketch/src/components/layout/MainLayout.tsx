@@ -40,22 +40,22 @@ import TestGrid from '../../testpages/TestGrid';
 import SimpleChatExample from '../../components/features/chat/SimpleChatExample';
 
 // 전체 화면 (헤더/푸터 제외) 경로 목록
-export const FULLSCREEN_PATHS = [
-  '/product/location'
-];
+export const FULLSCREEN_PATHS = ['/product/location'];
 
 // 푸터만 숨기는 경로 목록
 export const FOOTER_HIDDEN_PATHS = [
   '/servicechat',
   '/chat/',
-  '/sharelocation'
+  '/sharelocation',
+  '/change-password',
+  '/forgotpassword',
+  '/verfication-code',
+  '/verify-method',
+  '/reset-password'
 ];
 
 // 로그인/회원가입 관련 인증 경로
-export const AUTH_PATHS = [
-  '/login',
-  '/signup'
-];
+export const AUTH_PATHS = ['/login', '/signup'];
 
 // 첫 로그인 시 위치 설정 페이지인지 확인하는 함수
 export const isInitialLocationPage = () => {
@@ -78,14 +78,14 @@ const MainLayout = () => {
   const footerHiddenPaths = useMemo(() => FOOTER_HIDDEN_PATHS, []);
 
   // 현재 경로가 전체 화면 경로인지 확인
-  const isFullscreenPage = useMemo(() =>
-    fullscreenPaths.some(path => location.pathname.includes(path)),
+  const isFullscreenPage = useMemo(
+    () => fullscreenPaths.some((path) => location.pathname.includes(path)),
     [location.pathname, fullscreenPaths]
   );
 
   // 현재 경로가 푸터만 숨기는 경로인지 확인
-  const isFooterHiddenPage = useMemo(() =>
-    footerHiddenPaths.some(path => location.pathname.startsWith(path)),
+  const isFooterHiddenPage = useMemo(
+    () => footerHiddenPaths.some((path) => location.pathname.startsWith(path)),
     [location.pathname, footerHiddenPaths]
   );
 
@@ -176,7 +176,7 @@ const MainLayout = () => {
   return (
     <main className="fixed inset-0 w-full">
       <div
-        className={!isFullscreenPage && !isInitialLocation ? "content-scroll" : ""}
+        className={!isFullscreenPage && !isInitialLocation ? 'content-scroll' : ''}
         style={contentStyle}
       >
         <Routes>
@@ -218,7 +218,12 @@ const MainLayout = () => {
           <Route path="/test/component" element={<TestComponent />} />
           <Route path="/test/func" element={<TestFunc />} />
           <Route path="/test/grid" element={<TestGrid />} />
-          <Route path="/test/chat" element={<SimpleChatExample chatroomId={1} userEmail="test@test.com" token="testToken" />} />
+          <Route
+            path="/test/chat"
+            element={
+              <SimpleChatExample chatroomId={1} userEmail="test@test.com" token="testToken" />
+            }
+          />
         </Routes>
       </div>
     </main>

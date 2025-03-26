@@ -31,9 +31,9 @@ const VerifyMethod = () => {
       dispatch(updatePasswordInfo({ email: inputValue }));
     } else {
       sendSms(inputValue, {
-        onSuccess: (data) => {          
+        onSuccess: (data) => {
           console.log('전송 성공:', data.message);
-        },
+        }
       });
     }
     dispatch(updatePasswordInfo({ phoneNumber: inputValue })); // Redux 상태 업데이트
@@ -47,18 +47,7 @@ const VerifyMethod = () => {
   };
 
   return (
-    <LoginLayout
-      title={<h1 className="text-2xl font-bold text-center">비밀번호 찾기</h1>}
-      signupLink={
-        <button
-          type="button"
-          onClick={() => navigate('/login')}
-          className="text-primary-light hover:text-primary-dark text-sm"
-        >
-          로그인으로 돌아가기
-        </button>
-      }
-    >
+    <LoginLayout title={<h1 className="text-2xl font-bold text-center">비밀번호 찾기</h1>}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <p className="text-sm text-gray-500 text-center">
           비밀번호를 재설정하려면 아래 방법 중 하나를 선택하세요.
