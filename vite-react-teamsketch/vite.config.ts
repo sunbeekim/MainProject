@@ -9,11 +9,21 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'logo192.png', 'logo512.png'],
       manifest: {
         name: 'Haru - 당신의 취미를 공유하세요',
         short_name: 'Haru',
+        description: 'Haru - 당신의 취미를 공유하세요',
         theme_color: '#000000',
+        background_color: '#ffffff',
+        start_url: '/',
+        display: 'standalone',
         icons: [
+          {
+            src: '/favicon.ico',
+            sizes: '64x64 32x32 24x24 16x16',
+            type: 'image/x-icon'
+          },
           {
             src: '/logo192.png',
             sizes: '192x192',
@@ -23,7 +33,7 @@ export default defineConfig({
             src: '/logo512.png',
             sizes: '512x512',
             type: 'image/png'
-          },         
+          }
         ]
       },
       workbox: {
@@ -55,8 +65,8 @@ export default defineConfig({
     },
   },
   server: {   
-    host: true, // true로 변경 
-    port: 3000, // 3000으로 나중에 변경
+    host: true,
+    port: 3000,
     allowedHosts: [
       'sunbee.world',
       'www.sunbee.world',
