@@ -58,7 +58,7 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
   if (!thumbnailPath) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-100">
-        
+        <span className="text-gray-400">이미지 없음</span>
       </div>
     );
   }
@@ -98,6 +98,13 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
   );
 });
 
+export interface NProductResponse {
+  status: string;
+  message: string;
+  data:
+  IProduct[];
+}
+
 const MarketList = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -105,6 +112,7 @@ const MarketList = () => {
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [selectedDistance, setSelectedDistance] = useState<number>(10);
+
 
   // 상품 Query - 카테고리 선택에 따라 다른 API 호출
   const { data: queryProducts = [], isLoading, error } = useQuery({
@@ -247,9 +255,9 @@ const MarketList = () => {
     );
   }
 
+
   return (
-    <div className="w-full mt-4">
-      
+    <div className="w-full mt-4">    
       <Category categorySize="md" onCategorySelect={handleCategorySelect} />
       <div className="flex justify-end mt-4 mr-4">
         <FilterButton onDistanceChange={handleDistanceChange} />

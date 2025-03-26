@@ -8,6 +8,7 @@ interface FilterButtonProps {
 
 const FilterButton = ({ onDistanceChange = () => {}, className = '' }: FilterButtonProps) => {
     const [open, setOpen] = useState(false);
+
     const [distance, setDistance] = useState(10);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -27,6 +28,7 @@ const FilterButton = ({ onDistanceChange = () => {}, className = '' }: FilterBut
         setDistance(newDistance);
         onDistanceChange(newDistance);
     };
+
 
     return (
         <div className={`relative ${className}`} ref={dropdownRef}>
@@ -107,6 +109,7 @@ const FilterButton = ({ onDistanceChange = () => {}, className = '' }: FilterBut
                                 </button>
                             ))}
                         </div>
+
                     </div>
                 </div>
             )}
