@@ -9,17 +9,15 @@ import {
 import { HiOutlineMapPin, HiMapPin } from 'react-icons/hi2';
 import { CgUser } from 'react-icons/cg';
 import { RiUserFill } from 'react-icons/ri';
-import { useChatRooms } from '../../services/api/userChatAPI';
 import { useAppSelector } from '../../store/hooks';
 
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: chatRooms } = useChatRooms();
-  const { unreadCount } = useAppSelector((state) => state.noti);
+  const { notifications } = useAppSelector((state) => state.noti);
 
-  // 전체 안 읽은 메시지 수 계산
-  const totalUnreadCount = chatRooms?.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0) || 0;
+  // CHAT_MESSAGE 타입의 알림만 카운트
+  const unreadChatMessages = notifications.filter(n => n.type === 'CHAT_MESSAGE' && n.status === 'UNREAD').length;
  
   const getPathForLabel = (label: string) => {
     switch (label) {
@@ -49,14 +47,16 @@ const Footer = () => {
         location.pathname === '/chat-list' ? <IoChatbubbleEllipses /> : <IoChatbubbleEllipsesOutline />,
       label: '채팅',
       onClick: () => navigate('/chat-list'),
-      badge: totalUnreadCount > 0 ? totalUnreadCount : undefined
+      badge: unreadChatMessages > 0 ? unreadChatMessages : undefined
     },
     {
       icon:
         location.pathname === '/notification' ? <IoNotifications /> : <IoNotificationsOutline />,
       label: '알림',
       onClick: () => navigate('/notification'),
-      badge: unreadCount > 0 ? unreadCount : undefined
+      badge: notifications.filter(n => n.status === 'UNREAD').length > 0 
+        ? notifications.filter(n => n.status === 'UNREAD').length 
+        : undefined
     },
     {
       icon: location.pathname === '/my-location' ? <HiMapPin /> : <HiOutlineMapPin />,

@@ -6,15 +6,19 @@ import Loading from "../../components/common/Loading";
 import ProductImage from "../../components/features/image/ProductImage";
 import { MessageType } from "../../services/real-time/types";
 import { useWebSocket } from "../../contexts/WebSocketContext";
-import { useAppSelector } from "../../store/hooks";
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import { useChat } from "../../services/real-time/useChat";
+import { useNavigate } from "react-router-dom";
+import { markChatMessagesAsRead } from "../../store/slices/notiSlice";
 
 const ChatList: React.FC = () => {
   const { data: chatRooms, isLoading, isError, error, refetch } = useChatRooms();
   const [mockChats, setMockChats] = useState<ChatRoom[]>([]);
   const { token, user } = useAppSelector((state) => state.auth);
   const { isConnected } = useWebSocket();
-
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  
   // 웹소켓 연결 설정
   const { connect } = useChat({
     userEmail: user?.email || undefined,
@@ -173,6 +177,28 @@ const ChatList: React.FC = () => {
     }
   }, [isError, error]);
 
+  // 채팅방 클릭 처리
+  const handleChatRoomClick = (chatroomId: number) => {
+    // 채팅방 읽음 상태로 표시
+    dispatch(markChatMessagesAsRead(chatroomId));
+    
+    // 클릭한 채팅방 찾기
+    const chatRoom = (chatRooms || mockChats).find(chat => chat.chatroomId === chatroomId);
+    if (!chatRoom) return;
+    
+    // 채팅방으로 이동
+    navigate(`/chat/${chatroomId}/${chatRoom.chatname}`, {
+      state: {
+        chatroomId,
+        otherUserEmail: chatRoom.otherUserEmail,
+        nickname: chatRoom.otherUserName,
+        chatname: chatRoom.chatname,
+        productId: chatRoom.productId,
+        imageUrl: chatRoom.productImageUrl
+      }
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -200,17 +226,16 @@ const ChatList: React.FC = () => {
     <div className="flex justify-center">
       <div className="grid grid-cols-1 w-full">
         {displayChats.map((chat) => (
-          <ChatListItem
+          <ChatListItem          
             key={chat.chatroomId}
             nickname={chat.otherUserName}
             lastMessage={chat.lastMessage}
             time={formatTime(chat.lastMessageTime ?? new Date().toISOString())}
-            unreadCount={chat.unreadCount}
-            email={chat.otherUserEmail}
+            unreadCount={chat.unreadCount}    
             productImage={<ProductImage imagePath={chat.productImageUrl} />}
             chatname={chat.chatname}
-            chatroomId={chat.chatroomId}
             messageType={chat.messageType}
+            onClick={() => handleChatRoomClick(chat.chatroomId)}
           />
         ))}
       </div>
