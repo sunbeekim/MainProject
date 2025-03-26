@@ -13,6 +13,7 @@ import EmailInput from '../../components/forms/input/EmailInput';
 import LoginPasswordInput from '../../components/forms/input/LoginPasswordInput';
 import { validateEmail, validatePassword } from '../../utils/validation';
 import { toast } from 'react-toastify';
+import { isIOS } from 'react-device-detect';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -162,7 +163,12 @@ const Login = () => {
 
   return (
     <>
-   
+      {isIOS && (
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-800 px-4 py-2 rounded shadow">
+        iPhone 사용자는 Safari 공유 버튼을 눌러 <b>“홈 화면에 추가”</b> 해주세요
+      </div>
+      )}
+
       {showInstallButton && (
         <button
           className="fixed top-4 right-4 bg-purple-600 text-white px-4 py-2 rounded shadow-lg z-50"
