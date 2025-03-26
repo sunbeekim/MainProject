@@ -3,7 +3,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
-  index: ['./index.html'],
+  index: ['/index.html'],
   darkMode: 'class',
   theme: {
     // 컨테이너 설정
