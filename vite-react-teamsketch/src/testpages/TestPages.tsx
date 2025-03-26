@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import IList from '../components/features/list/IList';
+import TransactionDetail from '../pages/Transaction history/TransactionDetail';
+
 
 
 const TestPages = () => {
@@ -14,8 +15,9 @@ const TestPages = () => {
       <button onClick={() => navigate('/test/api')}>테스트 API</button>
       <button onClick={() => navigate('/test/chat')}>테스트 채팅</button>
       <div>
-        <IList />
-        x
+        <TransactionDetail />
+
+
       </div>
     </div>
   );

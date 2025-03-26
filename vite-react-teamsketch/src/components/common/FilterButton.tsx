@@ -32,6 +32,7 @@ const FilterButton = ({ onDistanceChange = () => {}, className = '' }: FilterBut
         dispatch(setDistance(newDistance));
     };
 
+
     return (
         <div className={`relative ${className}`} ref={dropdownRef}>
             {/* 필터 버튼 */}
@@ -111,6 +112,7 @@ const FilterButton = ({ onDistanceChange = () => {}, className = '' }: FilterBut
                                 </button>
                             ))}
                         </div>
+
                     </div>
                 </div>
             )}
