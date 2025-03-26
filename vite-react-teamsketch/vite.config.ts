@@ -7,31 +7,23 @@ export default defineConfig({
   base: '/', 
   plugins: [
     react(),
-    VitePWA({ 
+    VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Haru',
+        name: 'Haru - 당신의 취미를 공유하세요',
         short_name: 'Haru',
-        description: 'Haru Progressive Web App',
-        theme_color: '#ffffff',
+        theme_color: '#000000',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: '/logo192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: '/logo512.png',
             sizes: '512x512',
             type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
+          },         
         ]
       },
       workbox: {
@@ -59,6 +51,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      crypto: 'crypto-browserify'
     },
   },
   server: {   
