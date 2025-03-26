@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { receiveMessage, setError, sendMessage } from '../../store/slices/chatSlice';
 import { useSendChatMessage } from '../../services/api/serviceChatAPI';
 import Loading from '../../components/common/Loading';
+import MessageInput from '../../components/features/chat/MessageInput';
 
 const AIChatBot = () => {
   const dispatch = useAppDispatch();
   const { messages, isLoading } = useAppSelector((state) => state.chat);
   const { mutate: sendChatMessage } = useSendChatMessage();
-  const [newMessage, setNewMessage] = useState<string>('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // 메시지가 추가될 때마다 스크롤을 아래로 이동
@@ -18,14 +18,13 @@ const AIChatBot = () => {
     }
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
+  const handleSendMessage = async (message: string, file?: { type: string; url: string; name?: string }) => {
+    if (!message.trim() && !file) return;
 
     try {
-      dispatch(sendMessage(newMessage));
+      dispatch(sendMessage(message));
       
-      sendChatMessage(newMessage, {
+      sendChatMessage(message, {
         onSuccess: (response) => {
           dispatch(receiveMessage(response));
         },
@@ -36,7 +35,6 @@ const AIChatBot = () => {
         }
       });
       
-      setNewMessage('');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
       dispatch(setError(errorMessage));
@@ -85,32 +83,8 @@ const AIChatBot = () => {
         )}
       </div>
 
-      {/* 입력 폼 */}
-      <div className="p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 w-full flex-shrink-0">
-        <form onSubmit={handleSendMessage} className="flex gap-3">
-          <input
-            type="text"
-            className="flex-1 px-4 py-2 text-base rounded-xl border border-gray-200 dark:border-gray-600 
-                     bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white
-                     focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-500
-                     transition-all duration-200"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="메시지를 입력하세요..."
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-primary-500 text-white rounded-xl
-                     hover:opacity-90 transition-all duration-200 font-medium
-                     disabled:opacity-50 disabled:cursor-not-allowed
-                     focus:outline-none focus:ring-2 focus:ring-primary-500"
-            disabled={isLoading || !newMessage.trim()}
-          >
-            전송
-          </button>
-        </form>
-      </div>
+      <MessageInput onSendMessage={(message, file) => handleSendMessage(message, file)} />
+      
     </div>
   );
 };
