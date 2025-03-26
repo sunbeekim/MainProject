@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
-
+import com.example.demo.mapper.Market.UserLocationMapper;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,6 +35,7 @@ public class ProductService {
     private final ImageUploadService imageUploadService;
     private final ChatService chatService;
     private final TransactionsMapper transactionsMapper;
+    private final UserLocationMapper userLocationMapper;
 
     /** 전체 상품 목록 조회 (등록자 상품 조회 항상가능, 비로그인자 모집 중인 상품 조회 가능) **/
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getAllProducts(String email) {
@@ -393,9 +394,11 @@ public class ProductService {
 
     /** 사용자의 위치 기반으로 특정 반경 내(유동적 거리) 있는 상품을 조회 **/
     public ResponseEntity<BaseResponse<List<ProductResponse>>> getNearbyProducts(
-            Double latitude,
-            Double longitude,
-            Double distance) {
+            int distance,
+            String email) {
+
+        Double latitude = userLocationMapper.getUserLatestLocation(email).getLatitude();
+        Double longitude = userLocationMapper.getUserLatestLocation(email).getLongitude();
 
         // 디버그 확인
         System.out.println("Received - latitude: " + latitude + ", longitude: " + longitude + ", distance: " + distance);
@@ -407,7 +410,7 @@ public class ProductService {
         if (longitude == null || longitude == 0.0) {
             return ResponseEntity.badRequest().body(BaseResponse.error("경도 값이 누락되었습니다."));
         }
-        if (distance == null || distance == 0.0) {
+        if (distance == 0) {
             return ResponseEntity.badRequest().body(BaseResponse.error("거리 값이 누락되었습니다."));
         }
 

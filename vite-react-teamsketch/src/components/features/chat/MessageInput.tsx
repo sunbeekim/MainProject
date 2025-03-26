@@ -2,12 +2,12 @@ import React, { useState, useRef } from "react";
 import { FaPaperclip, FaPaperPlane } from "react-icons/fa";
 
 interface MessageInputProps {
-  onSendMessage: (message: string, file?: { type: string; url: string; name?: string }) => void;
+  onSendMessage?: (message: string, file?: { type: string; url: string; name?: string }) => void;
   onFocus?: () => void;
   onBlur?: () => void;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onFocus, onBlur }) => {
+const MessageInput: React.FC<MessageInputProps> = ({onSendMessage, onFocus, onBlur }) => {
   const [message, setMessage] = useState("");
   const [file, setFile] = useState<{ type: string; url: string; name?: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +33,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onFocus, onB
 
   const handleSend = () => {
     if (!message.trim() && !file) return;
-    onSendMessage(message, file || undefined);
+    onSendMessage?.(message, file || undefined);
     setMessage("");
     setFile(null);
   };

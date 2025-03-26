@@ -438,6 +438,15 @@ const ChatRoom: React.FC = () => {
       };
       return getTime(a.sentAt) - getTime(b.sentAt);
     });
+
+    // 테스트용 로그 추가
+    console.log('정렬 전 메시지:', [...previousMessages, ...messages]);
+    console.log('정렬 후 메시지:', sortedMessages);
+    console.log('KST 시간 변환 테스트:', {
+      'UTC 시간': new Date().toISOString(),
+      'KST 시간': new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString()
+    });
+
     setAllMessages(sortedMessages);
   }, [previousMessages, messages]);
 

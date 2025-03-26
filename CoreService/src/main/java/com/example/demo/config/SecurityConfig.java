@@ -73,10 +73,7 @@ public class SecurityConfig {
                                 "/api/core/chat/rooms/{chatroomId}/read",
                                 "/api/core/chat/rooms/{chatroomId}/approve",
                                 "/api/core/chat/messages/**",
-                                "/api/core/boards/{boardId}/members", // 게시판 멤버 조회 API 추가
-                                // 테스트
-                                "/api/core/test/**",
-                                "/api/core/test/v2/**",
+                                "/api/core/boards/{boardId}/members", // 게시판 멤버 조회 API 추가                        
                                 "/api/core/market/products/requests/approval-status"
                         ).permitAll()
                         // 관리자 전용 API
