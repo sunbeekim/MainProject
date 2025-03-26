@@ -33,6 +33,23 @@ export default defineConfig({
             purpose: 'any maskable'
           }
         ]
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB로 증가
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\.yourbackend\.com\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 // 24시간
+              }
+            }
+          }
+        ]
       }
     })
   ],
@@ -58,6 +75,12 @@ export default defineConfig({
       input: {
         main: './index.html',
       },
+      external: ['fs', 'path', 'crypto'],
+      output: {
+        manualChunks: {
+          'opencv': ['opencv.js']
+        }
+      }
     },
   },
 })

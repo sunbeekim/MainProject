@@ -7,6 +7,7 @@ interface ProductState {
   loading: boolean;
   isLoading: boolean;
   error: string | null;
+  distance: number;
   formData: Partial<IProductRegisterRequest>;
   registerForm: {
     title: string;
@@ -27,7 +28,9 @@ interface ProductState {
     startDate: string;
     endDate: string;
   };
+  selectedCategory: number | null;
 }
+
 
 const initialState: ProductState = {
   products: [],
@@ -35,6 +38,7 @@ const initialState: ProductState = {
   loading: false,
   isLoading: false,
   error: null,
+  distance: 10,
   formData: {},
   registerForm: {
     title: '',
@@ -54,7 +58,8 @@ const initialState: ProductState = {
     days: [],
     startDate: '',
     endDate: ''
-  }
+  },
+  selectedCategory: null
 };
 
 const productSlice = createSlice({
@@ -160,8 +165,14 @@ const productSlice = createSlice({
       state.registerForm.latitude = action.payload.latitude;
       state.registerForm.longitude = action.payload.longitude;
     },
+    setDistance: (state, action: PayloadAction<number>) => {
+      state.distance = action.payload;
+    },
     resetProductState: () => {
       return initialState;
+    },
+    setSelectedCategory: (state, action: PayloadAction<number | null>) => {
+      state.selectedCategory = action.payload;
     }
   }
 });
@@ -182,7 +193,9 @@ export const {
   setMeetingPlace,
   setAddress,
   setLocation,
-  resetProductState
+  resetProductState,
+  setDistance,
+  setSelectedCategory
 } = productSlice.actions;
 
 export default productSlice.reducer;

@@ -1,10 +1,8 @@
-import { useState, memo, useEffect } from 'react';
+import { useState, memo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FloatingButton from '../../components/common/FloatingButton';
 import Category from '../../components/common/CategoryIcon';
-import { mockAPI } from '../../mock/mockAPI';
-import { IProduct as IMockProduct } from '../../mock/mockData';
 import { IProduct } from '../../types/product';
 import Card from '../../components/features/card/Card';
 import {
@@ -18,36 +16,10 @@ import { toast } from 'react-toastify';
 
 import FilterButton from '../../components/common/FilterButton';
 import { getProductNearBy } from '../../services/api/productAPI';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { RootState } from '../../store/store';
+import { setDistance } from '../../store/slices/productSlice';
 
-// mock 데이터를 실제 API 응답 타입으로 변환하는 함수
-const convertMockToProduct = (mockProduct: IMockProduct): IProduct => ({
-  id: mockProduct.id,
-  productCode: `MOCK-${mockProduct.id}`,
-  title: mockProduct.title,
-  description: mockProduct.description,
-  price: mockProduct.price,
-  email: 'mock@example.com',
-  categoryId: 1, // 기본 카테고리 ID
-  hobbyId: 1, // 기본 취미 ID
-  transactionType: '대면',
-  registrationType: '판매',
-  maxParticipants: mockProduct.maxParticipants,
-  currentParticipants: mockProduct.currentParticipants,
-  days: [],
-  startDate: new Date().toISOString(),
-  endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  latitude: null,
-  longitude: null,
-  meetingPlace: mockProduct.location,
-  address: mockProduct.location,
-  createdAt: mockProduct.createdAt,
-  imagePaths: [mockProduct.image],
-  thumbnailPath: mockProduct.image,
-  nickname: 'Mock User',
-  bio: null,
-  dopamine: mockProduct.dopamine,
-  visible: true
-});
 
 const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) => {
   const imageId = thumbnailPath ? extractImageIdFromPath(thumbnailPath) : null;
@@ -101,68 +73,54 @@ const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) 
 const MarketList = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [categoryName, setCategoryName] = useState<string>('전체');
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [products, setProducts] = useState<IProduct[]>([]);
-  const [selectedDistance, setSelectedDistance] = useState<number>(10);
+  const distance = useAppSelector((state: RootState) => state.product.distance);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   // 상품 Query - 카테고리 선택에 따라 다른 API 호출
   const { data: queryProducts = [], isLoading, error } = useQuery({
-    queryKey: ['products', selectedCategory, selectedDistance],
+    queryKey: ['products', selectedCategory, distance],
     queryFn: async () => {
       try {
         let response;
 
         // 거리 기반 조회가 선택된 경우
-        if (selectedDistance > 0) {
-          response = await getProductNearBy(selectedDistance);
+        if (distance > 0) {
+          response = await getProductNearBy(distance);
+          // 카테고리가 선택된 경우 필터링 적용
+          if (selectedCategory) {
+            const filteredProducts = response.data.filter((product: IProduct) => 
+              selectedCategory === 0 ? true : product.categoryId === selectedCategory
+            );
+            return filteredProducts;
+          }
         }
         // 카테고리가 선택되었으면 카테고리별 조회, 아니면 전체 조회
         else if (selectedCategory) {
           response = await getProductsByCategory(selectedCategory);
         } else {
           response = await getProducts();
-        }
-
-        console.log('response', response);
-        // 응답 데이터가 없으면 목 데이터 사용
-        if (!response.data || response.data.length === 0) {
-          // 카테고리가 선택된 경우 해당 카테고리의 목 데이터만 필터링
-          if (selectedCategory) {
-            const mockResponse = await mockAPI.market.getProductsByCategory(categoryName);
-            return mockResponse.data.products.map(convertMockToProduct);
-          } else {
-            const mockResponse = await mockAPI.market.getLatestProducts();
-            return mockResponse.data.products.map(convertMockToProduct);
-          }
-        }
+        }       
 
         return response.data || [];
       } catch (error) {
         console.error('API 요청 실패:', error);
         // 에러 발생 시 한 번만 토스트 메시지 표시
         toast.error('상품 목록을 불러오는 중 오류가 발생했습니다.');
-
-        // 에러 발생 시 목 데이터 사용
-        if (selectedCategory) {
-          const mockResponse = await mockAPI.market.getProductsByCategory(categoryName);
-          return mockResponse.data.products.map(convertMockToProduct);
-        } else {
-          const mockResponse = await mockAPI.market.getLatestProducts();
-          return mockResponse.data.products.map(convertMockToProduct);
-        }
       }
     },
     gcTime: 60000,
     staleTime: 30000
   });
 
-  // queryProducts가 변경될 때마다 products 상태 업데이트
+  // 상품 목록 상태 업데이트
   useEffect(() => {
     if (queryProducts) {
       setProducts(queryProducts);
     }
-  }, [queryProducts?.length]); // queryProducts의 길이만 의존성으로 사용
+  }, [queryProducts.length]);
 
   // 페이지 로딩 상태 관리
   useEffect(() => {
@@ -187,11 +145,8 @@ const MarketList = () => {
     navigate('/product/register');
   };
 
-  const handleCategorySelect = (categoryId: number, name: string) => {
-    setSelectedCategory(categoryId === 0 ? null : categoryId);
-    setCategoryName(name);
-    setIsPageLoading(true); // 카테고리 변경 시 로딩 상태로 변경
-    console.log(`카테고리 선택: ${name} (ID: ${categoryId})`);
+  const handleCategorySelect = (categoryId: number) => {
+    setSelectedCategory(categoryId);
   };
 
   const handleProductClick = (product: IProduct) => {
@@ -226,17 +181,21 @@ const MarketList = () => {
     });
   };
 
-  const handleDistanceChange = async (newDistance: number) => {
+  const handleDistanceChange = useCallback(async (newDistance: number) => {
+    if (loading) return;
+    setLoading(true);
     try {
-      setIsPageLoading(true);
-      setSelectedDistance(newDistance);
+      dispatch(setDistance(newDistance));
+      const response = await getProductNearBy(newDistance);
+      if (response.data) {
+        setProducts(response.data);
+      }
     } catch (error) {
-      console.error('위치 기반 상품 조회 중 오류 발생:', error);
-      toast.error('상품 목록을 불러오는 중 오류가 발생했습니다.');
+      console.error('거리 기반 상품 조회 실패:', error);
     } finally {
-      setIsPageLoading(false);
+      setLoading(false);
     }
-  };
+  }, [loading]);
 
   if (isPageLoading) {
     return (
@@ -249,14 +208,14 @@ const MarketList = () => {
 
   return (
     <div className="w-full mt-4">
-      
-      <Category categorySize="md" onCategorySelect={handleCategorySelect} />
       <div className="flex justify-end mt-4 mr-4">
         <FilterButton onDistanceChange={handleDistanceChange} />
-      </div>
+      </div>      
+      <Category categorySize="md" onCategorySelect={handleCategorySelect} />
+      
       {/* 상품 목록 */}
       <div className="mt-4 px-4 justify-end">      
-        <div className="no-scrollbar md:scrollbar-thin md:scrollbar-thumb-gray-400 md:scrollbar-track-gray-100">
+        <div className="no-scrollbar md:scrollbar-thin md:scrollbar-track-gray-100 md:scrollbar-thumb-gray-400">
           {products.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               해당 카테고리에 상품이 없습니다.

@@ -286,10 +286,13 @@ const ChatRoom: React.FC = () => {
   useEffect(() => {
     if (chatContainerRef.current) {
       const scrollToBottom = () => {
-        chatContainerRef.current?.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
-          behavior: 'smooth'
-        });
+        // setTimeout을 사용하여 DOM 업데이트 후 스크롤 실행
+        setTimeout(() => {
+          chatContainerRef.current?.scrollTo({
+            top: chatContainerRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }, 100);
       };
       
       // 키보드가 나타나거나 사라질 때 스크롤 조정
@@ -463,7 +466,7 @@ const ChatRoom: React.FC = () => {
     return (
       <div className="flex flex-col h-full">
         {/* 채팅방 헤더는 항상 표시 */}
-        <div className="bg-gradient-to-r from-primary-500 to-primary-600 dark:from-gray-800 dark:to-gray-700 
+        <div className="fixed bg-gradient-to-r from-primary-500 to-primary-600 dark:from-gray-800 dark:to-gray-700 
           p-3 flex items-center justify-between shadow-md z-10">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/30 shrink-0">
@@ -574,6 +577,16 @@ const ChatRoom: React.FC = () => {
         // 텍스트 메시지 처리
         await sendMessage(chatInfo?.productId || 0, message.trim(), MessageType.TEXT);
       }
+
+      // 메시지 전송 후 스크롤 처리
+      setTimeout(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTo({
+            top: chatContainerRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
     } catch (error) {
       console.error('메시지 전송 중 오류:', error);
       toast.error('메시지 전송에 실패했습니다.');
@@ -642,7 +655,6 @@ const ChatRoom: React.FC = () => {
         )}
       </div>
 
-     
         {/* 채팅 메시지 영역 */}
         <div
           ref={chatContainerRef}
