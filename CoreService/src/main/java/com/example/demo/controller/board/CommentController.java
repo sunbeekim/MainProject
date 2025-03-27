@@ -4,7 +4,7 @@ import com.example.demo.dto.board.CommentCreateRequest;
 import com.example.demo.dto.board.CommentResponse;
 import com.example.demo.dto.board.CommentUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
-import com.example.demo.service.CommentService;
+import com.example.demo.service.board.CommentService;
 import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

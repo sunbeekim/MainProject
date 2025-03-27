@@ -10,7 +10,7 @@ import com.example.demo.mapper.Market.ProductImageMapper;
 import com.example.demo.mapper.Market.TransactionsMapper;
 import com.example.demo.model.Market.Product;
 import com.example.demo.model.Market.ProductImage;
-import com.example.demo.service.ChatService;
+import com.example.demo.service.chat.ChatService;
 import com.example.demo.service.NotificationService;
 import com.example.demo.util.BaseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;

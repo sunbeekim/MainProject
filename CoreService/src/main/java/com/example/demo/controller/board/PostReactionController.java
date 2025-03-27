@@ -1,12 +1,11 @@
 package com.example.demo.controller.board;
 
-import com.example.demo.dto.board.PostReactionRequest;
 import com.example.demo.dto.board.PostReactionResponse;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.mapper.board.PostMapper;
 import com.example.demo.mapper.board.PostReactionMapper;
 import com.example.demo.model.board.PostReaction;
-import com.example.demo.service.PostReactionService;
+import com.example.demo.service.board.PostReactionService;
 import com.example.demo.util.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

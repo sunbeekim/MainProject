@@ -1,0 +1,28 @@
+-- BoardMember 테이블에 복합 인덱스 추가
+ALTER TABLE board_members ADD INDEX idx_board_member (board_id, user_email);
+
+-- BoardPost 테이블에 인덱스 추가
+ALTER TABLE board_posts ADD INDEX idx_board_posts_board_id (board_id);
+
+-- BoardComment 테이블에 인덱스 추가
+ALTER TABLE board_comments ADD INDEX idx_comments_post_id (post_id);
+ALTER TABLE board_comments ADD INDEX idx_comments_parent_id (parent_id);
+
+-- BoardReaction 테이블에 인덱스 추가
+ALTER TABLE board_reactions ADD INDEX idx_reactions_reference (reference_id, reference_type);
+
+
+-- BoardMember 테이블의 role 필드에 CHECK 제약 조건 추가
+ALTER TABLE board_members ADD CONSTRAINT chk_member_role CHECK (role IN ('HOST', 'ADMIN', 'MEMBER'));
+
+-- BoardMember 테이블의 status 필드에 CHECK 제약 조건 추가
+ALTER TABLE board_members ADD CONSTRAINT chk_member_status CHECK (status IN ('ACTIVE', 'PENDING', 'BANNED'));
+
+-- 반응 테이블에 사용자당 하나의 반응만 허용하도록 유니크 제약 조건 추가
+ALTER TABLE board_reactions ADD CONSTRAINT unq_user_reaction UNIQUE (user_email, reference_id, reference_type, reaction_type);
+
+-- BoardPost 테이블에 is_deleted 필드 추가
+ALTER TABLE board_posts ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+
+-- BoardComment 테이블에 is_deleted 필드 추가
+ALTER TABLE board_comments ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;

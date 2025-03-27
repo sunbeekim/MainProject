@@ -1,0 +1,21 @@
+-- 게시글 반응 테이블 생성
+CREATE TABLE board_post_reactions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT NOT NULL,
+    user_email VARCHAR(100) NOT NULL,
+    reaction_type VARCHAR(20) NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    
+    FOREIGN KEY (post_id) REFERENCES board_posts(id),
+    FOREIGN KEY (user_email) REFERENCES users(email),
+    
+    -- 한 게시글에 사용자가 한 종류의 반응만 할 수 있도록 제약
+    UNIQUE KEY uk_post_user (post_id, user_email)
+);
+
+-- 인덱스 추가 (게시글별 반응 조회 성능 향상)
+CREATE INDEX idx_post_reactions ON board_post_reactions(post_id);
+
+-- 인덱스 추가 (사용자별 반응 조회 성능 향상)
+CREATE INDEX idx_user_reactions ON board_post_reactions(user_email);

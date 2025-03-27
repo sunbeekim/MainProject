@@ -1,0 +1,22 @@
+-- 게시글 테이블 검색 및 정렬 성능 향상을 위한 인덱스 추가
+
+-- 게시판별 게시글 조회를 위한 인덱스
+CREATE INDEX idx_board_posts_board_id ON board_posts(board_id);
+
+-- 작성자별 게시글 조회를 위한 인덱스
+CREATE INDEX idx_board_posts_author_email ON board_posts(author_email);
+
+-- 생성일 기준 정렬 및 필터링을 위한 인덱스
+CREATE INDEX idx_board_posts_created_at ON board_posts(created_at);
+
+-- 제목 검색을 위한 인덱스
+CREATE INDEX idx_board_posts_title ON board_posts(title(255));
+
+-- 조회수 기준 정렬을 위한 인덱스
+CREATE INDEX idx_board_posts_view_count ON board_posts(view_count);
+
+-- 좋아요 수 기준 정렬을 위한 인덱스
+CREATE INDEX idx_board_posts_like_count ON board_posts(like_count);
+
+-- 댓글 수 기준 정렬을 위한 인덱스
+CREATE INDEX idx_board_posts_comment_count ON board_posts(comment_count);
