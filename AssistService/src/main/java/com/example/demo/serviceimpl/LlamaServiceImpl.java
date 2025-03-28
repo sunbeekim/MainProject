@@ -47,7 +47,7 @@ public class LlamaServiceImpl {
             String[] sentences = text.split("(?<=[.!?])\\s+");
             
             for (String sentence : sentences) {
-                if (currentChunk.length() + sentence.length() > 300) { // 여유 있게 300자로 제한
+                if (currentChunk.length() + sentence.length() > 500) { // 여유 있게 500자로 제한
                     chunks.add(currentChunk.toString());
                     currentChunk = new StringBuilder();
                 }
