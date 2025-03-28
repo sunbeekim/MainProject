@@ -228,7 +228,7 @@ const PDLayout: React.FC<PDLayoutProps> = ({
         {/* 요일 선택 */}
         <GridItem>
           <BaseLabelBox label="요일">
-            <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className="p-3 bg-white rounded-2xl shadow-sm border border-gray-100">
               <DaySelect onDaySelect={() => {}} selectedDays={day || []} disabled={true} />
             </div>
           </BaseLabelBox>
