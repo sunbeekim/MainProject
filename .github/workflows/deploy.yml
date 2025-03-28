@@ -285,7 +285,7 @@ jobs:
           docker run -d --name gateway-container \
             --network teamsketch-network \
             -p 8080:8080 \
-            -e SPRING_PROFILES_ACTIVE=prod \
+            -e SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }} \
             ${{ secrets.DOCKER_HUB_USERNAME }}/gateway-service:latest
 
           # CoreService 실행 (Redis 포함)
@@ -331,7 +331,7 @@ jobs:
           docker run -d --name assist-container \
             --network teamsketch-network \
             -p 8082:8082 \
-            -e SPRING_PROFILES_ACTIVE=prod \
+            -e SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }} \
             -e SMS_API_KEY=${{ secrets.SMS_API_KEY }} \
             -e SMS_API_SECRET=${{ secrets.SMS_API_SECRET }} \
             -e SMS_API_URL=${{ secrets.SMS_API_URL }} \
