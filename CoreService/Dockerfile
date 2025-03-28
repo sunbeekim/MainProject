@@ -23,6 +23,7 @@ RUN echo "bind 0.0.0.0\nport 6379\nprotected-mode no\ndaemonize yes\nsupervised 
 # Redis 로그 디렉토리 생성
 RUN mkdir -p /var/log/redis && chmod 777 /var/log/redis
 
+ENV SPRING_PROFILES_ACTIVE=prod
 ENV SPRING_REDIS_HOST=localhost
 ENV SPRING_REDIS_PORT=6379
 
