@@ -251,11 +251,7 @@ public class LlamaServiceImpl {
             String englishResponse = jsonResponse.get("response").asText();
             System.out.println("영어 응답: " + englishResponse);
 
-            // 영어 -> 한글 번역
-            String koreanResponse = translate(response.toString(), "en", "ko");
-            System.out.println("한글 번역 응답: " + koreanResponse);
-
-            return koreanResponse;  // JSON 감싸지 않고 직접 반환
+            return englishResponse;  // 영어 응답만 반환
             
         } catch (Exception e) {
             System.out.println("=== LlamaService 에러 발생 ===");
