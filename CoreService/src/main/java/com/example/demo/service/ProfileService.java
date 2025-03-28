@@ -263,7 +263,7 @@ public class ProfileService {
      */
     @Transactional
     public PasswordChangeResponse changePassword(String email, PasswordChangeRequest request) {
-        // 사용자 존재 여부 확인 이메일 존재하는지 확인하고고
+        // 사용자 존재 여부 확인 이메일 존재하는지 확인하고
         User user = userMapper.findByEmail(email);
         if (user == null) {
             return PasswordChangeResponse.builder()
@@ -286,10 +286,10 @@ public class ProfileService {
                         .build();
             }
         } else { // if문이 성공했으니 여기는 건너뜁니다다
-            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber();
+            String verifyPhoneNumber = userMapper.findByEmail(request.getEmail()).getPhoneNumber().trim();
             System.out.println(
                     "VerifyPhoneNumber: " + verifyPhoneNumber + "\n" + "getPhoneNumber:" + request.getPhoneNumber());
-            if (verifyPhoneNumber != request.getPhoneNumber()) {
+            if (!verifyPhoneNumber.equals(request.getPhoneNumber())) {
                 return PasswordChangeResponse.builder()
                         .success(false)
                         .message("전화번호가 일치하지 않습니다.")

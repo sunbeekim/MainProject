@@ -4,8 +4,8 @@ import {IPasswordChange} from '../../types/passwordChange'
 // 초기 상태값
 const initialState: IPasswordChange = {
     isToken: '',  // token 값 (optional)
-  email: '',
-  phoneNumber: '',
+    email: '',
+    phoneNumber: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
