@@ -197,7 +197,7 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest || exit 1
           # 로그아웃
           docker logout
-
+      
   build-and-deploy-frontend:
     runs-on: self-hosted
     needs: build-and-deploy-assist
@@ -291,6 +291,7 @@ jobs:
           docker run -d --name core-container \
             --network teamsketch-network \
             -p 8081:8081 \
+            -e SPRING_PROFILES_ACTIVE=prod \
             -p 6379:6379 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/core-service:latest
             
@@ -330,6 +331,15 @@ jobs:
           docker run -d --name assist-container \
             --network teamsketch-network \
             -p 8082:8082 \
+            -e SPRING_PROFILES_ACTIVE=prod \
+            -e SMS_API_KEY=${{ secrets.SMS_API_KEY }} \
+            -e SMS_API_SECRET=${{ secrets.SMS_API_SECRET }} \
+            -e SMS_API_URL=${{ secrets.SMS_API_URL }} \
+            -e NAVER_CLOUD_CHATBOT_SECRET_KEY=${{ secrets.NAVER_CLOUD_CHATBOT_SECRET_KEY }} \
+            -e NAVER_CLOUD_CHATBOT_API_URL=${{ secrets.NAVER_CLOUD_CHATBOT_API_URL }} \
+            -e NAVER_CLOUD_OCR_SECRET_KEY=${{ secrets.NAVER_CLOUD_OCR_SECRET_KEY }} \
+            -e NAVER_CLOUD_OCR_API_URL=${{ secrets.NAVER_CLOUD_OCR_API_URL }} \
+            -e KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }} \
             ${{ secrets.DOCKER_HUB_USERNAME }}/assist-service:latest
             
           docker run -d --name fastapi-container \
