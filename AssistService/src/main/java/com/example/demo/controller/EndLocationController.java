@@ -9,6 +9,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -16,13 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 public class EndLocationController {
     
     @Value("${kakao.rest-api-key}")
-    private String kakaoRestApiKey;
+    private String kakaoRestApiKey;    
     
     private final RestTemplate restTemplate = new RestTemplate();
     
     @GetMapping("/search")
     public ResponseEntity<?> searchAddress(@RequestParam String query) {
         try {
+            
          
             
             String kakaoUrl = "https://dapi.kakao.com/v2/local/search/keyword.json"
@@ -31,7 +33,7 @@ public class EndLocationController {
             
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "KakaoAK " + kakaoRestApiKey);
-            
+
             HttpEntity<?> entity = new HttpEntity<>(headers);
             
             log.info("Requesting Kakao API with URL: {}", kakaoUrl);
