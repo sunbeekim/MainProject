@@ -47,7 +47,7 @@ public class LlamaServiceImpl {
             String[] sentences = text.split("(?<=[.!?])\\s+");
             
             for (String sentence : sentences) {
-                if (currentChunk.length() + sentence.length() > 500) { // 여유 있게 500자로 제한
+                if (currentChunk.length() + sentence.length() > 300) { // 여유 있게 300자로 제한
                     chunks.add(currentChunk.toString());
                     currentChunk = new StringBuilder();
                 }
@@ -78,8 +78,8 @@ public class LlamaServiceImpl {
 
     private String translateChunk(String text, String sourceLang, String targetLang) throws Exception {
         String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
-        String apiKey = "94dea587aaa15e058ead";
-        String email = "rlatjsql12@gmail.com";
+        String apiKey = "f3bddd536ff4fe3b5e96";
+        String email = "rlatjsql11@gmail.com";
         // rlatjsql11@gmail.com f3bddd536ff4fe3b5e96
         // rlatjsql12@gmail.com 94dea587aaa15e058ead
         String urlStr = String.format(
