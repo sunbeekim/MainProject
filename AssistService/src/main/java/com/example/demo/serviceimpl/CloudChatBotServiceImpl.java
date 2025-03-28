@@ -25,10 +25,10 @@ public class CloudChatBotServiceImpl implements CloudChatBotService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${naver.cloud.chatbot.secret-key}")
+    @Value("${naver.cloud.chatbot.secret.key}")
     private String secretKey;
 
-    @Value("${naver.cloud.chatbot.api-url}")
+    @Value("${naver.cloud.chatbot.api.url}")
     private String apiUrl;
 
     @Override
