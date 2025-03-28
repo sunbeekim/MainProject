@@ -10,15 +10,6 @@ import asyncio
 import logging
 from datetime import datetime
 
-# 로깅 설정
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler('llama_server.log'),
-        logging.StreamHandler()
-    ]
-)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
@@ -109,7 +100,7 @@ Notification: Notification center
 Location: Set my location
 My: User profile and settings
 Account and Authentication
-Login (/login): Log in with your email and password
+Login (/login): Login with your email and password
 Sign up (/signup): Create a new account
 Forgot password (/forgotpassword): Reset a forgotten password
 Change password (/change-password): Change your existing password
@@ -146,7 +137,7 @@ Customer Center (/cs-list): Customer support menu
 Inquiry History (/inquiry-history): User inquiry history
 Frequently Asked Questions (FAQ)
 Login/Account Related
-How do I log in?
+How do I login?
 When you launch the app, a login screen will appear. Enter your email and password.
 I forgot my password.
 You can reset it through the "Find Password" link on the login screen.
