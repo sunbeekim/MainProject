@@ -126,8 +126,9 @@ public class LlamaServiceImpl {
         try {
             // CloudChatBot 먼저 시도            
             try {
-                response = cloudChatBotServiceImpl.getResponse(message);
-                if (response != null && !response.trim().isEmpty()) {
+                response = cloudChatBotServiceImpl.getResponse(message).trim();
+                System.out.println("CloudChatBot 응답: " + response);
+                if (response != null && !response.trim().isEmpty() && !response.equals("false")) {
                     // CloudChatBot 응답이 성공적으로 왔을 때 DB에 저장
                     saveChat(message, response, sessionId);
                     return response;
