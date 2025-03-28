@@ -8,8 +8,6 @@ WORKDIR /app
 COPY build/libs/*.jar app.jar
 COPY src/main/resources/application.properties application.properties
 
-ENV SPRING_PROFILES_ACTIVE=prod
-
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"] 
