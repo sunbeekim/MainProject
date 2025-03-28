@@ -13,7 +13,6 @@ import java.util.*;
 
 import com.example.demo.dao.ChatMessageDAO;
 import com.example.demo.model.ChatMessage;
-import org.springframework.beans.factory.annotation.Value;
 
 @Service
 @RequiredArgsConstructor
@@ -22,14 +21,15 @@ public class LlamaServiceImpl {
     private final ChatMessageDAO chatMessageDAO;
     private final ObjectMapper objectMapper = new ObjectMapper();
     
-    @Value("${spring.profiles.active:local}")
-    private String activeProfile;
+    
+    private String activeProfile = "prod";
 
     final String gatewayUri = "prod".equals(activeProfile)
             ? "http://gateway-container:8080"
             : "http://localhost:8080";
 
     private String translate(String text, String sourceLang, String targetLang) {
+        System.out.println("gatewayUri: " + gatewayUri);
         System.out.println("=== 번역 시작 ===");
         System.out.println(String.format("%s -> %s 번역", sourceLang, targetLang));
         System.out.println("번역할 텍스트: " + text);
