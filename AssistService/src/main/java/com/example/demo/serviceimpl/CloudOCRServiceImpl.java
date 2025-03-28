@@ -19,10 +19,10 @@ public class CloudOCRServiceImpl {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${naver.cloud.ocr.secret-key}")
+    @Value("${naver.cloud.ocr.secret.key}")
     private String secretKey;
 
-    @Value("${naver.cloud.ocr.url}")
+    @Value("${naver.cloud.ocr.api.url}")
     private String apiUrl;
 
     public String processImage(MultipartFile file) {

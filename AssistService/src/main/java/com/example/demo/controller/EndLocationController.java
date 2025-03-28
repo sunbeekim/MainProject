@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/assist/location")
 public class EndLocationController {
     
-    @Value("${kakao.rest-api-key}")
+    @Value("${kakao.rest.api.key}")
     private String kakaoRestApiKey;    
     
     private final RestTemplate restTemplate = new RestTemplate();
