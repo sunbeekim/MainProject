@@ -280,8 +280,8 @@ jobs:
           docker network create teamsketch-network || true
 
       - name: Deploy containers
+        shell: /usr/bin/bash -e {0}
         run: |
-          # 게이트웨이 서버 먼저 실행
           docker run -d --name gateway-container \
             --network teamsketch-network \
             -p 8080:8080 \
