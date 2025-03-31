@@ -48,13 +48,6 @@ public class ChatService {
         
         String sellerEmail = product.getEmail();
         
-        if (sellerEmail.equals(userEmail)) {
-            return ChatRoomResponse.builder()
-                    .success(false)
-                    .message("자신이 등록한 상품에 대해 채팅을 시작할 수 없습니다.")
-                    .build();
-        }
-        
         String requestEmail = userEmail;
         
         // 모집 완료된 상품의 경우 승인된 사용자만 채팅방 접근 허용
