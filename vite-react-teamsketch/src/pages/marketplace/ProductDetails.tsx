@@ -112,7 +112,13 @@ const ProductDetails = () => {
   // 이미지 URL 처리
   const processedImages = productData.images.map((imagePath: string) => {
     if (imagePath.startsWith('http')) return imagePath;
-    console.log('imagePath', imagePath);
+    
+    // imagePath가 이미 /api로 시작하는 경우
+    if (imagePath.startsWith('/api')) {
+      return `${import.meta.env.VITE_API_URL}${imagePath}`;
+    }
+    
+    // 그 외의 경우 기존 로직 유지
     return `${import.meta.env.VITE_API_URL}/api/core/market/images${imagePath}`;
   });
 
