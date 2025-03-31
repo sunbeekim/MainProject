@@ -24,13 +24,15 @@ interface NotificationState {
   notifications: INotification[];
   unreadCount: number;
   lastProcessedId: string;
+  unreadChatCount: number;
 }
 
 // 초기 상태
 const initialState: NotificationState = {
   notifications: [],
   unreadCount: 0,
-  lastProcessedId: ''
+  lastProcessedId: '',
+  unreadChatCount: 0
 };
 
 // 알림 슬라이스 생성
@@ -71,12 +73,17 @@ const notificationSlice = createSlice({
     // 특정 채팅방의 모든 메시지 읽음 처리
     markChatMessagesAsRead: (state, action: PayloadAction<number>) => {
       const chatroomId = action.payload;
+      let readCount = 0;
+      
       state.notifications.forEach(n => {
         if (n.type === 'CHAT_MESSAGE' && n.chatroomId === chatroomId && n.status === 'UNREAD') {
           n.status = 'READ';
-          state.unreadCount = Math.max(0, state.unreadCount - 1);
+          readCount++;
         }
       });
+      
+      state.unreadCount = Math.max(0, state.unreadCount - readCount);
+      state.unreadChatCount = Math.max(0, state.unreadChatCount - readCount);
     },
     
     // 알림 삭제
@@ -98,6 +105,12 @@ const notificationSlice = createSlice({
       state.notifications = [];
       state.unreadCount = 0;
       state.lastProcessedId = '';
+      state.unreadChatCount = 0;
+    },
+    
+    // 안읽은 채팅 메시지 수 업데이트
+    updateUnreadChatCount: (state, action: PayloadAction<number>) => {
+      state.unreadChatCount = action.payload;
     }
   }
 });
@@ -110,7 +123,8 @@ export const {
   markChatMessagesAsRead,
   removeNotification,
   updateLastProcessedId,
-  clearNotifications
+  clearNotifications,
+  updateUnreadChatCount
 } = notificationSlice.actions;
 
 // 리듀서 내보내기

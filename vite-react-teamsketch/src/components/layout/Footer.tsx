@@ -14,11 +14,8 @@ import { useAppSelector } from '../../store/hooks';
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { notifications } = useAppSelector((state) => state.noti);
+  const { notifications, unreadChatCount } = useAppSelector((state) => state.noti);
 
-  // CHAT_MESSAGE 타입의 알림만 카운트
-  const unreadChatMessages = notifications.filter(n => n.type === 'CHAT_MESSAGE' && n.status === 'UNREAD').length;
- 
   const getPathForLabel = (label: string) => {
     switch (label) {
       case '마켓':
@@ -47,7 +44,7 @@ const Footer = () => {
         location.pathname === '/chat-list' ? <IoChatbubbleEllipses /> : <IoChatbubbleEllipsesOutline />,
       label: '채팅',
       onClick: () => navigate('/chat-list'),
-      badge: unreadChatMessages > 0 ? unreadChatMessages : undefined
+      badge: unreadChatCount > 0 ? unreadChatCount : undefined
     },
     {
       icon:

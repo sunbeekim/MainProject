@@ -18,7 +18,16 @@ const ChatList: React.FC = () => {
   const { isConnected } = useWebSocket();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { notifications } = useAppSelector((state) => state.noti);
+  const lastNotification = notifications[0]; // 가장 최근 알림
   
+  // 새로운 채팅 메시지 알림이 오면 채팅방 목록 업데이트
+  useEffect(() => {
+    if (lastNotification && lastNotification.type === 'CHAT_MESSAGE') {
+      refetch(); // 채팅방 목록 새로고침
+    }
+  }, [lastNotification, refetch]);
+
   // 웹소켓 연결 설정
   const { connect } = useChat({
     userEmail: user?.email || undefined,
