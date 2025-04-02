@@ -8,10 +8,12 @@ import { ChatRoom as ChatRoomType, getChatRoomDetail } from '../../services/api/
 import { axiosInstance } from '../../services/api/axiosInstance';
 import { apiConfig } from '../../services/api/apiConfig';
 import { toast } from 'react-toastify';
-import { useUserProfileImage } from '../../services/api/profileImageAPI';
 import { useAppSelector } from '../../store/hooks';
 import { useProductByProductId, getApprovalStatus, getProductByProductId } from '../../services/api/productAPI';
 import { IconMap } from '../../components/common/Icons';
+import ProductImage from '../../components/features/image/ProductImage';
+import ProfileImage from '../../components/features/image/ProfileImage';
+
 
 const ChatRoom: React.FC = () => {
   const { chatroomId } = useParams();
@@ -64,8 +66,6 @@ const ChatRoom: React.FC = () => {
     }
   }, [productData]);
 
-  
-
   // 카테고리와 취미 이름 찾기
   const mainCategory = useMemo(() => {
     const categoryId = chatInfo?.productInfo?.categoryId;
@@ -83,25 +83,6 @@ const ChatRoom: React.FC = () => {
     )?.hobbyName || '';
   }, [constantHobbies, chatInfo?.productInfo?.hobbyId]);
 
-  // 상대방 프로필 이미지 조회
-  const { data: profileImage, isLoading: isLoadingProfile } = useUserProfileImage(chatInfo?.otherUserName || '');
-
-  // 프로필 이미지 URL 생성
-  const profileImageUrl = useMemo(() => {
-    if (profileImage?.status === 'success' && profileImage.data.response) {
-      return URL.createObjectURL(profileImage.data.response);
-    }
-    return 'https://picsum.photos/600/400'; // 기본 이미지
-  }, [profileImage]);
-
-  // 컴포넌트 언마운트 시 URL 정리
-  useEffect(() => {
-    return () => {
-      if (profileImageUrl && profileImageUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(profileImageUrl);
-      }
-    };
-  }, [profileImageUrl]);
 
   // 컴포넌트 마운트 시 연결 시도 (한 번만)
   useEffect(() => {
@@ -462,7 +443,7 @@ const ChatRoom: React.FC = () => {
   }, [previousMessages, messages]);
 
   // 로딩 상태 표시 부분 수정
-  if (isLoading || isConnecting || isLoadingMessages || isLoadingProfile) {
+  if (isLoading || isConnecting || isLoadingMessages ) {
     return (
       <div className="flex flex-col h-full">
         {/* 채팅방 헤더는 항상 표시 */}
@@ -470,14 +451,8 @@ const ChatRoom: React.FC = () => {
           p-3 flex items-center justify-between shadow-md z-10">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/30 shrink-0">
-              <img
-                src={profileImageUrl}
-                alt="프로필"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = 'https://picsum.photos/600/400';
-                }}
+              <ProductImage 
+                imagePath={chatInfo?.productImageUrl || ''} 
               />
             </div>
             <div className="flex flex-col">
@@ -593,7 +568,6 @@ const ChatRoom: React.FC = () => {
     }
   };
 
-  console.log("chatInfo",chatInfo);
   console.log("userEmail",userEmail);
   return (
     <div className="relative flex flex-col h-full bg-gray-50 dark:bg-gray-900">
@@ -602,14 +576,8 @@ const ChatRoom: React.FC = () => {
         p-3 flex items-center justify-between shadow-md z-10 flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/30 shrink-0">
-            <img
-              src={profileImageUrl}
-              alt="프로필"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = 'https://picsum.photos/600/400';
-              }}
+            <ProductImage 
+              imagePath={chatInfo?.productImageUrl || ''} 
             />
           </div>
           <div className="flex flex-col">
@@ -664,14 +632,22 @@ const ChatRoom: React.FC = () => {
           {allMessages.map((msg, index) => (
             <div key={msg.messageId || index} className="group relative">
               <div className={`flex flex-col ${msg.senderEmail === userEmail ? 'items-end' : 'items-start'}`}>
-                {/* 닉네임 표시 */}
+                {/* 상대방 메시지일 때만 프로필 이미지와 닉네임 표시 */}
                 {msg.senderEmail !== userEmail && (
-                  <span className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-1">
-                    {chatInfo?.otherUserName || '알 수 없음'}
-                  </span>
+                  <div className="flex items-start space-x-2 mb-1">
+                    <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-primary-100 dark:ring-primary-900 flex-shrink-0">
+                      <ProfileImage 
+                        nickname={chatInfo?.otherUserName || ''}                     
+                      />
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      {chatInfo?.otherUserName || '알 수 없음'}
+                    </span>
+                  </div>
                 )}
+                
                 {/* 메시지와 시간을 감싸는 컨테이너 */}
-                <div className="flex items-end gap-2">
+                <div className={`flex items-end gap-2 ${msg.senderEmail !== userEmail ? 'ml-10' : ''}`}>
                   {/* 시간을 왼쪽에 표시 (내가 보낸 메시지일 경우) */}
                   {msg.senderEmail === userEmail && (
                     <span className="text-xs text-gray-500 flex-shrink-0">
@@ -682,7 +658,7 @@ const ChatRoom: React.FC = () => {
                   <div className={`max-w-[80%] rounded-2xl p-3 shadow-md ${
                     msg.senderEmail === userEmail 
                       ? 'bg-primary-500 text-white rounded-tr-sm' 
-                      : 'bg-white rounded-tl-sm'
+                      : 'bg-white dark:bg-gray-800 rounded-tl-sm'
                   }`}>
                     {msg.messageType === MessageType.IMAGE ? (
                       <img

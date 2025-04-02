@@ -14,11 +14,13 @@ import { useAppSelector } from '../../store/hooks';
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { notifications } = useAppSelector((state) => state.noti);
+  const { notifications, unreadChatCount } = useAppSelector((state) => state.noti);
 
-  // CHAT_MESSAGE 타입의 알림만 카운트
-  const unreadChatMessages = notifications.filter(n => n.type === 'CHAT_MESSAGE' && n.status === 'UNREAD').length;
- 
+  // CHAT_MESSAGE를 제외한 읽지 않은 알림 수 계산
+  const unreadNonChatCount = notifications.filter(
+    n => n.status === 'UNREAD' && n.type !== 'CHAT_MESSAGE'
+  ).length;
+
   const getPathForLabel = (label: string) => {
     switch (label) {
       case '마켓':
@@ -47,16 +49,15 @@ const Footer = () => {
         location.pathname === '/chat-list' ? <IoChatbubbleEllipses /> : <IoChatbubbleEllipsesOutline />,
       label: '채팅',
       onClick: () => navigate('/chat-list'),
-      badge: unreadChatMessages > 0 ? unreadChatMessages : undefined
+      badge: unreadChatCount > 0 ? unreadChatCount : undefined
     },
     {
       icon:
         location.pathname === '/notification' ? <IoNotifications /> : <IoNotificationsOutline />,
       label: '알림',
       onClick: () => navigate('/notification'),
-      badge: notifications.filter(n => n.status === 'UNREAD').length > 0 
-        ? notifications.filter(n => n.status === 'UNREAD').length 
-        : undefined
+      // CHAT_MESSAGE를 제외한 알림 수만 표시
+      badge: unreadNonChatCount > 0 ? unreadNonChatCount : undefined
     },
     {
       icon: location.pathname === '/my-location' ? <HiMapPin /> : <HiOutlineMapPin />,
