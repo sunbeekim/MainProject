@@ -9,7 +9,7 @@ import { useWebSocket } from "../../contexts/WebSocketContext";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import { useChat } from "../../services/real-time/useChat";
 import { useNavigate } from "react-router-dom";
-import { markChatMessagesAsRead, updateUnreadChatCount } from "../../store/slices/notiSlice";
+import { markChatMessagesAsRead } from "../../store/slices/notiSlice";
 
 const ChatList: React.FC = () => {
   const { data: chatRooms, isLoading, isError, error, refetch } = useChatRooms();
@@ -26,8 +26,7 @@ const ChatList: React.FC = () => {
     if (lastNotification && lastNotification.type === 'CHAT_MESSAGE') {
       refetch(); // 채팅방 목록 새로고침
     }    
-    const unreadChatMessages = notifications.filter(n => n.type === 'CHAT_MESSAGE' && n.status === 'UNREAD').length;
-    dispatch(updateUnreadChatCount(unreadChatMessages));
+    
   }, [lastNotification, refetch]);
 
   // 웹소켓 연결 설정

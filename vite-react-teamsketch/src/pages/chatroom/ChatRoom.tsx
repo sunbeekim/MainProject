@@ -8,11 +8,12 @@ import { ChatRoom as ChatRoomType, getChatRoomDetail } from '../../services/api/
 import { axiosInstance } from '../../services/api/axiosInstance';
 import { apiConfig } from '../../services/api/apiConfig';
 import { toast } from 'react-toastify';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { useProductByProductId, getApprovalStatus, getProductByProductId } from '../../services/api/productAPI';
 import { IconMap } from '../../components/common/Icons';
 import ProductImage from '../../components/features/image/ProductImage';
 import ProfileImage from '../../components/features/image/ProfileImage';
+import { markChatMessagesAsRead } from '../../store/slices/notiSlice';
 
 
 const ChatRoom: React.FC = () => {
@@ -40,6 +41,7 @@ const ChatRoom: React.FC = () => {
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [transactionType, setTransactionType] = useState<string>('');
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const dispatch = useAppDispatch();
   
   // useProductById 훅 사용
   const { data: productData } = useProductByProductId(chatInfo?.productId || 0);
@@ -252,6 +254,31 @@ const ChatRoom: React.FC = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+  
+  // ChatRoom.tsx에 useEffect 추가
+useEffect(() => {
+  // 컴포넌트 언마운트 시 실행될 cleanup 함수
+  return () => {
+    // 채팅방을 나갈 때 메시지 읽음 처리
+    if (chatroomId) {
+      // Redux store에서 읽음 처리
+      dispatch(markChatMessagesAsRead(Number(chatroomId)));
+      
+      // API 호출로도 읽음 처리
+      axiosInstance.put(
+        `${apiConfig.endpoints.core.base}/chat/rooms/${chatroomId}/messages/read`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      ).catch(error => {
+        console.error('메시지 읽음 처리 실패:', error);
+      });
+    }
+  };
+}, [chatroomId, token, dispatch]);
 
   // 메시지 영역 클릭 시 키보드 내리기
   const handleChatAreaClick = () => {
