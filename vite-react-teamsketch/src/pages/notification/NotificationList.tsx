@@ -1,40 +1,40 @@
 import { useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
-import { markAsRead, markAllAsRead, INotification } from "../../store/slices/notiSlice";
+import { markAllNonChatAsRead, INotification } from "../../store/slices/notiSlice";
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
 const NotificationList = () => {
   const [filter, setFilter] = useState("전체");
   const dispatch = useAppDispatch();
-  const { notifications, unreadCount } = useAppSelector((state) => state.noti);
+  const { notifications } = useAppSelector((state) => state.noti);
 
-  // 알림 필터링
-  const filteredNotifications = notifications.filter((n: INotification) => {
+  // CHAT_MESSAGE를 제외한 알림만 필터링
+  const nonChatNotifications = notifications.filter(n => n.type !== 'CHAT_MESSAGE');
+
+  // 알림 필터링 (CHAT_MESSAGE 제외)
+  const filteredNotifications = nonChatNotifications.filter((n: INotification) => {
     if (filter === "전체") return true;
     return n.type === filter;
   });
 
-  // 알림 읽음 처리
-  const handleMarkAsRead = (id: number) => {
-    dispatch(markAsRead(id));
-  };
+  // 필터 옵션에서도 CHAT_MESSAGE 제외
+  const filterOptions = [
+    "전체", 
+    "PRODUCT_REQUEST", 
+    "JOIN_REQUEST", 
+    "LOCATION_SHARE", 
+    "PRODUCT_APPROVAL"
+  ];
 
-  // 모든 알림 읽음 처리
+  // 알림 읽음 처리
   const handleMarkAllAsRead = () => {
-    dispatch(markAllAsRead());
+    dispatch(markAllNonChatAsRead());
   };
 
   // 알림 타입별 스타일
   const getNotificationStyle = (type: string) => {
-    switch (type) {
-      case 'CHAT_MESSAGE':
-        return {
-          icon: '💬',
-          bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-          textColor: 'text-blue-600 dark:text-blue-300',
-          borderColor: 'border-blue-100 dark:border-blue-800'
-        };
+    switch (type) {   
       case 'PRODUCT_REQUEST':
         return {
           icon: '🛍️',
@@ -78,7 +78,7 @@ const NotificationList = () => {
       {/* 알림 유형 필터 */}
       <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-sm">
         <div className="flex space-x-2 overflow-x-auto px-4 py-3 scrollbar-hide">
-          {["전체", "CHAT_MESSAGE", "PRODUCT_REQUEST", "JOIN_REQUEST", "LOCATION_SHARE", "PRODUCT_APPROVAL"].map((type) => (
+          {filterOptions.map((type) => (
             <button
               key={type}
               onClick={() => setFilter(type)}
@@ -97,13 +97,15 @@ const NotificationList = () => {
         </div>
       </div>
 
-      {/* 읽지 않은 알림 카운터 및 전체 읽음 처리 버튼 */}
+      {/* 읽지 않은 알림 카운터 (CHAT_MESSAGE 제외) */}
       <div className="bg-white dark:bg-gray-800 px-4 py-3 border-b border-gray-100 dark:border-gray-700">
         <div className="flex justify-between items-center">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-            읽지 않은 알림 <span className="text-primary-500">{unreadCount}</span>개
+            읽지 않은 알림 <span className="text-primary-500">
+              {nonChatNotifications.filter(n => n.status === 'UNREAD').length}
+            </span>개
           </span>
-          {unreadCount > 0 && (
+          {nonChatNotifications.some(n => n.status === 'UNREAD') && (
             <button
               onClick={handleMarkAllAsRead}
               className="text-sm text-white hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
@@ -122,7 +124,7 @@ const NotificationList = () => {
             return (
               <div
                 key={notification.id}
-                onClick={() => notification.status === 'UNREAD' && handleMarkAsRead(notification.id)}
+                onClick={() => notification.status === 'UNREAD' && handleMarkAllAsRead()}
                 className={`
                   p-4 rounded-xl transition-all duration-200 cursor-pointer
                   ${notification.status === "UNREAD" 

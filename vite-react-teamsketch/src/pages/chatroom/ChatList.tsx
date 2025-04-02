@@ -9,7 +9,7 @@ import { useWebSocket } from "../../contexts/WebSocketContext";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import { useChat } from "../../services/real-time/useChat";
 import { useNavigate } from "react-router-dom";
-import { markChatMessagesAsRead } from "../../store/slices/notiSlice";
+import { markChatMessagesAsRead, updateUnreadChatCount } from "../../store/slices/notiSlice";
 
 const ChatList: React.FC = () => {
   const { data: chatRooms, isLoading, isError, error, refetch } = useChatRooms();
@@ -25,7 +25,9 @@ const ChatList: React.FC = () => {
   useEffect(() => {
     if (lastNotification && lastNotification.type === 'CHAT_MESSAGE') {
       refetch(); // 채팅방 목록 새로고침
-    }
+    }    
+    const unreadChatMessages = notifications.filter(n => n.type === 'CHAT_MESSAGE' && n.status === 'UNREAD').length;
+    dispatch(updateUnreadChatCount(unreadChatMessages));
   }, [lastNotification, refetch]);
 
   // 웹소켓 연결 설정
@@ -42,14 +44,14 @@ const ChatList: React.FC = () => {
     }
   }, [user?.email, token, isConnected, connect]);
 
-  // 채팅방 데이터 주기적 갱신
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      refetch();
-    }, 1000); // 1초마다 갱신
+  // // 채팅방 데이터 주기적 갱신
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     refetch();
+  //   }, 1000); // 1초마다 갱신
 
-    return () => clearInterval(intervalId);
-  }, [refetch]);
+  //   return () => clearInterval(intervalId);
+  // }, [refetch]);
 
   // 채팅방 데이터 유효성 검사
   useEffect(() => {
@@ -82,7 +84,9 @@ const ChatList: React.FC = () => {
         const [year, month, day, hour, minute] = dateValue;
         date = new Date(year, month - 1, day, hour, minute); // 월은 0부터 시작하므로 -1
       } else {
+        // UTC 시간을 KST로 변환
         date = new Date(dateValue);
+        date = new Date(date.getTime() + 9 * 60 * 60 * 1000); // UTC+9 (한국 시간)
       }
 
       if (isNaN(date.getTime())) {
@@ -90,6 +94,9 @@ const ChatList: React.FC = () => {
       }
 
       const now = new Date();
+      // 현재 시간도 KST로 맞추기
+      now.setTime(now.getTime() + 9 * 60 * 60 * 1000);
+      
       const diffInMs = now.getTime() - date.getTime();
       
       // 시간 차이 계산

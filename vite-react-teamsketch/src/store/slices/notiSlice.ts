@@ -111,7 +111,20 @@ const notificationSlice = createSlice({
     // 안읽은 채팅 메시지 수 업데이트
     updateUnreadChatCount: (state, action: PayloadAction<number>) => {
       state.unreadChatCount = action.payload;
-    }
+    },
+    
+    // 채팅 메시지를 제외한 모든 알림 읽음 처리
+    markAllNonChatAsRead: (state) => {
+      state.notifications.forEach(n => {
+        if (n.type !== 'CHAT_MESSAGE' && n.status === 'UNREAD') {
+          n.status = 'READ';
+        }
+      });
+      // 채팅 메시지를 제외한 읽지 않은 알림 수 계산
+      state.unreadCount = state.notifications.filter(
+        n => n.status === 'UNREAD' && n.type === 'CHAT_MESSAGE'
+      ).length;
+    },
   }
 });
 
@@ -124,7 +137,8 @@ export const {
   removeNotification,
   updateLastProcessedId,
   clearNotifications,
-  updateUnreadChatCount
+  updateUnreadChatCount,
+  markAllNonChatAsRead,
 } = notificationSlice.actions;
 
 // 리듀서 내보내기
