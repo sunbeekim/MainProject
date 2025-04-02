@@ -9,12 +9,16 @@ import {
 import { HiOutlineMapPin, HiMapPin } from 'react-icons/hi2';
 import { CgUser } from 'react-icons/cg';
 import { RiUserFill } from 'react-icons/ri';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { updateUnreadChatCount } from '../../store/slices/notiSlice';
 
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { notifications, unreadChatCount } = useAppSelector((state) => state.noti);
+  const unreadChatMessages = notifications.filter(n => n.type === 'CHAT_MESSAGE' && n.status === 'UNREAD').length;
+  const dispatch = useAppDispatch();
+  dispatch(updateUnreadChatCount(unreadChatMessages));
 
   // CHAT_MESSAGE를 제외한 읽지 않은 알림 수 계산
   const unreadNonChatCount = notifications.filter(

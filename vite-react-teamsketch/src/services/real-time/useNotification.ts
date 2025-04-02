@@ -5,6 +5,7 @@ import { INotification } from './types';
 export interface NotificationHookProps {
   userEmail?: string;
   token?: string;
+  currentChatroomId?: number;
 }
 
 export interface NotificationHookReturn {

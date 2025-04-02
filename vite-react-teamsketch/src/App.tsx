@@ -17,8 +17,8 @@ import {
 } from './components/layout/MainLayout';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import { useNotification } from './services/real-time/useNotification';
-import { useDispatch } from 'react-redux';
-import { addNotification, updateLastProcessedId, INotification } from './store/slices/notiSlice';
+import { useAppDispatch } from './store/hooks';
+import { addNotification, updateLastProcessedId, INotification, updateUnreadChatCount } from './store/slices/notiSlice';
 import ChangePassword from './pages/account/ChangePassword';
 import ForgotPassword from './pages/account/ForgotPassword';
 import VerificationCode from './pages/account/VerificationCode';
@@ -30,7 +30,8 @@ import SplashScreen from './components/common/splash/SplashScreen';
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  
 
   // 토큰 및 위치 설정 여부 확인
   const token = localStorage.getItem('token') || undefined;
@@ -101,8 +102,13 @@ const App = () => {
   // 사용자가 로그인했을 때만 알림 구독 (메모이제이션 적용)
   const NotificationHandler = memo(() => {
     const location = useLocation();
-    const isChatPage = location.pathname.startsWith('/chat/');
     const isChatListPage = location.pathname.startsWith('/chat-list');
+    
+    // 현재 채팅방 ID 추출
+    const currentChatroomId = useMemo(() => {
+      const match = location.pathname.match(/\/chat\/(\d+)/);
+      return match ? parseInt(match[1]) : null;
+    }, [location.pathname]);
 
     // 로그인 정보 확인 로그 추가
     console.log('[알림 디버그] ==== NotificationHandler 시작 ====');
@@ -134,12 +140,27 @@ const App = () => {
     // 마지막으로 처리한 알림의 ID를 저장
     const [lastProcessedId, setLastProcessedId] = useState<string>('');
 
-    // 새로운 알림이 오면 Redux store에 저장하고 토스트 메시지 표시
+    // 최신 알림이 오면 Redux store에 저장하고 토스트 메시지 표시
     useEffect(() => {
-      if (notifications.length === 0 || !isConnected || isChatPage) return;
+      if (notifications.length === 0 || !isConnected) return;
 
       // 최신 알림 가져오기
       const latestNotification = notifications[notifications.length - 1];
+
+      // 타입 가드 함수 추가
+      const isChatMessage = (notification: any): notification is INotification => {
+        return notification.type === 'CHAT_MESSAGE' && notification.chatroomId !== undefined;
+      };
+
+      // 현재 채팅방의 메시지인 경우 알림 무시
+      if (
+        isChatMessage(latestNotification) && 
+        currentChatroomId && 
+        latestNotification.chatroomId === currentChatroomId
+      ) {
+        console.log('[알림 디버그] 현재 채팅방 메시지 무시:', latestNotification);
+        return;
+      }
 
       // 고유 ID 생성
       const notificationId = `${latestNotification.receiverEmail}-${latestNotification.message}-${
@@ -156,14 +177,23 @@ const App = () => {
 
       // Redux store에 알림 저장
       const notification: INotification = {
-        id: Date.now(), // 임시 ID 생성
+        id: Date.now(),
         type: latestNotification.type || 'SYSTEM',
         message: latestNotification.message,
         timestamp: latestNotification.timestamp || new Date().toISOString(),
         status: 'UNREAD',
-        receiverEmail: latestNotification.receiverEmail
+        receiverEmail: latestNotification.receiverEmail,
+        ...(isChatMessage(latestNotification) && {
+          chatroomId: latestNotification.chatroomId,
+          senderEmail: latestNotification.senderEmail
+        })
       };
 
+      // CHAT_MESSAGE 타입이고 현재 채팅방이 아닌 경우에만 카운트 증가
+      if (isChatMessage(latestNotification) && 
+          (!currentChatroomId || latestNotification.chatroomId !== currentChatroomId)) {
+        dispatch(updateUnreadChatCount(1));
+      }
       // 선택적 필드 추가
       if ('senderEmail' in latestNotification) {
         notification.senderEmail = latestNotification.senderEmail as string;
@@ -174,7 +204,6 @@ const App = () => {
       if ('chatroomId' in latestNotification) {
         notification.chatroomId = latestNotification.chatroomId as number;
       }
-
       dispatch(addNotification(notification));
 
       // 마지막 처리 ID 업데이트
@@ -194,12 +223,10 @@ const App = () => {
             theme: 'dark'
           });
         }
-
-        console.log('[알림 디버그] 토스트 메시지 표시 완료');
       } catch (error) {
         console.error('[알림 디버그] 토스트 메시지 표시 오류:', error);
       }
-    }, [notifications, isConnected, lastProcessedId, isChatPage, dispatch]);
+    }, [notifications, isConnected, lastProcessedId, currentChatroomId, dispatch, isChatListPage]);
 
     // WebSocket 연결 상태 모니터링
     useEffect(() => {
