@@ -1,4 +1,4 @@
-import { useState, memo, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FloatingButton from '../../components/common/FloatingButton';
@@ -8,8 +8,6 @@ import Card from '../../components/features/card/Card';
 import {
   getProducts,
   getProductsByCategory,
-  useProductImage,
-  extractImageIdFromPath
 } from '../../services/api/productAPI';
 import Loading from '../../components/common/Loading';
 import { toast } from 'react-toastify';
@@ -19,56 +17,7 @@ import { getProductNearBy } from '../../services/api/productAPI';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { RootState } from '../../store/store';
 import { setDistance } from '../../store/slices/productSlice';
-
-
-const ProductImage = memo(({ thumbnailPath }: { thumbnailPath: string | null }) => {
-  const imageId = thumbnailPath ? extractImageIdFromPath(thumbnailPath) : null;
-  const { data: imageBlob, isLoading, error } = useProductImage(imageId || 0);
-  const [imgError, setImgError] = useState(false);
-
-  // 이미지가 없는 경우 기본 이미지 표시
-  if (!thumbnailPath) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-100">
-        <span className="text-gray-400">이미지 없음</span>
-      </div>
-    );
-  }
-
-  // 로딩 중인 경우 로딩 컴포넌트 표시
-  if (isLoading) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-50">
-        <Loading />
-      </div>
-    );
-  }
-
-  // 에러가 발생했거나 이미지 로드에 실패한 경우 대체 이미지 표시
-  if (error || !imageBlob || imgError) {
-    // 이미지 ID를 사용하여 고유한 랜덤 이미지 생성
-    const mockImageUrl = `https://picsum.photos/600/400?random=${imageId || Math.floor(Math.random() * 1000)
-      }`;
-    return (
-      <img
-        src={mockImageUrl}
-        alt="상품 이미지"
-        className="w-full h-full object-cover"
-        onError={() => setImgError(true)}
-      />
-    );
-  }
-
-  // 정상적으로 이미지 표시
-  return (
-    <img
-      src={URL.createObjectURL(imageBlob)}
-      alt="상품 이미지"
-      className="w-full h-full object-cover"
-      onError={() => setImgError(true)}
-    />
-  );
-});
+import ProductImage from '../../components/features/image/ProductImage';
 
 export interface NProductResponse {
   status: string;
@@ -85,7 +34,6 @@ const MarketList = () => {
   const distance = useAppSelector((state: RootState) => state.product.distance);
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
-
 
   // 상품 Query - 카테고리 선택에 따라 다른 API 호출
   const { data: queryProducts = [], isLoading, error } = useQuery({
@@ -236,7 +184,7 @@ const MarketList = () => {
                   <Card
                     title={product.title}
                     description={product.description}
-                    image={<ProductImage thumbnailPath={product.thumbnailPath} />}
+                    image={<ProductImage imagePath={product.thumbnailPath || ''} />}
                     price={product.price.toString()}
                     dopamine={product.dopamine}
                     currentParticipants={product.currentParticipants}
