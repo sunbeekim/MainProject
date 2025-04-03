@@ -62,7 +62,7 @@ public class RouteConfig {
                         .path("/ws/**", "/ws", "/topic/**")
                         .filters(f -> f
                                 // 웹소켓 헤더 보존 및 추가
-                                .preserveHostHeader()
+                                .preserveHostHeader() // 제거해도 될듯?
                                 .removeRequestHeader(HttpHeaders.HOST)
                                 .addRequestHeader("Connection", "Upgrade")
                                 .addRequestHeader("Upgrade", "websocket")                            
